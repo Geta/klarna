@@ -16,6 +16,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
                     return new GenericCreditCardViewModel { PaymentMethod = new GenericCreditCardPaymentMethod() };
                 case "Authorize":
                     return new AuthorizeViewModel { PaymentMethod = new AuthorizePaymentMethod() };
+                case "KlarnaPayments":
+                    return new KlarnaPaymentsViewModel { PaymentMethod = new KlarnaPaymentsPaymentMethod() };
             }
 
             throw new ArgumentException("No view model has been implemented for the method " + paymentMethodName, "paymentMethodName");

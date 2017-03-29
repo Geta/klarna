@@ -3,7 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.9
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Geta.Klarna.Payments", "Geta.Klarna.Payments\Geta.Klarna.Payments.csproj", "{304FF62A-4DF6-40CB-9701-F85F91E16AF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments", "Klarna.Payments\Klarna.Payments.csproj", "{D32786DF-E314-4E0D-A0DD-0047FA2316F9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0EACE22F-D6BA-4969-AEBF-6BB95083452E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Integration", "..\test\Test.Integration\Test.Integration.csproj", "{A8B66E60-E974-40AE-8E00-4743F1FE8659}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments.CommerceManager", "Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj", "{6E816423-8646-43CE-9192-FB6E2A2F13B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,12 +17,23 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{304FF62A-4DF6-40CB-9701-F85F91E16AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{304FF62A-4DF6-40CB-9701-F85F91E16AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{304FF62A-4DF6-40CB-9701-F85F91E16AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{304FF62A-4DF6-40CB-9701-F85F91E16AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D32786DF-E314-4E0D-A0DD-0047FA2316F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32786DF-E314-4E0D-A0DD-0047FA2316F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32786DF-E314-4E0D-A0DD-0047FA2316F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32786DF-E314-4E0D-A0DD-0047FA2316F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8B66E60-E974-40AE-8E00-4743F1FE8659}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8B66E60-E974-40AE-8E00-4743F1FE8659}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8B66E60-E974-40AE-8E00-4743F1FE8659}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8B66E60-E974-40AE-8E00-4743F1FE8659}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A8B66E60-E974-40AE-8E00-4743F1FE8659} = {0EACE22F-D6BA-4969-AEBF-6BB95083452E}
 	EndGlobalSection
 EndGlobal

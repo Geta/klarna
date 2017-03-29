@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -66,13 +66,11 @@
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.ApplicationModules, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.ApplicationModules, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
     </Reference>
     <Reference Include="EPiServer.Cms.Shell.UI, Version=10.6.1.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EPiServer.CMS.UI.Core.10.6.1\lib\net45\EPiServer.Cms.Shell.UI.dll</HintPath>
@@ -82,41 +80,32 @@
       <HintPath>..\..\packages\EPiServer.CMS.UI.AspNetIdentity.10.6.1\lib\net45\EPiServer.Cms.UI.AspNetIdentity.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Configuration, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.Configuration.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Configuration, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Data, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Data.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Data, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Data.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Data.Cache, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Data.Cache.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Data.Cache, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Data.Cache.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Enterprise, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.Enterprise.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Enterprise, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.Enterprise.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Events, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Events.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Events, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Events.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Framework, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Framework.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Framework, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.ImageLibrary, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.ImageLibrary, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Licensing, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Licensing.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Licensing, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Licensing.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.LinkAnalyzer, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.LinkAnalyzer, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
     </Reference>
     <Reference Include="EPiServer.Logging.Log4Net, Version=2.1.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EPiServer.Logging.Log4Net.2.1.0\lib\net45\EPiServer.Logging.Log4Net.dll</HintPath>
@@ -146,13 +135,11 @@
       <HintPath>..\..\packages\EPiServer.CMS.UI.Core.10.6.1\lib\net45\EPiServer.UI.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="EPiServer.Web.WebControls, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.Web.WebControls, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.XForms, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.XForms.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="EPiServer.XForms, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.XForms.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -410,10 +397,12 @@
     <Compile Include="Features\Market\Services\MarketContentLoader.cs" />
     <Compile Include="Features\Payment\Models\PaymentMethodModel.cs" />
     <Compile Include="Features\Payment\PaymentMethods\AuthorizePaymentMethod.cs" />
+    <Compile Include="Features\Payment\PaymentMethods\KlarnaPaymentsPaymentMethod.cs" />
     <Compile Include="Features\Payment\Services\IPaymentService.cs" />
     <Compile Include="Features\Payment\Services\PaymentService.cs" />
     <Compile Include="Features\Payment\ViewModelFactories\PaymentMethodViewModelFactory.cs" />
     <Compile Include="Features\Payment\ViewModels\AuthorizeViewModel.cs" />
+    <Compile Include="Features\Payment\ViewModels\KlarnaPaymentsViewModel.cs" />
     <Compile Include="Features\Product\Controllers\BundleController.cs" />
     <Compile Include="Features\Product\Controllers\PackageController.cs" />
     <Compile Include="Features\Product\Models\FashionBundle.cs" />
@@ -793,6 +782,7 @@
     <Content Include="modules\_protected\CMS\web.config" />
     <Content Include="modules\_protected\CMS\CMS.zip" />
     <Content Include="App_Data\GeoLiteCity.dat" />
+    <Content Include="Views\Shared\_KlarnaPaymentsPaymentMethod.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -921,6 +911,10 @@
     <Content Include="Views\Shared\_Facet.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Klarna.Payments\Klarna.Payments.csproj">
+      <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
+      <Name>Klarna.Payments</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj">
       <Project>{341c8e14-4eae-4946-9841-45f9818265a8}</Project>
       <Name>EPiServer.Reference.Commerce.Shared</Name>
@@ -1001,9 +995,9 @@
     <Exec WorkingDirectory="$(ProjectDir)" Command="&#xD;&#xA;          WHERE npm&#xD;&#xA;          IF %ERRORLEVEL% NEQ 0 ECHO nodejs is not installed. You need to install nodejs for changes in less files to appear in the css on the site. The old styles will still work.&#xD;&#xA;          IF %ERRORLEVEL% NEQ 0 GOTO :EOF&#xD;&#xA;          npm install &amp;&amp; npm run buildless" />
   </Target>
   <ItemGroup>
-    <Content Include="modules\_protected\EPiServer.Commerce.Shell\EPiServer.Commerce.Shell.zip"/>
-    <Content Include="modules\_protected\Commerce\Commerce.zip"/>
-    <Content Include="modules\_protected\EPiServer.Commerce.Shell.ManagerIntegration\EPiServer.Commerce.Shell.ManagerIntegration.zip"/>
+    <Content Include="modules\_protected\EPiServer.Commerce.Shell\EPiServer.Commerce.Shell.zip" />
+    <Content Include="modules\_protected\Commerce\Commerce.zip" />
+    <Content Include="modules\_protected\EPiServer.Commerce.Shell.ManagerIntegration\EPiServer.Commerce.Shell.ManagerIntegration.zip" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="EPiServer.Business.Commerce, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">

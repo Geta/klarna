@@ -1,0 +1,23 @@
+﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels.KlarnaPaymentsViewModel
+
+@Html.HiddenFor(model => model.PaymentMethod.PaymentMethodId)
+
+<script src="https://credit.klarnacdn.net/lib/v1/api.js" async></script>
+
+<script>
+    window.klarnaAsyncCallback = function () {
+        debugger;
+        Klarna.Credit.init({
+            client_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIifQ.dtxWM6MIcgoeMgH87tGvsNDY6cH'
+        });
+        Klarna.Credit.load({
+                container: "#klarna_container"
+            },
+            function(res) {
+                console.debug(res);
+            });
+
+    };
+</script>
+
+<div id="klarna_container"></div>
