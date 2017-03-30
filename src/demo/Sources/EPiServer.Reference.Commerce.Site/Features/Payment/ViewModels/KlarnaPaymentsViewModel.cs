@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Web.Mvc;
+﻿using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
+using EPiServer.ServiceLocation;
+using Klarna.Payments;
+using Klarna.Payments.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
 {
@@ -13,33 +13,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
             InitializeValues();
         }
 
-        public List<SelectListItem> Months { get; set; }
-
-        public List<SelectListItem> Years { get; set; }
+        public string ClientToken { get; set; }
+        public WidgetColorOptions ColorOptions { get; set; }
 
         public void InitializeValues()
         {
-            Months = new List<SelectListItem>();
-            Years = new List<SelectListItem>();
+            var cartService = ServiceLocator.Current.GetInstance<ICartService>();
+            var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
 
-            for (var i = 1; i < 13; i++)
-            {
-                Months.Add(new SelectListItem
-                {
-                    Text = i.ToString(CultureInfo.InvariantCulture),
-                    Value = i.ToString(CultureInfo.InvariantCulture)
-                });
-            }
+            var cart = cartService.LoadCart(cartService.DefaultCartName);
 
-            for (var i = 0; i < 7; i++)
-            {
-                var year = (DateTime.Now.Year + i).ToString(CultureInfo.InvariantCulture);
-                Years.Add(new SelectListItem
-                {
-                    Text = year,
-                    Value = year
-                });
-            }
+            ClientToken = klarnaService.GetClientToken(cart);
+            ColorOptions = klarnaService.GetWidgetColorOptions();
         }
     }
 }

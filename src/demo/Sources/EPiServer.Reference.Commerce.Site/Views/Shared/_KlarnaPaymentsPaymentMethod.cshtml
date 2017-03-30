@@ -6,18 +6,28 @@
 
 <script>
     window.klarnaAsyncCallback = function () {
-        debugger;
+       
         Klarna.Credit.init({
-            client_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIifQ.dtxWM6MIcgoeMgH87tGvsNDY6cH'
+            client_token: '@Model.ClientToken'
         });
         Klarna.Credit.load({
                 container: "#klarna_container"
-            },
-            function(res) {
-                console.debug(res);
-            });
-
+        },
+        function (res) {
+            
+            console.debug(res);
+        });
     };
+
+    function executeAuthorize() {
+        Klarna.Credit.authorize({
+            "design": null, "purchase_country": "US", "purchase_currency": "USD", "locale": "en", "billing_address": { "given_name": null, "family_name": null, "email": "john.doe+require_signup@abcstore.com", "title": null, "street_address": null, "street_address2": null, "postal_code": null, "city": "New York", "region": null, "phone": "202-555-0174", "country": "US" }, "shipping_address": null, "order_amount": 1160, "order_tax_amount": 0, "order_lines": [{ "type": null, "reference": "SKU-36127195", "name": "Faded Glory Mens Canvas Twin Gore Slip-On Shoe", "quantity": 1, "unit_price": 1450, "tax_rate": 0, "total_amount": 1160, "total_discount_amount": 290, "total_tax_amount": 0 }], "customer": null, "merchant_urls": { "status_update": null, "confirmation": "http://localhost:63149", "notification": "http://localhost:63149", "push": null }, "merchant_reference1": null, "merchant_reference2": null, "merchant_data": null, "body": null, "options": { "color_button": "#0000FF", "color_button_text": "#0000FF", "color_checkbox": "#0000FF", "color_checkbox_checkmark": "#0000FF", "color_header": "#0000FF", "color_link": "#0000FF", "color_border": "#0000FF", "color_border_selected": "#0000FF", "color_text": "#0000FF", "color_details": "#0000FF", "color_text_secondary": "#0000FF", "radius_border": "10px" } 
+        }, function (res) {
+            debugger;
+            console.debug(res);
+        });
+    }
 </script>
 
 <div id="klarna_container"></div>
+<a href="#" onclick="executeAuthorize()">Authorize!</a>

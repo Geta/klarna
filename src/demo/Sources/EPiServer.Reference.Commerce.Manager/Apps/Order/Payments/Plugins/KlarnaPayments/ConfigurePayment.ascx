@@ -1,6 +1,14 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ConfigurePayment.ascx.cs" Inherits="Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPayments.ConfigurePayment" %>
 
+<style>
+    .karnapayment-parameters table.DataForm tbody tr td.FormLabelCell { width: 200px; }
+    .karnapayment-parameters h2 { margin-top: 20px }
+</style>
+
+<div class="karnapayment-parameters">
+    
 <h2>Klarna connection setting</h2>
+
 
 <table class="DataForm">
     <tbody>
@@ -105,3 +113,49 @@
         </tr>
     </tbody>
 </table>
+    
+<h2>Other setting</h2>
+
+<table class="DataForm">
+    <tbody>
+         <tr>
+            <td class="FormLabelCell">Confirmation URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtConfirmationUrl" />
+                <asp:RequiredFieldValidator ID="requiredConfirmationUrl" runat="server" ControlToValidate="txtConfirmationUrl" ErrorMessage="Confirmation URL is required." />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Notification URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtNotificationUrl" />
+                <asp:RequiredFieldValidator ID="requiredNotificationUrl" runat="server" ControlToValidate="txtNotificationUrl" ErrorMessage="Notification URL is required." />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Send product and image URL:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="SendProductAndImageUrlCheckBox" />
+            </td>
+        </tr>
+         <tr>
+            <td class="FormLabelCell">Use attachments:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="UseAttachmentsCheckBox" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Pre-assesment:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="PreAssesmentCheckBox" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Name of credit form:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtNameOfCreditForm" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+</div>

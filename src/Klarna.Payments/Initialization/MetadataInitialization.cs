@@ -22,6 +22,10 @@ namespace Klarna.Payments.Initialization
 
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaUsernameField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaPasswordField), Constants.OtherPaymentClass);
+
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdField), Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Constants.CartClass);
+
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorDetailsField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonTextField), Constants.OtherPaymentClass);
@@ -34,6 +38,13 @@ namespace Klarna.Payments.Initialization
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextSecondaryField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetRadiusBorderField), Constants.OtherPaymentClass);
+
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.ConfirmationUrlField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NotificationUrlField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.SendProductAndImageUrlField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.PreAssesmentField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.UseAttachmentsField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NameOfCreditFormField), Constants.OtherPaymentClass);
         }
 
         public void Uninitialize(InitializationEngine context)

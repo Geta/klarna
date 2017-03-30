@@ -34,7 +34,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly IRecommendationService _recommendationService;
         private ICart _cart;
         private readonly CheckoutService _checkoutService;
-        private readonly KlarnaService _klarnaService;
+        private readonly IKlarnaService _klarnaService;
 
         public CheckoutController(
             ICurrencyService currencyService,
@@ -45,7 +45,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             OrderSummaryViewModelFactory orderSummaryViewModelFactory,
             IRecommendationService recommendationService,
             CheckoutService checkoutService,
-            KlarnaService klarnaService)
+            IKlarnaService klarnaService)
         {
             _currencyService = currencyService;
             _controllerExceptionHandler = controllerExceptionHandler;
@@ -81,7 +81,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            var result = await _klarnaService.CreateSession(Cart);
+            var result = await _klarnaService.CreateOrUpdateSession(Cart);
 
             return View(viewModel.ViewName, viewModel);
         }

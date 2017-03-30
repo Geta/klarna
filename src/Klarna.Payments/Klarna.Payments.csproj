@@ -98,6 +98,9 @@
     <Reference Include="Klarna.Rest, Version=2.2.0.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
       <HintPath>..\packages\Klarna.Rest.2.2.0.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
     </Reference>
@@ -210,11 +213,13 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
+    <Compile Include="IKlarnaService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="Initialization\RefitInitialization.cs" />
     <Compile Include="KlarnaPaymentGateway.cs" />
     <Compile Include="KlarnaService.cs" />
     <Compile Include="IKlarnaServiceApi.cs" />
+    <Compile Include="Models\CreateOrderResponse.cs" />
     <Compile Include="Models\CreateSessionRequest.cs" />
     <Compile Include="Models\CreateSessionResponse.cs" />
     <Compile Include="Models\WidgetColorOptions.cs" />

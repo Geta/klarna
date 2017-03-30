@@ -34,6 +34,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             txtColorTextSecondary.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorTextSecondaryField, string.Empty);
             txtRadiusBorder.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetRadiusBorderField, string.Empty);
 
+            txtConfirmationUrl.Text = paymentMethod.GetParameter(Constants.ConfirmationUrlField, string.Empty);
+            txtNotificationUrl.Text = paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
+            var sendProductAndImageUrl = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
+            SendProductAndImageUrlCheckBox.Checked = sendProductAndImageUrl;
+            var useAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
+            UseAttachmentsCheckBox.Checked = useAttachments;
+            var preAssesment = bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
+            PreAssesmentCheckBox.Checked = preAssesment;
+            txtNameOfCreditForm.Text = paymentMethod.GetParameter(Constants.NameOfCreditFormField, string.Empty);
         }
 
         public void SaveChanges(object dto)
@@ -64,6 +73,13 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorTextField, txtColorText.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorTextSecondaryField, txtColorTextSecondary.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetRadiusBorderField, txtRadiusBorder.Text);
+
+            paymentMethod.SetParameter(Constants.ConfirmationUrlField, txtConfirmationUrl.Text);
+            paymentMethod.SetParameter(Constants.NotificationUrlField, txtNotificationUrl.Text);
+            paymentMethod.SetParameter(Constants.SendProductAndImageUrlField, (SendProductAndImageUrlCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.UseAttachmentsField, (UseAttachmentsCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.PreAssesmentField, (PreAssesmentCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.NameOfCreditFormField, txtNameOfCreditForm.Text);
         }
         
     }
