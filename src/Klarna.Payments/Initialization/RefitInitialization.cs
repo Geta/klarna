@@ -15,9 +15,9 @@ namespace Klarna.Payments.Initialization
         private static bool _initialized;
 
         // TODO: make configurable
-        private string _apiUrl = "https://api.playground.klarna.com/";
-        private string _username = "username";
-        private string  _password = "password1234";
+        private string _apiUrl = "https://api-na.playground.klarna.com/";
+        private string _username = "N100198";
+        private string  _password = "Gee4mawush+u<el8";
 
         public void Initialize(InitializationEngine context)
         {

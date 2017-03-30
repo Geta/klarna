@@ -16,8 +16,10 @@ using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using Klarna.Payments;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -32,6 +34,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly IRecommendationService _recommendationService;
         private ICart _cart;
         private readonly CheckoutService _checkoutService;
+        private readonly KlarnaService _klarnaService;
 
         public CheckoutController(
             ICurrencyService currencyService,
@@ -41,7 +44,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             ICartService cartService,
             OrderSummaryViewModelFactory orderSummaryViewModelFactory,
             IRecommendationService recommendationService,
-            CheckoutService checkoutService)
+            CheckoutService checkoutService,
+            KlarnaService klarnaService)
         {
             _currencyService = currencyService;
             _controllerExceptionHandler = controllerExceptionHandler;
@@ -51,12 +55,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderSummaryViewModelFactory = orderSummaryViewModelFactory;
             _recommendationService = recommendationService;
             _checkoutService = checkoutService;
+            _klarnaService = klarnaService;
         }
 
         [HttpGet]
         [OutputCache(Duration = 0, NoStore = true)]
         [Tracking(TrackingType.Checkout)]
-        public ActionResult Index(CheckoutPage currentPage)
+        public async Task<ActionResult> Index(CheckoutPage currentPage)
         {
             if (CartIsNullOrEmpty())
             {
@@ -75,6 +80,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.UpdateShippingMethods(Cart, viewModel.Shipments);
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
+
+            var result = await _klarnaService.CreateSession(Cart);
 
             return View(viewModel.ViewName, viewModel);
         }
