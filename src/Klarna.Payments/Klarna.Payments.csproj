@@ -92,6 +92,9 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
+    </Reference>
     <Reference Include="Klarna.Rest, Version=2.2.0.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
       <HintPath>..\packages\Klarna.Rest.2.2.0.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
