@@ -105,7 +105,7 @@ namespace Klarna.Payments.Models
         [JsonProperty("given_name")]
         public string GivenName { get; set; }
         [JsonProperty("family_name")]
-        public string FailyName { get; set; }
+        public string FamilyName { get; set; }
         [JsonProperty("email")]
         public string Email { get; set; }
         [JsonProperty("title")]
@@ -146,6 +146,10 @@ namespace Klarna.Payments.Models
         public int TotalDiscountAmount { get; set; }
         [JsonProperty("total_tax_amount")]
         public int TotalTaxAmount { get; set; }
+        [JsonProperty("product_url")]
+        public string ProductUrl { get; set; }
+        [JsonProperty("image_url")]
+        public string ProductImageUrl { get; set; }
     }
 
 }

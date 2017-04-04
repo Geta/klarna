@@ -13,7 +13,7 @@ namespace Klarna.Payments
 
         public bool ProcessPayment(IPayment payment, ref string message)
         {
-            throw new System.NotImplementedException();
+            return ProcessPayment((Payment)payment, ref message);
         }
     }
 }

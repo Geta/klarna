@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Payments;
+using Klarna.Payments.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -81,7 +82,17 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            var result = await _klarnaService.CreateOrUpdateSession(Cart);
+            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
+            if (_klarnaService.IsCustomerPreAssessmentEnabled())
+            {
+                sessionRequest.Customer = new Customer
+                {
+                    DateOfBirth = "01-01-2017",
+                    Gender = "Male",
+                    LastFourSsn = "1234"
+                };
+            }
+            await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
 
             return View(viewModel.ViewName, viewModel);
         }

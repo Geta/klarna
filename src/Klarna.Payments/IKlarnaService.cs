@@ -6,11 +6,11 @@ namespace Klarna.Payments
 {
     public interface IKlarnaService
     {
-        Task<string> CreateSession(Session request);
-        Task<string> CreateSession(ICart cart);
-        Task<string> CreateOrUpdateSession(ICart cart);
+        Task<string> CreateOrUpdateSession(Session sessionRequest, ICart cart);
+        Session GetSessionRequest(ICart cart);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(string sessionId);
+        bool IsCustomerPreAssessmentEnabled();
         WidgetColorOptions GetWidgetColorOptions();
 
         Task CancelAuthorization(string authorizationToken);
