@@ -162,7 +162,7 @@ namespace Klarna.Payments
             var shipment = cart.GetFirstShipment();
             var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
 
-            if (shipment != null)
+            if (shipment != null && shipment.ShippingAddress != null)
             {
                 request.ShippingAddress = GetAddress(shipment.ShippingAddress);
             }
