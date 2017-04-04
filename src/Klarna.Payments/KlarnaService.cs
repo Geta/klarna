@@ -165,6 +165,7 @@ namespace Klarna.Payments
             if (shipment != null && shipment.ShippingAddress != null)
             {
                 request.ShippingAddress = GetAddress(shipment.ShippingAddress);
+                request.PurchaseCountry = GetTwoLetterCountryCode(shipment.ShippingAddress.CountryCode);
             }
             if (payment != null && payment.BillingAddress != null)
             {
@@ -174,7 +175,7 @@ namespace Klarna.Payments
             request.OrderAmount = GetAmount(totals.SubTotal);
 
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
-            request.PurchaseCountry = GetTwoLetterCountryCode(shipment.ShippingAddress.CountryCode);
+            
             request.Locale = ContentLanguage.PreferredCulture.Name;
             
             var list = new List<OrderLine>();
