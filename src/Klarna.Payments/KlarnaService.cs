@@ -14,8 +14,10 @@ using EPiServer.Logging;
 using EPiServer.Web.Routing;
 using Klarna.Payments.Extensions;
 using Mediachase.Commerce.Catalog;
+using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
+using Mediachase.Commerce.Orders.Search;
 
 namespace Klarna.Payments
 {
@@ -87,7 +89,7 @@ namespace Klarna.Payments
             return await _klarnaServiceApi.GetSession(sessionId).ConfigureAwait(false);
         }
 
-        public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
+        public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart)
         {
             try
             {
@@ -188,6 +190,45 @@ namespace Klarna.Payments
             request.OrderLines = list.ToArray();
             
             return request;
+        }
+
+        public void FraudUpdate(NotificationModel notification)
+        {
+            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            searchOptions.CacheResults = false; 
+            searchOptions.StartingRecord = 0; 
+            searchOptions.RecordsToRetrieve = 1;
+            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
+            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+
+            var parameters = new OrderSearchParameters();
+            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} = '{notification.OrderId}'";
+
+            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
+
+            if (purchaseOrder != null)
+            {
+                var order = _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
+                if (order != null)
+                {
+                    var orderForm = order.GetFirstForm();
+                    var payment = orderForm.Payments.FirstOrDefault();
+                    if (payment != null)
+                    {
+                        payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.EventType;
+
+                        if (notification.EventType.Equals(Models.OrderStatus.ORDER_ACCEPTED.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            payment.Status = PaymentStatus.Pending.ToString();
+
+                        }
+                        else if (notification.EventType.Equals(Models.OrderStatus.ORDER_REJECTED.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            payment.Status = PaymentStatus.Failed.ToString();
+                        }
+                    }
+                }
+            }
         }
 
         private async Task<string> CreateSession(Session sessionRequest, ICart cart)

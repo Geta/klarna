@@ -45,6 +45,10 @@ namespace Klarna.Payments.Initialization
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.PreAssesmentField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.UseAttachmentsField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NameOfCreditFormField), Constants.OtherPaymentClass);
+
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentMethodField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaOrderIdField), Constants.OrderNamespace);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.FraudStatusPaymentMethodField), Constants.OtherPaymentClass);
         }
 
         public void Uninitialize(InitializationEngine context)

@@ -2,6 +2,7 @@
 using System.Web.Http;
 using EPiServer.ServiceLocation;
 using Klarna.Payments;
+using Klarna.Payments.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -17,6 +18,17 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var result = await klarnaService.GetSession(sessionId);
 
             return Ok(result);
+        }
+
+        [Route("fraud/")]
+        [AcceptVerbs("Post")]
+        public IHttpActionResult FraudNotification([FromBody] NotificationModel notificaton)
+        {
+            var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
+
+            klarnaService.FraudUpdate(notificaton);
+
+            return Ok();
         }
     }
 }

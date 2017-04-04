@@ -35,5 +35,10 @@
         public const string PreAssesmentField = "PreAssesment";
         public const string UseAttachmentsField = "UseAttachments";
         public const string NameOfCreditFormField = "NameOfCreditForm";
+
+        // Payment fields
+        public const string AuthorizationTokenPaymentMethodField = "AuthorizationTokenPaymentMethod";
+        public const string KlarnaOrderIdField = "KlarnaOrderId";
+        public const string FraudStatusPaymentMethodField = "FraudStatusPaymentMethod";
     }
 }

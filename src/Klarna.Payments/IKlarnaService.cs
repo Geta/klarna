@@ -13,7 +13,9 @@ namespace Klarna.Payments
         bool IsCustomerPreAssessmentEnabled();
         WidgetColorOptions GetWidgetColorOptions();
 
+        void FraudUpdate(NotificationModel notification);
+
         Task CancelAuthorization(string authorizationToken);
-        Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
+        Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart);
     }
 }

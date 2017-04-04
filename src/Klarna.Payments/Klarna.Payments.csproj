@@ -212,6 +212,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="Extensions\OrderGroupExtensions.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
     <Compile Include="IKlarnaService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
@@ -222,8 +223,13 @@
     <Compile Include="Models\CreateOrderResponse.cs" />
     <Compile Include="Models\CreateSessionRequest.cs" />
     <Compile Include="Models\CreateSessionResponse.cs" />
+    <Compile Include="Models\FraudStatus.cs" />
+    <Compile Include="Models\NotificationModel.cs" />
+    <Compile Include="Models\OrderStatus.cs" />
     <Compile Include="Models\WidgetColorOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steps\AuthorizePaymentStep.cs" />
+    <Compile Include="Steps\PaymentStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

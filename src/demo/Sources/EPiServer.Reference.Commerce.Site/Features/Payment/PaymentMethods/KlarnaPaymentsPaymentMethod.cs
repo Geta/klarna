@@ -4,19 +4,12 @@ using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
 using System;
 using System.ComponentModel;
+using Klarna.Payments;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
     public class KlarnaPaymentsPaymentMethod : PaymentMethodBase, IDataErrorInfo
     {
-        static readonly string[] ValidatedProperties = 
-        {
-            "CreditCardNumber",
-            "CreditCardSecurityCode",
-            "ExpirationYear",
-            "ExpirationMonth",
-        };
-
         public KlarnaPaymentsPaymentMethod()
             : this(LocalizationService.Current, ServiceLocator.Current.GetInstance<IOrderGroupFactory>())
         {
@@ -30,23 +23,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
         {
-            var payment = orderGroup.CreateCardPayment(_orderGroupFactory);
-            payment.CardType = "Credit card";
+            var payment = orderGroup.CreatePayment(_orderGroupFactory);
+            payment.PaymentType = PaymentType.Other;
             payment.PaymentMethodId = PaymentMethodId;
-            payment.PaymentMethodName = "GenericCreditCard";
+            payment.PaymentMethodName = Constants.KlarnaPaymentSystemKeyword;
             payment.Amount = amount;
             payment.Status = PaymentStatus.Pending.ToString();
             payment.TransactionType = TransactionType.Authorization.ToString();
+            payment.Properties[Constants.AuthorizationTokenPaymentMethodField] = ""; //TODO add authorizaton token here, this will be used in the klarna payment gateway
             return payment;
         }
 
         public override void PostProcess(IPayment payment)
         {
-            var creditCardPayment = (ICreditCardPayment)payment;
-            var visibleDigits = 4;
-            var cardNumberLength = creditCardPayment.CreditCardNumber.Length;
-            creditCardPayment.CreditCardNumber = new string('*', cardNumberLength - visibleDigits) 
-                + creditCardPayment.CreditCardNumber.Substring(cardNumberLength - visibleDigits, visibleDigits);
+
         }
 
         public override bool ValidateData()
