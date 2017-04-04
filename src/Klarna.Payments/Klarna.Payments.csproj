@@ -223,6 +223,8 @@
     <Compile Include="Models\CreateOrderResponse.cs" />
     <Compile Include="Models\CreateSessionRequest.cs" />
     <Compile Include="Models\CreateSessionResponse.cs" />
+    <Compile Include="Models\IKlarnaCheckout.cs" />
+    <Compile Include="Models\IKlarnaClientSession.cs" />
     <Compile Include="Models\FraudStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\OrderStatus.cs" />

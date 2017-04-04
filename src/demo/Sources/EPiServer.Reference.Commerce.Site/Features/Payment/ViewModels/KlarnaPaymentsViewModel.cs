@@ -3,28 +3,31 @@ using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
 using EPiServer.ServiceLocation;
 using Klarna.Payments;
 using Klarna.Payments.Models;
+using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
 {
-    public class KlarnaPaymentsViewModel : PaymentMethodViewModel<KlarnaPaymentsPaymentMethod>
+    public class KlarnaPaymentsViewModel : PaymentMethodViewModel<KlarnaPaymentsPaymentMethod>, IKlarnaClientSession
     {
+        public Injected<ICartService> InjectedCartService { get; set; }
+        public ICartService CartService => InjectedCartService.Service;
+
+        public Injected<IKlarnaService> InjectedKlarnaService { get; set; }
+        public IKlarnaService KlarnaService => InjectedKlarnaService.Service;
+
         public KlarnaPaymentsViewModel()
         {
             InitializeValues();
         }
 
         public string ClientToken { get; set; }
-        public WidgetColorOptions ColorOptions { get; set; }
+        public Session SessionRequest { get; set; }
 
         public void InitializeValues()
         {
-            var cartService = ServiceLocator.Current.GetInstance<ICartService>();
-            var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
-
-            var cart = cartService.LoadCart(cartService.DefaultCartName);
-
-            ClientToken = klarnaService.GetClientToken(cart);
-            ColorOptions = klarnaService.GetWidgetColorOptions();
+            var cart = CartService.LoadCart(CartService.DefaultCartName);
+            ClientToken = KlarnaService.GetClientToken(cart);
+            SessionRequest = KlarnaService.GetSessionRequest(cart);
         }
     }
 }

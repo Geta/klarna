@@ -7,11 +7,12 @@ using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
 using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
+using Klarna.Payments.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels
 {
     [Bind(Exclude = "Payment")]
-    public class CheckoutViewModel
+    public class CheckoutViewModel : IKlarnaAuthorization
     {
         public const string MultiShipmentCheckoutViewName = "MultiShipmentCheckout";
 
@@ -68,5 +69,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels
                 return Shipments.Count() > 1 ? MultiShipmentCheckoutViewName : SingleShipmentCheckoutViewName;
             }
         }
+
+        public string AuthorizationToken { get; set; }
     }
 }

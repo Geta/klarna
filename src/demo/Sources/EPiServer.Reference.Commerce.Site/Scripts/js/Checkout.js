@@ -10,12 +10,35 @@
             .on('click', '#AlternativeAddressButton', Checkout.enableShippingAddress)
             .on('click', '.remove-shipping-address', Checkout.removeShippingAddress)
             .on('click', '.js-add-couponcode', Checkout.addCouponCode)
-            .on('click', '.js-remove-couponcode', Checkout.removeCouponCode);
+            .on('click', '.js-remove-couponcode', Checkout.removeCouponCode)
+            .on('submit', '.jsCheckoutForm', function (e) {
+
+                Klarna.Episerver.authorization_token = "testing";
+                $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
+
+                // TODO check authorization_token_expiration
+                if (!Klarna.Episerver.authorization_token) {
+                    e.preventDefault();
+                    //TODO prevent multiple authorize calls
+                    Klarna.Credit.authorize(Klarna.Episerver.session_request,
+                        function (result) {
+                            debugger;
+                            console.debug(result);
+                            if (result.approved && result.authorization_token) {
+
+                                Klarna.Episerver.authorization_token_expiration = new Date();
+                                Klarna.Episerver.authorization_token = result.authorization_token;
+
+                                $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
+                                $('.jsCheckoutForm').submit();
+                            }
+                        });
+                }
+            });
 
         Checkout.initializeAddressAreas();
     },
     initializeAddressAreas: function () {
-
         if ($("#UseBillingAddressForShipment").val() == "False") {
             Checkout.doEnableShippingAddress();
         }
@@ -161,14 +184,14 @@
         $("#AlternativeAddressButton").hide();
         $(".shipping-address:hidden").slideToggle(300);
         $(".shipping-address").css("display", "block");
-        $("#UseBillingAddressForShipment").val("False");        
+        $("#UseBillingAddressForShipment").val("False");
     },
     enableShippingAddress: function (event) {
 
         event.preventDefault();
 
         Checkout.doEnableShippingAddress();
-        
+
         var form = $('.jsCheckoutForm');
         $("#ShippingAddressIndex").val(0);
 
@@ -178,17 +201,17 @@
             url: $('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
             success: function (result) {
-                $("#AddressContainer").html($(result)); 
+                $("#AddressContainer").html($(result));
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
             }
         });
     },
-    doRemoveShippingAddress: function() {
+    doRemoveShippingAddress: function () {
         $("#AlternativeAddressButton").show();
         $(".shipping-address:visible").slideToggle(300);
         $(".shipping-address").css("display", "none");
-        $("#UseBillingAddressForShipment").val("True");        
+        $("#UseBillingAddressForShipment").val("True");
     },
     removeShippingAddress: function (event) {
 

@@ -784,6 +784,7 @@
     <Content Include="modules\_protected\CMS\CMS.zip" />
     <Content Include="App_Data\GeoLiteCity.dat" />
     <Content Include="Views\Shared\_KlarnaPaymentsPaymentMethod.cshtml" />
+    <Content Include="Views\Shared\_KlarnaCheckout.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

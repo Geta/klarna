@@ -64,6 +64,8 @@
 
     @using (Html.BeginForm("Purchase", "Checkout", FormMethod.Post, new { @class = "jsCheckoutForm", @data_UpdateUrl = Url.Action("Update", null, null) }))
     {
+        @Html.HiddenFor(x => x.AuthorizationToken)
+
         <div class="row section-box">
             <div class="col-xs-12">
                 <div class="checkout-cart jsLargeCart">

@@ -84,6 +84,7 @@
     }
 
     <form class="jsCheckoutForm" action="@Url.Action("Purchase", "Checkout")" method="post" novalidate data-updateurl="@Url.Action("Update", null, null)">
+        @Html.HiddenFor(x => x.AuthorizationToken)
 
         @if (!(bool)ViewData["IsReadOnly"])
         {
@@ -102,7 +103,7 @@
                     @{ Html.RenderPartial("SingleShippingAddress", Model); }
                 </div>
             </div>
-        }
+                        }
 
         <div class="row section-box">
             <div class="col-xs-12">

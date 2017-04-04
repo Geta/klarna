@@ -1,0 +1,25 @@
+﻿@model Klarna.Payments.Models.IKlarnaClientSession
+
+
+<div id="klarna_container"></div>
+
+<script>
+    window.klarnaAsyncCallback = function () {
+        window.Klarna.Episerver = {session_request: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.SessionRequest)) || {} };
+
+        Klarna.Credit.init({
+            client_token: '@Model.ClientToken'
+        });
+        Klarna.Credit.load({
+            container: "#klarna_container"
+        }, function (result) {
+            console.debug(result);
+            if(result && result.show_form) {
+                // TODO Check for errors, diplay errors
+            } else {
+                // TODO Do not display form
+            }
+        });
+    };
+</script>
+<script src="https://credit.klarnacdn.net/lib/v1/api.js" async></script>
