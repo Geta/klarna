@@ -10,7 +10,7 @@ namespace Klarna.Payments
         Task<CreateSessionResponse> CreatNewSession([Body]Session request);
 
         [Post("/credit/v1/sessions/{session_id}")]
-        Task<CreateSessionResponse> UpdateSession(string session_id, [Body]Session request);
+        Task UpdateSession(string session_id, [Body]Session request);
 
         [Get("/credit/v1/sessions/{session_id}")]
         Task<Session> GetSession(string session_id);

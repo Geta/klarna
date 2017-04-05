@@ -40,6 +40,7 @@ namespace Klarna.Payments.Initialization
             var refitSettings = new RefitSettings();
 
             var restService = RestService.For<IKlarnaServiceApi>(httpClient, refitSettings);
+
             context.Container.Configure(x => x.For<IKlarnaServiceApi>()
                 .Singleton()
                 .Add(() => restService));

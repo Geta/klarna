@@ -46,7 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public string this[string columnName]
         {
-            get { throw new NotImplementedException(); }
+            get { return string.Empty; }
         }
 
         public string Error { get; }

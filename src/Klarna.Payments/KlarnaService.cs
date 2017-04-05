@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
@@ -226,6 +227,27 @@ namespace Klarna.Payments
                         {
                             payment.Status = PaymentStatus.Failed.ToString();
                         }
+                    }
+                }
+            }
+        }
+
+        public void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder)
+        {
+            if (purchaseOrder == null)
+            {
+                throw new ArgumentNullException(nameof(purchaseOrder));
+            }
+            var orderForm = purchaseOrder.GetFirstForm();
+            if (orderForm != null)
+            {
+                var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword));
+                if (payment != null)
+                {
+                    var url = payment.Properties[Constants.KlarnaConfirmationUrlField]?.ToString();
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        HttpContext.Current.Response.Redirect(url);
                     }
                 }
             }

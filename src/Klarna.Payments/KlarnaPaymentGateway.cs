@@ -19,6 +19,24 @@ namespace Klarna.Payments
         {
             try
             {
+                Logger.Debug("Netaxept checkout gateway. Processing Payment ....");
+
+                OrderGroup = payment.Parent.Parent;
+                _orderForm = payment.Parent;
+                return ProcessPayment(payment as IPayment, ref message);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Process payment failed with error: " + ex.Message, ex);
+                message = ex.Message;
+                throw;
+            }
+        }
+
+        public bool ProcessPayment(IPayment payment, ref string message)
+        {
+            try
+            {
                 Logger.Debug("Klarna checkout gateway. Processing Payment ....");
 
                 if (_orderForm == null)
@@ -36,11 +54,6 @@ namespace Klarna.Payments
                 message = ex.Message;
                 throw;
             }
-        }
-
-        public bool ProcessPayment(IPayment payment, ref string message)
-        {
-            return ProcessPayment((Payment)payment, ref message);
         }
     }
 }

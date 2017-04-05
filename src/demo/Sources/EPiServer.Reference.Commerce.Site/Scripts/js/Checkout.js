@@ -1,5 +1,8 @@
 ﻿var Checkout = {
     init: function () {
+        Klarna.Episerver.authorization_token = "testing";
+        $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
+
         $(document)
             .on('change', '.jsChangePayment', Checkout.changePayment)
             .on('change', '.jsChangeShipment', Checkout.changeShipment)
@@ -13,8 +16,7 @@
             .on('click', '.js-remove-couponcode', Checkout.removeCouponCode)
             .on('submit', '.jsCheckoutForm', function (e) {
 
-                Klarna.Episerver.authorization_token = "testing";
-                $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
+               
 
                 // TODO check authorization_token_expiration
                 if (!Klarna.Episerver.authorization_token) {

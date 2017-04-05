@@ -17,6 +17,7 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
+using Klarna.Payments;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
 
@@ -102,6 +103,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         {
             var total = cart.GetTotal(_orderGroupCalculator);
             var payment = viewModel.Payment.PaymentMethod.CreatePayment(total.Amount, cart);
+            if (payment.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword))
+            {
+                payment.Properties[Constants.AuthorizationTokenPaymentMethodField] = viewModel.AuthorizationToken;
+            }
+
             cart.AddPayment(payment, _orderGroupFactory);
             payment.BillingAddress = _addressBookService.ConvertToAddress(viewModel.BillingAddress, cart);
         }

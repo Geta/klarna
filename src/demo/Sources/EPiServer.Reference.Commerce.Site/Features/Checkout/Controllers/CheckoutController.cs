@@ -87,7 +87,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 sessionRequest.Customer = new Customer
                 {
-                    DateOfBirth = "01-01-2017",
+                    DateOfBirth = "1980-01-01",
                     Gender = "Male",
                     LastFourSsn = "1234"
                 };
@@ -221,6 +221,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 return View(viewModel);
             }
+
+            _klarnaService.RedirectToConfirmationUrl(purchaseOrder);
             
             var confirmationSentSuccessfully = _checkoutService.SendConfirmation(viewModel, purchaseOrder);
           

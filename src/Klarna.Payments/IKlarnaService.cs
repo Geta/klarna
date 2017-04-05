@@ -15,6 +15,8 @@ namespace Klarna.Payments
 
         void FraudUpdate(NotificationModel notification);
 
+        void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder);
+
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart);
     }
