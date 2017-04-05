@@ -24,6 +24,8 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.WebPages;
+using EPiServer.Reference.Commerce.Site.Features.Checkout;
+using Klarna.Payments;
 
 namespace EPiServer.Reference.Commerce.Site.Infrastructure
 {
@@ -79,6 +81,8 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             services.AddTransient<IModelBinderProvider, ModelBinderProvider>();
             services.AddHttpContextOrThreadScoped<SiteContext, CustomCurrencySiteContext>();
             services.AddTransient<HttpContextBase>(locator => HttpContext.Current.ContextBaseOrNull());
+
+            services.AddTransient<SessionBuilder, DemoSessionBuilder>();
 
             DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.Container));
             GlobalConfiguration.Configure(config =>

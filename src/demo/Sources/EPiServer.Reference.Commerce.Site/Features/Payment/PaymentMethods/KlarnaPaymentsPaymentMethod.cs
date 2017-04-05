@@ -30,7 +30,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             payment.Amount = amount;
             payment.Status = PaymentStatus.Pending.ToString();
             payment.TransactionType = TransactionType.Authorization.ToString();
-            payment.Properties[Constants.AuthorizationTokenPaymentMethodField] = ""; //TODO add authorizaton token here, this will be used in the klarna payment gateway
             return payment;
         }
 

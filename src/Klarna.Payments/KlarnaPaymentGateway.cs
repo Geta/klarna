@@ -17,20 +17,9 @@ namespace Klarna.Payments
 
         public override bool ProcessPayment(Payment payment, ref string message)
         {
-            try
-            {
-                Logger.Debug("Netaxept checkout gateway. Processing Payment ....");
-
-                OrderGroup = payment.Parent.Parent;
-                _orderForm = payment.Parent;
-                return ProcessPayment(payment as IPayment, ref message);
-            }
-            catch (Exception ex)
-            {
-                Logger.Error("Process payment failed with error: " + ex.Message, ex);
-                message = ex.Message;
-                throw;
-            }
+            OrderGroup = payment.Parent.Parent;
+            _orderForm = payment.Parent;
+            return ProcessPayment(payment as IPayment, ref message);
         }
 
         public bool ProcessPayment(IPayment payment, ref string message)

@@ -1,11 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
-using EPiServer.Globalization;
 using EPiServer.Logging;
-using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Orders;
-using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.Payments.Steps
 {
@@ -26,8 +24,10 @@ namespace Klarna.Payments.Steps
                 {
                     try
                     {
-                        // TODO: var result = KlarnaService.Service.CreateOrder(authorizationToken, orderGroup).Result;
-                        var result = new CreateOrderResponse
+
+                        var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup).Result).Result;
+
+                        /*var result = new CreateOrderResponse
                         {
                             FraudStatus = FraudStatus.ACCEPTED,
                             OrderId = "1234567890"
@@ -37,14 +37,13 @@ namespace Klarna.Payments.Steps
                         if (paymentMethod != null)
                         {
                             result.RedirectUrl = paymentMethod.GetParameter(Constants.ConfirmationUrlField);
-                        }
+                        }*/
 
                         orderGroup.Properties[Constants.KlarnaOrderIdField] = result.OrderId;
                         payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
                         payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment Authorize",
-                            $"Place order at Klarna, orderid: {result.OrderId}, fraud status: {result.FraudStatus}");
+                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", $"Place order at Klarna, orderid: {result.OrderId}, fraud status: {result.FraudStatus}");
 
                         if (result.FraudStatus == FraudStatus.REJECTED)
                         {
@@ -64,7 +63,7 @@ namespace Klarna.Payments.Steps
                     {
                         Logger.Error(ex.Message, ex);
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment Authorize - Error", ex.Message);
+                        AddNoteAndSaveChanges(orderGroup, "Payment authorization - Error", ex.Message);
                     }
                 }
             }

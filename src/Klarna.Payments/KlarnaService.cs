@@ -14,6 +14,7 @@ using Mediachase.Commerce;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
 using Klarna.Payments.Extensions;
+using Klarna.Payments.Helpers;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
@@ -32,15 +33,17 @@ namespace Klarna.Payments
         private readonly ReferenceConverter _referenceConverter;
         private readonly UrlResolver _urlResolver;
         private readonly IContentRepository _contentRepository;
-        private readonly IContentLoader _contentLoader;
+        private readonly ICurrentMarket _currentMarket;
+        private readonly SessionBuilder _sessionBuilder;
 
         public KlarnaService(IKlarnaServiceApi klarnaServiceApi, 
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
             IOrderRepository orderRepository, 
             ReferenceConverter referenceConverter, 
             UrlResolver urlResolver, 
-            IContentRepository contentRepository, 
-            IContentLoader contentLoader)
+            IContentRepository contentRepository,
+            ICurrentMarket currentMarket,
+            SessionBuilder sessionBuilder)
         {
             _klarnaServiceApi = klarnaServiceApi;
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
@@ -48,11 +51,14 @@ namespace Klarna.Payments
             _referenceConverter = referenceConverter;
             _urlResolver = urlResolver;
             _contentRepository = contentRepository;
-            _contentLoader = contentLoader;
+            _currentMarket = currentMarket;
+            _sessionBuilder = sessionBuilder;
         }
 
-        public async Task<string> CreateOrUpdateSession(Session sessionRequest, ICart cart)
+        public async Task<string> CreateOrUpdateSession(ICart cart)
         {
+            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, GetConfiguration());
+
             // If the pre assessment is not enabled then don't send the customer information to Klarna
             if (!IsCustomerPreAssessmentEnabled())
             {
@@ -62,7 +68,7 @@ namespace Klarna.Payments
             {
                 throw new ArgumentNullException("Session.Customer", "Provide customer information when the pre-assessment configuration is enabled in Commerce Manager");
             }
-
+            
             var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
             if (!string.IsNullOrEmpty(sessionId))
             {
@@ -80,14 +86,64 @@ namespace Klarna.Payments
             return await CreateSession(sessionRequest, cart);
         }
 
+        public async void UpdateBillingAddress(ICart cart, Address address)
+        {
+            var sessionId = GetSessionId(cart);
+            var session = await GetSession(sessionId);
+            session.BillingAddress = address;
+
+            await _klarnaServiceApi.UpdateSession(sessionId, session).ConfigureAwait(false);
+        }
+
         public string GetClientToken(ICart cart)
         {
             return cart.Properties[Constants.KlarnaClientTokenField]?.ToString();
         }
 
+        public string GetSessionId(ICart cart)
+        {
+            return cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
+        }
+
         public async Task<Session> GetSession(string sessionId)
         {
             return await _klarnaServiceApi.GetSession(sessionId).ConfigureAwait(false);
+        }
+
+        public async Task<Authorization> GetAuthorizationModel(string sessionId)
+        {
+            //var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
+            if (!string.IsNullOrEmpty(sessionId))
+            {
+                try
+                {
+                    var result =  await _klarnaServiceApi.GetSession(sessionId).ConfigureAwait(false);
+
+                    var model = new Authorization
+                    {
+                        PurchaseCountry = result.PurchaseCountry,
+                        PurchaseCurrency = result.PurchaseCurrency,
+                        Locale = result.Locale,
+                        BillingAddress = result.BillingAddress,
+                        ShippingAddress = result.ShippingAddress,
+                        OrderAmount = result.OrderAmount,
+                        OrderTaxAmount = result.OrderTaxAmount,
+                        OrderLines = result.OrderLines,
+                        Customer = result.Customer,
+                        MerchantReference1 = result.MerchantReference1,
+                        MerchantReference2 = result.MerchantReference2,
+                        MerchantData = result.MerchantData,
+                        Body = result.Body
+                    };
+                    return model;
+
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex.Message);
+                }
+            }
+            return new Authorization();
         }
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart)
@@ -142,9 +198,10 @@ namespace Klarna.Payments
             return WidgetColorOptions.FromPaymentMethod(paymentMethod);
         }
 
-        public Session GetSessionRequest(ICart cart)
+        private Session GetSessionRequest(ICart cart)
         {
             var request = new Session();
+            request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
 
             var sendProductUrl = false;
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
@@ -167,14 +224,12 @@ namespace Klarna.Payments
 
             if (shipment != null && shipment.ShippingAddress != null)
             {
-                request.ShippingAddress = GetAddress(shipment.ShippingAddress);
-                request.PurchaseCountry = GetTwoLetterCountryCode(shipment.ShippingAddress.CountryCode);
+                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
             }
             if (payment != null && payment.BillingAddress != null)
             {
-                request.BillingAddress = GetAddress(payment.BillingAddress);
+                request.BillingAddress = payment.BillingAddress.ToAddress();
             }
-            
             request.OrderAmount = GetAmount(totals.SubTotal);
 
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
@@ -291,11 +346,6 @@ namespace Klarna.Payments
             return 0;
         }
 
-        private string GetTwoLetterCountryCode(string code)
-        {
-            return ISO3166.Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(code, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode;
-        }
-
         private string GetVariantImage(ContentReference contentReference)
         {
             VariationContent variant;
@@ -329,23 +379,6 @@ namespace Klarna.Payments
             return options;
         }
 
-        private Address GetAddress(IOrderAddress orderAddress)
-        {
-            var address = new Address();
-            address.GivenName = orderAddress.FirstName;
-            address.FamilyName = orderAddress.LastName;
-            address.StreetAddress = orderAddress.Line1;
-            address.StreetAddress2 = orderAddress.Line2;
-            address.PostalCode = orderAddress.PostalCode;
-            address.City = orderAddress.City;
-            address.Region = orderAddress.RegionCode;
-            address.Country = GetTwoLetterCountryCode(orderAddress.CountryCode);
-            address.Email = orderAddress.Email;
-            address.Phone = orderAddress.DaytimePhoneNumber ?? orderAddress.EveningPhoneNumber;
-
-            return address;
-        }
-
         private OrderLine GetOrderLine(ILineItem item, Currency currency, bool sendProductUrl)
         {
             var orderLine = new OrderLine();
@@ -353,8 +386,10 @@ namespace Klarna.Payments
             orderLine.Name = item.DisplayName;
             orderLine.Reference = item.Code;
             orderLine.UnitPrice = GetAmount(item.PlacedPrice);
-            orderLine.TotalDiscountAmount = orderLine.UnitPrice - GetAmount(item.GetDiscountedPrice(currency));
-            orderLine.TotalAmount = orderLine.UnitPrice - orderLine.TotalDiscountAmount;
+
+            var total = GetAmount(item.GetExtendedPrice(currency).Amount);
+            orderLine.TotalDiscountAmount = total - GetAmount(item.GetDiscountedPrice(currency));
+            orderLine.TotalAmount = total - orderLine.TotalDiscountAmount;
 
             if (sendProductUrl)
             {
@@ -366,6 +401,19 @@ namespace Klarna.Payments
                 }
             }
             return orderLine;
+        }
+
+        private Configuration GetConfiguration()
+        {
+            var configuration = new Configuration();
+
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod != null)
+            {
+                // If the pre assessment is not enabled then don't send the customer information to Klarna
+                configuration.IsCustomerPreAssessmentEnabled = bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
+            }
+            return configuration;
         }
     }
 }

@@ -4,8 +4,9 @@
 <div id="klarna_container"></div>
 
 <script>
-    window.klarnaAsyncCallback = function () {
-        window.Klarna.Episerver = {session_request: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.SessionRequest)) || {} };
+    window.klarnaAsyncCallback = function() {
+
+        window.Klarna.Episerver = { SessionId: "@Model.SessionId" };
 
         Klarna.Credit.init({
             client_token: '@Model.ClientToken'

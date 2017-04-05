@@ -2,7 +2,7 @@
 {
     public interface IKlarnaClientSession 
     {
+        string SessionId { get; set; }
         string ClientToken { get; set; }
-        Session SessionRequest { get; set; }
     }
 }

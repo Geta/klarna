@@ -212,9 +212,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Extensions\CustomerAddressExtensions.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
+    <Compile Include="Helpers\CountryCodeHelper.cs" />
     <Compile Include="IKlarnaService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="Initialization\RefitInitialization.cs" />
@@ -222,7 +225,8 @@
     <Compile Include="KlarnaService.cs" />
     <Compile Include="IKlarnaServiceApi.cs" />
     <Compile Include="Models\CreateOrderResponse.cs" />
-    <Compile Include="Models\CreateSessionRequest.cs" />
+    <Compile Include="Models\Authorization.cs" />
+    <Compile Include="Models\Session.cs" />
     <Compile Include="Models\CreateSessionResponse.cs" />
     <Compile Include="Models\IKlarnaCheckout.cs" />
     <Compile Include="Models\IKlarnaClientSession.cs" />
@@ -231,6 +235,7 @@
     <Compile Include="Models\OrderStatus.cs" />
     <Compile Include="Models\WidgetColorOptions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionBuilder.cs" />
     <Compile Include="Steps\AuthorizePaymentStep.cs" />
     <Compile Include="Steps\PaymentStep.cs" />
   </ItemGroup>

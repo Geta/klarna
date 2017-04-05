@@ -1,8 +1,5 @@
 ﻿var Checkout = {
     init: function () {
-        Klarna.Episerver.authorization_token = "testing";
-        $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
-
         $(document)
             .on('change', '.jsChangePayment', Checkout.changePayment)
             .on('change', '.jsChangeShipment', Checkout.changeShipment)
@@ -16,25 +13,38 @@
             .on('click', '.js-remove-couponcode', Checkout.removeCouponCode)
             .on('submit', '.jsCheckoutForm', function (e) {
 
-               
+                if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
+                    //Klarna.Episerver.authorization_token = "testing";
+                    // $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
 
-                // TODO check authorization_token_expiration
-                if (!Klarna.Episerver.authorization_token) {
-                    e.preventDefault();
-                    //TODO prevent multiple authorize calls
-                    Klarna.Credit.authorize(Klarna.Episerver.session_request,
-                        function (result) {
-                            debugger;
-                            console.debug(result);
-                            if (result.approved && result.authorization_token) {
+                    // TODO check authorization_token_expiration
+                    if (!Klarna.Episerver.authorization_token) {
+                        e.preventDefault();
+                        //TODO prevent multiple authorize calls
 
-                                Klarna.Episerver.authorization_token_expiration = new Date();
-                                Klarna.Episerver.authorization_token = result.authorization_token;
+                        $.ajax({
+                            type: "GET",
+                            cache: false,
+                            url: "/klarnaapi/authorization",
+                            success: function(result) {
+                                Klarna.Credit.authorize(result,
+                                    function(result) {
+                                        debugger;
+                                        console.debug(result);
+                                        if (result.approved && result.authorization_token) {
 
-                                $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
-                                $('.jsCheckoutForm').submit();
+                                            Klarna.Episerver.authorization_token_expiration = new Date();
+                                            Klarna.Episerver.authorization_token = result.authorization_token;
+
+                                            $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
+                                            $('.jsCheckoutForm').submit();
+                                        }
+                                    });
                             }
                         });
+
+
+                    }
                 }
             });
 

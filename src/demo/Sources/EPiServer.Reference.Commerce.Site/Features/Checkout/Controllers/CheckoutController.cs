@@ -1,4 +1,5 @@
-﻿using EPiServer.Commerce.Order;
+﻿using System;
+using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Recommendations.Commerce.Tracking;
 using EPiServer.Recommendations.Tracking;
@@ -20,7 +21,10 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Payments;
+using Klarna.Payments.Extensions;
+using Klarna.Payments.Helpers;
 using Klarna.Payments.Models;
+using Mediachase.Commerce.Customers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -81,18 +85,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.UpdateShippingMethods(Cart, viewModel.Shipments);
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
-
-            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-            if (_klarnaService.IsCustomerPreAssessmentEnabled())
-            {
-                sessionRequest.Customer = new Customer
-                {
-                    DateOfBirth = "1980-01-01",
-                    Gender = "Male",
-                    LastFourSsn = "1234"
-                };
-            }
-            await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+            
+            await _klarnaService.CreateOrUpdateSession(Cart);
 
             return View(viewModel.ViewName, viewModel);
         }
@@ -111,7 +105,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult Update(CheckoutPage currentPage, UpdateShippingMethodViewModel shipmentViewModel, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel)
+        public ActionResult Update(CheckoutPage currentPage, UpdateShippingMethodViewModel shipmentViewModel, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel, CheckoutViewModel inputModel)
         {
             ModelState.Clear();
 
@@ -120,6 +114,37 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderRepository.Save(Cart);
 
             var viewModel = CreateCheckoutViewModel(currentPage, paymentViewModel);
+
+            if (paymentViewModel.SystemName.Equals(Constants.KlarnaPaymentSystemKeyword, StringComparison.InvariantCultureIgnoreCase))
+            {
+                if (User.Identity.IsAuthenticated)
+                {
+                    if (inputModel.BillingAddress != null && !string.IsNullOrEmpty(inputModel.BillingAddress.AddressId))
+                    {
+                        var address = CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == inputModel.BillingAddress.AddressId)?.ToAddress();
+                        if (address != null)
+                        {
+                            Task.Run(() => _klarnaService.UpdateBillingAddress(Cart, address));
+                        }
+                    }
+                }
+                else
+                {
+                    var address = new Address();
+                    address.GivenName = inputModel.BillingAddress.FirstName;
+                    address.FamilyName = inputModel.BillingAddress.LastName;
+                    address.StreetAddress = inputModel.BillingAddress.Line1;
+                    address.StreetAddress2 = inputModel.BillingAddress.Line2;
+                    address.PostalCode = inputModel.BillingAddress.PostalCode;
+                    address.City = inputModel.BillingAddress.City;
+                    address.Region = inputModel.BillingAddress.CountryRegion.Region;
+                    address.Country = CountryCodeHelper.GetTwoLetterCountryCode(inputModel.BillingAddress.CountryCode);
+                    address.Email = inputModel.BillingAddress.Email;
+                    address.Phone = inputModel.BillingAddress.DaytimePhoneNumber;
+
+                    Task.Run(() => _klarnaService.UpdateBillingAddress(Cart, address));
+                }
+            }
 
             return PartialView("Partial", viewModel);
         }
