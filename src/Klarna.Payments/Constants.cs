@@ -6,7 +6,7 @@
 
         public const string KlarnaUsernameField = "KlarnaUsername";
         public const string KlarnaPasswordField = "KlarnaPassword";
-        public const string KlarnaIsProductionField = "KlarnaIsProduction";
+        public const string KlarnaApiUrlField = "KlarnaApiUrl";
 
         public const string OrderNamespace = "Mediachase.Commerce.Orders";
         public const string OtherPaymentClass = "OtherPayment";

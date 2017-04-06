@@ -49,13 +49,22 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredPassword;
         
         /// <summary>
-        /// IsProductionCheckBox control.
+        /// txtApiUrl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox IsProductionCheckBox;
+        protected global::System.Web.UI.WebControls.TextBox txtApiUrl;
+        
+        /// <summary>
+        /// requiredApiUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredApiUrl;
         
         /// <summary>
         /// txtColorDetails control.

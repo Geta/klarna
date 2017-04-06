@@ -3,7 +3,10 @@ using System.Net.Http;
 using System.Text;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
+using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
+using Klarna.Payments.Extensions;
+using Mediachase.Commerce.Orders.Managers;
 using Refit;
 
 namespace Klarna.Payments.Initialization
@@ -13,12 +16,7 @@ namespace Klarna.Payments.Initialization
     public class RefitInitialization : IConfigurableModule
     {
         private static bool _initialized;
-
-        // TODO: make configurable
-        private string _apiUrl = "https://api-na.playground.klarna.com/";
-        private string _username = "N100198";
-        private string  _password = "Gee4mawush+u<el8";
-
+        
         public void Initialize(InitializationEngine context)
         {
             if (_initialized)
@@ -30,25 +28,45 @@ namespace Klarna.Payments.Initialization
 
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
-            var byteArray = Encoding.ASCII.GetBytes($"{_username}:{_password}");
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(_apiUrl)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-            var refitSettings = new RefitSettings();
-
-            var restService = RestService.For<IKlarnaServiceApi>(httpClient, refitSettings);
-
             context.Container.Configure(x => x.For<IKlarnaServiceApi>()
-                .Singleton()
-                .Add(() => restService));
+                .Use(() => GetInstance()));
+
         }
 
         public void Uninitialize(InitializationEngine context)
         {
 
+        }
+
+        public IKlarnaServiceApi GetInstance()
+        {
+            var conn = GetConnectionConfiguration();
+
+            var byteArray = Encoding.ASCII.GetBytes($"{conn.Username}:{conn.Password}");
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(conn.ApiUrl)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            var refitSettings = new RefitSettings();
+
+            return RestService.For<IKlarnaServiceApi>(httpClient, refitSettings);
+        }
+
+        private ConnectionConfiguration GetConnectionConfiguration()
+        {
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod != null)
+            {
+                return new ConnectionConfiguration
+                {
+                    Username = paymentMethod.GetParameter(Constants.KlarnaUsernameField, string.Empty),
+                    Password = paymentMethod.GetParameter(Constants.KlarnaPasswordField, string.Empty),
+                    ApiUrl = paymentMethod.GetParameter(Constants.KlarnaApiUrlField, string.Empty),
+                };
+            }
+            return null;
         }
     }
 }

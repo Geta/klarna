@@ -27,9 +27,10 @@
             </td>
         </tr>
         <tr>
-            <td class="FormLabelCell">Is production:</td>
+            <td class="FormLabelCell">ApiUrl:</td>
             <td class="FormFieldCell">
-                <asp:CheckBox runat="server" ID="IsProductionCheckBox" />
+                <asp:TextBox runat="server" ID="txtApiUrl"  />
+                <asp:RequiredFieldValidator ID="requiredApiUrl" runat="server" ControlToValidate="txtApiUrl" ErrorMessage="Api URL is required." />
             </td>
         </tr>
     </tbody>

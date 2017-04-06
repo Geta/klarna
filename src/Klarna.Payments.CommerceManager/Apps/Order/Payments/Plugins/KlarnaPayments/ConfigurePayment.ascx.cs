@@ -18,8 +18,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             }
             txtUsername.Text = paymentMethod.GetParameter(Constants.KlarnaUsernameField, string.Empty);
             txtPassword.Text = paymentMethod.GetParameter(Constants.KlarnaPasswordField, string.Empty);
-            var isProduction = bool.Parse(paymentMethod.GetParameter(Constants.KlarnaIsProductionField, "false"));
-            IsProductionCheckBox.Checked = isProduction;
+            txtApiUrl.Text = paymentMethod.GetParameter(Constants.KlarnaApiUrlField, string.Empty);
 
             txtColorDetails.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorDetailsField, string.Empty);
             txtColorButton.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonField, string.Empty);
@@ -59,7 +58,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             }
             paymentMethod.SetParameter(Constants.KlarnaUsernameField, txtUsername.Text);
             paymentMethod.SetParameter(Constants.KlarnaPasswordField, txtPassword.Text);
-            paymentMethod.SetParameter(Constants.KlarnaIsProductionField, (IsProductionCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.KlarnaApiUrlField, txtApiUrl.Text);
 
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorDetailsField, txtColorDetails.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonField, txtColorButton.Text);

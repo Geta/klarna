@@ -213,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="ConnectionConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\CustomerAddressExtensions.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />

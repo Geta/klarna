@@ -432,8 +432,9 @@ namespace Klarna.Payments
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
-                // If the pre assessment is not enabled then don't send the customer information to Klarna
                 configuration.IsCustomerPreAssessmentEnabled = bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
+                configuration.SendProductAndImageUrlField = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
+                configuration.UseAttachmentsField = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
             }
             return configuration;
         }
