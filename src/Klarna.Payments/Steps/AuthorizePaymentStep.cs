@@ -30,7 +30,7 @@ namespace Klarna.Payments.Steps
                         payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
                         payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", $"Place order at Klarna, orderid: {result.OrderId}, fraud status: {result.FraudStatus}");
+                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
 
                         if (result.FraudStatus == FraudStatus.REJECTED)
                         {
