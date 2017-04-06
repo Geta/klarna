@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using EPiServer.Commerce.Order;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Payments.Extensions;
+using Mediachase.Commerce.Initialization;
 using Mediachase.Commerce.Orders.Managers;
 using Refit;
 
@@ -13,6 +15,7 @@ namespace Klarna.Payments.Initialization
 {
     [InitializableModule]
     [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
+    [ModuleDependency(typeof(CommerceInitialization))]
     public class RefitInitialization : IConfigurableModule
     {
         private static bool _initialized;
@@ -30,7 +33,11 @@ namespace Klarna.Payments.Initialization
         {
             context.Container.Configure(x => x.For<IKlarnaServiceApi>()
                 .Use(() => GetInstance()));
-
+            
+            context.Services.Intercept<IOrderNumberGenerator>((locator, defaultService) =>
+            {
+                return new OrderNumberGeneratorDecorator(defaultService);
+            });
         }
 
         public void Uninitialize(InitializationEngine context)

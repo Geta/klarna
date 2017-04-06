@@ -35,6 +35,7 @@ namespace Klarna.Payments
         private readonly IContentRepository _contentRepository;
         private readonly ICurrentMarket _currentMarket;
         private readonly SessionBuilder _sessionBuilder;
+        private readonly IOrderNumberGenerator _orderNumberGenerator;
 
         public KlarnaService(IKlarnaServiceApi klarnaServiceApi, 
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
@@ -43,7 +44,8 @@ namespace Klarna.Payments
             UrlResolver urlResolver, 
             IContentRepository contentRepository,
             ICurrentMarket currentMarket,
-            SessionBuilder sessionBuilder)
+            SessionBuilder sessionBuilder,
+            IOrderNumberGenerator orderNumberGenerator)
         {
             _klarnaServiceApi = klarnaServiceApi;
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
@@ -53,10 +55,12 @@ namespace Klarna.Payments
             _contentRepository = contentRepository;
             _currentMarket = currentMarket;
             _sessionBuilder = sessionBuilder;
+            _orderNumberGenerator = orderNumberGenerator;
         }
 
         public async Task<string> CreateOrUpdateSession(ICart cart)
         {
+            var test = ServiceLocator.Current.GetInstance<IOrderNumberGenerator>();
             var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, GetConfiguration());
 
             // If the pre assessment is not enabled then don't send the customer information to Klarna
@@ -181,7 +185,7 @@ namespace Klarna.Payments
                 if (!string.IsNullOrEmpty(sessionId))
                 {
                     var session = await GetSession(sessionId);
-                    //session.MerchantReference1 = CartOrderNumberHelper.GenerateOrderNumber(cart);
+                    session.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
 
                     return await _klarnaServiceApi.CreateOrder(authorizationToken, session).ConfigureAwait(false);
                 }
