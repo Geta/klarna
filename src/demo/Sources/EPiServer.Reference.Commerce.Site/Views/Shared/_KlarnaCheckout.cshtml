@@ -1,26 +1,52 @@
 ﻿@model Klarna.Payments.Models.IKlarnaClientSession
 
-
 <div id="klarna_container"></div>
 
 <script>
-    window.klarnaAsyncCallback = function() {
+    window.klarnaAsyncCallback = function () {
+        window.Klarna.Episerver = window.Klarna.Episerver || {
+            klarna_container: "#klarna_container",
+            client_token: '@Model.ClientToken',
+            session_request: {},
+            authorization_token: "",
+            authorization_token_expiration: new Date("2017-01-01"),
+            init: function () {
+                console.log("Klarna.Episerver.load");
+                Klarna.Credit.init({
+                    client_token: Klarna.Episerver.client_token
+                });
+            },
+            load: function () {
+                console.log("Klarna.Episerver.load");
+                Klarna.Credit.load({
+                    container: Klarna.Episerver.klarna_container
+                }, function (result) {
+                    console.debug(result);
+                    if (result && result.show_form) {
+                        // TODO Check for errors, diplay errors
+                    } else {
+                        // TODO Do not display form
+                    }
+                });
+            },
+            authorize: function (cb) {
+                //TODO prevent multiple authorize calls
+                Klarna.Credit.authorize({},
+                    function (result) {
+                        console.debug(result);
+                        if (result.approved && result.authorization_token) {
 
-        window.Klarna.Episerver = { SessionId: "@Model.SessionId" };
+                            Klarna.Episerver.authorization_token_expiration = new Date();
+                            Klarna.Episerver.authorization_token = result.authorization_token;
 
-        Klarna.Credit.init({
-            client_token: '@Model.ClientToken'
-        });
-        Klarna.Credit.load({
-            container: "#klarna_container"
-        }, function (result) {
-            console.debug(result);
-            if(result && result.show_form) {
-                // TODO Check for errors, diplay errors
-            } else {
-                // TODO Do not display form
+                            cb(result);
+                        }
+                    });
             }
-        });
+        };
+
+        window.Klarna.Episerver.init();
+        window.Klarna.Episerver.load();
     };
 </script>
 <script src="https://credit.klarnacdn.net/lib/v1/api.js" async></script>
