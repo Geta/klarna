@@ -24,20 +24,7 @@ namespace Klarna.Payments.Steps
                 {
                     try
                     {
-
-                        var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup).Result).Result;
-
-                        /*var result = new CreateOrderResponse
-                        {
-                            FraudStatus = FraudStatus.ACCEPTED,
-                            OrderId = "1234567890"
-                        };
-
-                        var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
-                        if (paymentMethod != null)
-                        {
-                            result.RedirectUrl = paymentMethod.GetParameter(Constants.ConfirmationUrlField);
-                        }*/
+                        var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup)).Result;
 
                         orderGroup.Properties[Constants.KlarnaOrderIdField] = result.OrderId;
                         payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;

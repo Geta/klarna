@@ -112,7 +112,6 @@ namespace Klarna.Payments
 
         public async Task<Authorization> GetAuthorizationModel(string sessionId)
         {
-            //var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
             if (!string.IsNullOrEmpty(sessionId))
             {
                 try
@@ -136,7 +135,6 @@ namespace Klarna.Payments
                         Body = result.Body
                     };
                     return model;
-
                 }
                 catch (Exception ex)
                 {
@@ -220,15 +218,10 @@ namespace Klarna.Payments
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
 
             var shipment = cart.GetFirstShipment();
-            var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
 
             if (shipment != null && shipment.ShippingAddress != null)
             {
                 request.ShippingAddress = shipment.ShippingAddress.ToAddress();
-            }
-            if (payment != null && payment.BillingAddress != null)
-            {
-                request.BillingAddress = payment.BillingAddress.ToAddress();
             }
             request.OrderAmount = GetAmount(totals.SubTotal);
 

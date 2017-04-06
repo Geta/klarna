@@ -14,14 +14,10 @@
             .on('submit', '.jsCheckoutForm', function (e) {
 
                 if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
-                    //Klarna.Episerver.authorization_token = "testing";
-                    // $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
-
                     // TODO check authorization_token_expiration
                     if (!Klarna.Episerver.authorization_token) {
                         e.preventDefault();
                         //TODO prevent multiple authorize calls
-
                         $.ajax({
                             type: "GET",
                             cache: false,
@@ -29,7 +25,6 @@
                             success: function(result) {
                                 Klarna.Credit.authorize(result,
                                     function(result) {
-                                        debugger;
                                         console.debug(result);
                                         if (result.approved && result.authorization_token) {
 

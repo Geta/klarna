@@ -124,7 +124,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                         var address = CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == inputModel.BillingAddress.AddressId)?.ToAddress();
                         if (address != null)
                         {
-                            Task.Run(() => _klarnaService.UpdateBillingAddress(Cart, address));
+                            _klarnaService.UpdateBillingAddress(Cart, address);
                         }
                     }
                 }
@@ -142,10 +142,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     address.Email = inputModel.BillingAddress.Email;
                     address.Phone = inputModel.BillingAddress.DaytimePhoneNumber;
 
-                    Task.Run(() => _klarnaService.UpdateBillingAddress(Cart, address));
+                    _klarnaService.UpdateBillingAddress(Cart, address);
                 }
             }
-
             return PartialView("Partial", viewModel);
         }
 
