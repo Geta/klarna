@@ -418,11 +418,13 @@ namespace Klarna.Payments
             orderLine.Quantity = (int)item.Quantity;
             orderLine.Name = item.DisplayName;
             orderLine.Reference = item.Code;
-            orderLine.UnitPrice = GetAmount(item.PlacedPrice);
 
-            var total = GetAmount(item.GetExtendedPrice(currency).Amount);
-            orderLine.TotalDiscountAmount = total - GetAmount(item.GetDiscountedPrice(currency));
-            orderLine.TotalAmount = total - orderLine.TotalDiscountAmount;
+            //var isDiscount = item.GetDiscountedPrice(currency).Amount > 0;
+
+            orderLine.UnitPrice = GetAmount(item.PlacedPrice);
+            
+            orderLine.TotalDiscountAmount = GetAmount(item.GetEntryDiscount());
+            orderLine.TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount);
 
             if (sendProductUrl)
             {
