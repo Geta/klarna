@@ -52,8 +52,6 @@
                     $('.couponcode-errormessage').hide();
                     $("#CheckoutView").replaceWith($(result));
                     Checkout.initializeAddressAreas();
-
-                    window.Klarna.Episerver.load();
                 }
             });
         }
@@ -67,8 +65,6 @@
             success: function (result) {
                 $("#CheckoutView").replaceWith($(result));
                 Checkout.initializeAddressAreas();
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -87,8 +83,6 @@
             success: function (result) {
                 view.replaceWith($(result));
                 Checkout.initializeAddressAreas();
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -120,8 +114,6 @@
                 }
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -140,8 +132,6 @@
             data: form.serialize(),
             success: function (result) {
                 Checkout.updateOrderSummary();
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -156,8 +146,6 @@
                 $('.jsPaymentMethod').replaceWith($(result).find('.jsPaymentMethod'));
                 Checkout.updateOrderSummary();
                 Misc.updateValidation('jsCheckoutForm');
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -169,8 +157,6 @@
             data: form.serialize(),
             success: function (result) {
                 Checkout.updateOrderSummary();
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -181,6 +167,10 @@
             url: $('.jsOrderSummary').data('url'),
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
+
+                if (window.Klarna && window.Klarna.Episerver) {
+                    Klarna.Episerver.load();
+                }
             }
         });
     },
@@ -208,8 +198,6 @@
                 $("#AddressContainer").html($(result));
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
-
-                window.Klarna.Episerver.load();
             }
         });
     },
@@ -236,8 +224,6 @@
             success: function (result) {
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
-
-                window.Klarna.Episerver.load();
             }
         });
     }

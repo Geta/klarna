@@ -9,18 +9,25 @@
             client_token: '@Model.ClientToken',
             session_request: {},
             authorization_token: "",
-            authorization_token_expiration: new Date("2017-01-01"),
+            authorization_token_expiration: new Date(),
             init: function () {
-                console.log("Klarna.Episerver.load");
+                console.log("Klarna.Episerver.init");
                 Klarna.Credit.init({
                     client_token: Klarna.Episerver.client_token
                 });
             },
-            load: function () {
+            load: function (options, data, callback) {
+                options = options || {};
+                data = data || {};
+
+                if (!document.querySelectorAll(window.Klarna.Episerver.klarna_container).length) {
+                    return;
+                }
+
                 console.log("Klarna.Episerver.load");
                 Klarna.Credit.load({
                     container: Klarna.Episerver.klarna_container
-                }, function (result) {
+                }, {}, function (result) {
                     console.debug(result);
                     if (result && result.show_form) {
                         // TODO Check for errors, diplay errors
@@ -29,9 +36,16 @@
                     }
                 });
             },
-            authorize: function (cb) {
+            authorize: function (data, options, callback) {
+                if (typeof options === 'function') {
+                    [callback, options] = [options, {}];
+                } else if (typeof data === 'function') {
+                    [callback, data] = [data, {}];
+                }
+                data = data || {};
+
                 //TODO prevent multiple authorize calls
-                Klarna.Credit.authorize({},
+                Klarna.Credit.authorize(data, options,
                     function (result) {
                         console.debug(result);
                         if (result.approved && result.authorization_token) {
@@ -39,7 +53,7 @@
                             Klarna.Episerver.authorization_token_expiration = new Date();
                             Klarna.Episerver.authorization_token = result.authorization_token;
 
-                            cb(result);
+                            callback(result);
                         }
                     });
             }
