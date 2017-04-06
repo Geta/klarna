@@ -12,9 +12,11 @@
         public const string OtherPaymentClass = "OtherPayment";
         public const string CartClass = "ShoppingCart";
         
+        // Cart meta fields
         public const string KlarnaSessionIdField = "KlarnaSessionId";
         public const string KlarnaClientTokenField = "KlarnaClientToken";
-        
+        public const string CartOrderNumberTempField = "CartOrderNumberTemp";
+
         // Widget styling fields
         public const string KlarnaWidgetColorDetailsField = "KlarnaWidgetColorDetails";
         public const string KlarnaWidgetColorButtonField = "KlarnaWidgetColorButton";

@@ -25,6 +25,7 @@ namespace Klarna.Payments.Initialization
 
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdField), Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Constants.CartClass);
 
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorDetailsField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonField), Constants.OtherPaymentClass);

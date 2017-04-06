@@ -16,6 +16,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                     Gender = "Male",
                     LastFourSsn = "1234"
                 };
+                session.MerchantReference2 = "12345";
             }
             return session;
         }

@@ -18,6 +18,7 @@ using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Payments;
+using Klarna.Payments.Helpers;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
 
@@ -126,7 +127,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
                 var payment = cart.GetFirstForm().Payments.First();
                 checkoutViewModel.Payment.PaymentMethod.PostProcess(payment);
-
+                
                 var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
                 var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
                 _orderRepository.Delete(cart.OrderLink);

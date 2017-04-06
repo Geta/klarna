@@ -218,6 +218,7 @@
     <Compile Include="Extensions\CustomerAddressExtensions.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
+    <Compile Include="Helpers\CartOrderNumberHelper.cs" />
     <Compile Include="Helpers\CountryCodeHelper.cs" />
     <Compile Include="IKlarnaService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />

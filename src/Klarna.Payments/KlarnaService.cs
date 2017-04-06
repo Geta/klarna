@@ -181,6 +181,7 @@ namespace Klarna.Payments
                 if (!string.IsNullOrEmpty(sessionId))
                 {
                     var session = await GetSession(sessionId);
+                    //session.MerchantReference1 = CartOrderNumberHelper.GenerateOrderNumber(cart);
 
                     return await _klarnaServiceApi.CreateOrder(authorizationToken, session).ConfigureAwait(false);
                 }
@@ -252,7 +253,7 @@ namespace Klarna.Payments
             {
                 request.ShippingAddress = shipment.ShippingAddress.ToAddress();
             }
-            request.OrderAmount = GetAmount(totals.SubTotal);
+            request.OrderAmount = GetAmount(totals.Total);
 
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
             
@@ -264,6 +265,16 @@ namespace Klarna.Payments
                 var orderLine = GetOrderLine(item, cart.Currency, sendProductUrl);
 
                 list.Add(orderLine);
+            }
+            if (totals.ShippingTotal.Amount > 0)
+            {
+                list.Add(new OrderLine
+                {
+                    Name = "Shipping method",
+                    Quantity = 1,
+                    UnitPrice = GetAmount(totals.ShippingTotal.Amount),
+                    TotalAmount = GetAmount(totals.ShippingTotal.Amount)
+                });
             }
             request.OrderLines = list.ToArray();
             
