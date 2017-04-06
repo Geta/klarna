@@ -86,13 +86,42 @@ namespace Klarna.Payments
             return await CreateSession(sessionRequest, cart);
         }
 
-        public async void UpdateBillingAddress(ICart cart, Address address)
+        public async Task<bool> UpdateBillingAddress(ICart cart, Address address)
         {
             var sessionId = GetSessionId(cart);
             var session = await GetSession(sessionId);
             session.BillingAddress = address;
 
-            await _klarnaServiceApi.UpdateSession(sessionId, session).ConfigureAwait(false);
+            try
+            {
+                await _klarnaServiceApi.UpdateSession(sessionId, session).ConfigureAwait(false);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateShippingAddress(ICart cart, Address address)
+        {
+            var sessionId = GetSessionId(cart);
+            var session = await GetSession(sessionId);
+            session.ShippingAddress = address;
+
+            try
+            {
+                await _klarnaServiceApi.UpdateSession(sessionId, session).ConfigureAwait(false);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+                return false;
+            }
         }
 
         public string GetClientToken(ICart cart)

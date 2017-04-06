@@ -105,7 +105,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult Update(CheckoutPage currentPage, UpdateShippingMethodViewModel shipmentViewModel, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel, CheckoutViewModel inputModel)
+        public async Task<ActionResult> Update(CheckoutPage currentPage, UpdateShippingMethodViewModel shipmentViewModel, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel, CheckoutViewModel inputModel)
         {
             ModelState.Clear();
 
@@ -117,6 +117,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             if (paymentViewModel.SystemName.Equals(Constants.KlarnaPaymentSystemKeyword, StringComparison.InvariantCultureIgnoreCase))
             {
+                var shipment = shipmentViewModel.Shipments.FirstOrDefault();
                 if (User.Identity.IsAuthenticated)
                 {
                     if (inputModel.BillingAddress != null && !string.IsNullOrEmpty(inputModel.BillingAddress.AddressId))
@@ -124,7 +125,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                         var address = CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == inputModel.BillingAddress.AddressId)?.ToAddress();
                         if (address != null)
                         {
-                            _klarnaService.UpdateBillingAddress(Cart, address);
+                            await _klarnaService.UpdateBillingAddress(Cart, address);
+                        }
+                    }
+                    if(shipment != null && shipment.Address != null && !string.IsNullOrEmpty(shipment.Address.AddressId))
+                    {
+                        var address = CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == shipment.Address.AddressId)?.ToAddress();
+                        if (address != null)
+                        {
+                            await _klarnaService.UpdateShippingAddress(Cart, address);
                         }
                     }
                 }
@@ -141,8 +150,24 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     address.Country = CountryCodeHelper.GetTwoLetterCountryCode(inputModel.BillingAddress.CountryCode);
                     address.Email = inputModel.BillingAddress.Email;
                     address.Phone = inputModel.BillingAddress.DaytimePhoneNumber;
+                    await _klarnaService.UpdateBillingAddress(Cart, address);
 
-                    _klarnaService.UpdateBillingAddress(Cart, address);
+                    if (shipment != null && shipment.Address != null)
+                    {
+                        var shipmentAddress = new Address();
+                        shipmentAddress.GivenName = shipment.Address.FirstName;
+                        shipmentAddress.FamilyName = shipment.Address.LastName;
+                        shipmentAddress.StreetAddress = shipment.Address.Line1;
+                        shipmentAddress.StreetAddress2 = shipment.Address.Line2;
+                        shipmentAddress.PostalCode = shipment.Address.PostalCode;
+                        shipmentAddress.City = shipment.Address.City;
+                        shipmentAddress.Region = shipment.Address.CountryRegion.Region;
+                        shipmentAddress.Country = CountryCodeHelper.GetTwoLetterCountryCode(shipment.Address.CountryCode);
+                        shipmentAddress.Email = shipment.Address.Email;
+                        shipmentAddress.Phone = shipment.Address.DaytimePhoneNumber;
+
+                        await _klarnaService.UpdateShippingAddress(Cart, shipmentAddress);
+                    }
                 }
             }
             return PartialView("Partial", viewModel);

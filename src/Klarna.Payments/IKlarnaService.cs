@@ -18,7 +18,9 @@ namespace Klarna.Payments
 
         void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder);
 
-        void UpdateBillingAddress(ICart cart, Address address);
+        Task<bool> UpdateBillingAddress(ICart cart, Address address);
+
+        Task<bool> UpdateShippingAddress(ICart cart, Address address);
 
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart);
