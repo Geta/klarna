@@ -20,7 +20,6 @@
                             <div class="jsCheckoutAddress" data-url="@Url.Action("ChangeAddress", "Checkout", new {@node = @Model.StartPage.CheckoutPage})">
 
                                 @Html.HiddenFor(model => model.Shipments[0].Address.Name)
-                                @Html.HiddenFor(model => model.Shipments[0].Address.DaytimePhoneNumber)
                                 @Html.HiddenFor(model => model.Shipments[0].Address.BillingDefault)
                                 @Html.HiddenFor(model => model.Shipments[0].Address.ShippingDefault)
 
@@ -56,6 +55,12 @@
 										@Html.TextBoxFor(model => model.Shipments[0].Address.Email, new {@class = "form-control"})
 										@Html.ValidationMessageFor(model => model.Shipments[0].Address.Email)
 									</div>
+
+                                    <div class="form-group">
+                                        @Html.LabelFor(model => model.Shipments[0].Address.DaytimePhoneNumber)
+                                        @Html.TextBoxFor(model => model.Shipments[0].Address.DaytimePhoneNumber, new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Shipments[0].Address.DaytimePhoneNumber)
+                                    </div>
 
 									<div class="form-group">
 										@Html.LabelFor(model => model.Shipments[0].Address.Line1)
