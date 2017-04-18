@@ -53,7 +53,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Models
         public CountryRegionViewModel CountryRegion { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/Email")]
-        [LocalizedEmail("/Shared/Address/Form/Error/InvalidEmail")]
+        //[LocalizedEmail("/Shared/Address/Form/Error/InvalidEmail")]
         [LocalizedRequired("/Shared/Address/Form/Empty/Email")]
         public string Email { get; set; }
 

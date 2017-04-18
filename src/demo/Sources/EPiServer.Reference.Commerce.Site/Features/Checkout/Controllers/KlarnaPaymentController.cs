@@ -3,13 +3,15 @@ using System.Web.Http;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.ServiceLocation;
 using Klarna.Payments;
-using Klarna.Payments.Models;
+using EPiServer.Logging;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
     [RoutePrefix("klarnaapi")]
     public class KlarnaPaymentController : ApiController
     {
+        private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
+
         [Route("session/{sessionId}")]
         [AcceptVerbs("GET")]
         public async Task<IHttpActionResult> GetSession(string sessionId)
@@ -37,11 +39,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [Route("fraud/")]
         [AcceptVerbs("Post")]
-        public IHttpActionResult FraudNotification([FromBody] NotificationModel notificaton)
+        [HttpPost]
+        public IHttpActionResult FraudNotification()
         {
+            var requestParams = Request.Content.ReadAsStringAsync().Result;
+
+            _log.Error("KlarnaPaymentController.FraudNotification called: " + requestParams);
             var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
 
-            klarnaService.FraudUpdate(notificaton);
+            klarnaService.FraudUpdate(null);
 
             return Ok();
         }
