@@ -5,6 +5,6 @@
         public bool IsCustomerPreAssessmentEnabled { get; set; }
         public bool IsProduction { get; set; }
         public bool SendProductAndImageUrlField { get; set; }
-        public bool UseAttachmentsField { get; set; }
+        public bool UseAttachments { get; set; }
     }
 }

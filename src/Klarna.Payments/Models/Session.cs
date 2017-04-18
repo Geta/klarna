@@ -37,6 +37,8 @@ namespace Klarna.Payments.Models
         public string Body { get; set; }
         [JsonProperty("options")]
         public Options Options { get; set; }
+        [JsonProperty("attachment")]
+        public Attachment Attachment { get; set; }
     }
 
     public class Options

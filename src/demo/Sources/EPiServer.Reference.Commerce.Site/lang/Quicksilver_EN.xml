@@ -166,6 +166,7 @@
           <ZipCode>Zip code:</ZipCode>
           <SaveAddress>Save address</SaveAddress>
           <AddressId>Selected address</AddressId>
+          <DaytimePhoneNumber>Phone number</DaytimePhoneNumber>
         </Labels>
         <Empty>
           <FirstName>First name is required</FirstName>
@@ -507,6 +508,7 @@
             <BillingAddress>Billing address is required</BillingAddress>
             <ShippingAddress>Shipping address is required</ShippingAddress>
             <ShippingMethod>Delivery option is required</ShippingMethod>
+            <DaytimePhoneNumber>Phone number is required</DaytimePhoneNumber>
           </Empty>
           <Label>
             <FirstName>First name *:</FirstName>

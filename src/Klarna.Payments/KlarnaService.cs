@@ -186,7 +186,10 @@ namespace Klarna.Payments
                 {
                     var session = await GetSession(sessionId);
                     session.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
-
+                    session.MerchantUrl = new MerchantUrl
+                     {
+                         Confirmation = $"{session.MerchantUrl.Confirmation}?trackingNumber={session.MerchantReference1}",
+                     };
                     return await _klarnaServiceApi.CreateOrder(authorizationToken, session).ConfigureAwait(false);
                 }
             }
@@ -451,7 +454,7 @@ namespace Klarna.Payments
             {
                 configuration.IsCustomerPreAssessmentEnabled = bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
                 configuration.SendProductAndImageUrlField = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
-                configuration.UseAttachmentsField = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
+                configuration.UseAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
             }
             return configuration;
         }
