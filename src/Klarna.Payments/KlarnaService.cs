@@ -84,7 +84,7 @@ namespace Klarna.Payments
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex.Message);
+                    _logger.Error(ex.Message, ex);
                 }
             }
             return await CreateSession(sessionRequest, cart);
@@ -104,7 +104,7 @@ namespace Klarna.Payments
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error(ex.Message, ex);
                 return false;
             }
         }
@@ -123,7 +123,7 @@ namespace Klarna.Payments
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error(ex.Message, ex);
                 return false;
             }
         }
@@ -171,7 +171,7 @@ namespace Klarna.Payments
                 }
                 catch (Exception ex)
                 {
-                    _logger.Error(ex.Message);
+                    _logger.Error(ex.Message, ex);
                 }
             }
             return new Authorization();
@@ -195,7 +195,7 @@ namespace Klarna.Payments
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error(ex.Message, ex);
             }
             return null;
         }
@@ -311,14 +311,13 @@ namespace Klarna.Payments
                     var payment = orderForm.Payments.FirstOrDefault();
                     if (payment != null)
                     {
-                        payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.EventType;
+                        payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.Status.ToString();
 
-                        if (notification.EventType.Equals(Models.OrderStatus.ORDER_ACCEPTED.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                        if (notification.Status == NotificationFraudStatus.FRAUD_RISK_ACCEPTED)
                         {
                             payment.Status = PaymentStatus.Pending.ToString();
-
                         }
-                        else if (notification.EventType.Equals(Models.OrderStatus.ORDER_REJECTED.ToString(), StringComparison.InvariantCultureIgnoreCase))
+                        else if (notification.Status == NotificationFraudStatus.FRAUD_RISK_REJECTED)
                         {
                             payment.Status = PaymentStatus.Failed.ToString();
                         }

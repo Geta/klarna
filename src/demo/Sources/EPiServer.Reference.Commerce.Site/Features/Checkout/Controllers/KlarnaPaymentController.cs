@@ -4,6 +4,8 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.ServiceLocation;
 using Klarna.Payments;
 using EPiServer.Logging;
+using Klarna.Payments.Models;
+using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -45,10 +47,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var requestParams = Request.Content.ReadAsStringAsync().Result;
 
             _log.Error("KlarnaPaymentController.FraudNotification called: " + requestParams);
-            var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
 
-            klarnaService.FraudUpdate(null);
+            if (!string.IsNullOrEmpty(requestParams))
+            {
+                var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
 
+                var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
+
+                klarnaService.FraudUpdate(notification);
+            }
             return Ok();
         }
     }
