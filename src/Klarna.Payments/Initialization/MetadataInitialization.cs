@@ -27,6 +27,7 @@ namespace Klarna.Payments.Initialization
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Constants.CartClass);
 
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaLogoUrlField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorDetailsField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonTextField), Constants.OtherPaymentClass);
@@ -45,7 +46,6 @@ namespace Klarna.Payments.Initialization
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.SendProductAndImageUrlField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.PreAssesmentField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.UseAttachmentsField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NameOfCreditFormField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaConfirmationUrlField), Constants.OtherPaymentClass);
             
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentMethodField), Constants.OtherPaymentClass);

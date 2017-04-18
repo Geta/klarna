@@ -40,6 +40,12 @@
 
 <table class="DataForm">
     <tbody>
+        <tr>
+            <td class="FormLabelCell">Klarna logo url:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtKlarnaLogoUrl" />
+            </td>
+        </tr>
          <tr>
             <td class="FormLabelCell">Color details:</td>
             <td class="FormFieldCell">
@@ -149,12 +155,6 @@
             <td class="FormLabelCell">Pre-assesment:</td>
             <td class="FormFieldCell">
                 <asp:CheckBox runat="server" ID="PreAssesmentCheckBox" />
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabelCell">Name of credit form:</td>
-            <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtNameOfCreditForm" />
             </td>
         </tr>
     </tbody>

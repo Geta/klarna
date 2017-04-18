@@ -67,6 +67,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredApiUrl;
         
         /// <summary>
+        /// txtKlarnaLogoUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtKlarnaLogoUrl;
+        
+        /// <summary>
         /// txtColorDetails control.
         /// </summary>
         /// <remarks>
@@ -236,14 +245,5 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox PreAssesmentCheckBox;
-        
-        /// <summary>
-        /// txtNameOfCreditForm control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNameOfCreditForm;
     }
 }

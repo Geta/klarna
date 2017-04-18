@@ -18,6 +18,7 @@
         public const string CartOrderNumberTempField = "CartOrderNumberTemp";
 
         // Widget styling fields
+        public const string KlarnaLogoUrlField = "KlarnaLogoUrl";
         public const string KlarnaWidgetColorDetailsField = "KlarnaWidgetColorDetails";
         public const string KlarnaWidgetColorButtonField = "KlarnaWidgetColorButton";
         public const string KlarnaWidgetColorButtonTextField = "KlarnaWidgetColorButtonText";
@@ -36,7 +37,6 @@
         public const string SendProductAndImageUrlField = "SendProductAndImageUrl";
         public const string PreAssesmentField = "PreAssesment";
         public const string UseAttachmentsField = "UseAttachments";
-        public const string NameOfCreditFormField = "NameOfCreditForm";
         public const string KlarnaConfirmationUrlField = "KlarnaConfirmationUrl";
 
 

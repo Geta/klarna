@@ -20,6 +20,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             txtPassword.Text = paymentMethod.GetParameter(Constants.KlarnaPasswordField, string.Empty);
             txtApiUrl.Text = paymentMethod.GetParameter(Constants.KlarnaApiUrlField, string.Empty);
 
+            txtKlarnaLogoUrl.Text = paymentMethod.GetParameter(Constants.KlarnaLogoUrlField, string.Empty);
             txtColorDetails.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorDetailsField, string.Empty);
             txtColorButton.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonField, string.Empty);
             txtColorButtonText.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonTextField, string.Empty);
@@ -41,7 +42,6 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             UseAttachmentsCheckBox.Checked = useAttachments;
             var preAssesment = bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
             PreAssesmentCheckBox.Checked = preAssesment;
-            txtNameOfCreditForm.Text = paymentMethod.GetParameter(Constants.NameOfCreditFormField, string.Empty);
         }
 
         public void SaveChanges(object dto)
@@ -60,6 +60,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             paymentMethod.SetParameter(Constants.KlarnaPasswordField, txtPassword.Text);
             paymentMethod.SetParameter(Constants.KlarnaApiUrlField, txtApiUrl.Text);
 
+            paymentMethod.SetParameter(Constants.KlarnaLogoUrlField, txtKlarnaLogoUrl.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorDetailsField, txtColorDetails.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonField, txtColorButton.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonTextField, txtColorButtonText.Text);
@@ -78,8 +79,6 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             paymentMethod.SetParameter(Constants.SendProductAndImageUrlField, (SendProductAndImageUrlCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.UseAttachmentsField, (UseAttachmentsCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.PreAssesmentField, (PreAssesmentCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.NameOfCreditFormField, txtNameOfCreditForm.Text);
         }
-        
     }
 }
