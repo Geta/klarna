@@ -15,14 +15,9 @@
                 if ($(".jsChangePayment:checked").val() !== "KlarnaPayments") {
                     return;
                 }
-
-                // TODO check authorization_token_expiration
-                if (!Klarna.Episerver.authorization_token) {
+                if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
-                    Klarna.Episerver.authorize(function (result) {
-                        $("#AuthorizationToken").val(Klarna.Episerver.authorization_token);
-                        $('.jsCheckoutForm').submit();
-                    });
+                    $(document).trigger('klarna:authorize');
                 }
             });
 
@@ -168,9 +163,7 @@
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
 
-                if (window.Klarna && window.Klarna.Episerver) {
-                    Klarna.Episerver.load();
-                }
+                $(document).trigger('klarna:load');
             }
         });
     },

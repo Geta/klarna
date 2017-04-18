@@ -3,64 +3,25 @@
 <div id="klarna_container"></div>
 
 <script>
+    // Register callback function to be executed after initial load
     window.klarnaAsyncCallback = function () {
-        window.Klarna.Episerver = window.Klarna.Episerver || {
-            klarna_container: "#klarna_container",
-            client_token: '@Model.ClientToken',
-            session_request: {},
-            authorization_token: "",
-            authorization_token_expiration: new Date(),
-            init: function () {
-                console.log("Klarna.Episerver.init");
-                Klarna.Credit.init({
-                    client_token: Klarna.Episerver.client_token
-                });
-            },
-            load: function (options, data, callback) {
-                options = options || {};
-                data = data || {};
-
-                if (!document.querySelectorAll(window.Klarna.Episerver.klarna_container).length) {
-                    return;
-                }
-
-                console.log("Klarna.Episerver.load");
-                Klarna.Credit.load({
-                    container: Klarna.Episerver.klarna_container
-                }, {}, function (result) {
-                    console.debug(result);
-                    if (result && result.show_form) {
-                        // TODO Check for errors, diplay errors
-                    } else {
-                        // TODO Do not display form
-                    }
-                });
-            },
-            authorize: function (data, options, callback) {
-                if (typeof options === 'function') {
-                    [callback, options] = [options, {}];
-                } else if (typeof data === 'function') {
-                    [callback, data] = [data, {}];
-                }
-                data = data || {};
-
-                //TODO prevent multiple authorize calls
-                Klarna.Credit.authorize(data, options,
-                    function (result) {
-                        console.debug(result);
-                        if (result.approved && result.authorization_token) {
-
-                            Klarna.Episerver.authorization_token_expiration = new Date();
-                            Klarna.Episerver.authorization_token = result.authorization_token;
-
-                            callback(result);
-                        }
-                    });
-            }
-        };
-
-        window.Klarna.Episerver.init();
-        window.Klarna.Episerver.load();
+        console.log("window.klarnaAsyncCallback load");
+        $(document)
+            .trigger('klarna:load', {
+                klarna_container: "#klarna_container",
+                client_token: '@Model.ClientToken'
+            });
     };
+
+
+    // Only call this if jQuery has been loaded already
+    if (window.jQuery) {
+        console.log("window.jQuery load");
+        window.jQuery(document)
+            .trigger('klarna:load',
+            {
+                klarna_container: "#klarna_container",
+                client_token: '@Model.ClientToken'
+            });
+    }
 </script>
-<script src="https://credit.klarnacdn.net/lib/v1/api.js" async></script>
