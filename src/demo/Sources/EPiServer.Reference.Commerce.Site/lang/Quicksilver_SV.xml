@@ -172,6 +172,7 @@
           <FirstName>Förnamn krävs</FirstName>
           <LastName>Efternamn krävs</LastName>
           <Email>E-postadress krävs</Email>
+          <DaytimePhoneNumber>Phone krävs</DaytimePhoneNumber>
           <Address>Leveransadress krävs</Address>
           <Country>Land krävs</Country>
           <City>Stad krävs</City>

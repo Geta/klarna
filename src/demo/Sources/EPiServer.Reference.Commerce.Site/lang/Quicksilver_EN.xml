@@ -171,6 +171,7 @@
           <FirstName>First name is required</FirstName>
           <LastName>Last name is required</LastName>
           <Email>Email address is required</Email>
+          <DaytimePhoneNumber>Phone number address is required</DaytimePhoneNumber>
           <Address>Shipping address is required</Address>
           <Country>Country is required</Country>
           <City>City is required</City>
