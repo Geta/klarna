@@ -12,7 +12,7 @@ namespace Klarna.Payments.Initialization
 {
     [InitializableModule]
     [ModuleDependency(typeof(EPiServer.Commerce.Initialization.InitializationModule))]
-    public class MetadataInitialization : IInitializableModule
+    internal class MetadataInitialization : IInitializableModule
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(MetadataInitialization));
 

@@ -242,10 +242,8 @@
     <Compile Include="Models\FraudStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\OrderStatus.cs" />
-    <Compile Include="Models\WidgetColorOptions.cs" />
     <Compile Include="OrderNumberGeneratorDecorator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SessionBuilder.cs" />
     <Compile Include="Steps\AuthorizePaymentStep.cs" />
     <Compile Include="Steps\PaymentStep.cs" />
   </ItemGroup>
