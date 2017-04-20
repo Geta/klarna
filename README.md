@@ -70,3 +70,23 @@ sessionRequest.Customer = new Customer
 **Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager nuget (see above)**
 
 In the **Markets** tab select a market for which this payment will be available.
+
+### Creating session
+A session at Klarna should created the visitor is on the checkout page. By calling the GetSessionRequest method most of the properties are set by default like orderlines, country, etc. You can enrich data before you call the CreateOrUpdateSession method.
+
+```
+var sessionRequest = _klarnaService.GetSessionRequest(Cart);
+
+sessionRequest = GetSessionRequest(sessionRequest);
+
+await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+```
+
+### Call authorize client-side
+// TODO: Brian
+
+### Process payment
+
+
+
+
