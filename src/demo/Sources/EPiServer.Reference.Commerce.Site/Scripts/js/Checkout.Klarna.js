@@ -90,14 +90,12 @@
 
                     Klarna.Credit.authorize(personalInformation,
                         function (result) {
-                            debugger;
-
                             console.debug(result);
                             if (result.approved && result.authorization_token) {
                                 state.authorizationToken = result.authorization_token;
                                 state.authorizationTokenExpiration = new Date();
 
-                                $("#AuthorizationToken").val(state.authorization_token);
+                                $("#AuthorizationToken").val(state.authorizationToken);
                                 $('.jsCheckoutForm').submit();
                             }
                         });

@@ -95,7 +95,12 @@ namespace Klarna.Payments
             }
             return await CreateSession(sessionRequest, cart);
         }
-        
+
+        public string GetSessionId(ICart cart)
+        {
+            return cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
+        }
+
         public string GetClientToken(ICart cart)
         {
             return cart.Properties[Constants.KlarnaClientTokenField]?.ToString();
@@ -103,7 +108,7 @@ namespace Klarna.Payments
 
         public async Task<Session> GetSession(ICart cart)
         {
-            return await _klarnaServiceApi.GetSession(GetClientToken(cart)).ConfigureAwait(false);
+            return await _klarnaServiceApi.GetSession(GetSessionId(cart)).ConfigureAwait(false);
         }
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
