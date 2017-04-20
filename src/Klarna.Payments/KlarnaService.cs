@@ -39,6 +39,20 @@ namespace Klarna.Payments
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
 
+        private Configuration _configuration;
+
+        public Configuration Configuration
+        {
+            get
+            {
+                if (_configuration == null)
+                {
+                    _configuration = GetConfiguration();
+                }
+                return _configuration;
+            }
+        }
+
         public KlarnaService(IKlarnaServiceApi klarnaServiceApi, 
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
             IOrderRepository orderRepository, 
@@ -66,10 +80,10 @@ namespace Klarna.Payments
 
         public async Task<string> CreateOrUpdateSession(ICart cart)
         {
-            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, GetConfiguration());
+            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
 
             // If the pre assessment is not enabled then don't send the customer information to Klarna
-            if (!IsCustomerPreAssessmentEnabled())
+            if (!Configuration.IsCustomerPreAssessmentEnabled || !CanSendPersonalInformation(cart.Market.Countries.FirstOrDefault()))
             {
                 sessionRequest.Customer = null;
             }
@@ -97,6 +111,9 @@ namespace Klarna.Payments
 
         public async Task<bool> UpdateBillingAddress(ICart cart, Address address)
         {
+            if (!CanSendPersonalInformation(CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault())))
+                return false;
+
             var sessionId = GetSessionId(cart);
             var session = await GetSession(sessionId);
             session.BillingAddress = address;
@@ -116,6 +133,9 @@ namespace Klarna.Payments
 
         public async Task<bool> UpdateShippingAddress(ICart cart, Address address)
         {
+            if (!CanSendPersonalInformation(CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault())))
+                return false;
+
             var sessionId = GetSessionId(cart);
             var session = await GetSession(sessionId);
             session.ShippingAddress = address;
@@ -213,37 +233,15 @@ namespace Klarna.Payments
             }
             catch (Exception ex)
             {
-                _logger.Error(ex.Message);
+                _logger.Error(ex.Message, ex);
             }
         }
-
-        public bool IsCustomerPreAssessmentEnabled()
-        {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
-            {
-                // If the pre assessment is not enabled then don't send the customer information to Klarna
-                return bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
-            }
-            return false;
-        }
-
-        public WidgetColorOptions GetWidgetColorOptions()
-        {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod == null)
-            {
-                return new WidgetColorOptions();
-            }
-            return WidgetColorOptions.FromPaymentMethod(paymentMethod);
-        }
-
+        
         public Session GetSessionRequest(ICart cart)
         {
             var request = new Session();
             request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
-
-            var sendProductUrl = false;
+            
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
@@ -253,8 +251,6 @@ namespace Klarna.Payments
                     Notification = paymentMethod.GetParameter(Constants.NotificationUrlField),
                 };
                 request.Options = GetWidgetOptions(paymentMethod);
-
-                sendProductUrl = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
             }
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
@@ -274,7 +270,7 @@ namespace Klarna.Payments
             var list = new List<OrderLine>();
             foreach (var item in cart.GetAllLineItems())
             {
-                var orderLine = GetOrderLine(item, cart.Currency, sendProductUrl);
+                var orderLine = GetOrderLine(item, cart.Currency);
 
                 list.Add(orderLine);
             }
@@ -336,6 +332,13 @@ namespace Klarna.Payments
                     }
                 }
             }
+        }
+
+        public bool CanSendPersonalInformation(string countryCode)
+        {
+            var continent = CountryCodeHelper.GetContinentByCountry(countryCode);
+
+            return !continent.Equals("EU", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private async Task<string> CreateSession(Session sessionRequest, ICart cart)
@@ -409,7 +412,7 @@ namespace Klarna.Payments
             return options;
         }
 
-        private OrderLine GetOrderLine(ILineItem item, Currency currency, bool sendProductUrl)
+        private OrderLine GetOrderLine(ILineItem item, Currency currency)
         {
             var orderLine = new OrderLine();
             orderLine.Quantity = (int)item.Quantity;
@@ -419,7 +422,7 @@ namespace Klarna.Payments
             orderLine.TotalDiscountAmount = GetAmount(item.GetEntryDiscount());
             orderLine.TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount);
 
-            if (sendProductUrl)
+            if (Configuration.SendProductAndImageUrlField)
             {
                 var contentLink = _referenceConverter.GetContentLink(item.Code);
                 if (!ContentReference.IsNullOrEmpty(contentLink))

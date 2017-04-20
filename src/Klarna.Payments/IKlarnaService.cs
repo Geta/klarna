@@ -12,8 +12,6 @@ namespace Klarna.Payments
         Task<Session> GetSession(string sessionId);
         Session GetSessionRequest(ICart cart);
         Task<Authorization> GetAuthorizationModel(string sessionId);
-        bool IsCustomerPreAssessmentEnabled();
-        WidgetColorOptions GetWidgetColorOptions();
 
         void FraudUpdate(NotificationModel notification);
 
@@ -25,5 +23,6 @@ namespace Klarna.Payments
 
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart);
+        bool CanSendPersonalInformation(string countryCode);
     }
 }

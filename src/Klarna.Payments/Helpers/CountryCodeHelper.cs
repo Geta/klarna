@@ -7,7 +7,7 @@ namespace Klarna.Payments.Helpers
 {
     public static class CountryCodeHelper
     {
-        public static Injected<GeolocationProvider> GeoLocationProvider { get; set; }
+        private static Injected<GeolocationProvider> GeoLocationProvider { get; set; }
 
         public static string GetTwoLetterCountryCode(string code)
         {
