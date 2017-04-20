@@ -17,6 +17,9 @@
       <dependency id="EPiServer.Commerce.Core" version="10.0.0" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="readme.txt" target="" />
+  </files>
 </package>-->
 
 <package >
@@ -37,4 +40,7 @@
       <dependency id="EPiServer.Commerce.Core" version="10.0.0" />
     </dependencies>
   </metadata>
+  <files>
+    <file src="readme.txt" target="" />
+  </files>
 </package>
