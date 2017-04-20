@@ -251,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Klarna.Payments.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

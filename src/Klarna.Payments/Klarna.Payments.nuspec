@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<!--<package>
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
@@ -10,6 +10,26 @@
     <projectUrl>https://github.com/Geta/Klarna</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
+    <copyright>Copyright 2016 Geta</copyright>
+    <tags>EPiServer Commerce 10</tags>
+    <dependencies>
+      <dependency id="EPiServer.CMS.Core" version="10.0.0" />
+      <dependency id="EPiServer.Commerce.Core" version="10.0.0" />
+    </dependencies>
+  </metadata>
+</package>-->
+
+<package>
+  <metadata>
+    <id>EPiServer.Klarna.Payments</id>
+    <version>1.0.0.1</version>
+    <title>Klarna Payments</title>
+    <authors>Geta</authors>
+    <owners>Geta</owners>
+    <iconUrl>https://cdn.geta.no/opensource/icons/Geta-logo-3.png</iconUrl>
+    <projectUrl>https://github.com/Geta/Klarna</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Klarna Payments</description>
     <copyright>Copyright 2016 Geta</copyright>
     <tags>EPiServer Commerce 10</tags>
     <dependencies>
