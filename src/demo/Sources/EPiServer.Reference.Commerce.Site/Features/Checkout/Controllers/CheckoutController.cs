@@ -134,10 +134,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderRepository.Save(Cart);
 
             var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-
             sessionRequest = GetSessionRequest(sessionRequest);
-
             await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+
+            // Make sure Klarna values are set
+            (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
 
             return View(viewModel.ViewName, viewModel);
         }
