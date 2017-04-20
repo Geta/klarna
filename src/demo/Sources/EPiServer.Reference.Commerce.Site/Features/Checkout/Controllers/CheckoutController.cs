@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Recommendations.Commerce.Tracking;
@@ -25,6 +26,8 @@ using Klarna.Payments.Extensions;
 using Klarna.Payments.Helpers;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Customers;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -85,8 +88,50 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.UpdateShippingMethods(Cart, viewModel.Shipments);
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
-            
-            await _klarnaService.CreateOrUpdateSession(Cart);
+
+            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
+
+            if (_klarnaService.Configuration.IsCustomerPreAssessmentEnabled)
+            {
+                sessionRequest.Customer = new Customer
+                {
+                    DateOfBirth = "1980-01-01",
+                    Gender = "Male",
+                    LastFourSsn = "1234"
+                };
+            }
+            sessionRequest.MerchantReference2 = "12345";
+
+            if (_klarnaService.Configuration.UseAttachments)
+            {
+                var converter = new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
+                };
+
+                var customerAccountInfos = new List<Dictionary<string, object>>
+                {
+                    new Dictionary<string, object>
+                    {
+                        { "unique_account_identifier",  "Test Testperson" },
+                        { "account_registration_date", DateTime.Now },
+                        { "account_last_modified", DateTime.Now }
+                    }
+                };
+
+                var emd = new Dictionary<string, object>
+                {
+                    { "customer_account_info", customerAccountInfos}
+                };
+
+                sessionRequest.Attachment = new Attachment
+                {
+                    ContentType = "application/vnd.klarna.internal.emd-v2+json",
+                    Body = JsonConvert.SerializeObject(emd, converter)
+                };
+            }
+
+            await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
 
             return View(viewModel.ViewName, viewModel);
         }
@@ -115,6 +160,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var viewModel = CreateCheckoutViewModel(currentPage, paymentViewModel);
 
+            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
+
             if (paymentViewModel.SystemName.Equals(Constants.KlarnaPaymentSystemKeyword, StringComparison.InvariantCultureIgnoreCase))
             {
                 var shipment = shipmentViewModel.Shipments.FirstOrDefault();
@@ -122,18 +169,23 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 {
                     if (inputModel.BillingAddress != null && !string.IsNullOrEmpty(inputModel.BillingAddress.AddressId))
                     {
-                        var address = CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == inputModel.BillingAddress.AddressId)?.ToAddress();
+                        var address =
+                            CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(
+                                x => x.Name == inputModel.BillingAddress.AddressId)?.ToAddress();
                         if (address != null)
                         {
-                            await _klarnaService.UpdateBillingAddress(Cart, address);
+                            sessionRequest.BillingAddress = address;
                         }
                     }
-                    if(shipment != null && shipment.Address != null && !string.IsNullOrEmpty(shipment.Address.AddressId))
+                    if (shipment != null && shipment.Address != null &&
+                        !string.IsNullOrEmpty(shipment.Address.AddressId))
                     {
-                        var address = CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == shipment.Address.AddressId)?.ToAddress();
+                        var address =
+                            CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(
+                                x => x.Name == shipment.Address.AddressId)?.ToAddress();
                         if (address != null)
                         {
-                            await _klarnaService.UpdateShippingAddress(Cart, address);
+                            sessionRequest.ShippingAddress = address;
                         }
                     }
                 }
@@ -150,7 +202,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     address.Country = CountryCodeHelper.GetTwoLetterCountryCode(inputModel.BillingAddress.CountryCode);
                     address.Email = inputModel.BillingAddress.Email;
                     address.Phone = inputModel.BillingAddress.DaytimePhoneNumber;
-                    await _klarnaService.UpdateBillingAddress(Cart, address);
+
+                    sessionRequest.BillingAddress = address;
 
                     if (shipment != null && shipment.Address != null)
                     {
@@ -166,10 +219,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                         shipmentAddress.Email = shipment.Address.Email;
                         shipmentAddress.Phone = shipment.Address.DaytimePhoneNumber;
 
-                        await _klarnaService.UpdateShippingAddress(Cart, shipmentAddress);
+                        sessionRequest.ShippingAddress = address;
                     }
                 }
             }
+            await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+
             return PartialView("Partial", viewModel);
         }
 

@@ -6,21 +6,16 @@ namespace Klarna.Payments
 {
     public interface IKlarnaService
     {
-        Task<string> CreateOrUpdateSession(ICart cart);
+        Configuration Configuration { get; }
+
+        Task<string> CreateOrUpdateSession(Session sessionRequest, ICart cart);
         string GetClientToken(ICart cart);
-        string GetSessionId(ICart cart);
-        Task<Session> GetSession(string sessionId);
+        Task<Session> GetSession(ICart cart);
         Session GetSessionRequest(ICart cart);
         void FraudUpdate(NotificationModel notification);
-
         void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder);
-
-        Task<bool> UpdateBillingAddress(ICart cart, Address address);
-
-        Task<bool> UpdateShippingAddress(ICart cart, Address address);
-
         Task CancelAuthorization(string authorizationToken);
-        Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart);
+        Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool CanSendPersonalInformation(string countryCode);
     }
 }

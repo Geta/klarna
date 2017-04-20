@@ -33,13 +33,32 @@ namespace Klarna.Payments
         private readonly ReferenceConverter _referenceConverter;
         private readonly UrlResolver _urlResolver;
         private readonly IContentRepository _contentRepository;
-        private readonly ICurrentMarket _currentMarket;
-        private readonly SessionBuilder _sessionBuilder;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
 
         private Configuration _configuration;
+
+        public KlarnaService( 
+            IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
+            IOrderRepository orderRepository, 
+            ReferenceConverter referenceConverter, 
+            UrlResolver urlResolver, 
+            IContentRepository contentRepository,
+            IOrderNumberGenerator orderNumberGenerator,
+            IPaymentProcessor paymentProcessor,
+            IOrderGroupCalculator orderGroupCalculator)
+        {
+            _klarnaServiceApi = ServiceLocator.Current.GetInstance<IKlarnaServiceApi>();
+            _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
+            _orderRepository = orderRepository;
+            _referenceConverter = referenceConverter;
+            _urlResolver = urlResolver;
+            _contentRepository = contentRepository;
+            _orderNumberGenerator = orderNumberGenerator;
+            _paymentProcessor = paymentProcessor;
+            _orderGroupCalculator = orderGroupCalculator;
+        }
 
         public Configuration Configuration
         {
@@ -53,45 +72,13 @@ namespace Klarna.Payments
             }
         }
 
-        public KlarnaService(IKlarnaServiceApi klarnaServiceApi, 
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
-            IOrderRepository orderRepository, 
-            ReferenceConverter referenceConverter, 
-            UrlResolver urlResolver, 
-            IContentRepository contentRepository,
-            ICurrentMarket currentMarket,
-            SessionBuilder sessionBuilder,
-            IOrderNumberGenerator orderNumberGenerator,
-            IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator)
+        public async Task<string> CreateOrUpdateSession(Session sessionRequest, ICart cart)
         {
-            _klarnaServiceApi = klarnaServiceApi;
-            _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
-            _orderRepository = orderRepository;
-            _referenceConverter = referenceConverter;
-            _urlResolver = urlResolver;
-            _contentRepository = contentRepository;
-            _currentMarket = currentMarket;
-            _sessionBuilder = sessionBuilder;
-            _orderNumberGenerator = orderNumberGenerator;
-            _paymentProcessor = paymentProcessor;
-            _orderGroupCalculator = orderGroupCalculator;
-        }
-
-        public async Task<string> CreateOrUpdateSession(ICart cart)
-        {
-            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
-
             // If the pre assessment is not enabled then don't send the customer information to Klarna
             if (!Configuration.IsCustomerPreAssessmentEnabled || !CanSendPersonalInformation(cart.Market.Countries.FirstOrDefault()))
             {
                 sessionRequest.Customer = null;
             }
-            else if (sessionRequest.Customer == null)
-            {
-                throw new ArgumentNullException("Session.Customer", "Provide customer information when the pre-assessment configuration is enabled in Commerce Manager");
-            }
-            
             var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
             if (!string.IsNullOrEmpty(sessionId))
             {
@@ -108,81 +95,28 @@ namespace Klarna.Payments
             }
             return await CreateSession(sessionRequest, cart);
         }
-
-        public async Task<bool> UpdateBillingAddress(ICart cart, Address address)
-        {
-            if (!CanSendPersonalInformation(CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault())))
-                return false;
-
-            var sessionId = GetSessionId(cart);
-            var session = await GetSession(sessionId);
-            session.BillingAddress = address;
-
-            try
-            {
-                await _klarnaServiceApi.UpdateSession(sessionId, session).ConfigureAwait(false);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message, ex);
-                return false;
-            }
-        }
-
-        public async Task<bool> UpdateShippingAddress(ICart cart, Address address)
-        {
-            if (!CanSendPersonalInformation(CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault())))
-                return false;
-
-            var sessionId = GetSessionId(cart);
-            var session = await GetSession(sessionId);
-            session.ShippingAddress = address;
-
-            try
-            {
-                await _klarnaServiceApi.UpdateSession(sessionId, session).ConfigureAwait(false);
-
-                return true;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message, ex);
-                return false;
-            }
-        }
-
+        
         public string GetClientToken(ICart cart)
         {
             return cart.Properties[Constants.KlarnaClientTokenField]?.ToString();
         }
 
-        public string GetSessionId(ICart cart)
+        public async Task<Session> GetSession(ICart cart)
         {
-            return cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
+            return await _klarnaServiceApi.GetSession(GetClientToken(cart)).ConfigureAwait(false);
         }
 
-        public async Task<Session> GetSession(string sessionId)
-        {
-            return await _klarnaServiceApi.GetSession(sessionId).ConfigureAwait(false);
-        }
-
-        public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart)
+        public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
             try
             {
-                var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
-                if (!string.IsNullOrEmpty(sessionId))
-                {
-                    var session = await GetSession(sessionId);
-                    session.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
-                    session.MerchantUrl = new MerchantUrl
-                     {
-                         Confirmation = $"{session.MerchantUrl.Confirmation}?trackingNumber={session.MerchantReference1}",
-                     };
-                    return await _klarnaServiceApi.CreateOrder(authorizationToken, session).ConfigureAwait(false);
-                }
+                var session = await GetSession(cart);
+                session.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
+                session.MerchantUrl = new MerchantUrl
+                    {
+                        Confirmation = $"{session.MerchantUrl.Confirmation}?trackingNumber={session.MerchantReference1}",
+                    };
+                return await _klarnaServiceApi.CreateOrder(authorizationToken, session).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -203,7 +137,7 @@ namespace Klarna.Payments
             }
         }
         
-        public Session GetSessionRequest(ICart cart)
+        public virtual Session GetSessionRequest(ICart cart)
         {
             var request = new Session();
             request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
@@ -220,7 +154,6 @@ namespace Klarna.Payments
             }
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-
             var shipment = cart.GetFirstShipment();
 
             if (shipment != null && shipment.ShippingAddress != null)
@@ -228,9 +161,7 @@ namespace Klarna.Payments
                 request.ShippingAddress = shipment.ShippingAddress.ToAddress();
             }
             request.OrderAmount = GetAmount(totals.Total);
-
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
-            
             request.Locale = ContentLanguage.PreferredCulture.Name;
             
             var list = new List<OrderLine>();

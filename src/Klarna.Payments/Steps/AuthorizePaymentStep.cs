@@ -38,6 +38,7 @@ namespace Klarna.Payments.Steps
 
                         return false;
                     }
+                    //TODO Fraud status stopped
                 }
                 else
                 {
@@ -46,7 +47,7 @@ namespace Klarna.Payments.Steps
                     {
                         try
                         {
-                            var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup)).Result;
+                            var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup as ICart)).Result;
 
                             orderGroup.Properties[Constants.KlarnaOrderIdField] = result.OrderId;
                             payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
@@ -58,7 +59,6 @@ namespace Klarna.Payments.Steps
                             {
                                 message = "Klarna fraud status reject";
                                 payment.Status = PaymentStatus.Failed.ToString();
-
                             }
                             else
                             {

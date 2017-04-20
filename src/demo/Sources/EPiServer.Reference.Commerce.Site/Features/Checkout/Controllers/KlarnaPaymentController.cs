@@ -24,15 +24,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _klarnaService = klarnaService;
         }
 
-        [Route("session/{sessionId}")]
-        [AcceptVerbs("GET")]
-        public async Task<IHttpActionResult> GetSession(string sessionId)
-        {
-            var result = await _klarnaService.GetSession(sessionId);
-
-            return Ok(result);
-        }
-
         [Route("address/{addressId}")]
         [AcceptVerbs("GET")]
         public IHttpActionResult GetAddress(string addressId)

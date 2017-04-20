@@ -82,8 +82,6 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             services.AddHttpContextOrThreadScoped<SiteContext, CustomCurrencySiteContext>();
             services.AddTransient<HttpContextBase>(locator => HttpContext.Current.ContextBaseOrNull());
 
-            services.AddTransient<SessionBuilder, DemoSessionBuilder>();
-
             DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.Container));
             GlobalConfiguration.Configure(config =>
             {

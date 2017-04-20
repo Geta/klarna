@@ -21,13 +21,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
         }
 
         public string ClientToken { get; set; }
-        public string SessionId { get; set; }
 
         public void InitializeValues()
         {
             var cart = CartService.LoadCart(CartService.DefaultCartName);
             ClientToken = KlarnaService.GetClientToken(cart);
-            SessionId = KlarnaService.GetSessionId(cart);
         }
     }
 }

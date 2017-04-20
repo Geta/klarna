@@ -16,7 +16,7 @@ namespace Klarna.Payments.Initialization
     [InitializableModule]
     [ModuleDependency(typeof(EPiServer.Web.InitializationModule))]
     [ModuleDependency(typeof(CommerceInitialization))]
-    public class RefitInitialization : IConfigurableModule
+    internal class RefitInitialization : IConfigurableModule
     {
         private static bool _initialized;
         
