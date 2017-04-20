@@ -10,16 +10,6 @@ namespace Klarna.Payments.Models
         public Address ShippingAddress { get; set; }
         [JsonProperty("customer")]
         public Customer Customer { get; set; }
-
-        public PersonalInformationSession ToPersonalInformationSession()
-        {
-            return new PersonalInformationSession()
-            {
-                BillingAddress = this.BillingAddress,
-                ShippingAddress = this.ShippingAddress,
-                Customer = this.Customer
-            };
-        }
     }
 
     public class Session : PersonalInformationSession

@@ -159,12 +159,6 @@ namespace Klarna.Payments
             }
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            var shipment = cart.GetFirstShipment();
-
-            if (shipment != null && shipment.ShippingAddress != null)
-            {
-                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
-            }
             request.OrderAmount = GetAmount(totals.Total);
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
             request.Locale = ContentLanguage.PreferredCulture.Name;
@@ -188,6 +182,28 @@ namespace Klarna.Payments
             }
             request.OrderLines = list.ToArray();
             
+            return request;
+        }
+
+        public virtual PersonalInformationSession GetPersonalInformationSession(ICart cart)
+        {
+            var request = new PersonalInformationSession();
+            if (Configuration.IsCustomerPreAssessmentEnabled)
+            {
+                request.Customer = new Customer
+                {
+                    DateOfBirth = "1980-01-01",
+                    Gender = "Male",
+                    LastFourSsn = "1234"
+                };
+            }
+
+            var shipment = cart.GetFirstShipment();
+            if (shipment?.ShippingAddress != null)
+            {
+                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
+            }
+
             return request;
         }
 

@@ -68,15 +68,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         private Session GetSessionRequest(Session sessionRequest)
         {
-            if (_klarnaService.Configuration.IsCustomerPreAssessmentEnabled)
-            {
-                sessionRequest.Customer = new Customer
-                {
-                    DateOfBirth = "1980-01-01",
-                    Gender = "Male",
-                    LastFourSsn = "1234"
-                };
-            }
             sessionRequest.MerchantReference2 = "12345";
 
             if (_klarnaService.Configuration.UseAttachments)
@@ -168,68 +159,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var viewModel = CreateCheckoutViewModel(currentPage, paymentViewModel);
 
             var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-
-            if (paymentViewModel.SystemName.Equals(Constants.KlarnaPaymentSystemKeyword, StringComparison.InvariantCultureIgnoreCase))
-            {
-                var shipment = shipmentViewModel.Shipments.FirstOrDefault();
-                if (User.Identity.IsAuthenticated)
-                {
-                    if (inputModel.BillingAddress != null && !string.IsNullOrEmpty(inputModel.BillingAddress.AddressId))
-                    {
-                        var address =
-                            CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(
-                                x => x.Name == inputModel.BillingAddress.AddressId)?.ToAddress();
-                        if (address != null)
-                        {
-                            sessionRequest.BillingAddress = address;
-                        }
-                    }
-                    if (shipment != null && shipment.Address != null &&
-                        !string.IsNullOrEmpty(shipment.Address.AddressId))
-                    {
-                        var address =
-                            CustomerContext.Current.CurrentContact.ContactAddresses.FirstOrDefault(
-                                x => x.Name == shipment.Address.AddressId)?.ToAddress();
-                        if (address != null)
-                        {
-                            sessionRequest.ShippingAddress = address;
-                        }
-                    }
-                }
-                else
-                {
-                    var address = new Address();
-                    address.GivenName = inputModel.BillingAddress.FirstName;
-                    address.FamilyName = inputModel.BillingAddress.LastName;
-                    address.StreetAddress = inputModel.BillingAddress.Line1;
-                    address.StreetAddress2 = inputModel.BillingAddress.Line2;
-                    address.PostalCode = inputModel.BillingAddress.PostalCode;
-                    address.City = inputModel.BillingAddress.City;
-                    address.Region = inputModel.BillingAddress.CountryRegion.Region;
-                    address.Country = CountryCodeHelper.GetTwoLetterCountryCode(inputModel.BillingAddress.CountryCode);
-                    address.Email = inputModel.BillingAddress.Email;
-                    address.Phone = inputModel.BillingAddress.DaytimePhoneNumber;
-
-                    sessionRequest.BillingAddress = address;
-
-                    if (shipment != null && shipment.Address != null)
-                    {
-                        var shipmentAddress = new Address();
-                        shipmentAddress.GivenName = shipment.Address.FirstName;
-                        shipmentAddress.FamilyName = shipment.Address.LastName;
-                        shipmentAddress.StreetAddress = shipment.Address.Line1;
-                        shipmentAddress.StreetAddress2 = shipment.Address.Line2;
-                        shipmentAddress.PostalCode = shipment.Address.PostalCode;
-                        shipmentAddress.City = shipment.Address.City;
-                        shipmentAddress.Region = shipment.Address.CountryRegion.Region;
-                        shipmentAddress.Country = CountryCodeHelper.GetTwoLetterCountryCode(shipment.Address.CountryCode);
-                        shipmentAddress.Email = shipment.Address.Email;
-                        shipmentAddress.Phone = shipment.Address.DaytimePhoneNumber;
-
-                        sessionRequest.ShippingAddress = address;
-                    }
-                }
-            }
             await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
 
             return PartialView("Partial", viewModel);

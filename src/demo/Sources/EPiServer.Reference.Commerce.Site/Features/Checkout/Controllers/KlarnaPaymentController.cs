@@ -17,11 +17,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
     public class KlarnaPaymentController : ApiController
     {
         private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
+        private readonly CustomerContextFacade _customerContextFacade;
         private readonly IKlarnaService _klarnaService;
+        private readonly ICartService _cartService;
 
-        public KlarnaPaymentController(IKlarnaService klarnaService)
+        public KlarnaPaymentController(
+            CustomerContextFacade customerContextFacade, 
+            IKlarnaService klarnaService, 
+            ICartService cartService)
         {
             _klarnaService = klarnaService;
+            _customerContextFacade = customerContextFacade;
+            _cartService = cartService;
         }
 
         [Route("address/{addressId}")]
@@ -37,16 +44,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [AcceptVerbs("GET")]
         public IHttpActionResult GetpersonalInformation()
         {
-            var klarnaService = ServiceLocator.Current.GetInstance<IKlarnaService>();
-            var cartService = ServiceLocator.Current.GetInstance<ICartService>();
-            var cart = cartService.LoadCart(cartService.DefaultCartName);
-            var sessionRequest = klarnaService.GetSessionRequest(cart).ToPersonalInformationSession();
-
-            /*if (klarnaService.Configuration.PreAssesmentENabnled)
-            {
-                sessionReuest.
-            }*/
-
+            var cart = _cartService.LoadCart(_cartService.DefaultCartName);
+            var sessionRequest = _klarnaService.GetPersonalInformationSession(cart);
             return Ok(sessionRequest);
         }
 
