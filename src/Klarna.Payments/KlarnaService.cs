@@ -238,7 +238,7 @@ namespace Klarna.Payments
             return WidgetColorOptions.FromPaymentMethod(paymentMethod);
         }
 
-        private Session GetSessionRequest(ICart cart)
+        public Session GetSessionRequest(ICart cart)
         {
             var request = new Session();
             request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());

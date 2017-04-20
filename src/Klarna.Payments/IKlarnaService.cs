@@ -10,6 +10,7 @@ namespace Klarna.Payments
         string GetClientToken(ICart cart);
         string GetSessionId(ICart cart);
         Task<Session> GetSession(string sessionId);
+        Session GetSessionRequest(ICart cart);
         Task<Authorization> GetAuthorizationModel(string sessionId);
         bool IsCustomerPreAssessmentEnabled();
         WidgetColorOptions GetWidgetColorOptions();
