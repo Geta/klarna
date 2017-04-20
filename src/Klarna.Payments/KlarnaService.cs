@@ -295,39 +295,24 @@ namespace Klarna.Payments
 
         public void FraudUpdate(NotificationModel notification)
         {
-            OrderSearchOptions searchOptions = new OrderSearchOptions();
-            searchOptions.CacheResults = false; 
-            searchOptions.StartingRecord = 0; 
-            searchOptions.RecordsToRetrieve = 1;
-            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
-            searchOptions.Namespace = "Mediachase.Commerce.Orders";
-
-            var parameters = new OrderSearchParameters();
-            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{notification.OrderId}'";
-
-            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
-            
-            if (purchaseOrder != null)
+            var order = GetPurchaseOrderByKlarnaOrderId(notification.OrderId);
+            if (order != null)
             {
-                var order = _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
-                if (order != null)
+                var orderForm = order.GetFirstForm();
+                var payment = orderForm.Payments.FirstOrDefault();
+                if (payment != null && payment.Status == PaymentStatus.Pending.ToString())
                 {
-                    var orderForm = order.GetFirstForm();
-                    var payment = orderForm.Payments.FirstOrDefault();
-                    if (payment != null && payment.Status == PaymentStatus.Pending.ToString())
-                    {
-                        payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.Status.ToString();
+                    payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.Status.ToString();
 
-                        try
-                        {
-                            order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.Error(ex.Message, ex);
-                        }
-                        _orderRepository.Save(order);
+                    try
+                    {
+                        order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
                     }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex.Message, ex);
+                    }
+                    _orderRepository.Save(order);
                 }
             }
         }
@@ -430,11 +415,7 @@ namespace Klarna.Payments
             orderLine.Quantity = (int)item.Quantity;
             orderLine.Name = item.DisplayName;
             orderLine.Reference = item.Code;
-
-            //var isDiscount = item.GetDiscountedPrice(currency).Amount > 0;
-
             orderLine.UnitPrice = GetAmount(item.PlacedPrice);
-            
             orderLine.TotalDiscountAmount = GetAmount(item.GetEntryDiscount());
             orderLine.TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount);
 
@@ -462,6 +443,27 @@ namespace Klarna.Payments
                 configuration.UseAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
             }
             return configuration;
+        }
+
+        private IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
+        {
+            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            searchOptions.CacheResults = false;
+            searchOptions.StartingRecord = 0;
+            searchOptions.RecordsToRetrieve = 1;
+            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
+            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+
+            var parameters = new OrderSearchParameters();
+            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{orderId}'";
+
+            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
+
+            if (purchaseOrder != null)
+            {
+                return _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
+            }
+            return null;
         }
     }
 }
