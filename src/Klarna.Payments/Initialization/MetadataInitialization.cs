@@ -50,6 +50,7 @@ namespace Klarna.Payments.Initialization
             
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentMethodField), Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaOrderIdField), Constants.OrderNamespace);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaOrderIdField), Constants.PurchaseOrderClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.FraudStatusPaymentMethodField), Constants.OtherPaymentClass);
         }
 
@@ -64,7 +65,7 @@ namespace Klarna.Payments.Initialization
             var f = MetaField.Load(mdContext, fieldName);
             if (f == null)
             {
-                Logger.Debug($"Adding meta field '{fieldName}' for Netaxept integration.");
+                Logger.Debug($"Adding meta field '{fieldName}' for Klarna payments integration.");
                 f = MetaField.Create(mdContext, Constants.OrderNamespace, fieldName, fieldName, string.Empty, MetaDataType.LongString, Int32.MaxValue, true, false, false, false);
             }
             return f;

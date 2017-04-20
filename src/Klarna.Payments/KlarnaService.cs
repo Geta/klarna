@@ -36,6 +36,8 @@ namespace Klarna.Payments
         private readonly ICurrentMarket _currentMarket;
         private readonly SessionBuilder _sessionBuilder;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
+        private readonly IPaymentProcessor _paymentProcessor;
+        private readonly IOrderGroupCalculator _orderGroupCalculator;
 
         public KlarnaService(IKlarnaServiceApi klarnaServiceApi, 
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
@@ -45,7 +47,9 @@ namespace Klarna.Payments
             IContentRepository contentRepository,
             ICurrentMarket currentMarket,
             SessionBuilder sessionBuilder,
-            IOrderNumberGenerator orderNumberGenerator)
+            IOrderNumberGenerator orderNumberGenerator,
+            IPaymentProcessor paymentProcessor,
+            IOrderGroupCalculator orderGroupCalculator)
         {
             _klarnaServiceApi = klarnaServiceApi;
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
@@ -56,6 +60,8 @@ namespace Klarna.Payments
             _currentMarket = currentMarket;
             _sessionBuilder = sessionBuilder;
             _orderNumberGenerator = orderNumberGenerator;
+            _paymentProcessor = paymentProcessor;
+            _orderGroupCalculator = orderGroupCalculator;
         }
 
         public async Task<string> CreateOrUpdateSession(ICart cart)
@@ -298,10 +304,10 @@ namespace Klarna.Payments
             searchOptions.Namespace = "Mediachase.Commerce.Orders";
 
             var parameters = new OrderSearchParameters();
-            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} = '{notification.OrderId}'";
+            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{notification.OrderId}'";
 
             var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
-
+            
             if (purchaseOrder != null)
             {
                 var order = _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
@@ -309,18 +315,19 @@ namespace Klarna.Payments
                 {
                     var orderForm = order.GetFirstForm();
                     var payment = orderForm.Payments.FirstOrDefault();
-                    if (payment != null)
+                    if (payment != null && payment.Status == PaymentStatus.Pending.ToString())
                     {
                         payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.Status.ToString();
 
-                        if (notification.Status == NotificationFraudStatus.FRAUD_RISK_ACCEPTED)
+                        try
                         {
-                            payment.Status = PaymentStatus.Pending.ToString();
+                            order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
                         }
-                        else if (notification.Status == NotificationFraudStatus.FRAUD_RISK_REJECTED)
+                        catch (Exception ex)
                         {
-                            payment.Status = PaymentStatus.Failed.ToString();
+                            _logger.Error(ex.Message, ex);
                         }
+                        _orderRepository.Save(order);
                     }
                 }
             }

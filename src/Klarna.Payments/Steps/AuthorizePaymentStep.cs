@@ -19,38 +19,58 @@ namespace Klarna.Payments.Steps
         {
             if (payment.TransactionType == "Authorization")
             {
-                var authorizationToken = payment.Properties[Constants.AuthorizationTokenPaymentMethodField]?.ToString();
-                if (!string.IsNullOrEmpty(authorizationToken))
+                // Fraud status update
+                if (payment.Status == PaymentStatus.Pending.ToString() && !string.IsNullOrEmpty(orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString()))
                 {
-                    try
+                    if (payment.Properties[Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
                     {
-                        var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup)).Result;
+                        payment.Status = PaymentStatus.Processed.ToString();
 
-                        orderGroup.Properties[Constants.KlarnaOrderIdField] = result.OrderId;
-                        payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
-                        payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
+                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", "Fraud risk accepted");
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
-
-                        if (result.FraudStatus == FraudStatus.REJECTED)
-                        {
-                            message = "Klarna fraud status reject";
-                            payment.Status = PaymentStatus.Failed.ToString();
-
-                            return false;
-                        }
-                        else // either accept or pending
-                        {
-                            payment.Status = PaymentStatus.Pending.ToString();
-
-                            return true;
-                        }
+                        return true;
                     }
-                    catch (Exception ex)
+                    else if (payment.Properties[Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
                     {
-                        Logger.Error(ex.Message, ex);
+                        payment.Status = PaymentStatus.Failed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment authorization - Error", ex.Message);
+                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", "Fraud risk rejected");
+
+                        return false;
+                    }
+                }
+                else
+                {
+                    var authorizationToken = payment.Properties[Constants.AuthorizationTokenPaymentMethodField]?.ToString();
+                    if (!string.IsNullOrEmpty(authorizationToken))
+                    {
+                        try
+                        {
+                            var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup)).Result;
+
+                            orderGroup.Properties[Constants.KlarnaOrderIdField] = result.OrderId;
+                            payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
+                            payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
+
+                            AddNoteAndSaveChanges(orderGroup, "Payment authorization", $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
+
+                            if (result.FraudStatus == FraudStatus.REJECTED)
+                            {
+                                message = "Klarna fraud status reject";
+                                payment.Status = PaymentStatus.Failed.ToString();
+
+                            }
+                            else
+                            {
+                                return true;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error(ex.Message, ex);
+
+                            AddNoteAndSaveChanges(orderGroup, "Payment authorization - Error", ex.Message);
+                        }
                     }
                 }
             }

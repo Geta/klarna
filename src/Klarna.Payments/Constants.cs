@@ -9,6 +9,7 @@
         public const string KlarnaApiUrlField = "KlarnaApiUrl";
 
         public const string OrderNamespace = "Mediachase.Commerce.Orders";
+        public const string PurchaseOrderClass = "PurchaseOrder";
         public const string OtherPaymentClass = "OtherPayment";
         public const string CartClass = "ShoppingCart";
         
