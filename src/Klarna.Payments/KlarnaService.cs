@@ -113,9 +113,15 @@ namespace Klarna.Payments
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
+            throw new Exception("See TODO");
+
             try
             {
+                // TODO: REMOVE - We should not do this...
+                // Retrieving session from klarna in order to create an order is unsafe, user can change data during authorization
+                // However have to check if we need to provide personal info during create order or just cart info
                 var session = await GetSession(cart);
+
                 session.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
                 session.MerchantUrl = new MerchantUrl
                     {
