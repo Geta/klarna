@@ -66,31 +66,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _klarnaService = klarnaService;
         }
 
-        [HttpGet]
-        [OutputCache(Duration = 0, NoStore = true)]
-        [Tracking(TrackingType.Checkout)]
-        public async Task<ActionResult> Index(CheckoutPage currentPage)
+        private Session GetSessionRequest(Session sessionRequest)
         {
-            if (CartIsNullOrEmpty())
-            {
-                return View("EmptyCart");
-            }
-
-            var viewModel = CreateCheckoutViewModel(currentPage);
-
-            Cart.Currency = _currencyService.GetCurrentCurrency();
-            
-            if (User.Identity.IsAuthenticated)
-            {
-                _checkoutService.UpdateShippingAddresses(Cart, viewModel);
-            }
-
-            _checkoutService.UpdateShippingMethods(Cart, viewModel.Shipments);
-            _checkoutService.ApplyDiscounts(Cart);
-            _orderRepository.Save(Cart);
-
-            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-
             if (_klarnaService.Configuration.IsCustomerPreAssessmentEnabled)
             {
                 sessionRequest.Customer = new Customer
@@ -130,6 +107,35 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     Body = JsonConvert.SerializeObject(emd, converter)
                 };
             }
+            return sessionRequest;
+        }
+
+        [HttpGet]
+        [OutputCache(Duration = 0, NoStore = true)]
+        [Tracking(TrackingType.Checkout)]
+        public async Task<ActionResult> Index(CheckoutPage currentPage)
+        {
+            if (CartIsNullOrEmpty())
+            {
+                return View("EmptyCart");
+            }
+
+            var viewModel = CreateCheckoutViewModel(currentPage);
+
+            Cart.Currency = _currencyService.GetCurrentCurrency();
+            
+            if (User.Identity.IsAuthenticated)
+            {
+                _checkoutService.UpdateShippingAddresses(Cart, viewModel);
+            }
+
+            _checkoutService.UpdateShippingMethods(Cart, viewModel.Shipments);
+            _checkoutService.ApplyDiscounts(Cart);
+            _orderRepository.Save(Cart);
+
+            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
+
+            sessionRequest = GetSessionRequest(sessionRequest);
 
             await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
 
