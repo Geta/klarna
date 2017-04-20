@@ -11,8 +11,6 @@ namespace Klarna.Payments
         string GetSessionId(ICart cart);
         Task<Session> GetSession(string sessionId);
         Session GetSessionRequest(ICart cart);
-        Task<Authorization> GetAuthorizationModel(string sessionId);
-
         void FraudUpdate(NotificationModel notification);
 
         void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder);

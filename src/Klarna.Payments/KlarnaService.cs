@@ -168,40 +168,6 @@ namespace Klarna.Payments
             return await _klarnaServiceApi.GetSession(sessionId).ConfigureAwait(false);
         }
 
-        public async Task<Authorization> GetAuthorizationModel(string sessionId)
-        {
-            if (!string.IsNullOrEmpty(sessionId))
-            {
-                try
-                {
-                    var result =  await _klarnaServiceApi.GetSession(sessionId).ConfigureAwait(false);
-
-                    var model = new Authorization
-                    {
-                        PurchaseCountry = result.PurchaseCountry,
-                        PurchaseCurrency = result.PurchaseCurrency,
-                        Locale = result.Locale,
-                        BillingAddress = result.BillingAddress,
-                        ShippingAddress = result.ShippingAddress,
-                        OrderAmount = result.OrderAmount,
-                        OrderTaxAmount = result.OrderTaxAmount,
-                        OrderLines = result.OrderLines,
-                        Customer = result.Customer,
-                        MerchantReference1 = result.MerchantReference1,
-                        MerchantReference2 = result.MerchantReference2,
-                        MerchantData = result.MerchantData,
-                        Body = result.Body
-                    };
-                    return model;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex.Message, ex);
-                }
-            }
-            return new Authorization();
-        }
-
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, IOrderGroup cart)
         {
             try
