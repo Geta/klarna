@@ -2,7 +2,27 @@
 
 namespace Klarna.Payments.Models
 {
-    public class Session
+    public class PersonalInformationSession
+    {
+        [JsonProperty("billing_address")]
+        public Address BillingAddress { get; set; }
+        [JsonProperty("shipping_address")]
+        public Address ShippingAddress { get; set; }
+        [JsonProperty("customer")]
+        public Customer Customer { get; set; }
+
+        public PersonalInformationSession ToPersonalInformationSession()
+        {
+            return new PersonalInformationSession()
+            {
+                BillingAddress = this.BillingAddress,
+                ShippingAddress = this.ShippingAddress,
+                Customer = this.Customer
+            };
+        }
+    }
+
+    public class Session : PersonalInformationSession
     {
         [JsonProperty("design")]
         public string Design { get; set; }
@@ -12,18 +32,12 @@ namespace Klarna.Payments.Models
         public string PurchaseCurrency { get; set; }
         [JsonProperty("locale")]
         public string Locale { get; set; }
-        [JsonProperty("billing_address")]
-        public Address BillingAddress { get; set; }
-        [JsonProperty("shipping_address")]
-        public Address ShippingAddress { get; set; }
         [JsonProperty("order_amount")]
         public int OrderAmount { get; set; }
         [JsonProperty("order_tax_amount")]
         public int OrderTaxAmount { get; set; }
         [JsonProperty("order_lines")]
         public OrderLine[] OrderLines { get; set; }
-        [JsonProperty("customer")]
-        public Customer Customer { get; set; }
         [JsonProperty("merchant_urls")]
         public MerchantUrl MerchantUrl { get; set; }
         [JsonProperty("merchant_reference1")]

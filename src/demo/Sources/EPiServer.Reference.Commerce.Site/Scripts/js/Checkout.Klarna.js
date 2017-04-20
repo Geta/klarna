@@ -1,25 +1,24 @@
 ﻿(function ($) {
     var state = {
-        initializedForToken: ''
+        initializedForToken: '',
+        isAuthorizing: false,
+        authorizationToken: '',
+        authorizationTokenExpiration: new Date()
     };
 
     var settings = {
         klarna_container: '',
-        client_token: '',
-        authorization_token: "",
-        authorization_token_expiration: new Date()
+        client_token: ''
     };
 
-    function updateSettings(settings, newSettings) {
+    function shouldUpdateSettings(settings, newSettings) {
         if (!newSettings) {
             return false;
         }
         if (settings.klarna_container === newSettings.klarna_container && settings.client_token === newSettings.client_token) {
             return false;
         }
-        
-        settings.klarna_container = newSettings.klarna_container;
-        settings.client_token = newSettings.client_token;
+
         return true;
     }
 
@@ -33,26 +32,19 @@
     }
 
     $(document)
-        .on('klarna:settings', function (ev, newSettings) {
-            updateSettings(settings, newSettings);
-        })
-        .on('klarna:init', function (ev) {
-            initKlarna(state, settings.client_token);
-        })
         .on('klarna:load', function (ev, newSettings) {
-            if (updateSettings(settings, newSettings)) {
+            if (shouldUpdateSettings(settings, newSettings)) {
+
+                settings.client_token = newSettings.client_token;
+                settings.klarna_container = newSettings.klarna_container;
+
                 // Init new settings
                 initKlarna(state, settings.client_token);
             }
 
-            if (!document.querySelectorAll(settings.klarna_container).length) {
-                console.log('Cant find container');
-                return;
-            }
-
             Klarna.Credit.load({
                 container: settings.klarna_container
-            }, { }, function (result) {
+            }, function (result) {
                 console.debug(result);
                 if (result && result.show_form) {
                     // TODO Check for errors, diplay errors
@@ -62,22 +54,61 @@
             });
         })
         .on('klarna:authorize', function () {
-            // TODO check authorization_token_expiration
-            if (!settings.authorization_token) {
-                //TODO prevent multiple authorize calls
-                Klarna.Credit.authorize({
-                    // No data here as we update the session server side
-                }, function (result) {
-                        console.debug(result);
-                        if (result.approved && result.authorization_token) {
-
-                            settings.authorization_token_expiration = new Date();
-                            settings.authorization_token = result.authorization_token;
-
-                            $("#AuthorizationToken").val(settings.authorization_token);
-                            $('.jsCheckoutForm').submit();
-                        }
-                    });
+            //TODO prevent multiple authorize calls
+            if (state.isAuthorizing) {
+                return;
             }
-        });    
+
+            // TODO check authorization_token_expiration
+            //if (state.authorizationTokenExpiration)
+
+            if (state.authorizationToken === '') {
+                state.isAuthorizing = true;
+
+                /*var billingAddress = {
+                    "given_name": "Brian",
+                    "family_name": "Weeteling",
+                    "email": "brian@geta.no",
+                    "title": null,
+                    "street_address": "379 W Broadway",
+                    "street_address2": null,
+                    "postal_code": "NY 10012",
+                    "city": "New York",
+                    "region": "New York",
+                    "phone": "+1 855-593-9675",
+                    "country": "US"
+                };*/
+
+                // Get personal info from server
+                $.when($.getJSON("/klarnaapi/personal"), $.getJSON("/klarnaapi/address/" + $("#BillingAddress_AddressId").val()))
+                .done(function (personalInformationResult, billingAddressResult) {
+                    var personalInformation = personalInformationResult[0];
+                    var billingAddress = billingAddressResult[0];
+
+                    // We should have billing and shipping address here, if not we need to populate it from the local form fields
+                    personalInformation.billing_address = billingAddress;
+
+                    Klarna.Credit.authorize(personalInformation,
+                        function (result) {
+                            debugger;
+
+                            console.debug(result);
+                            if (result.approved && result.authorization_token) {
+                                state.authorizationToken = result.authorization_token;
+                                state.authorizationTokenExpiration = new Date();
+
+                                $("#AuthorizationToken").val(state.authorization_token);
+                                $('.jsCheckoutForm').submit();
+                            }
+                        });
+                })
+                .fail(function (result) {
+                    console.log("Something went wrong", result);
+                })
+                .always(function () {
+                    console.log("Always");
+                    state.isAuthorizing = false;
+                });
+            }
+        });
 }(jQuery));
