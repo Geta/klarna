@@ -66,7 +66,6 @@ namespace Klarna.Payments
 
         public async Task<string> CreateOrUpdateSession(ICart cart)
         {
-            var test = ServiceLocator.Current.GetInstance<IOrderNumberGenerator>();
             var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, GetConfiguration());
 
             // If the pre assessment is not enabled then don't send the customer information to Klarna
