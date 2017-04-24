@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using EPiServer.Commerce.Order;
+﻿using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Recommendations.Commerce.Tracking;
 using EPiServer.Recommendations.Tracking;
@@ -22,12 +20,6 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Payments;
-using Klarna.Payments.Extensions;
-using Klarna.Payments.Helpers;
-using Klarna.Payments.Models;
-using Mediachase.Commerce.Customers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -66,41 +58,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _klarnaService = klarnaService;
         }
 
-        private Session GetSessionRequest(Session sessionRequest)
-        {
-            sessionRequest.MerchantReference2 = "12345";
-
-            if (_klarnaService.Configuration.UseAttachments)
-            {
-                var converter = new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
-                };
-
-                var customerAccountInfos = new List<Dictionary<string, object>>
-                {
-                    new Dictionary<string, object>
-                    {
-                        { "unique_account_identifier",  "Test Testperson" },
-                        { "account_registration_date", DateTime.Now },
-                        { "account_last_modified", DateTime.Now }
-                    }
-                };
-
-                var emd = new Dictionary<string, object>
-                {
-                    { "customer_account_info", customerAccountInfos}
-                };
-
-                sessionRequest.Attachment = new Attachment
-                {
-                    ContentType = "application/vnd.klarna.internal.emd-v2+json",
-                    Body = JsonConvert.SerializeObject(emd, converter)
-                };
-            }
-            return sessionRequest;
-        }
-
         [HttpGet]
         [OutputCache(Duration = 0, NoStore = true)]
         [Tracking(TrackingType.Checkout)]
@@ -124,9 +81,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-            sessionRequest = GetSessionRequest(sessionRequest);
-            await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+            var clientToken = await _klarnaService.CreateOrUpdateSession(Cart);
 
             // Make sure Klarna values are set
             (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
@@ -157,9 +112,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderRepository.Save(Cart);
 
             var viewModel = CreateCheckoutViewModel(currentPage, paymentViewModel);
-
-            var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-            await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+            
+            await _klarnaService.CreateOrUpdateSession(Cart);
 
             return PartialView("Partial", viewModel);
         }

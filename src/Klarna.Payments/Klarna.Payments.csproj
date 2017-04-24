@@ -244,6 +244,7 @@
     <Compile Include="Models\OrderStatus.cs" />
     <Compile Include="OrderNumberGeneratorDecorator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SessionBuilder.cs" />
     <Compile Include="Steps\AuthorizePaymentStep.cs" />
     <Compile Include="Steps\PaymentStep.cs" />
   </ItemGroup>

@@ -8,10 +8,9 @@ namespace Klarna.Payments
     {
         Configuration Configuration { get; }
 
-        Task<string> CreateOrUpdateSession(Session sessionRequest, ICart cart);
+        Task<string> CreateOrUpdateSession(ICart cart);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(ICart cart);
-        Session GetSessionRequest(ICart cart);
         void FraudUpdate(NotificationModel notification);
         void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder);
         Task CancelAuthorization(string authorizationToken);

@@ -36,6 +36,7 @@ namespace Klarna.Payments
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly SessionBuilder _sessionBuilder;
 
         private Configuration _configuration;
 
@@ -47,7 +48,8 @@ namespace Klarna.Payments
             IContentRepository contentRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator)
+            IOrderGroupCalculator orderGroupCalculator,
+            SessionBuilder sessionBuilder)
         {
             _klarnaServiceApi = ServiceLocator.Current.GetInstance<IKlarnaServiceApi>();
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
@@ -58,6 +60,7 @@ namespace Klarna.Payments
             _orderNumberGenerator = orderNumberGenerator;
             _paymentProcessor = paymentProcessor;
             _orderGroupCalculator = orderGroupCalculator;
+            _sessionBuilder = sessionBuilder;
         }
 
         public Configuration Configuration
@@ -72,8 +75,10 @@ namespace Klarna.Payments
             }
         }
 
-        public async Task<string> CreateOrUpdateSession(Session sessionRequest, ICart cart)
+        public async Task<string> CreateOrUpdateSession(ICart cart)
         {
+            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
+            
             // If the pre assessment is not enabled then don't send the customer information to Klarna
             if (!Configuration.IsCustomerPreAssessmentEnabled || !CanSendPersonalInformation(cart.Market.Countries.FirstOrDefault()))
             {
@@ -118,14 +123,16 @@ namespace Klarna.Payments
                 // TODO: REMOVE - We should not do this...
                 // Retrieving session from klarna in order to create an order is unsafe, user can change data during authorization
                 // However have to check if we need to provide personal info during create order or just cart info
-                var session = await GetSession(cart);
+                //var session = await GetSession(cart);
 
-                session.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
-                session.MerchantUrl = new MerchantUrl
+                var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
+
+                sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
+                sessionRequest.MerchantUrl = new MerchantUrl
                     {
-                        Confirmation = $"{session.MerchantUrl.Confirmation}?trackingNumber={session.MerchantReference1}",
+                        Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?trackingNumber={sessionRequest.MerchantReference1}",
                     };
-                return await _klarnaServiceApi.CreateOrder(authorizationToken, session).ConfigureAwait(false);
+                return await _klarnaServiceApi.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -144,49 +151,6 @@ namespace Klarna.Payments
             {
                 _logger.Error(ex.Message, ex);
             }
-        }
-        
-        public virtual Session GetSessionRequest(ICart cart)
-        {
-            var request = new Session();
-            request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
-            
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
-            {
-                request.MerchantUrl = new MerchantUrl
-                {
-                    Confirmation = paymentMethod.GetParameter(Constants.ConfirmationUrlField),
-                    Notification = paymentMethod.GetParameter(Constants.NotificationUrlField),
-                };
-                request.Options = GetWidgetOptions(paymentMethod);
-            }
-
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            request.OrderAmount = GetAmount(totals.Total);
-            request.PurchaseCurrency = cart.Currency.CurrencyCode;
-            request.Locale = ContentLanguage.PreferredCulture.Name;
-            
-            var list = new List<OrderLine>();
-            foreach (var item in cart.GetAllLineItems())
-            {
-                var orderLine = GetOrderLine(item, cart.Currency);
-
-                list.Add(orderLine);
-            }
-            if (totals.ShippingTotal.Amount > 0)
-            {
-                list.Add(new OrderLine
-                {
-                    Name = "Shipping method",
-                    Quantity = 1,
-                    UnitPrice = GetAmount(totals.ShippingTotal.Amount),
-                    TotalAmount = GetAmount(totals.ShippingTotal.Amount)
-                });
-            }
-            request.OrderLines = list.ToArray();
-            
-            return request;
         }
 
         public void FraudUpdate(NotificationModel notification)
@@ -239,6 +203,49 @@ namespace Klarna.Payments
             var continent = CountryCodeHelper.GetContinentByCountry(countryCode);
 
             return !continent.Equals("EU", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private Session GetSessionRequest(ICart cart)
+        {
+            var request = new Session();
+            request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
+
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod != null)
+            {
+                request.MerchantUrl = new MerchantUrl
+                {
+                    Confirmation = paymentMethod.GetParameter(Constants.ConfirmationUrlField),
+                    Notification = paymentMethod.GetParameter(Constants.NotificationUrlField),
+                };
+                request.Options = GetWidgetOptions(paymentMethod);
+            }
+
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            request.OrderAmount = GetAmount(totals.Total);
+            request.PurchaseCurrency = cart.Currency.CurrencyCode;
+            request.Locale = ContentLanguage.PreferredCulture.Name;
+
+            var list = new List<OrderLine>();
+            foreach (var item in cart.GetAllLineItems())
+            {
+                var orderLine = GetOrderLine(item, cart.Currency);
+
+                list.Add(orderLine);
+            }
+            if (totals.ShippingTotal.Amount > 0)
+            {
+                list.Add(new OrderLine
+                {
+                    Name = "Shipping method",
+                    Quantity = 1,
+                    UnitPrice = GetAmount(totals.ShippingTotal.Amount),
+                    TotalAmount = GetAmount(totals.ShippingTotal.Amount)
+                });
+            }
+            request.OrderLines = list.ToArray();
+
+            return request;
         }
 
         private async Task<string> CreateSession(Session sessionRequest, ICart cart)
