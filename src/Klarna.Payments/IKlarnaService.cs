@@ -16,5 +16,6 @@ namespace Klarna.Payments
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool CanSendPersonalInformation(string countryCode);
+        PersonalInformationSession GetPersonalInformationSession(ICart cart);
     }
 }

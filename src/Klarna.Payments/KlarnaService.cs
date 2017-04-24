@@ -209,6 +209,31 @@ namespace Klarna.Payments
 
             return !continent.Equals("EU", StringComparison.InvariantCultureIgnoreCase);
         }
+        
+        public PersonalInformationSession GetPersonalInformationSession(ICart cart)
+        {
+            var request = new Session();
+
+            var shipment = cart.GetFirstShipment();
+            var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
+
+            if (shipment != null && shipment.ShippingAddress != null)
+            {
+                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
+            }
+            if (payment != null && payment.BillingAddress != null)
+            {
+                request.BillingAddress = payment.BillingAddress.ToAddress();
+            }
+            request = _sessionBuilder.Build(request, cart, Configuration, true);
+
+            return new PersonalInformationSession
+            {
+                Customer = request.Customer,
+                BillingAddress = request.BillingAddress,
+                ShippingAddress = request.ShippingAddress
+            };
+        }
 
         private Session GetSessionRequest(ICart cart, bool includePersonalInformation = false)
         {

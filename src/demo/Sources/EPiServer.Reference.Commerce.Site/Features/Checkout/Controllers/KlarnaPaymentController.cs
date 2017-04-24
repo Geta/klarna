@@ -73,16 +73,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         public virtual PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
         {
-            var sessionRequest = _sessionBuilder.Build(new Session(), cart, _klarnaService.Configuration, true);
-
-            var request = new PersonalInformationSession();
+            var request = _klarnaService.GetPersonalInformationSession(cart);
             
-            // Get customer info
-            request.Customer = sessionRequest.Customer;
-
-            // Get shipping address info
-            request.ShippingAddress = sessionRequest.ShippingAddress;
-
             // Get billling address info
             var billingAddress =
                 _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == billingAddressId)?
