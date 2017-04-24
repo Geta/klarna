@@ -12,7 +12,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
     {
         public override Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
         {
-            if (configuration.IsCustomerPreAssessmentEnabled)
+            if (includePersonalInformation && configuration.IsCustomerPreAssessmentEnabled)
             {
                 session.Customer = new Customer
                 {

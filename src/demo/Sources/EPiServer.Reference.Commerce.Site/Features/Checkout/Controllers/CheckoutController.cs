@@ -81,7 +81,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            var clientToken = await _klarnaService.CreateOrUpdateSession(Cart);
+            await _klarnaService.CreateOrUpdateSession(Cart);
 
             // Make sure Klarna values are set
             (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
