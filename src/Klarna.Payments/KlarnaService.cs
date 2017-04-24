@@ -80,9 +80,14 @@ namespace Klarna.Payments
             var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
             
             // If the pre assessment is not enabled then don't send the customer information to Klarna
-            if (!Configuration.IsCustomerPreAssessmentEnabled || !CanSendPersonalInformation(cart.Market.Countries.FirstOrDefault()))
+            if (!CanSendPersonalInformation(cart.Market.Countries.FirstOrDefault()))
             {
-                sessionRequest.Customer = null;
+                if (!Configuration.IsCustomerPreAssessmentEnabled)
+                {
+                    sessionRequest.Customer = null;
+                }
+                sessionRequest.ShippingAddress = null;
+                sessionRequest.BillingAddress = null;
             }
             var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
             if (!string.IsNullOrEmpty(sessionId))
@@ -125,7 +130,7 @@ namespace Klarna.Payments
                 // However have to check if we need to provide personal info during create order or just cart info
                 //var session = await GetSession(cart);
 
-                var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
+                var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart, true), cart, Configuration, true);
 
                 sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
                 sessionRequest.MerchantUrl = new MerchantUrl
@@ -205,7 +210,7 @@ namespace Klarna.Payments
             return !continent.Equals("EU", StringComparison.InvariantCultureIgnoreCase);
         }
 
-        private Session GetSessionRequest(ICart cart)
+        private Session GetSessionRequest(ICart cart, bool includePersonalInformation = false)
         {
             var request = new Session();
             request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
@@ -246,16 +251,19 @@ namespace Klarna.Payments
                 });
             }
             request.OrderLines = list.ToArray();
-            
-            var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
 
-            if (shipment != null && shipment.ShippingAddress != null)
+            if (includePersonalInformation)
             {
-                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
-            }
-            if (payment != null && payment.BillingAddress != null)
-            {
-                request.BillingAddress = payment.BillingAddress.ToAddress();
+                var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
+
+                if (shipment != null && shipment.ShippingAddress != null)
+                {
+                    request.ShippingAddress = shipment.ShippingAddress.ToAddress();
+                }
+                if (payment != null && payment.BillingAddress != null)
+                {
+                    request.BillingAddress = payment.BillingAddress.ToAddress();
+                }
             }
             return request;
         }
