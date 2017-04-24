@@ -21,15 +21,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly CustomerContextFacade _customerContextFacade;
         private readonly IKlarnaService _klarnaService;
         private readonly ICartService _cartService;
+        private readonly SessionBuilder _sessionBuilder;
 
         public KlarnaPaymentController(
             CustomerContextFacade customerContextFacade, 
             IKlarnaService klarnaService, 
-            ICartService cartService)
+            ICartService cartService,
+            SessionBuilder sessionBuilder)
         {
             _klarnaService = klarnaService;
             _customerContextFacade = customerContextFacade;
             _cartService = cartService;
+            _sessionBuilder = sessionBuilder;
         }
 
         [Route("address/{addressId}")]
@@ -70,25 +73,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         public virtual PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
         {
+            var sessionRequest = _sessionBuilder.Build(new Session(), cart, _klarnaService.Configuration, true);
+
             var request = new PersonalInformationSession();
             
             // Get customer info
-            if (_klarnaService.Configuration.IsCustomerPreAssessmentEnabled)
-            {
-                request.Customer = new Customer
-                {
-                    DateOfBirth = "1980-01-01",
-                    Gender = "Male",
-                    LastFourSsn = "1234"
-                };
-            }
+            request.Customer = sessionRequest.Customer;
 
             // Get shipping address info
-            var shipment = cart.GetFirstShipment();
-            if (shipment?.ShippingAddress != null)
-            {
-                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
-            }
+            request.ShippingAddress = sessionRequest.ShippingAddress;
 
             // Get billling address info
             var billingAddress =
