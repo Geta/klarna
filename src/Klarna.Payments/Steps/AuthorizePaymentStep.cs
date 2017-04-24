@@ -67,6 +67,7 @@ namespace Klarna.Payments.Steps
                         }
                         catch (Exception ex)
                         {
+                            payment.Status = PaymentStatus.Failed.ToString();
                             Logger.Error(ex.Message, ex);
 
                             AddNoteAndSaveChanges(orderGroup, "Payment authorization - Error", ex.Message);
