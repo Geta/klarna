@@ -113,8 +113,6 @@ namespace Klarna.Payments
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
-            throw new Exception("See TODO");
-
             try
             {
                 // TODO: REMOVE - We should not do this...
@@ -188,28 +186,6 @@ namespace Klarna.Payments
             }
             request.OrderLines = list.ToArray();
             
-            return request;
-        }
-
-        public virtual PersonalInformationSession GetPersonalInformationSession(ICart cart)
-        {
-            var request = new PersonalInformationSession();
-            if (Configuration.IsCustomerPreAssessmentEnabled)
-            {
-                request.Customer = new Customer
-                {
-                    DateOfBirth = "1980-01-01",
-                    Gender = "Male",
-                    LastFourSsn = "1234"
-                };
-            }
-
-            var shipment = cart.GetFirstShipment();
-            if (shipment?.ShippingAddress != null)
-            {
-                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
-            }
-
             return request;
         }
 

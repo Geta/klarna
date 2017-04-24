@@ -523,8 +523,8 @@
             <Name>Name *:</Name>
             <ShippingAddress>Preferred shipping address</ShippingAddress>
             <BillingAddress>Preferred billing address</BillingAddress>
-            <DaytimePhoneNumber>Phone number:</DaytimePhoneNumber>
-            <Email>Email:</Email>
+            <DaytimePhoneNumber>Phone number *:</DaytimePhoneNumber>
+            <Email>Email *:</Email>
           </Label>
           <Error>
             <InvalidEmail>You have to enter a valid email address</InvalidEmail>

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.ServiceLocation;
 using Klarna.Payments;
@@ -35,17 +36,17 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [AcceptVerbs("GET")]
         public IHttpActionResult GetAddress(string addressId)
         {
-            var customerContextFacade = ServiceLocator.Current.GetInstance<CustomerContextFacade>();
-            var address = customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == addressId)?.ToAddress();
+            var address = _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == addressId)?.ToAddress();
             return Ok(address);
         }
 
-        [Route("personal")]
+        [Route("personal/{billingAddressId}")]
         [AcceptVerbs("GET")]
-        public IHttpActionResult GetpersonalInformation()
+        public IHttpActionResult GetpersonalInformation(string billingAddressId)
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
-            var sessionRequest = _klarnaService.GetPersonalInformationSession(cart);
+            var sessionRequest = GetPersonalInformationSession(cart, billingAddressId);
+            
             return Ok(sessionRequest);
         }
 
@@ -65,6 +66,37 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 _klarnaService.FraudUpdate(notification);
             }
             return Ok();
+        }
+
+        public virtual PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
+        {
+            var request = new PersonalInformationSession();
+            
+            // Get customer info
+            if (_klarnaService.Configuration.IsCustomerPreAssessmentEnabled)
+            {
+                request.Customer = new Customer
+                {
+                    DateOfBirth = "1980-01-01",
+                    Gender = "Male",
+                    LastFourSsn = "1234"
+                };
+            }
+
+            // Get shipping address info
+            var shipment = cart.GetFirstShipment();
+            if (shipment?.ShippingAddress != null)
+            {
+                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
+            }
+
+            // Get billling address info
+            var billingAddress =
+                _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == billingAddressId)?
+                    .ToAddress();
+            request.BillingAddress = billingAddress;
+
+            return request;
         }
     }
 }

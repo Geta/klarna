@@ -518,8 +518,8 @@
             <Name>Namn *:</Name>
             <ShippingAddress>Standardleveransadress</ShippingAddress>
             <BillingAddress>Standardfaktureringsadress</BillingAddress>
-            <DaytimePhoneNumber>Telefonnummer:</DaytimePhoneNumber>
-            <Email>E-post:</Email>
+            <DaytimePhoneNumber>Telefonnummer *:</DaytimePhoneNumber>
+            <Email>E-post *:</Email>
           </Label>
           <Error>
             <InvalidEmail>Du måste ange en giltig e-postadress</InvalidEmail>
