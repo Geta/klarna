@@ -175,4 +175,7 @@ public IHttpActionResult FraudNotification()
 }
 ```
 
+### Order notes
+The KlarnaPaymentGateway save notes about payment updates at the order.
+![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
 
