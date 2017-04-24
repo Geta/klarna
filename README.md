@@ -72,15 +72,79 @@ sessionRequest.Customer = new Customer
 In the **Markets** tab select a market for which this payment will be available.
 
 ### Creating session
-A session at Klarna should created the visitor is on the checkout page. By calling the GetSessionRequest method most of the properties are set by default like orderlines, country, etc. You can enrich data before you call the CreateOrUpdateSession method.
+A session at Klarna should be created when the visitor is on the checkout page. The CreateOrUpdateSession method will create a new session when it does not exists or update the current one.
 
 ```
-var sessionRequest = _klarnaService.GetSessionRequest(Cart);
-
-sessionRequest = GetSessionRequest(sessionRequest);
-
-await _klarnaService.CreateOrUpdateSession(sessionRequest, Cart);
+await _klarnaService.CreateOrUpdateSession(Cart);
 ```
+
+It's mandatory to create an implementation of the SessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. The includePersonalInformation parameter indicates if personal information can be send to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information on the last step of the payment process. Below an example implementation of the SessionBuilder class.
+
+```
+public class DemoSessionBuilder : SessionBuilder
+{
+    public override Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
+    {
+        if (includePersonalInformation && configuration.IsCustomerPreAssessmentEnabled)
+        {
+            session.Customer = new Customer
+            {
+                DateOfBirth = "1980-01-01",
+                Gender = "Male",
+                LastFourSsn = "1234"
+            };
+        }
+        session.MerchantReference2 = "12345";
+
+        if (configuration.UseAttachments)
+        {
+            var converter = new IsoDateTimeConverter
+            {
+                DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
+            };
+
+
+            var customerAccountInfos = new List<Dictionary<string, object>>
+        {
+            new Dictionary<string, object>
+            {
+                { "unique_account_identifier",  "Test Testperson" },
+                { "account_registration_date", DateTime.Now },
+                { "account_last_modified", DateTime.Now }
+            }
+        };
+
+            var emd = new Dictionary<string, object>
+        {
+            { "customer_account_info", customerAccountInfos}
+        };
+
+            session.Attachment = new Attachment
+            {
+                ContentType = "application/vnd.klarna.internal.emd-v2+json",
+                Body = JsonConvert.SerializeObject(emd, converter)
+            };
+        }
+        return session;
+    }
+}
+```
+
+The following properties are set default:
+- **PurchaseCountry**
+- **MerchantUrl.Confirmation**
+- **MerchantUrl.Notification**
+- **Options**
+- **OrderAmount**
+- **PurchaseCurrency**
+- **Locale**
+- **OrderLines**
+- **ShippingAddress**
+- **BillingAddress**
+
+Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-session.
+
+When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above shows an example how you can implement this. Full documentation regarding this topic can be found here: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases
 
 ### Call authorize client-side
 // TODO: Brian
