@@ -41,7 +41,7 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 - select shipping methods available for this payment
 - navigate to parameters tab and fill in settings (see screenshot below)
 
-![Payment method settings](/Netaxept/docs/screenshots/overview.PNG?raw=true "Payment method settings")
+![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
 
 **Connection string**
 Connection string configurations for the connection with the Klarna APi
@@ -65,7 +65,7 @@ sessionRequest.Customer = new Customer
 };
 ```
 
-![Payment method settings](/Netaxept/docs/screenshots/parameters.PNG?raw=true "Payment method parameters")
+![Payment method settings](/docs/screenshots/payment-parameters.PNG?raw=true "Payment method parameters")
 
 **Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager nuget (see above)**
 
