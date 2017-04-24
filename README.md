@@ -10,7 +10,7 @@ This library consists of two assemblies:
 
 ### Payment process
 - **Klarna: Create session** - A session is created at Klarna
-- **Klarna: Authorization**  - The authorization step is done client-side 
+- **Klarna: Authorization**  - The authorization step is done client-side (when the visitor presses the Purchase button)
 - **Klarna: Create order** - Create order at Klarna
 - **EPiServer: Create purchase order** - Create purchase order in EPiServer
 
@@ -149,8 +149,30 @@ When the 'Use attachment' checkbox is checked extra information can be send to K
 ### Call authorize client-side
 // TODO: Brian
 
-### Process payment
+### Create order
+The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The SessionBuilder class is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, you can have a look at the QuickSilver demo site for an example implementation.
 
+### Fraud status notifications
+In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
 
+```
+[Route("fraud/")]
+[AcceptVerbs("Post")]
+[HttpPost]
+public IHttpActionResult FraudNotification()
+{
+    var requestParams = Request.Content.ReadAsStringAsync().Result;
+
+    _log.Error("KlarnaPaymentController.FraudNotification called: " + requestParams);
+
+    if (!string.IsNullOrEmpty(requestParams))
+    {
+        var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
+
+        _klarnaService.FraudUpdate(notification);
+    }
+    return Ok();
+}
+```
 
 
