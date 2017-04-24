@@ -226,6 +226,8 @@ namespace Klarna.Payments
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
             request.Locale = ContentLanguage.PreferredCulture.Name;
 
+            var shipment = cart.GetFirstShipment();
+
             var list = new List<OrderLine>();
             foreach (var item in cart.GetAllLineItems())
             {
@@ -237,14 +239,24 @@ namespace Klarna.Payments
             {
                 list.Add(new OrderLine
                 {
-                    Name = "Shipping method",
+                    Name = shipment.ShippingMethodName ?? "Shipping method",
                     Quantity = 1,
                     UnitPrice = GetAmount(totals.ShippingTotal.Amount),
                     TotalAmount = GetAmount(totals.ShippingTotal.Amount)
                 });
             }
             request.OrderLines = list.ToArray();
+            
+            var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
 
+            if (shipment != null && shipment.ShippingAddress != null)
+            {
+                request.ShippingAddress = shipment.ShippingAddress.ToAddress();
+            }
+            if (payment != null && payment.BillingAddress != null)
+            {
+                request.BillingAddress = payment.BillingAddress.ToAddress();
+            }
             return request;
         }
 
