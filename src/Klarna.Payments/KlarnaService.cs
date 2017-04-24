@@ -40,11 +40,11 @@ namespace Klarna.Payments
 
         private Configuration _configuration;
 
-        public KlarnaService( 
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator, 
-            IOrderRepository orderRepository, 
-            ReferenceConverter referenceConverter, 
-            UrlResolver urlResolver, 
+        public KlarnaService(
+            IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
+            IOrderRepository orderRepository,
+            ReferenceConverter referenceConverter,
+            UrlResolver urlResolver,
             IContentRepository contentRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
@@ -123,27 +123,14 @@ namespace Klarna.Payments
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
-            try
-            {
-                // TODO: REMOVE - We should not do this...
-                // Retrieving session from klarna in order to create an order is unsafe, user can change data during authorization
-                // However have to check if we need to provide personal info during create order or just cart info
-                //var session = await GetSession(cart);
+            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart, true), cart, Configuration, true);
 
-                var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart, true), cart, Configuration, true);
-
-                sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
-                sessionRequest.MerchantUrl = new MerchantUrl
-                    {
-                        Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?trackingNumber={sessionRequest.MerchantReference1}",
-                    };
-                return await _klarnaServiceApi.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
-            }
-            catch (Exception ex)
+            sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
+            sessionRequest.MerchantUrl = new MerchantUrl
             {
-                _logger.Error(ex.Message, ex);
-            }
-            return null;
+                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?trackingNumber={sessionRequest.MerchantReference1}",
+            };
+            return await _klarnaServiceApi.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
         }
 
         public async Task CancelAuthorization(string authorizationToken)
