@@ -17,7 +17,7 @@ namespace Klarna.Payments.Steps
 
         public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message)
         {
-            if (payment.TransactionType == "Authorization")
+            if (payment.TransactionType == TransactionType.Authorization.ToString())
             {
                 // Fraud status update
                 if (payment.Status == PaymentStatus.Pending.ToString() && !string.IsNullOrEmpty(orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString()))
