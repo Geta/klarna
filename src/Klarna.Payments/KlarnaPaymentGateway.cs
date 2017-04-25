@@ -34,6 +34,9 @@ namespace Klarna.Payments
                 }
 
                 var authorizePaymentStep = new AuthorizePaymentStep(payment);
+                var cancelPaymentStep = new CancelPaymentStep(payment);
+
+                authorizePaymentStep.SetSuccessor(cancelPaymentStep);
 
                 return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, ref message);
             }

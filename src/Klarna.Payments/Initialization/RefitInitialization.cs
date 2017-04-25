@@ -31,8 +31,7 @@ namespace Klarna.Payments.Initialization
 
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
-            context.Container.Configure(x => x.For<IKlarnaServiceApi>()
-                .Use(() => GetInstance()));
+            context.Container.Configure(x => x.For<IKlarnaServiceApi>().Use(() => GetInstance()));
             
             context.Services.Intercept<IOrderNumberGenerator>((locator, defaultService) =>
             {
