@@ -9,10 +9,12 @@ This library consists of two assemblies:
 * Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
 
 ### Payment process
-- **Klarna: Create session** - A session is created at Klarna
-- **Klarna: Authorization**  - The authorization step is done client-side (when the visitor presses the Purchase button)
-- **Klarna: Create order** - Create order at Klarna
+- **Visitor visit's checkout page** - Klarna session is created or updated 
+- **Klarna widget is loaded (payment option)**  
+- **Visitor presses the Purchase button**  - Klarna payment authorize is called client-side 
+- **Klarna: Create order** - When payment authorization is completed then create order (payment gateway) at Klarna
 - **EPiServer: Create purchase order** - Create purchase order in EPiServer
+- **Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are send to the configured notification URL (configured in Commerce Manager)
 
 More information about the Klarna Payments flow: https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods
 
