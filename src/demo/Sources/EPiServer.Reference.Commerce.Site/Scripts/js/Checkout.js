@@ -17,7 +17,7 @@
                 }
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
-                    $(document).trigger('klarna:authorize');
+                    KlarnaCheckout.authorize();                    
                 }
             });
 
@@ -163,7 +163,7 @@
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
 
-                $(document).trigger('klarna:load');
+                KlarnaCheckout.load();
             }
         });
     },
