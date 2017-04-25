@@ -95,8 +95,8 @@
     <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
     </Reference>
-    <Reference Include="Klarna.Rest, Version=2.2.0.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
-      <HintPath>..\packages\Klarna.Rest.2.2.0.0\lib\net40\Klarna.Rest.dll</HintPath>
+    <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
+      <HintPath>..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
