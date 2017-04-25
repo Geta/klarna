@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -43,10 +44,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok(address);
         }
 
-        [Route("personal/{billingAddressId}")]
-        [AcceptVerbs("GET")]
-        public IHttpActionResult GetpersonalInformation(string billingAddressId)
+        [Route("personal")]
+        [AcceptVerbs("POST")]
+        [HttpPost]
+        public IHttpActionResult GetpersonalInformation([FromBody]string billingAddressId)
         {
+            if (string.IsNullOrWhiteSpace(billingAddressId))
+            {
+                return BadRequest();
+            }
+
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             var sessionRequest = GetPersonalInformationSession(cart, billingAddressId);
             

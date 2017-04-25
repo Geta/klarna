@@ -18,6 +18,7 @@
     };
 
     function getCustomerInfo() {
+        //TODO: implement form for the user to fill in this information
         return {
             dateOfBirth: "1980-01-01",
             gender: "Male",
@@ -118,7 +119,12 @@
             } else {
                 // Normal checkout, server has address info
                 getPersonalInfoPromise =
-                    $.getJSON("/klarnaapi/personal/", { billingAddressId: $("#BillingAddress_AddressId").val() })
+                    $.ajax({
+                        type: 'POST',
+                        url: '/klarnaapi/personal/',
+                        data: "=" + $("#BillingAddress_AddressId").val(),
+                        contentType: 'application/x-www-form-urlencoded'
+                    })
                     .then(function (data) { return data; });
             }
 
@@ -143,7 +149,8 @@
                     });
             })
             .fail(function (result) {
-                console.log("Something went wrong", result);
+                console.error("Something went wrong", result);
+                alert("Something went wrong");
             })
             .always(function () {
                 state.isAuthorizing = false;
