@@ -44,13 +44,16 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
 
 **Connection string**
+
 Connection string configurations for the connection with the Klarna APi.
 
 **Widget settings**
+
 Set the colors and border size for the Klarna widget. The Klarna logo should be placed by the developer somewhere on the checkout/payment page.
 
 **Other settings**
-Confirmation url is called when calling this method:
+
+After payment is completed the confirmation url must be called. This can be done with this method:
 ```
 _klarnaService.RedirectToConfirmationUrl(purchaseOrder);
 ```
@@ -87,7 +90,7 @@ public class DemoSessionBuilder : SessionBuilder
 {
     public override Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
     {
-        if (includePersonalInformation && configuration.IsCustomerPreAssessmentEnabled)
+        if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
         {
             session.Customer = new Customer
             {
@@ -105,21 +108,20 @@ public class DemoSessionBuilder : SessionBuilder
                 DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
             };
 
-
             var customerAccountInfos = new List<Dictionary<string, object>>
-        {
-            new Dictionary<string, object>
             {
-                { "unique_account_identifier",  "Test Testperson" },
-                { "account_registration_date", DateTime.Now },
-                { "account_last_modified", DateTime.Now }
-            }
-        };
+                new Dictionary<string, object>
+                {
+                    { "unique_account_identifier",  "Test Testperson" },
+                    { "account_registration_date", DateTime.Now },
+                    { "account_last_modified", DateTime.Now }
+                }
+            };
 
             var emd = new Dictionary<string, object>
-        {
-            { "customer_account_info", customerAccountInfos}
-        };
+            {
+                { "customer_account_info", customerAccountInfos}
+            };
 
             session.Attachment = new Attachment
             {
@@ -132,7 +134,7 @@ public class DemoSessionBuilder : SessionBuilder
 }
 ```
 
-The following properties are set default:
+The following properties are set by default (read from current cart and payment method configurations):
 - **PurchaseCountry**
 - **MerchantUrl.Confirmation**
 - **MerchantUrl.Notification**
@@ -146,7 +148,7 @@ The following properties are set default:
 
 Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-session.
 
-When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above shows an example how you can implement this. Full documentation regarding this topic can be found here: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases
+When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. Full documentation about this topic can be found here: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases
 
 ### Call authorize client-side
 // TODO: Brian
