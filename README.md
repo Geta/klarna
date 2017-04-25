@@ -44,7 +44,7 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
 
 **Connection string**
-Connection string configurations for the connection with the Klarna APi
+Connection string configurations for the connection with the Klarna APi.
 
 **Widget settings**
 Set the colors and border size for the Klarna widget. The Klarna logo should be placed by the developer somewhere on the checkout/payment page.
@@ -54,7 +54,9 @@ Confirmation url is called when calling this method:
 ```
 _klarnaService.RedirectToConfirmationUrl(purchaseOrder);
 ```
-Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be send to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases. The 'PreAssement' checkbox indicates if customer information should be send to Klarna to check if the customer is able to buy via Klarna.
+Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be send to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
+
+The 'PreAssement' field indicates if customer information should be send to Klarna. Klarna will review this information to verify if the customer can buy via Klarna. This setting can be enabled per country. Below a code snippet for sending customer information. An implementation of the SessionBuilder class can be used for setting this information. The SessionBuilder is explained later in this document.
 
 ```
 sessionRequest.Customer = new Customer
