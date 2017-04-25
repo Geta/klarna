@@ -1,6 +1,11 @@
-﻿@model Klarna.Payments.Models.IKlarnaClientSession
+﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels.KlarnaPaymentsViewModel
 
+@if (!string.IsNullOrWhiteSpace(Model.KlarnaLogoUrl))
+{
+    <img src="@Model.KlarnaLogoUrl" alt="Klarna logo" class="klarna-logo"  />
+}
 <div id="klarna_container"></div>
+<div id="klarna_container_error" class="alert alert-danger" hidden>@Html.Translate("/Checkout/Payment/Errors/NotAvailable")</div>
 
 <script>
     (function () {

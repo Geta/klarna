@@ -101,6 +101,7 @@
           <PlacedPricedChanged>The price for product {0} has changed since it was added to your cart.</PlacedPricedChanged>
           <AdjustedQuantity>The quantity of product {0} has changed.</AdjustedQuantity>
           <ProcessingPaymentFailure>Failed to process your payment.</ProcessingPaymentFailure>
+          <NotAvailable>Payment method not available, select a different payment method instead</NotAvailable>
         </Errors>
         <Methods>
           <CashOnDelivery>

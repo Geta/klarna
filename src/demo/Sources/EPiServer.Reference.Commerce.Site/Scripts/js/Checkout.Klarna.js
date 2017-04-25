@@ -72,7 +72,14 @@
         }
     }
 
+    function hideForm() {
+        console.error("Hide Klarna, display an error to the user");
+        $("#klarna_container_error").show();
+    }
+
     function load(newSettings) {
+        
+
         if (newSettings && shouldUpdateSettings(settings, newSettings)) {
             settings.client_token = newSettings.client_token;
             settings.klarna_container = newSettings.klarna_container;
@@ -85,13 +92,13 @@
             container: settings.klarna_container
         }, function (result) {
             if (!result.show_form) {
-                console.error("Hide Klarna, display an error to the user");
-                return;
+                // Unrecoverable error
+                hideForm();
             }
         });
     };
 
-    function authorize(){
+    function authorize() {
         // Prevent multiple authorize calls
         if (state.isAuthorizing) {
             return;
@@ -122,16 +129,16 @@
                 Klarna.Credit.authorize(personalInformation,
                     function (result) {
                         if (!result.show_form) {
-                            console.error("Hide Klarna, display an error to the user");
-                            return;
-                        }
+                            // Unrecoverable error
+                            hideForm();
+                        } else {
+                            if (result.approved && result.authorization_token) {
+                                state.authorizationToken = result.authorization_token;
 
-                        if (result.approved && result.authorization_token) {
-                            state.authorizationToken = result.authorization_token;
-
-                            // Set auth token in form field and submit the form
-                            $("#AuthorizationToken").val(state.authorizationToken);
-                            $('.jsCheckoutForm').submit();
+                                // Set auth token in form field and submit the form
+                                $("#AuthorizationToken").val(state.authorizationToken);
+                                $('.jsCheckoutForm').submit();
+                            }
                         }
                     });
             })

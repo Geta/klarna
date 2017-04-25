@@ -101,6 +101,7 @@
           <PlacedPricedChanged>Priset för artikel {0} har förändrats sedan den lades till din varukorg.</PlacedPricedChanged>
           <AdjustedQuantity>Antalet av artikel {0} har förändrats.</AdjustedQuantity>
           <ProcessingPaymentFailure>Behandlingen av din betalning misslyckades.</ProcessingPaymentFailure>
+          <NotAvailable>Payment method not available, select a different payment method instead</NotAvailable>
         </Errors>
         <Methods>
           <CashOnDelivery>

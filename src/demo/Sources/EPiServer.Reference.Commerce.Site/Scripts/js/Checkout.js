@@ -163,7 +163,9 @@
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
 
-                KlarnaCheckout.load();
+                if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
+                    KlarnaCheckout.load();
+                }
             }
         });
     },
