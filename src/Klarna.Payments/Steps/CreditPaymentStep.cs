@@ -5,28 +5,28 @@ using Mediachase.Commerce.Orders;
 
 namespace Klarna.Payments.Steps
 {
-    public class CancelPaymentStep : PaymentStep
+    public class CreditPaymentStep : PaymentStep
     {
-        private static readonly ILogger Logger = LogManager.GetLogger(typeof(CancelPaymentStep));
+        private static readonly ILogger Logger = LogManager.GetLogger(typeof(CreditPaymentStep));
 
-        public CancelPaymentStep(IPayment payment) : base(payment)
+        public CreditPaymentStep(IPayment payment) : base(payment)
         {
         }
 
         public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message)
         {
-            if (payment.TransactionType == TransactionType.Void.ToString())
+            if (payment.TransactionType == TransactionType.Credit.ToString())
             {
                 try
                 {
                     var orderId = orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString();
                     if (!string.IsNullOrEmpty(orderId))
                     {
-                        KlarnaOrderService.CancelOrder(orderId);
+                        //TODO: implement Refund
 
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment void", "Order cancelled at Klarna");
+                        AddNoteAndSaveChanges(orderGroup, "Payment credit", "Order cancelled at Klarna");
 
                         return true;
                     }
@@ -36,7 +36,7 @@ namespace Klarna.Payments.Steps
                     payment.Status = PaymentStatus.Failed.ToString();
                     Logger.Error(ex.Message, ex);
 
-                    AddNoteAndSaveChanges(orderGroup, "Payment void - Error", ex.Message);
+                    AddNoteAndSaveChanges(orderGroup, "Payment credit - Error", ex.Message);
                 }
             }
             else if (Successor != null)
