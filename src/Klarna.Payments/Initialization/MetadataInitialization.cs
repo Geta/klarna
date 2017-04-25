@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Linq;
+using EPiServer.Commerce.Order;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Catalog;
+using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus;
 using Mediachase.MetaDataPlus.Configurator;
 using MetaClass = Mediachase.MetaDataPlus.Configurator.MetaClass;

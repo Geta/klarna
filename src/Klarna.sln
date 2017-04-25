@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Integration", "..\test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments.CommerceManager", "Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj", "{6E816423-8646-43CE-9192-FB6E2A2F13B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.OrderManagement", "Klarna.OrderManagement\Klarna.OrderManagement.csproj", "{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +31,10 @@ Global
 		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6E816423-8646-43CE-9192-FB6E2A2F13B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
