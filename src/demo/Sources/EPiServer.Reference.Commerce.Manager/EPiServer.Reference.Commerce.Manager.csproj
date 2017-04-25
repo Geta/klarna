@@ -333,6 +333,10 @@
     <Folder Include="modulesbin\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
+      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
+      <Name>Klarna.OrderManagement</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj">
       <Project>{6e816423-8646-43ce-9192-fb6e2a2f13b8}</Project>
       <Name>Klarna.Payments.CommerceManager</Name>
