@@ -154,7 +154,7 @@ When the 'Use attachment' checkbox is checked extra information can be send to K
 // TODO: Brian
 
 ### Create order
-The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The SessionBuilder class is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, you can have a look at the QuickSilver demo site for an example implementation.
+The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The SessionBuilder class is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
 
 ### Fraud status notifications
 In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
