@@ -75,7 +75,7 @@ namespace Klarna.Payments
             }
         }
 
-        public async Task<string> CreateOrUpdateSession(ICart cart)
+        public async Task<bool> CreateOrUpdateSession(ICart cart)
         {
             var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
             
@@ -97,11 +97,13 @@ namespace Klarna.Payments
                 {
                     await _klarnaServiceApi.UpdateSession(sessionId, sessionRequest).ConfigureAwait(false);
 
-                    return cart.Properties[Constants.KlarnaClientTokenField]?.ToString();
+                    return true;
                 }
                 catch (Exception ex)
                 {
                     _logger.Error(ex.Message, ex);
+
+                    return false;
                 }
             }
             return await CreateSession(sessionRequest, cart);
@@ -281,7 +283,7 @@ namespace Klarna.Payments
             return request;
         }
 
-        private async Task<string> CreateSession(Session sessionRequest, ICart cart)
+        private async Task<bool> CreateSession(Session sessionRequest, ICart cart)
         {
             try
             {
@@ -292,13 +294,13 @@ namespace Klarna.Payments
 
                 _orderRepository.Save(cart);
 
-                return response.ClientToken;
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.Error(ex.Message);
             }
-            return string.Empty;
+            return false;
         }
 
         private int GetAmount(decimal money)
