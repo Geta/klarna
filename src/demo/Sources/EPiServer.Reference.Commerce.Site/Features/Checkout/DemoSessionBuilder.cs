@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using EPiServer.Commerce.Order;
 using Klarna.Payments;
 using Klarna.Payments.Models;
@@ -12,7 +13,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
     {
         public override Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
         {
-            if (includePersonalInformation && configuration.IsCustomerPreAssessmentEnabled)
+            if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
             {
                 session.Customer = new Customer
                 {

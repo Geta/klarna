@@ -80,9 +80,10 @@ namespace Klarna.Payments
             var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
             
             // If the pre assessment is not enabled then don't send the customer information to Klarna
-            if (!CanSendPersonalInformation(cart.Market.Countries.FirstOrDefault()))
+            var currentCountry = cart.Market.Countries.FirstOrDefault();
+            if (!CanSendPersonalInformation(currentCountry))
             {
-                if (!Configuration.IsCustomerPreAssessmentEnabled)
+                if (!Configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
                 {
                     sessionRequest.Customer = null;
                 }
@@ -380,7 +381,7 @@ namespace Klarna.Payments
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
-                configuration.IsCustomerPreAssessmentEnabled = bool.Parse(paymentMethod.GetParameter(Constants.PreAssesmentField, "false"));
+                configuration.CustomerPreAssessmentCountries = paymentMethod.GetParameter(Constants.PreAssesmentCountriesField, string.Empty)?.Split(',');
                 configuration.SendProductAndImageUrlField = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
                 configuration.UseAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
             }

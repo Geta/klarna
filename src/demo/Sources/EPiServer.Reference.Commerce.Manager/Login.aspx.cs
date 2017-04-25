@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Mediachase.Commerce.Manager.Apps.Order.Payments.Tabs;
 
 namespace EPiServer.Reference.Commerce.Manager
 {

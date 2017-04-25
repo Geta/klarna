@@ -36,9 +36,9 @@
         public const string ConfirmationUrlField = "ConfirmationUrl";
         public const string NotificationUrlField = "NotificationUrl";
         public const string SendProductAndImageUrlField = "SendProductAndImageUrl";
-        public const string PreAssesmentField = "PreAssesment";
         public const string UseAttachmentsField = "UseAttachments";
         public const string KlarnaConfirmationUrlField = "KlarnaConfirmationUrl";
+        public const string PreAssesmentCountriesField = "PreAssesmentCountries";
 
 
         // Payment fields
