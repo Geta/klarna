@@ -33,6 +33,11 @@ namespace Klarna.Payments.Steps
 
         public abstract bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message);
 
+        protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string noteTitle)
+        {
+            orderGroup.AddNote(noteTitle, noteTitle);
+        }
+
         protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string noteTitle, string noteMessage)
         {
             orderGroup.AddNote(noteTitle, noteMessage);
