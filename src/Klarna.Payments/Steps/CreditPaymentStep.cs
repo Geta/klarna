@@ -3,6 +3,7 @@ using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Mediachase.Commerce.Orders;
+using Mediachase.MetaDataPlus;
 
 namespace Klarna.Payments.Steps
 {
@@ -26,7 +27,8 @@ namespace Klarna.Payments.Steps
                         var purchaseOrder = orderGroup as IPurchaseOrder;
                         if (purchaseOrder != null)
                         {
-                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault();
+                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault(x=> ((OrderForm)x).Status == ReturnFormStatus.Complete.ToString() && ((OrderForm)x).ObjectState == MetaObjectState.Modified);
+
                             if (returnForm != null)
                             {
                                 KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)orderForm, payment);
