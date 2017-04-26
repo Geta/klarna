@@ -33,11 +33,6 @@ namespace Klarna.Payments
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
 
-                if (payment.TransactionType == TransactionType.Capture.ToString())
-                {
-                    return true;
-                }
-
                 var authorizePaymentStep = new AuthorizePaymentStep(payment);
                 var cancelPaymentStep = new CancelPaymentStep(payment);
                 var capturePaymentStep = new CapturePaymentStep(payment);

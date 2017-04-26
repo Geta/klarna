@@ -8,6 +8,8 @@ using Klarna.Rest.Models;
 using Klarna.Rest.Models.Requests;
 using Klarna.Rest.OrderManagement;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce;
+using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement
 {
@@ -66,32 +68,43 @@ namespace Klarna.OrderManagement
             return capture.Fetch();
 
         }
-        public void Refund(string orderId, IOrderForm orderForm)
+        public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm)
         {
             IOrder order = _client.NewOrder(orderId);
 
-            List<OrderLine> lines = new List<OrderLine>();
-
-            lines.Add(new OrderLine()
-            {
-                Type = "physical",
-                Reference = "123050",
-                Name = "Tomatoes",
-                Quantity = 5,
-                QuantityUnit = "kg",
-                UnitPrice = 600,
-                TaxRate = 2500,
-                TotalAmount = 3000,
-                TotalTaxAmount = 600
-            });
+            List<OrderLine> lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
             Refund refund = new Refund()
             {
-                RefundedAmount = 3000,
-                Description = "Refunding half the tomatoes",
+                RefundedAmount = GetAmount(orderForm.Total),
+                Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
             order.Refund(refund);
+        }
+
+        //TODO: move to common project
+        private int GetAmount(decimal money)
+        {
+            if (money > 0)
+            {
+                return (int)(money * 100);
+            }
+            return 0;
+        }
+
+        private OrderLine FromLineItem(ILineItem item, Currency currency)
+        {
+            var orderLine = new OrderLine
+            {
+                Type = "physical",
+                Reference = item.Code,
+                Name = item.DisplayName,
+                Quantity = (int)item.ReturnQuantity,
+                UnitPrice = GetAmount(item.PlacedPrice),
+                TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount)
+            };
+            return orderLine;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Mediachase.Commerce.Orders;
@@ -22,11 +23,18 @@ namespace Klarna.Payments.Steps
                     var orderId = orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString();
                     if (!string.IsNullOrEmpty(orderId))
                     {
-                        //TODO: implement Refund
-
+                        var purchaseOrder = orderGroup as IPurchaseOrder;
+                        if (purchaseOrder != null)
+                        {
+                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault();
+                            if (returnForm != null)
+                            {
+                                KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)orderForm);
+                            }
+                        }
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment credit", "Order cancelled at Klarna");
+                        AddNoteAndSaveChanges(orderGroup, "Payment credit", "Create refund at Klarna");
 
                         return true;
                     }
