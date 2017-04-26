@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using EPiServer.Commerce.Order;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Models.Requests;
@@ -39,7 +40,8 @@ namespace Klarna.OrderManagement
             order.UpdateMerchantReferences(updateMerchantReferences);
         }
 
-        public CaptureData CaptureOrder(string orderId, int? amount, string description, ShippingInfo shippingInfo = null, List<OrderLine> orderLines = null)
+        public CaptureData CaptureOrder(string orderId, int? amount, string description,
+            ShippingInfo shippingInfo = null, List<OrderLine> orderLines = null)
         {
             var order = _client.NewOrder(orderId);
             var capture = _client.NewCapture(order.Location);
@@ -52,7 +54,7 @@ namespace Klarna.OrderManagement
 
             if (shippingInfo != null)
             {
-                captureData.ShippingInfo = new List<ShippingInfo> { shippingInfo };
+                captureData.ShippingInfo = new List<ShippingInfo> {shippingInfo};
             }
 
             if (orderLines != null && orderLines.Any())
@@ -62,6 +64,34 @@ namespace Klarna.OrderManagement
 
             capture.Create(captureData);
             return capture.Fetch();
+
+        }
+        public void Refund(string orderId, IOrderForm orderForm)
+        {
+            IOrder order = _client.NewOrder(orderId);
+
+            List<OrderLine> lines = new List<OrderLine>();
+
+            lines.Add(new OrderLine()
+            {
+                Type = "physical",
+                Reference = "123050",
+                Name = "Tomatoes",
+                Quantity = 5,
+                QuantityUnit = "kg",
+                UnitPrice = 600,
+                TaxRate = 2500,
+                TotalAmount = 3000,
+                TotalTaxAmount = 600
+            });
+
+            Refund refund = new Refund()
+            {
+                RefundedAmount = 3000,
+                Description = "Refunding half the tomatoes",
+                OrderLines = lines
+            };
+            order.Refund(refund);
         }
     }
 }
