@@ -133,6 +133,9 @@
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
+    </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -286,6 +289,8 @@
     <Compile Include="Logout.aspx.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="OrderManagement\DemoRefundBuilder.cs" />
+    <Compile Include="OrderManagement\SiteInitialization.cs" />
     <Compile Include="SignInAsDifferentUserHandler.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

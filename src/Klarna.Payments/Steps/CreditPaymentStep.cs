@@ -29,12 +29,12 @@ namespace Klarna.Payments.Steps
                             var returnForm = purchaseOrder.ReturnForms.FirstOrDefault();
                             if (returnForm != null)
                             {
-                                KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)orderForm);
+                                KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)orderForm, payment);
                             }
                         }
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment credit", "Create refund at Klarna");
+                        AddNoteAndSaveChanges(orderGroup, "Payment credit", $"Klarna - refund: amount {payment.Amount}");
 
                         return true;
                     }

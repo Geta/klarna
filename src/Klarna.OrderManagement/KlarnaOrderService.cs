@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
+using Klarna.OrderManagement.Refunds;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Models.Requests;
@@ -16,6 +17,7 @@ namespace Klarna.OrderManagement
     public class KlarnaOrderService : IKlarnaOrderService
     {
         private readonly Client _client;
+        private Injected<RefundBuilder> _refundBuilder;
 
         public KlarnaOrderService(string merchantId, string sharedSecret, string apiUrl)
         {
@@ -68,7 +70,7 @@ namespace Klarna.OrderManagement
             return capture.Fetch();
 
         }
-        public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm)
+        public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
             IOrder order = _client.NewOrder(orderId);
 
@@ -76,10 +78,13 @@ namespace Klarna.OrderManagement
 
             Refund refund = new Refund()
             {
-                RefundedAmount = GetAmount(orderForm.Total),
+                RefundedAmount = GetAmount(payment.Amount),
                 Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
+
+            refund = _refundBuilder.Service.Build(refund, orderGroup, orderForm, payment);
+
             order.Refund(refund);
         }
 

@@ -12,6 +12,6 @@ namespace Klarna.OrderManagement
         void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2);
         CaptureData CaptureOrder(string orderId, int? amount, string description, ShippingInfo shippingInfo = null, List<OrderLine> orderLines = null);
 
-        void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm);
+        void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
     }
 }
