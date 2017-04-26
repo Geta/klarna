@@ -31,7 +31,7 @@ namespace Klarna.Payments.Steps
 
                             if (returnForm != null)
                             {
-                                KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)orderForm, payment);
+                                KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)returnForm, payment);
                             }
                         }
                         payment.Status = PaymentStatus.Processed.ToString();
