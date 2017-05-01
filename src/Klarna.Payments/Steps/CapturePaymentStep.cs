@@ -40,9 +40,8 @@ namespace Klarna.Payments.Steps
                 {
                     try
                     {
-                        // TODO shipping info
                         // TODO order lines
-                        var captureData = KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment");
+                        var captureData = KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment", orderGroup, orderForm, payment);
                         AddNoteAndSaveChanges(orderGroup, $"Payment - Captured: {captureData.CaptureId}");
                     }
                     catch (Exception ex) when (ex is ApiException || ex is WebException)

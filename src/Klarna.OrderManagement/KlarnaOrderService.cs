@@ -18,6 +18,7 @@ namespace Klarna.OrderManagement
     {
         private readonly Client _client;
         private Injected<RefundBuilder> _refundBuilder;
+        private Injected<CaptureBuilder> _captureBuilder;
 
         public KlarnaOrderService(string merchantId, string sharedSecret, string apiUrl)
         {
@@ -44,32 +45,37 @@ namespace Klarna.OrderManagement
             order.UpdateMerchantReferences(updateMerchantReferences);
         }
 
-        public CaptureData CaptureOrder(string orderId, int? amount, string description,
-            ShippingInfo shippingInfo = null, List<OrderLine> orderLines = null)
+        public CaptureData CaptureOrder(
+            string orderId,
+            int? amount,
+            string description,
+            IOrderGroup orderGroup,
+            IOrderForm orderForm,
+            IPayment payment)
         {
             var order = _client.NewOrder(orderId);
             var capture = _client.NewCapture(order.Location);
+            var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
+            var shippingInfo = orderForm.Shipments.Select(s => new ShippingInfo
+            {
+                // TODO shipping info
+                ShippingMethod = "Own", //s.ShippingMethodName,
+                TrackingNumber = s.ShipmentTrackingNumber
+            }).ToList();
 
             var captureData = new CaptureData
             {
                 CapturedAmount = amount,
-                Description = description
+                Description = description,
+                OrderLines = lines,
+                ShippingInfo = shippingInfo
             };
-
-            if (shippingInfo != null)
-            {
-                captureData.ShippingInfo = new List<ShippingInfo> {shippingInfo};
-            }
-
-            if (orderLines != null && orderLines.Any())
-            {
-                captureData.OrderLines = orderLines;
-            }
+            captureData = _captureBuilder.Service.Build(captureData, orderGroup, orderForm, payment);
 
             capture.Create(captureData);
             return capture.Fetch();
-
         }
+
         public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
             IOrder order = _client.NewOrder(orderId);
@@ -88,7 +94,6 @@ namespace Klarna.OrderManagement
             order.Refund(refund);
         }
 
-        //TODO: move to common project
         private int GetAmount(decimal money)
         {
             if (money > 0)

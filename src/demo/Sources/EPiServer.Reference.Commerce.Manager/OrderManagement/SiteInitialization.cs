@@ -1,6 +1,7 @@
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
+using Klarna.OrderManagement;
 using Klarna.OrderManagement.Refunds;
 
 namespace EPiServer.Reference.Commerce.Manager.OrderManagement
@@ -18,6 +19,7 @@ namespace EPiServer.Reference.Commerce.Manager.OrderManagement
             var services = context.Services;
 
             services.AddTransient<RefundBuilder, DemoRefundBuilder>();
+            services.AddTransient<CaptureBuilder, DemoCaptureBuilder>();
         }
 
         public void Uninitialize(InitializationEngine context) { }

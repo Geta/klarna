@@ -5,6 +5,6 @@ namespace Klarna.Payments
 {
     public abstract class SessionBuilder
     {
-        public abstract Session Build(Session sessionn, ICart cart, Configuration configuration, bool includePersonalInformation = false);
+        public abstract Session Build(Session session, ICart cart, Configuration configuration, bool includePersonalInformation = false);
     }
 }
