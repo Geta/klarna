@@ -22,5 +22,7 @@ namespace Klarna.OrderManagement
         void ReleaseRemaininAuthorization(string orderId);
 
         void TriggerSendOutExample(string orderId, string captureId);
+
+        OrderData GetOrder(string orderId);
     }
 }

@@ -272,6 +272,7 @@
     <Content Include="Default.aspx" />
     <Content Include="EPiServerDefault.aspx" />
     <Content Include="Global.asax" />
+    <Content Include="KlarnaPaymentControl.ascx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -279,6 +280,13 @@
   <ItemGroup>
     <Compile Include="..\AssemblyVersionAuto.cs">
       <Link>AssemblyVersionAuto.cs</Link>
+    </Compile>
+    <Compile Include="KlarnaPaymentControl.ascx.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="KlarnaPaymentControl.ascx.designer.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
     </Compile>
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx.cs</DependentUpon>

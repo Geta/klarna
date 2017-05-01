@@ -115,6 +115,13 @@ namespace Klarna.OrderManagement
             capture.TriggerSendOut();
         }
 
+        public OrderData GetOrder(string orderId)
+        {
+            var order = _client.NewOrder(orderId);
+
+            return order.Fetch();
+        }
+
         private int GetAmount(decimal money)
         {
             if (money > 0)
