@@ -20,5 +20,7 @@ namespace Klarna.OrderManagement
         void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
 
         void ReleaseRemaininAuthorization(string orderId);
+
+        void TriggerSendOutExample(string orderId, string captureId);
     }
 }

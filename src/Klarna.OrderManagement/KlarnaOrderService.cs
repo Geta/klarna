@@ -107,6 +107,14 @@ namespace Klarna.OrderManagement
             order.ReleaseRemainingAuthorization();
         }
 
+        public void TriggerSendOutExample(string orderId, string captureId)
+        {
+            IOrder order = _client.NewOrder(orderId);
+            ICapture capture = _client.NewCapture(order.Location, captureId);
+
+            capture.TriggerSendOut();
+        }
+
         private int GetAmount(decimal money)
         {
             if (money > 0)
