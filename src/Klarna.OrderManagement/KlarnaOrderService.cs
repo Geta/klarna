@@ -11,6 +11,7 @@ using Klarna.Rest.OrderManagement;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.OrderManagement
 {
@@ -65,9 +66,17 @@ namespace Klarna.OrderManagement
             var shippingInfo = new ShippingInfo
             {
                 // TODO shipping info
-                ShippingMethod = "Own", //shipment.ShippingMethodName,
+                ShippingMethod = shipment.ShippingMethodName,
                 TrackingNumber = shipment.ShipmentTrackingNumber
             };
+            if (string.IsNullOrEmpty(shippingInfo.ShippingMethod))
+            {
+                var shipmentMethod = ShippingManager.GetShippingMethod(shipment.ShippingMethodId).ShippingMethod.FirstOrDefault();
+                if (shipmentMethod != null)
+                {
+                    shippingInfo.ShippingMethod = shipmentMethod.DisplayName;
+                }
+            }
 
             var captureData = new CaptureData
             {

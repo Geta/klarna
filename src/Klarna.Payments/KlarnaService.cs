@@ -257,14 +257,23 @@ namespace Klarna.Payments
             }
             if (totals.ShippingTotal.Amount > 0)
             {
-                list.Add(new OrderLine
+                var shipmentOrderLine = new OrderLine
                 {
-                    Name = shipment.ShippingMethodName ?? "Shipping method",
+                    Name = shipment.ShippingMethodName,
                     Quantity = 1,
                     UnitPrice = GetAmount(totals.ShippingTotal.Amount),
                     TotalAmount = GetAmount(totals.ShippingTotal.Amount),
                     Type = "shipping_fee"
-                });
+                };
+                if (string.IsNullOrEmpty(shipmentOrderLine.Name))
+                {
+                    var shipmentMethod = ShippingManager.GetShippingMethod(shipment.ShippingMethodId).ShippingMethod.FirstOrDefault();
+                    if (shipmentMethod != null)
+                    {
+                        shipmentOrderLine.Name = shipmentMethod.DisplayName;
+                    }
+                }
+                list.Add(shipmentOrderLine);
             }
             request.OrderLines = list.ToArray();
 
