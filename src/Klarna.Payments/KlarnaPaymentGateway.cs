@@ -37,10 +37,12 @@ namespace Klarna.Payments
                 var cancelPaymentStep = new CancelPaymentStep(payment);
                 var capturePaymentStep = new CapturePaymentStep(payment);
 				var creditPaymentStep = new CreditPaymentStep(payment);
+                var releaseRemainingPaymentStep = new ReleaseRemainingPaymentStep(payment);
                 
-				authorizePaymentStep.SetSuccessor(cancelPaymentStep);
+                authorizePaymentStep.SetSuccessor(cancelPaymentStep);
                 cancelPaymentStep.SetSuccessor(capturePaymentStep);
 				capturePaymentStep.SetSuccessor(creditPaymentStep);
+                creditPaymentStep.SetSuccessor(releaseRemainingPaymentStep);
 
                 return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, ref message);
             }

@@ -28,24 +28,52 @@ namespace Klarna.OrderManagement.Initialization
             {
                 var orderAfterSave = sender as IPurchaseOrder;
                 var orderBeforeSave = _orderRepository.Service.Load<IPurchaseOrder>(e.OrderGroupId);
-                if (orderBeforeSave != null && orderAfterSave != null && orderBeforeSave.OrderStatus != OrderStatus.Cancelled && orderAfterSave.OrderStatus == OrderStatus.Cancelled)
+                if (orderBeforeSave != null && orderAfterSave != null)
                 {
-                    if (orderAfterSave.GetFirstForm().Payments.All(p => p.TransactionType != TransactionType.Void.ToString() && p.TransactionType != TransactionType.Capture.ToString()))
+                    // multi shipment scenario. Call payment gateway to release remaining authorization
+                    if (orderBeforeSave.OrderStatus == OrderStatus.PartiallyShipped && orderAfterSave.OrderStatus == OrderStatus.Completed && orderAfterSave.GetFirstForm().Shipments.Any(s => s.OrderShipmentStatus == OrderShipmentStatus.Cancelled))
                     {
-                        var previousPayment = orderAfterSave.GetFirstForm().Payments.FirstOrDefault();
-                        if (previousPayment != null)
+                        if (orderAfterSave.GetFirstForm().Payments.All(p => p.TransactionType != KlarnaAdditionalTransactionType.ReleaseRemainingAuthorization.ToString()))
                         {
-                            var payment = orderAfterSave.CreatePayment(_orderGroupFactory.Service);
-                            payment.PaymentType = previousPayment.PaymentType;
-                            payment.PaymentMethodId = previousPayment.PaymentMethodId;
-                            payment.PaymentMethodName = previousPayment.PaymentMethodName;
-                            payment.Amount = previousPayment.Amount;
-                            payment.Status = PaymentStatus.Pending.ToString();
-                            payment.TransactionType = TransactionType.Void.ToString();
+                            var previousPayment = orderAfterSave.GetFirstForm().Payments.FirstOrDefault();
+                            if (previousPayment != null)
+                            {
+                                var payment = orderAfterSave.CreatePayment(_orderGroupFactory.Service);
+                                payment.PaymentType = previousPayment.PaymentType;
+                                payment.PaymentMethodId = previousPayment.PaymentMethodId;
+                                payment.PaymentMethodName = previousPayment.PaymentMethodName;
 
-                            orderAfterSave.AddPayment(payment);
+                                var remainingAmount = orderAfterSave.GetFirstForm().Shipments.Where(s => s.OrderShipmentStatus != OrderShipmentStatus.Shipped).Sum(x => (x.GetShippingItemsTotal(orderAfterSave.Currency).Amount + x.GetShippingCost(orderAfterSave.Market, orderAfterSave.Currency).Amount));
 
-                            _paymentProcessor.Service.ProcessPayment(payment, orderAfterSave.GetFirstShipment(), orderAfterSave);
+                                payment.Amount = remainingAmount;
+                                payment.Status = PaymentStatus.Pending.ToString();
+                                payment.TransactionType = KlarnaAdditionalTransactionType.ReleaseRemainingAuthorization.ToString();
+
+                                orderAfterSave.AddPayment(payment);
+
+                                _paymentProcessor.Service.ProcessPayment(payment, orderAfterSave.GetFirstShipment(), orderAfterSave);
+                            }
+                        }
+                    }
+                    else if (orderBeforeSave.OrderStatus != OrderStatus.Cancelled && orderAfterSave.OrderStatus == OrderStatus.Cancelled)
+                    { 
+                        if (orderAfterSave.GetFirstForm().Payments.All(p => p.TransactionType != TransactionType.Void.ToString() && p.TransactionType != TransactionType.Capture.ToString()))
+                        {
+                            var previousPayment = orderAfterSave.GetFirstForm().Payments.FirstOrDefault();
+                            if (previousPayment != null)
+                            {
+                                var payment = orderAfterSave.CreatePayment(_orderGroupFactory.Service);
+                                payment.PaymentType = previousPayment.PaymentType;
+                                payment.PaymentMethodId = previousPayment.PaymentMethodId;
+                                payment.PaymentMethodName = previousPayment.PaymentMethodName;
+                                payment.Amount = previousPayment.Amount;
+                                payment.Status = PaymentStatus.Pending.ToString();
+                                payment.TransactionType = TransactionType.Void.ToString();
+
+                                orderAfterSave.AddPayment(payment);
+
+                                _paymentProcessor.Service.ProcessPayment(payment, orderAfterSave.GetFirstShipment(), orderAfterSave);
+                            }
                         }
                     }
                 }

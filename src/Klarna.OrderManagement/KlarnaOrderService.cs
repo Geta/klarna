@@ -11,7 +11,6 @@ using Klarna.Rest.OrderManagement;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.OrderManagement
 {
@@ -66,17 +65,9 @@ namespace Klarna.OrderManagement
             var shippingInfo = new ShippingInfo
             {
                 // TODO shipping info
-                ShippingMethod = shipment.ShippingMethodName,
+                ShippingMethod = "Own",
                 TrackingNumber = shipment.ShipmentTrackingNumber
             };
-            if (string.IsNullOrEmpty(shippingInfo.ShippingMethod))
-            {
-                var shipmentMethod = ShippingManager.GetShippingMethod(shipment.ShippingMethodId).ShippingMethod.FirstOrDefault();
-                if (shipmentMethod != null)
-                {
-                    shippingInfo.ShippingMethod = shipmentMethod.DisplayName;
-                }
-            }
 
             var captureData = new CaptureData
             {
@@ -107,6 +98,13 @@ namespace Klarna.OrderManagement
             refund = _refundBuilder.Service.Build(refund, orderGroup, orderForm, payment);
 
             order.Refund(refund);
+        }
+
+        public void ReleaseRemaininAuthorization(string orderId)
+        {
+            IOrder order = _client.NewOrder(orderId);
+
+            order.ReleaseRemainingAuthorization();
         }
 
         private int GetAmount(decimal money)

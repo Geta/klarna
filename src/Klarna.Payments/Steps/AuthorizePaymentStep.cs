@@ -38,7 +38,17 @@ namespace Klarna.Payments.Steps
 
                         return false;
                     }
-                    //TODO Fraud status stopped
+                    else if (payment.Properties[Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
+                    {
+                        //TODO Fraud status stopped
+
+                        payment.Status = PaymentStatus.Failed.ToString();
+
+                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", "Fraud risk stopped");
+
+                        return false;
+                    }
+                    message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Constants.FraudStatusPaymentMethodField]} or no fraud notifications received so far.";
                 }
                 else
                 {
