@@ -112,7 +112,8 @@ namespace Klarna.OrderManagement
                 Name = item.DisplayName,
                 Quantity = (int)item.ReturnQuantity,
                 UnitPrice = GetAmount(item.PlacedPrice),
-                TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount)
+                TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount),
+                TotalDiscountAmount = GetAmount(item.GetEntryDiscount())
             };
             return orderLine;
         }
