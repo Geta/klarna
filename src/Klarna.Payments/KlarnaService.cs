@@ -262,7 +262,8 @@ namespace Klarna.Payments
                     Name = shipment.ShippingMethodName ?? "Shipping method",
                     Quantity = 1,
                     UnitPrice = GetAmount(totals.ShippingTotal.Amount),
-                    TotalAmount = GetAmount(totals.ShippingTotal.Amount)
+                    TotalAmount = GetAmount(totals.ShippingTotal.Amount),
+                    Type = "shipping_fee"
                 });
             }
             request.OrderLines = list.ToArray();
@@ -356,13 +357,23 @@ namespace Klarna.Payments
 
         private OrderLine GetOrderLine(ILineItem item, Currency currency)
         {
+            
             var orderLine = new OrderLine();
             orderLine.Quantity = (int)item.Quantity;
             orderLine.Name = item.DisplayName;
+            if (string.IsNullOrEmpty(orderLine.Name))
+            {
+                var entry = item.GetEntryContent();
+                if (entry != null)
+                {
+                    orderLine.Name = entry.DisplayName;
+                }
+            }
             orderLine.Reference = item.Code;
             orderLine.UnitPrice = GetAmount(item.PlacedPrice);
             orderLine.TotalDiscountAmount = GetAmount(item.GetEntryDiscount());
             orderLine.TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount);
+            orderLine.Type = "physical";
 
             if (Configuration.SendProductAndImageUrlField)
             {

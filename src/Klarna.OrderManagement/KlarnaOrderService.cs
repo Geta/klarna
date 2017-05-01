@@ -55,20 +55,26 @@ namespace Klarna.OrderManagement
         {
             var order = _client.NewOrder(orderId);
             var capture = _client.NewCapture(order.Location);
-            var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
-            var shippingInfo = orderForm.Shipments.Select(s => new ShippingInfo
+            
+            var shipment = orderForm.Shipments.FirstOrDefault(x => (x.GetShippingItemsTotal(orderGroup.Currency).Amount + x.GetShippingCost(orderGroup.Market, orderGroup.Currency).Amount) == payment.Amount);
+            if (shipment == null)
+            {
+                return null;
+            }
+            var lines = shipment.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
+            var shippingInfo = new ShippingInfo
             {
                 // TODO shipping info
-                ShippingMethod = "Own", //s.ShippingMethodName,
-                TrackingNumber = s.ShipmentTrackingNumber
-            }).ToList();
+                ShippingMethod = "Own", //shipment.ShippingMethodName,
+                TrackingNumber = shipment.ShipmentTrackingNumber
+            };
 
             var captureData = new CaptureData
             {
                 CapturedAmount = amount,
                 Description = description,
                 OrderLines = lines,
-                ShippingInfo = shippingInfo
+                ShippingInfo = new List<ShippingInfo>() { shippingInfo }
             };
             captureData = _captureBuilder.Service.Build(captureData, orderGroup, orderForm, payment);
 
