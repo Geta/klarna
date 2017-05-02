@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using EPiServer;
@@ -20,6 +21,7 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
+using Refit;
 
 namespace Klarna.Payments
 {
@@ -98,6 +100,17 @@ namespace Klarna.Payments
                     await _klarnaServiceApi.UpdateSession(sessionId, sessionRequest).ConfigureAwait(false);
 
                     return true;
+                }
+                catch (ApiException apiException)
+                {
+                    // Create new session if current one is not found
+                    if (apiException.StatusCode == HttpStatusCode.NotFound)
+                    {
+                        return await CreateSession(sessionRequest, cart);
+                    }
+
+                    _logger.Error(apiException.Message, apiException);
+                    return false;
                 }
                 catch (Exception ex)
                 {
