@@ -129,6 +129,13 @@ namespace Klarna.OrderManagement
             order.ExtendAuthorizationTime();
         }
 
+        public void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails)
+        {
+            IOrder order = _client.NewOrder(orderId);
+
+            order.UpdateCustomerDetails(updateCustomerDetails);
+        }
+
         private int GetAmount(decimal money)
         {
             if (money > 0)

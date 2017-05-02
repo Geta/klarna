@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using EPiServer.Commerce.Order;
 using Klarna.Rest.Models;
+using Klarna.Rest.Models.Requests;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement
@@ -26,5 +27,7 @@ namespace Klarna.OrderManagement
         OrderData GetOrder(string orderId);
 
         void ExtendAuthorizationTime(string orderId);
+
+        void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails);
     }
 }
