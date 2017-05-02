@@ -13,6 +13,15 @@ namespace EPiServer.Reference.Commerce.Manager {
     public partial class KlarnaPaymentControl {
         
         /// <summary>
+        /// bhl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::Mediachase.Commerce.Manager.Apps.Common.Design.BlockHeaderLight bhl;
+        
+        /// <summary>
         /// preLabel control.
         /// </summary>
         /// <remarks>
