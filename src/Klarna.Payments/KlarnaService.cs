@@ -8,6 +8,7 @@ using Castle.Components.DictionaryAdapter.Xml;
 using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
+using EPiServer.Commerce.Order.Internal;
 using EPiServer.Core;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
@@ -415,10 +416,15 @@ namespace Klarna.Payments
                     orderLine.Name = entry.DisplayName;
                 }
             }
+
+            var unitPrice = item.PlacedPrice;
+            var totalPrice = unitPrice * item.Quantity;
+            var extendedPrice = item.GetExtendedPrice(currency).Amount;
+
             orderLine.Reference = item.Code;
-            orderLine.UnitPrice = AmountHelper.GetAmount(item.PlacedPrice);
-            orderLine.TotalDiscountAmount = AmountHelper.GetAmount(item.GetEntryDiscount());
-            orderLine.TotalAmount = AmountHelper.GetAmount(item.GetExtendedPrice(currency).Amount);
+            orderLine.UnitPrice = AmountHelper.GetAmount(unitPrice);
+            orderLine.TotalDiscountAmount = AmountHelper.GetAmount(totalPrice - extendedPrice);
+            orderLine.TotalAmount = AmountHelper.GetAmount(extendedPrice);
             orderLine.Type = "physical";
 
             if (Configuration.SendProductAndImageUrlField)
