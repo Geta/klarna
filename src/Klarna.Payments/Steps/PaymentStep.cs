@@ -3,7 +3,6 @@ using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.OrderManagement;
 using Klarna.Payments.Extensions;
-using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.Payments.Steps

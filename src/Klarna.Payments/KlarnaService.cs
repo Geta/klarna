@@ -242,7 +242,7 @@ namespace Klarna.Payments
             }
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            request.OrderAmount = GetAmount(totals.Total);
+            request.OrderAmount = AmountHelper.GetAmount(totals.Total);
             request.PurchaseCurrency = cart.Currency.CurrencyCode;
             request.Locale = ContentLanguage.PreferredCulture.Name;
 
@@ -261,8 +261,8 @@ namespace Klarna.Payments
                 {
                     Name = shipment.ShippingMethodName,
                     Quantity = 1,
-                    UnitPrice = GetAmount(totals.ShippingTotal.Amount),
-                    TotalAmount = GetAmount(totals.ShippingTotal.Amount),
+                    UnitPrice = AmountHelper.GetAmount(totals.ShippingTotal.Amount),
+                    TotalAmount = AmountHelper.GetAmount(totals.ShippingTotal.Amount),
                     Type = "shipping_fee"
                 };
                 if (string.IsNullOrEmpty(shipmentOrderLine.Name))
@@ -313,24 +313,6 @@ namespace Klarna.Payments
             return false;
         }
 
-        private int GetAmount(decimal money)
-        {
-            if (money > 0)
-            {
-                return (int)(money * 100);
-            }
-            return 0;
-        }
-
-        private int GetAmount(Money money)
-        {
-            if (money.Amount > 0)
-            {
-                return (int)(money.Amount * 100);
-            }
-            return 0;
-        }
-
         private string GetVariantImage(ContentReference contentReference)
         {
             VariationContent variant;
@@ -379,9 +361,9 @@ namespace Klarna.Payments
                 }
             }
             orderLine.Reference = item.Code;
-            orderLine.UnitPrice = GetAmount(item.PlacedPrice);
-            orderLine.TotalDiscountAmount = GetAmount(item.GetEntryDiscount());
-            orderLine.TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount);
+            orderLine.UnitPrice = AmountHelper.GetAmount(item.PlacedPrice);
+            orderLine.TotalDiscountAmount = AmountHelper.GetAmount(item.GetEntryDiscount());
+            orderLine.TotalAmount = AmountHelper.GetAmount(item.GetExtendedPrice(currency).Amount);
             orderLine.Type = "physical";
 
             if (Configuration.SendProductAndImageUrlField)

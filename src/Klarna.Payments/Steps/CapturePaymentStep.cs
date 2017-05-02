@@ -2,6 +2,7 @@
 using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.Payments.Helpers;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders;
 
@@ -29,7 +30,7 @@ namespace Klarna.Payments.Steps
         {
             if (payment.TransactionType == TransactionType.Capture.ToString())
             {
-                var amount = PaymentStepHelper.GetAmount(payment.Amount);
+                var amount = AmountHelper.GetAmount(payment.Amount);
                 var orderId = orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString();
                 if (!string.IsNullOrEmpty(orderId))
                 {
@@ -70,22 +71,6 @@ namespace Klarna.Payments.Steps
                 return Successor.Process(payment, orderForm, orderGroup, ref message);
             }
             return false;
-        }
-    }
-
-    /// <summary>
-    /// Payment step helper class
-    /// </summary>
-    public static class PaymentStepHelper
-    {
-        /// <summary>
-        /// Get amount as string value (without decimals)
-        /// </summary>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        public static int GetAmount(decimal amount)
-        {
-            return (int)Math.Round(amount * 100);
         }
     }
 }
