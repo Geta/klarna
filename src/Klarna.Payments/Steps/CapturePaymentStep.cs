@@ -3,8 +3,8 @@ using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.Payments.Helpers;
-using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders;
+using Refit;
 
 namespace Klarna.Payments.Steps
 {
@@ -41,25 +41,12 @@ namespace Klarna.Payments.Steps
                     }
                     catch (Exception ex) when (ex is ApiException || ex is WebException)
                     {
-                        var exceptionMessage = string.Empty;
-                        switch (ex)
-                        {
-                            case ApiException apiException:
-                                exceptionMessage = 
-                                    $"Payment - Captured - Error: " +
-                                    $"{apiException.ErrorMessage.CorrelationId} " +
-                                    $"{apiException.ErrorMessage.ErrorCode} " +
-                                    $"{apiException.ErrorMessage.ErrorMessages}";
-                                break;
-                            case WebException webException:
-                                exceptionMessage =
-                                    $"Payment - Captured - Error: {webException.Message}";
-                                break;
-                        }
+                        var exceptionMessage = GetExceptionMessage(ex);
 
                         payment.Status = PaymentStatus.Failed.ToString();
                         message = exceptionMessage;
                         AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {exceptionMessage}");
+                        Logger.Error(exceptionMessage, ex);
                         return false;
                     }
                 }

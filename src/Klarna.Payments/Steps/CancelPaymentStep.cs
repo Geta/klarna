@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Mediachase.Commerce.Orders;
+using Refit;
 
 namespace Klarna.Payments.Steps
 {
@@ -31,12 +33,15 @@ namespace Klarna.Payments.Steps
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is ApiException || ex is WebException)
                 {
-                    payment.Status = PaymentStatus.Failed.ToString();
-                    Logger.Error(ex.Message, ex);
+                    var exceptionMessage = GetExceptionMessage(ex);
 
-                    AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {ex.Message}");
+                    payment.Status = PaymentStatus.Failed.ToString();
+                    message = exceptionMessage;
+                    AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {exceptionMessage}");
+                    Logger.Error(exceptionMessage, ex);
+                    return false;
                 }
             }
             else if (Successor != null)

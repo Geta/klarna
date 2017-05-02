@@ -1,8 +1,11 @@
-﻿using EPiServer.Commerce.Order;
+﻿using System;
+using System.Net;
+using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.OrderManagement;
 using Klarna.Payments.Extensions;
+using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.Payments.Steps
@@ -38,6 +41,24 @@ namespace Klarna.Payments.Steps
             var noteTitle = $"Klarna payment {transactionType.ToLower()}";
 
             orderGroup.AddNote(noteTitle, $"Payment {transactionType.ToLower()}: {noteMessage}");
+        }
+
+        protected string GetExceptionMessage(Exception ex)
+        {
+            var exceptionMessage = string.Empty;
+            switch (ex)
+            {
+                case ApiException apiException:
+                    exceptionMessage =
+                        $"{apiException.ErrorMessage.CorrelationId} " +
+                        $"{apiException.ErrorMessage.ErrorCode} " +
+                        $"{apiException.ErrorMessage.ErrorMessages}";
+                    break;
+                case WebException webException:
+                    exceptionMessage = webException.Message;
+                    break;
+            }
+            return exceptionMessage;
         }
     }
 }
