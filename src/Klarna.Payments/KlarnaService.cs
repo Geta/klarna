@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
+using Castle.Components.DictionaryAdapter.Xml;
 using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
@@ -79,18 +80,24 @@ namespace Klarna.Payments
 
         public async Task<bool> CreateOrUpdateSession(ICart cart)
         {
-            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart), cart, Configuration);
+            // Check if we shared PI before, if so it allows us to share it again
+            var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
+
+            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart, canSendPersonalInformation), cart, Configuration);
             
-            // If the pre assessment is not enabled then don't send the customer information to Klarna
             var currentCountry = cart.Market.Countries.FirstOrDefault();
-            if (!CanSendPersonalInformation(currentCountry))
+            // Clear PI if we're not allowed to send it yet (can be set by custom session builder)
+            if (!canSendPersonalInformation && !CanSendPersonalInformation(currentCountry))
             {
+                // Can't share PI yet, will be done during the first authorize call
+                sessionRequest.ShippingAddress = null;
+                sessionRequest.BillingAddress = null;
+
+                // If the pre assessment is not enabled then don't send the customer information to Klarna
                 if (!Configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
                 {
                     sessionRequest.Customer = null;
                 }
-                sessionRequest.ShippingAddress = null;
-                sessionRequest.BillingAddress = null;
             }
             var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
             if (!string.IsNullOrEmpty(sessionId))
@@ -212,7 +219,33 @@ namespace Klarna.Payments
 
             return !continent.Equals("EU", StringComparison.InvariantCultureIgnoreCase);
         }
-        
+
+        public bool AllowedToSharePersonalInformation(ICart cart)
+        {
+            if (bool.TryParse(
+                cart.Properties[Constants.KlarnaAllowSharingOfPersonalInformationField]?.ToString() ?? "false",
+                out var canSendPersonalInformation))
+            {
+                return canSendPersonalInformation;
+            }
+            return false;
+        }
+
+        public bool AllowSharingOfPersonalInformation(ICart cart)
+        {
+            try
+            {
+                cart.Properties[Constants.KlarnaAllowSharingOfPersonalInformationField] = true;
+                _orderRepository.Save(cart);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message);
+            }
+            return false;
+        }
+
         public PersonalInformationSession GetPersonalInformationSession(ICart cart)
         {
             var request = new Session();
@@ -302,6 +335,15 @@ namespace Klarna.Payments
                 {
                     request.BillingAddress = payment.BillingAddress.ToAddress();
                 }
+                else if (request.ShippingAddress != null)
+                {
+                    request.BillingAddress = new Address()
+                    {
+                        Email = request.ShippingAddress?.Email,
+                        Phone = request.ShippingAddress?.Phone
+                    };
+                }
+
             }
             return request;
         }

@@ -16,6 +16,7 @@
         // Cart meta fields
         public const string KlarnaSessionIdField = "KlarnaSessionId";
         public const string KlarnaClientTokenField = "KlarnaClientToken";
+        public const string KlarnaAllowSharingOfPersonalInformationField = "KlarnaAllowSharingOfPersonalInformationField";
         public const string CartOrderNumberTempField = "CartOrderNumberTemp";
 
         // Widget styling fields

@@ -17,6 +17,11 @@
         client_token: ''
     };
 
+    var urls = {
+        personalInformation: '/klarnaapi/personal/',
+        allowSharingOfPersonalInformation: '/klarnaapi/personal/allow'
+    };
+
     function getCustomerInfo() {
         //TODO: implement form for the user to fill in this information
         return {
@@ -79,8 +84,6 @@
     }
 
     function load(newSettings) {
-        
-
         if (newSettings && shouldUpdateSettings(settings, newSettings)) {
             settings.client_token = newSettings.client_token;
             settings.klarna_container = newSettings.klarna_container;
@@ -95,6 +98,8 @@
             if (!result.show_form) {
                 // Unrecoverable error
                 hideForm();
+            } else {
+                $("#klarna_container_error").hide();
             }
         });
     };
@@ -121,7 +126,7 @@
                 getPersonalInfoPromise =
                     $.ajax({
                         type: 'POST',
-                        url: '/klarnaapi/personal/',
+                        url: urls.personalInformation,
                         data: "=" + $("#BillingAddress_AddressId").val(),
                         contentType: 'application/x-www-form-urlencoded'
                     })
@@ -134,8 +139,13 @@
                 // We should have all necessary personal information here, pass it to authorize call
                 Klarna.Credit.authorize(personalInformation,
                     function (result) {
+                        // We're allowed to share personal information after this call, only need this info if authorize failed
+                        if (!result.show_form || !result.approved || !result.authorization_token) {
+                            $.post(urls.allowSharingOfPersonalInformation);
+                        }
+
                         if (!result.show_form) {
-                            // Unrecoverable error
+                            // 'Unrecoverable' error
                             hideForm();
                         } else {
                             if (result.approved && result.authorization_token) {

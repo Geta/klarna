@@ -7,7 +7,6 @@ namespace Klarna.Payments
     public interface IKlarnaService
     {
         Configuration Configuration { get; }
-
         Task<bool> CreateOrUpdateSession(ICart cart);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(ICart cart);
@@ -16,6 +15,8 @@ namespace Klarna.Payments
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool CanSendPersonalInformation(string countryCode);
+        bool AllowedToSharePersonalInformation(ICart cart);
+        bool AllowSharingOfPersonalInformation(ICart cart);
         PersonalInformationSession GetPersonalInformationSession(ICart cart);
     }
 }

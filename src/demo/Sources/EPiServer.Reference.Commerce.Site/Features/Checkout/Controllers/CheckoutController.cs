@@ -120,7 +120,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult ChangeAddress(UpdateAddressViewModel addressViewModel)
+        public async Task<ActionResult> ChangeAddress(UpdateAddressViewModel addressViewModel)
         {
             ModelState.Clear();
             var viewModel = CreateCheckoutViewModel(addressViewModel.CurrentPage);
@@ -134,6 +134,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderRepository.Save(Cart);
 
             var addressViewName = addressViewModel.ShippingAddressIndex > -1 ? "SingleShippingAddress" : "BillingAddress";
+
+            await _klarnaService.CreateOrUpdateSession(Cart);
 
             return PartialView(addressViewName, viewModel);
         }

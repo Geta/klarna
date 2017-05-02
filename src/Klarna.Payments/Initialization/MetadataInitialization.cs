@@ -29,6 +29,7 @@ namespace Klarna.Payments.Initialization
 
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdField), Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationField, MetaDataType.Boolean), Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Constants.CartClass);
 
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaLogoUrlField), Constants.OtherPaymentClass);
@@ -63,14 +64,14 @@ namespace Klarna.Payments.Initialization
 
         }
 
-        private MetaField GetOrCreateCardField(MetaDataContext mdContext, string fieldName)
+        private MetaField GetOrCreateCardField(MetaDataContext mdContext, string fieldName, MetaDataType metaDataType = MetaDataType.LongString)
         {
 
             var f = MetaField.Load(mdContext, fieldName);
             if (f == null)
             {
                 Logger.Debug($"Adding meta field '{fieldName}' for Klarna payments integration.");
-                f = MetaField.Create(mdContext, Constants.OrderNamespace, fieldName, fieldName, string.Empty, MetaDataType.LongString, Int32.MaxValue, true, false, false, false);
+                f = MetaField.Create(mdContext, Constants.OrderNamespace, fieldName, fieldName, string.Empty, metaDataType, Int32.MaxValue, true, false, false, false);
             }
             return f;
         }

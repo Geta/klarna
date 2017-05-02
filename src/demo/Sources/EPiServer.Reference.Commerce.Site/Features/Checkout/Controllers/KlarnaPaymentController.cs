@@ -60,6 +60,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok(sessionRequest);
         }
 
+        [Route("personal/allow")]
+        [AcceptVerbs("POST")]
+        [HttpPost]
+        public IHttpActionResult AllowSharingOfPersonalInformation()
+        {
+            var cart = _cartService.LoadCart(_cartService.DefaultCartName);
+            if (_klarnaService.AllowSharingOfPersonalInformation(cart))
+            {
+                return Ok();
+            }
+
+            return InternalServerError();
+        }
+
         [Route("fraud/")]
         [AcceptVerbs("Post")]
         [HttpPost]
