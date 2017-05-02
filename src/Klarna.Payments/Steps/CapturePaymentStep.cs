@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.OrderManagement;
-using Klarna.Payments.Models;
-using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders;
 
@@ -41,7 +36,7 @@ namespace Klarna.Payments.Steps
                     try
                     {
                         var captureData = KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment", orderGroup, orderForm, payment);
-                        AddNoteAndSaveChanges(orderGroup, $"Payment - Captured: {captureData.CaptureId}");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Captured {payment.Amount}, id {captureData.CaptureId}");
                     }
                     catch (Exception ex) when (ex is ApiException || ex is WebException)
                     {
@@ -63,9 +58,7 @@ namespace Klarna.Payments.Steps
 
                         payment.Status = PaymentStatus.Failed.ToString();
                         message = exceptionMessage;
-                        AddNoteAndSaveChanges(orderGroup,
-                            "Payment Captured - Error",
-                            exceptionMessage);
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {exceptionMessage}");
                         return false;
                     }
                 }

@@ -27,7 +27,7 @@ namespace Klarna.Payments.Steps
 
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment release remaining authorization", "Released remaining authorization at Klarna");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Released remaining authorization at Klarna");
 
                         return true;
                     }
@@ -37,7 +37,7 @@ namespace Klarna.Payments.Steps
                     payment.Status = PaymentStatus.Failed.ToString();
                     Logger.Error(ex.Message, ex);
 
-                    AddNoteAndSaveChanges(orderGroup, "Payment release remaining authorization - Error", ex.Message);
+                    AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {ex.Message}");
                 }
             }
             else if (Successor != null)

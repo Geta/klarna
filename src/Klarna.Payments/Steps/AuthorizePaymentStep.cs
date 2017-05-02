@@ -14,7 +14,7 @@ namespace Klarna.Payments.Steps
         public AuthorizePaymentStep(IPayment payment) : base(payment)
         {
         }
-
+        
         public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message)
         {
             if (payment.TransactionType == TransactionType.Authorization.ToString())
@@ -26,7 +26,7 @@ namespace Klarna.Payments.Steps
                     {
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", "Fraud risk accepted");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk accepted");
 
                         return true;
                     }
@@ -34,7 +34,7 @@ namespace Klarna.Payments.Steps
                     {
                         payment.Status = PaymentStatus.Failed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", "Fraud risk rejected");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk rejected");
 
                         return false;
                     }
@@ -44,7 +44,7 @@ namespace Klarna.Payments.Steps
 
                         payment.Status = PaymentStatus.Failed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment authorization", "Fraud risk stopped");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk stopped");
 
                         return false;
                     }
@@ -63,11 +63,11 @@ namespace Klarna.Payments.Steps
                             payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
                             payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
 
-                            AddNoteAndSaveChanges(orderGroup, "Payment authorization", $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
+                            AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
 
                             if (result.FraudStatus == FraudStatus.REJECTED)
                             {
-                                message = "Klarna fraud status reject";
+                                message = "Klarna fraud status rejected";
                                 payment.Status = PaymentStatus.Failed.ToString();
                             }
                             else
@@ -80,7 +80,7 @@ namespace Klarna.Payments.Steps
                             payment.Status = PaymentStatus.Failed.ToString();
                             Logger.Error(ex.Message, ex);
 
-                            AddNoteAndSaveChanges(orderGroup, "Payment authorization - Error", ex.Message);
+                            AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {ex.Message}");
                         }
                     }
                 }

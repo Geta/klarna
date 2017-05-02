@@ -3,6 +3,7 @@ using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.OrderManagement;
 using Klarna.Payments.Extensions;
+using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.Payments.Steps
@@ -32,15 +33,12 @@ namespace Klarna.Payments.Steps
         }
 
         public abstract bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message);
-
-        protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string noteTitle)
+        
+        protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string transactionType, string noteMessage)
         {
-            orderGroup.AddNote(noteTitle, noteTitle);
-        }
+            var noteTitle = $"Klarna payment {transactionType.ToLower()}";
 
-        protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string noteTitle, string noteMessage)
-        {
-            orderGroup.AddNote(noteTitle, noteMessage);
+            orderGroup.AddNote(noteTitle, $"Payment {transactionType.ToLower()}: {noteMessage}");
         }
     }
 }

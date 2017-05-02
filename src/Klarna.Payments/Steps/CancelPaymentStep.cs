@@ -26,7 +26,7 @@ namespace Klarna.Payments.Steps
 
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, "Payment void", "Order cancelled at Klarna");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Order cancelled at Klarna");
 
                         return true;
                     }
@@ -36,7 +36,7 @@ namespace Klarna.Payments.Steps
                     payment.Status = PaymentStatus.Failed.ToString();
                     Logger.Error(ex.Message, ex);
 
-                    AddNoteAndSaveChanges(orderGroup, "Payment void - Error", ex.Message);
+                    AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {ex.Message}");
                 }
             }
             else if (Successor != null)
