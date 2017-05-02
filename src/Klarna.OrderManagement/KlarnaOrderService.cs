@@ -107,7 +107,7 @@ namespace Klarna.OrderManagement
             order.ReleaseRemainingAuthorization();
         }
 
-        public void TriggerSendOutExample(string orderId, string captureId)
+        public void TriggerSendOut(string orderId, string captureId)
         {
             IOrder order = _client.NewOrder(orderId);
             ICapture capture = _client.NewCapture(order.Location, captureId);
@@ -120,6 +120,13 @@ namespace Klarna.OrderManagement
             var order = _client.NewOrder(orderId);
 
             return order.Fetch();
+        }
+
+        public void ExtendAuthorizationTime(string orderId)
+        {
+            IOrder order = _client.NewOrder(orderId);
+
+            order.ExtendAuthorizationTime();
         }
 
         private int GetAmount(decimal money)
