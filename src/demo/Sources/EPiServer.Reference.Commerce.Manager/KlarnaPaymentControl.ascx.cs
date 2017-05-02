@@ -58,6 +58,16 @@ namespace EPiServer.Reference.Commerce.Manager
 
                         var orderData = klarnaOrderService.GetOrder(orderId);
 
+                        OrderIdLabel.Text = orderData.OrderId;
+                        KlarnaReferenceLabel.Text = orderData.KlarnaReference;
+                        MerchantReference1Label.Text = orderData.MerchantReference1;
+                        MerchantReference2Label.Text = orderData.MerchantReference2;
+                        ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
+                        StatusLabel.Text = orderData.Status;
+                        OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
+                        CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
+                        RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
+
                         preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
                     }
                     else
@@ -66,6 +76,11 @@ namespace EPiServer.Reference.Commerce.Manager
                     }
                 }
             }
+        }
+
+        private string GetAmount(int? amount)
+        {
+            return amount.HasValue ? ((decimal)amount.Value / 100).ToString("#.##") : string.Empty;
         }
     }
 }
