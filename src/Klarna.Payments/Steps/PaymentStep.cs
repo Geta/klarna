@@ -50,7 +50,7 @@ namespace Klarna.Payments.Steps
                     exceptionMessage =
                         $"{apiException.ErrorMessage.CorrelationId} " +
                         $"{apiException.ErrorMessage.ErrorCode} " +
-                        $"{apiException.ErrorMessage.ErrorMessages}";
+                        $"{string.Join(", ", apiException.ErrorMessage.ErrorMessages)}";
                     break;
                 case WebException webException:
                     exceptionMessage = webException.Message;
