@@ -50,7 +50,7 @@ When the return is completed the payment gateway is called to create a refund at
 ### Cancel
 Whenever an order is cancelled in Commerce Manager the payment gateway is called to alos cancel the payment at Klarna.
 An order in Commerce Manager can only be can cancelled when the items haven't been shipped yet. 
-![Cancel order](/docs/screenshots/order-cancel.PNG?raw=true "Cancel order")
+![Cancel order](/docs/screenshots/order-cancel.png?raw=true "Cancel order")
 
 After the cancel button is pressed the payment gateway is called. The passed payment object contains the transaction type 'Void' which means the payment should be cancelled. This is also what happens at Klarna.
 ![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
