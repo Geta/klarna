@@ -46,7 +46,7 @@ Unfortunately a manual configuration needs to be done in the XML file to make su
 		</Control>
 	</Placeholder>
 	<Placeholder id="Placeholder_2">
-    <Control id="PaymentsGrid2" path="~/KlarnaPaymentControl.ascx"></Control>
+    <Control id="PaymentsGrid2" path="~/KlarnaSummary/KlarnaPaymentControl.ascx"></Control>
 	</Placeholder>
 	<Placeholder id="Placeholder_3" />
 	<Placeholder id="Placeholder_4" />
