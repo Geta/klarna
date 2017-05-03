@@ -21,7 +21,9 @@
 
         // Only call this if jQuery/Klarna/KlarnaCheckout has been loaded already
         if (window.jQuery && window.Klarna && window.KlarnaCheckout) {
-            KlarnaCheckout.load(klarnaData);
+            window.setTimeout(function () {
+                KlarnaCheckout.load(klarnaData);
+            }, 100);
         }
     })();
 </script>
