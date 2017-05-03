@@ -7,7 +7,7 @@ using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Web.Console.Common;
 using Newtonsoft.Json;
 
-namespace Klarna.OrderManagement
+namespace Klarna.OrderManagement.CommerceManager
 {
     public partial class KlarnaPaymentControl : System.Web.UI.UserControl
     {

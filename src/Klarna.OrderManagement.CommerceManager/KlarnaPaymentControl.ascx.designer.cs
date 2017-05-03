@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Klarna.OrderManagement {
+namespace Klarna.OrderManagement.CommerceManager {
     
     
     public partial class KlarnaPaymentControl {

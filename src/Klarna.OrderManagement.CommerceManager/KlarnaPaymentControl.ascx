@@ -1,4 +1,4 @@
-﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="KlarnaPaymentControl.ascx.cs" Inherits="Klarna.OrderManagement.KlarnaPaymentControl" %>
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="KlarnaPaymentControl.ascx.cs" Inherits="Klarna.OrderManagement.CommerceManager.KlarnaPaymentControl" %>
 
 <table cellpadding="0" cellspacing="0" width="100%">
 	<tr>

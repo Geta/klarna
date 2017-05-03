@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6E816423-8646-43CE-9192-FB6E2A2F13B8}</ProjectGuid>
+    <ProjectGuid>{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Klarna.Payments.CommerceManager</RootNamespace>
-    <AssemblyName>Klarna.Payments.CommerceManager</AssemblyName>
+    <RootNamespace>Klarna.OrderManagement.CommerceManager</RootNamespace>
+    <AssemblyName>Klarna.OrderManagement.CommerceManager</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,11 +42,11 @@
     <Reference Include="Castle.Windsor, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.dll</HintPath>
+    <Reference Include="EPiServer, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.ApplicationModules, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
+    <Reference Include="EPiServer.ApplicationModules, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.ApplicationModules.dll</HintPath>
     </Reference>
     <Reference Include="EPiServer.Business.Commerce, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
       <HintPath>..\packages\EPiServer.Commerce.Core.10.4.3\lib\net45\EPiServer.Business.Commerce.dll</HintPath>
@@ -54,44 +54,44 @@
     <Reference Include="EPiServer.Commerce.Internal.Migration, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
       <HintPath>..\packages\EPiServer.Commerce.Core.10.4.3\lib\net45\EPiServer.Commerce.Internal.Migration.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Configuration, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.Configuration.dll</HintPath>
+    <Reference Include="EPiServer.Configuration, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Data, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Data.dll</HintPath>
+    <Reference Include="EPiServer.Data, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Data.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Data.Cache, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Data.Cache.dll</HintPath>
+    <Reference Include="EPiServer.Data.Cache, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Data.Cache.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Enterprise, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.Enterprise.dll</HintPath>
+    <Reference Include="EPiServer.Enterprise, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.Enterprise.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Events, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Events.dll</HintPath>
+    <Reference Include="EPiServer.Events, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Events.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Framework, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Framework.dll</HintPath>
+    <Reference Include="EPiServer.Framework, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.ImageLibrary, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
+    <Reference Include="EPiServer.ImageLibrary, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.ImageLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Licensing, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.Framework.10.5.0\lib\net45\EPiServer.Licensing.dll</HintPath>
+    <Reference Include="EPiServer.Licensing, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.Framework.10.4.3\lib\net45\EPiServer.Licensing.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.LinkAnalyzer, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
+    <Reference Include="EPiServer.LinkAnalyzer, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.LinkAnalyzer.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.Web.WebControls, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
+    <Reference Include="EPiServer.Web.WebControls, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.Web.WebControls.dll</HintPath>
     </Reference>
-    <Reference Include="EPiServer.XForms, Version=10.5.0.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
-      <HintPath>..\packages\EPiServer.CMS.Core.10.5.0\lib\net45\EPiServer.XForms.dll</HintPath>
+    <Reference Include="EPiServer.XForms, Version=10.4.3.0, Culture=neutral, PublicKeyToken=8fe83dea738b45b7, processorArchitecture=MSIL">
+      <HintPath>..\packages\EPiServer.CMS.Core.10.4.3\lib\net45\EPiServer.XForms.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
+    <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
+      <HintPath>..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
@@ -169,30 +169,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.Helpers, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.4.0.20710.0\lib\net40\System.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.2.0.20710.0\lib\net40\System.Web.Razor.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.WebPages, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.WebPages.Deployment, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="System.Web.WebPages.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -202,34 +195,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Apps\Order\Payments\Plugins\KlarnaPayments\ConfigurePayment.ascx.cs">
-      <DependentUpon>ConfigurePayment.ascx</DependentUpon>
+    <Compile Include="KlarnaPaymentControl.ascx.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Apps\Order\Payments\Plugins\KlarnaPayments\ConfigurePayment.ascx.designer.cs">
-      <DependentUpon>ConfigurePayment.ascx.cs</DependentUpon>
+    <Compile Include="KlarnaPaymentControl.ascx.designer.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Apps\Order\Payments\Plugins\KlarnaPayments\ConfigurePayment.ascx">
+    <Content Include="KlarnaPaymentControl.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Klarna.Payments.CommerceManager.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Klarna.Payments\Klarna.Payments.csproj">
-      <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
-      <Name>Klarna.Payments</Name>
+    <ProjectReference Include="..\Klarna.Common\Klarna.Common.csproj">
+      <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
+      <Name>Klarna.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
+      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
+      <Name>Klarna.OrderManagement</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
 </Project>
