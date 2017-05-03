@@ -24,6 +24,13 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 ### Capture
 
 ### Release remaining authorization
+In a multi-shipment scenario, each individual shipment can be completed or cancelled. Say for instance we've an order with two shipments, one shipments was fullfilled and the other one was cancelled (partially completed). This means the remaining authorized amount at Klarna needs to be released. 
+
+![Order multi shipment](/docs/screenshots/order-multi-shipment.PNG?raw=true "Order multi shipment")
+
+When the last shipment is handled the payment gateway is called to release the remaining authorized amount at Klarna.
+
+![Order release remaining authorization](/docs/screenshots/order-payment-releaseremainingauthorization.PNG?raw=true "Order release remaining authorization")
 
 ### Refund
 To create a return in Commerce Manager the order must have the completed status. Follow these steps to create a return:
@@ -36,11 +43,17 @@ To create a return in Commerce Manager the order must have the completed status.
 - Press the 'Acknowledge Receipt Items' button
 - To complete the return press the 'Complete button'
 
-When the return is completed the payment gateway is called to create a refund at Klarna. In the Payments tab, an extra row for the payment refund (called Credit in Commerce Manager) has been added. Also, a note add the order is created.
+When the return is completed the payment gateway is called to create a refund at Klarna. In the Payments tab, an extra row for the payment refund (called Credit in Commerce Manager) has been added. Also, a note is added at the order.
 
 ![Order payments refund](/docs/screenshots/order-payments-refund.PNG?raw=true "Order payments refund")
-![Order notes refund](/docs/screenshots/order-notes-refund.PNG?raw=true "Order notes refund")
 
 ### Cancel
+Whenever an order is cancelled in Commerce Manager the payment gateway is called to alos cancel the payment at Klarna.
+An order in Commerce Manager can only be can cancelled when the items haven't been shipped yet. 
+![Cancel order](/docs/screenshots/order-cancel.PNG?raw=true "Cancel order")
+
+After the cancel button is pressed the payment gateway is called. The passed payment object contains the transaction type 'Void' which means the payment should be cancelled. This is also what happens at Klarna.
+![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
+
 
 ### Captur
