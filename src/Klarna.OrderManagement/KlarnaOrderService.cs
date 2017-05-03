@@ -55,11 +55,14 @@ namespace Klarna.OrderManagement
         {
             var order = _client.NewOrder(orderId);
             var capture = _client.NewCapture(order.Location);
-            
-            var shipment = orderForm.Shipments.FirstOrDefault(x => (x.GetShippingItemsTotal(orderGroup.Currency).Amount + x.GetShippingCost(orderGroup.Market, orderGroup.Currency).Amount) == payment.Amount);
+
+            var shipment =
+                orderForm.Shipments.FirstOrDefault(x => x.GetShippingItemsTotal(orderGroup.Currency).Amount +
+                                                        x.GetShipmentDiscountPrice(orderGroup.Currency).Amount ==
+                                                        payment.Amount);
             if (shipment == null)
             {
-                return null;
+                throw new InvalidOperationException("Can't find correct shipment");
             }
             var lines = shipment.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
             var shippingInfo = new ShippingInfo
