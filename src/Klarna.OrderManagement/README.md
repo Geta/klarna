@@ -56,8 +56,9 @@ After the cancel button is pressed the payment gateway is called. The passed pay
 ![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
 
 ### Order notes
-Order notes are used for payment gateway updates.
+EPiServer uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform users about the Klarna payment process. 
 
+![Order notes](/docs/screenshots/order-notes-complete.PNG?raw=true "Order notes")
 
 ### Klarna order information
 Order notes and the payment overview can be used to gather information about the Klarna payment process. The Payments tab contains more information about the order (payment) at Klarna. By clicking on the 'Show all order information' link a complete JSON of the order object from Klarna is displayed. 
