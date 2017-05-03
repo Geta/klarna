@@ -26,6 +26,10 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 
     Install-Package Klarna.OrderManagement
+    
+For the Commerce Manager site run the following package:
+
+    Install-Package Klarna.OrderManagement.CommerceManager
 
 Both Klarna.Payments and Klarna.Checkout have reference to the Klarna.OrderManagement. It's more likely that one of those packages are installed.    
 
