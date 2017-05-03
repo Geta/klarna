@@ -12,14 +12,14 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 - **Refund** - either partially or full refund an amount
 - **Cancel** - cancel payment
 
-### Other steps only available in the (*)code
+### (*) Other steps only available in the code
 - **Get Klarna order**
 - **Update merchant reference** - update merchant reference 1 and 2
 - **Trigger send out**
 - **Extend authorization time**
 - **Update customer information**
 
-(*) not integrated in EPiServer Commerce
+(*) Not integrated in the EPiServer Commerce order process
 
 ## How to get started?
 
@@ -84,6 +84,32 @@ An order in Commerce Manager can only be can cancelled when the items haven't be
 
 After the cancel button is pressed the payment gateway is called. The passed payment object contains the transaction type 'Void' which means the payment should be cancelled. This is also what happens at Klarna.
 ![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
+
+### Use KlarnaOrderService
+The IKlarnaOrderService interface contains some methods to work with Klarna payments. The following methods are used for integration in Commerce Manager: CancelOrder, CaptureOrder, Refund and ReleaseRemainingAuthorization.
+
+```
+    public interface IKlarnaOrderService
+    {
+        void CancelOrder(string orderId);
+
+        void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2);
+
+        CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment);
+
+        void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
+
+        void ReleaseRemaininAuthorization(string orderId);
+
+        void TriggerSendOut(string orderId, string captureId);
+
+        OrderData GetOrder(string orderId);
+
+        void ExtendAuthorizationTime(string orderId);
+
+        void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails);
+    }
+```
 
 ### Order notes
 EPiServer uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform users about the Klarna payment process. 
