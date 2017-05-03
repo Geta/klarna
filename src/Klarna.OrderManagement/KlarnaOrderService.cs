@@ -58,7 +58,7 @@ namespace Klarna.OrderManagement
 
             var shipment =
                 orderForm.Shipments.FirstOrDefault(x => x.GetShippingItemsTotal(orderGroup.Currency).Amount +
-                                                        x.GetShipmentDiscountPrice(orderGroup.Currency).Amount ==
+                                                        (x.GetShippingCost(orderGroup.Market, orderGroup.Currency).Amount - x.GetShipmentDiscountPrice(orderGroup.Currency).Amount) ==
                                                         payment.Amount);
             if (shipment == null)
             {
