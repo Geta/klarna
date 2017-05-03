@@ -52,6 +52,23 @@ Unfortunately a manual configuration needs to be done in the XML file to make su
 Note: these steps needs to be done each time Commerce Manager is updated. 
 
 ### Capture
+Capturing payments is done by completing a shipment in Commerce Manager. Follow these steps to complete a shipment:
+- Open the order in CM
+- Go to Order details - 'Release shipment'
+- Create pick list with the order
+- Go to pick lists in CM and select your picklist
+- Complete shipment for corresponding order
+    - You can enter tracking number in the 'Complete Shipment' pop-up, this will be available as shipping information in Klarna
+    - The 'OK' button triggers the payment gateway to do a capture, if capturing the payment succeeds the pop up will close. Otherwise you'll receive an error message in the pop up or, if there's something wrong with the payment there should be a new order note with exception information on the order.
+
+![Capture payment](/docs/screenshots/capture-complete-shipment.PNG?raw=true)
+
+Look at the [order notes section](#order-notes) for example order notes regarding captures.
+
+#### Partial capture
+Upon completing a shipment in a multi-shipment scenario, a partial capture will be done towards Klarna. The partial capture will capture the amount that has to be captured for that specific shipment. If all shipments are completed, the full order amount will have been captured.
+
+![Patrial capture](/docs/screenshots/capture-partial.PNG?raw=true)
 
 ### Release remaining authorization
 In a multi-shipment scenario, each individual shipment can be completed or cancelled. For instance, an order with two shipments, one shipments was fullfilled and the other one was cancelled (partially completed). This means the remaining authorized amount at Klarna needs to be released.
