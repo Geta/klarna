@@ -21,6 +21,36 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 
 (*) not integrated in EPiServer Commerce
 
+## How to get started?
+
+Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
+
+    Install-Package Klarna.OrderManagement
+
+Both Klarna.Payments and Klarna.Checkout have reference to the Klarna.OrderManagement. It's more likely that one of those packages are installed.    
+
+## Setup
+Unfortunately a manual configuration needs to be done in the XML file to make sure that the KlarnaPaymentControl.ascx user control is loaded in Commerce Manager. See section Klarna order information to learn what kind of information this user control displays. Follow these steps to configure the user control:
+- **Open file: /Apps/Order/Config/Views/Forms/PurchaseOrder-ObjectView.xml**
+- **Add the KlarnaPaymentControl.ascx to the Placeholder_2 like this**
+```
+<Block id="payments" name="Payments">
+	<Placeholder id="Placeholder_1">
+		<Control id="PaymentsGrid" path="~/Apps/Order/Modules/RelatedEntityView.ascx">
+			<Property name="RelatedClassName" value="Payment" />
+			<Property name="RelatedToClassName" value="Order"/>
+		</Control>
+	</Placeholder>
+	<Placeholder id="Placeholder_2">
+    <Control id="PaymentsGrid2" path="~/KlarnaPaymentControl.ascx"></Control>
+	</Placeholder>
+	<Placeholder id="Placeholder_3" />
+	<Placeholder id="Placeholder_4" />
+</Block>
+```
+
+Note: these steps needs to be done each time Commerce Manager is updated. 
+
 ### Capture
 
 ### Release remaining authorization
