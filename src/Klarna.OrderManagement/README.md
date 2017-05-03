@@ -26,6 +26,20 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 ### Release remaining authorization
 
 ### Refund
+To create a return in Commerce Manager the order must have the completed status. Follow these steps to create a return:
+- Open the order in Commerce Manager
+- Go to the Details tab
+- Press the 'Create return' button
+- New popup window is opened, add order lines, some comments and finally press 'Save'
+![Order create return](/docs/screenshots/order-create-return.PNG?raw=true "Order create return")
+- Got ot the Returns tab
+- Press the 'Acknowledge Receipt Items' button
+- To complete the return press the 'Complete button'
+
+When the return is completed the payment gateway is called to create a refund at Klarna. In the Payments tab, an extra row for the payment refund (called Credit in Commerce Manager) has been added. Also, a note add the order is created.
+
+![Order payments refund](/docs/screenshots/order-payments-refund.PNG?raw=true "Order payments refund")
+![Order notes refund](/docs/screenshots/order-notes-refund.PNG?raw=true "Order notes refund")
 
 ### Cancel
 
