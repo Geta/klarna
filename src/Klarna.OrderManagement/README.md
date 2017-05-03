@@ -54,11 +54,11 @@ Note: these steps needs to be done each time Commerce Manager is updated.
 ### Capture
 
 ### Release remaining authorization
-In a multi-shipment scenario, each individual shipment can be completed or cancelled. Say for instance we've an order with two shipments, one shipments was fullfilled and the other one was cancelled (partially completed). This means the remaining authorized amount at Klarna needs to be released. 
+In a multi-shipment scenario, each individual shipment can be completed or cancelled. For instance, an order with two shipments, one shipments was fullfilled and the other one was cancelled (partially completed). This means the remaining authorized amount at Klarna needs to be released.
 
 ![Order multi shipment](/docs/screenshots/order-multi-shipment.PNG?raw=true "Order multi shipment")
 
-When the last shipment is handled the payment gateway is called to release the remaining authorized amount at Klarna.
+When the last shipment is handled, the payment gateway is called to release the remaining authorized amount at Klarna. The payments overview in the Payment tab contains an extra row for the release remaining authorization step. Also, a note is saved at the order to inform the user.
 
 ![Order release remaining authorization](/docs/screenshots/order-payment-releaseremainingauthorization.PNG?raw=true "Order release remaining authorization")
 
