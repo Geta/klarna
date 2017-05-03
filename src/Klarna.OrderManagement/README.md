@@ -55,5 +55,13 @@ An order in Commerce Manager can only be can cancelled when the items haven't be
 After the cancel button is pressed the payment gateway is called. The passed payment object contains the transaction type 'Void' which means the payment should be cancelled. This is also what happens at Klarna.
 ![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
 
+### Order notes
+Order notes are used for payment gateway updates.
 
-### Captur
+
+### Klarna order information
+Order notes and the payment overview can be used to gather information about the Klarna payment process. The Payments tab contains more information about the order (payment) at Klarna. By clicking on the 'Show all order information' link a complete JSON of the order object from Klarna is displayed. 
+
+Note: this information is only displayed  when a Klarna payment is added to the order in Commerce Manager.
+
+![Klarna order information](/docs/screenshots/order-klarna-information.PNG?raw=true "Klarna order information")
