@@ -156,7 +156,7 @@ When the 'Use attachment' checkbox is checked extra information can be send to K
 The last step just before creating an order is to do an [authorization call](https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods/3-authorize). In this call we will provide Klarna with any missing personal information (which might be missing due to legislation). Up until now no personal information might have been synced to Klarna, which makes risk assessment quite hard to accomplish. During the authorize call we provide Klarna with the required personal information (billing-/shipping address, customer info). Klarna will conduct a full risk assessment after which it will provide immediate feedback, which is described on the previously linked [docs](https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods/3-authorize).
 As Quicksilver supports both authenticated and anonymous checkout, we have multiple ways to retrieve personal information for the current customer.
 
-Ways to retrieve personal information:
+Ways to retrieve personal information (PI):
 - Authenticated user
     - In this case we expect that (most of) the personal information exists server side. We do an api call to the provided KlarnaPaymentController (url: "/klarnaapi/personal") to retrieve personal information. Due to the way the Quicksilver checkout process is set up, we have to provide the currently selected billing address id; because it is not stored server side (yet). 
 - Anonymous user
@@ -166,9 +166,11 @@ If anything goes wrong it could be that the Klarna widget will display a pop-up,
 Receiving an authorization token means that the risk assessment succeeded and we're able to complete the order. The authorization token is provided during the form post to Epi (purchase). This authorization token is important because it allows us to make sure no changes were made client side (as you can change the cart items in the autorization call as well).
 
 Checkout flow:
-- Server side - During checkout we use the CreateOrUpdateSession to update the session at Klarna
-- Client side - When the user presses purchase we update the session with personal information
-- Server side - After authorize we take our cart and create a session based on the information we have (which is our 'thruth'), using this session and the authorization token we can create an order in Klarna
+- Server side - During checkout we use the CreateOrUpdateSession to update the session at Klarna (this does not contain any PI)
+- Client side - When the user clicks on 'Place order' we use the Klarna javascript library to do an authorize call, providing the necessary PI.
+    - If authorize succeeds we receive an authorization token, which we add to the checkout form and pass on to our server
+    - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaService - AllowedToSharePersonalInformation). 
+- Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'thruth'), using this session and the authorization token we can create an order in Klarna.
     - If creating an order fails, the authorize request has been tampered with and the payment fails
     
  In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the clarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
