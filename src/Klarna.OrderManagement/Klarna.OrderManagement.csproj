@@ -205,6 +205,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Klarna.OrderManagement.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
