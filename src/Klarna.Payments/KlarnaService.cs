@@ -463,7 +463,7 @@ namespace Klarna.Payments
             searchOptions.Namespace = "Mediachase.Commerce.Orders";
 
             var parameters = new OrderSearchParameters();
-            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{orderId}'";
+            parameters.SqlMetaWhereClause = $"META.{Common.Constants.KlarnaOrderIdField} LIKE '{orderId}'";
 
             var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
 

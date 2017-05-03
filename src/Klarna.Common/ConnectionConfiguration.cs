@@ -1,6 +1,6 @@
-﻿namespace Klarna.Payments
+﻿namespace Klarna.Common
 {
-    class ConnectionConfiguration
+    public class ConnectionConfiguration
     {
         public string Username { get; set; }
         public string Password { get; set; }

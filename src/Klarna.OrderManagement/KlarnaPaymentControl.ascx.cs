@@ -3,12 +3,11 @@ using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
-using Klarna.OrderManagement;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Web.Console.Common;
 using Newtonsoft.Json;
 
-namespace EPiServer.Reference.Commerce.Manager
+namespace Klarna.OrderManagement
 {
     public partial class KlarnaPaymentControl : System.Web.UI.UserControl
     {

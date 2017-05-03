@@ -168,6 +168,7 @@
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
@@ -198,6 +199,13 @@
     <Compile Include="Initialization\OrderInitialization.cs" />
     <Compile Include="KlarnaAdditionalTransactionType.cs" />
     <Compile Include="KlarnaOrderService.cs" />
+    <Compile Include="KlarnaPaymentControl.ascx.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="KlarnaPaymentControl.ascx.designer.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Refunds\RefundBuilder.cs" />
     <Compile Include="CaptureBuilder.cs" />
@@ -205,6 +213,17 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="KlarnaPaymentControl.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Klarna.Common\Klarna.Common.csproj">
+      <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
+      <Name>Klarna.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

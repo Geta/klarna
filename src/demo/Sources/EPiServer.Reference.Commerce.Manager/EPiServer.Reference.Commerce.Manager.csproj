@@ -272,7 +272,9 @@
     <Content Include="Default.aspx" />
     <Content Include="EPiServerDefault.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="KlarnaPaymentControl.ascx" />
+    <Content Include="KlarnaPaymentControl.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -347,6 +349,10 @@
     <Folder Include="modulesbin\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Klarna.Common\Klarna.Common.csproj">
+      <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
+      <Name>Klarna.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
       <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
       <Name>Klarna.OrderManagement</Name>

@@ -21,7 +21,7 @@ namespace Klarna.Payments.Steps
             {
                 try
                 {
-                    var orderId = orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString();
+                    var orderId = orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
                     if (!string.IsNullOrEmpty(orderId))
                     {
                         KlarnaOrderService.CancelOrder(orderId);

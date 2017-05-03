@@ -3,6 +3,7 @@ using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
+using Klarna.Common;
 using Klarna.OrderManagement;
 using Klarna.Payments.Extensions;
 using Klarna.Rest.Transport;
@@ -14,6 +15,7 @@ namespace Klarna.Payments.Steps
     {
         protected Injected<IKlarnaService> KlarnaService;
         protected IKlarnaOrderService KlarnaOrderService;
+        protected Injected<ConnectionFactory> ConnectionFactory;
         protected PaymentStep Successor;
 
         protected PaymentStep(IPayment payment)
@@ -21,11 +23,7 @@ namespace Klarna.Payments.Steps
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
-                var username = paymentMethod.GetParameter(Constants.KlarnaUsernameField, string.Empty);
-                var password = paymentMethod.GetParameter(Constants.KlarnaPasswordField, string.Empty);
-                var apiUrl = paymentMethod.GetParameter(Constants.KlarnaApiUrlField, string.Empty);
-
-                KlarnaOrderService = new KlarnaOrderService(username, password, apiUrl);
+                KlarnaOrderService = new KlarnaOrderService(ConnectionFactory.Service.GetConnectionConfiguration(paymentMethod));
             }
         }
 

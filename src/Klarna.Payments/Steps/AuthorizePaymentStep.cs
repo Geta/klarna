@@ -22,7 +22,7 @@ namespace Klarna.Payments.Steps
             if (payment.TransactionType == TransactionType.Authorization.ToString())
             {
                 // Fraud status update
-                if (payment.Status == PaymentStatus.Pending.ToString() && !string.IsNullOrEmpty(orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString()))
+                if (payment.Status == PaymentStatus.Pending.ToString() && !string.IsNullOrEmpty(orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString()))
                 {
                     return ProcessFraudUpdate(payment, orderGroup, ref message);
                 }
@@ -79,7 +79,7 @@ namespace Klarna.Payments.Steps
                 {
                     var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup as ICart)).Result;
 
-                    orderGroup.Properties[Constants.KlarnaOrderIdField] = result.OrderId;
+                    orderGroup.Properties[Common.Constants.KlarnaOrderIdField] = result.OrderId;
                     payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
                     payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
 

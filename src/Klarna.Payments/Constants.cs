@@ -44,7 +44,6 @@
 
         // Payment fields
         public const string AuthorizationTokenPaymentMethodField = "AuthorizationTokenPaymentMethod";
-        public const string KlarnaOrderIdField = "KlarnaOrderId";
         public const string FraudStatusPaymentMethodField = "FraudStatusPaymentMethod";
     }
 }

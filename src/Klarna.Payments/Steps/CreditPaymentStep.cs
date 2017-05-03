@@ -23,7 +23,7 @@ namespace Klarna.Payments.Steps
             {
                 try
                 {
-                    var orderId = orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString();
+                    var orderId = orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
                     if (!string.IsNullOrEmpty(orderId))
                     {
                         var purchaseOrder = orderGroup as IPurchaseOrder;

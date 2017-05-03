@@ -4,7 +4,7 @@ using Refit;
 
 namespace Klarna.Payments
 {
-    internal interface IKlarnaServiceApi
+    public interface IKlarnaServiceApi
     {
         [Post("/credit/v1/sessions")]
         Task<CreateSessionResponse> CreatNewSession([Body]Session request);

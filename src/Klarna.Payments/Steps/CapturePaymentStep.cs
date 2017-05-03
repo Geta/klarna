@@ -31,7 +31,7 @@ namespace Klarna.Payments.Steps
             if (payment.TransactionType == TransactionType.Capture.ToString())
             {
                 var amount = AmountHelper.GetAmount(payment.Amount);
-                var orderId = orderGroup.Properties[Constants.KlarnaOrderIdField]?.ToString();
+                var orderId = orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
                 if (!string.IsNullOrEmpty(orderId))
                 {
                     try

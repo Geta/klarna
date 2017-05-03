@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
+using Klarna.Common;
 using Klarna.OrderManagement.Refunds;
 using Klarna.Rest;
 using Klarna.Rest.Models;
@@ -20,9 +21,9 @@ namespace Klarna.OrderManagement
         private Injected<RefundBuilder> _refundBuilder;
         private Injected<CaptureBuilder> _captureBuilder;
 
-        public KlarnaOrderService(string merchantId, string sharedSecret, string apiUrl)
+        public KlarnaOrderService(ConnectionConfiguration connectionConfiguration)
         {
-            var connector = ConnectorFactory.Create(merchantId, sharedSecret, new Uri(apiUrl));
+            var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
 
             _client = new Client(connector);
         }

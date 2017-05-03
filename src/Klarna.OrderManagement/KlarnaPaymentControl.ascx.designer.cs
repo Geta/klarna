@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace EPiServer.Reference.Commerce.Manager {
+namespace Klarna.OrderManagement {
     
     
     public partial class KlarnaPaymentControl {
