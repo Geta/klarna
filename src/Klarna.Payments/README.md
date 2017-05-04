@@ -62,7 +62,7 @@ _klarnaService.RedirectToConfirmationUrl(purchaseOrder);
 ```
 Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be send to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
-The 'PreAssement' field indicates if customer information should be send to Klarna. Klarna will review this information to verify if the customer can buy via Klarna. This setting can be enabled per country. Below a code snippet for sending customer information. An implementation of the SessionBuilder class can be used for setting this information. The SessionBuilder is explained later in this document.
+The 'PreAssement' field indicates if customer information should be send to Klarna. Klarna will review this information to verify if the customer can buy via Klarna. This setting can be enabled per country. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
 
 ```
 sessionRequest.Customer = new Customer
@@ -110,12 +110,12 @@ A session at Klarna should be created when the visitor is on the checkout page. 
 await _klarnaService.CreateOrUpdateSession(Cart);
 ```
 
-It's mandatory to create an implementation of the SessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. The includePersonalInformation parameter indicates if personal information can be send to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information on the last step of the payment process. Below an example implementation of the SessionBuilder class.
+It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information on the last step of the payment process. Below an example implementation of a DemoSessionBuilder.
 
 ```
-public class DemoSessionBuilder : SessionBuilder
+public class DemoSessionBuilder : ISessionBuilder
 {
-    public override Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
+        public Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
     {
         if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
         {
@@ -201,7 +201,7 @@ Checkout flow:
  In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the clarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
 
 ### Create order
-The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The SessionBuilder class is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
+The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
 
 ### Fraud status notifications
 In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
