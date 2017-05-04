@@ -41,9 +41,10 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 - **Payment Class** - choose **Mediachase.Commerce.Orders.OtherPayment**
 - **IsActive** - **Yes**
 - select shipping methods available for this payment
-- navigate to parameters tab and fill in settings (see screenshot below)
 
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
+
+- navigate to parameters tab and fill in settings (see screenshot below)
 
 **Connection string**
 
@@ -76,7 +77,7 @@ sessionRequest.Customer = new Customer
 
 **Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager nuget (see above)**
 
-In the **Markets** tab select a market for which this payment will be available.
+- In the **Markets** tab select a market for which this payment will be available.
 
 ### Creating session
 A session at Klarna should be created when the visitor is on the checkout page. The CreateOrUpdateSession method will create a new session when it does not exists or update the current one.
