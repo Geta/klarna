@@ -48,7 +48,7 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 
 **Connection string**
 
-Connection string configurations for the connection with the Klarna APi.
+Connection string configurations for the connection with the Klarna APi. See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls
 
 **Widget settings**
 
