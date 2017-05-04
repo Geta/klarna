@@ -349,22 +349,6 @@
     <Folder Include="modulesbin\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Klarna.Common\Klarna.Common.csproj">
-      <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
-      <Name>Klarna.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
-      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
-      <Name>Klarna.OrderManagement</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj">
-      <Project>{6e816423-8646-43ce-9192-fb6e2a2f13b8}</Project>
-      <Name>Klarna.Payments.CommerceManager</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Klarna.Payments\Klarna.Payments.csproj">
-      <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
-      <Name>Klarna.Payments</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj">
       <Project>{341c8e14-4eae-4946-9841-45f9818265a8}</Project>
       <Name>EPiServer.Reference.Commerce.Shared</Name>
