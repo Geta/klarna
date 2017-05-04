@@ -84,12 +84,16 @@
     }
 
     function load(newSettings) {
-        if (newSettings && shouldUpdateSettings(settings, newSettings)) {
+        if (newSettings && newSettings.client_token && shouldUpdateSettings(settings, newSettings)) {
             settings.client_token = newSettings.client_token;
             settings.klarna_container = newSettings.klarna_container;
 
             // Init new settings
             initKlarna(state, settings.client_token);
+        }
+
+        if (!settings.client_token || !settings.klarna_container) {
+            return;
         }
 
         Klarna.Credit.load({
