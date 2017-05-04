@@ -79,6 +79,24 @@ sessionRequest.Customer = new Customer
 
 - In the **Markets** tab select a market for which this payment will be available.
 
+### Quicksilver demo site implementation
+This repository includes the Quicksilver demo site (https://github.com/Geta/Klarna/tree/master/demo) which contains an example implementation of this package. The following steps are done for implementing this package.
+- Load Klarna api.js on [Layout.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_Layout.cshtml#L87)
+- Implement [Checkout.Klarna.js]( https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.Klarna.js) 
+- [Reload the Klarna widget](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L167) each time something changed on the checkout page
+- [Execute authorization](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L14) at Klarna when Purchase button is clicked
+- Implement [API controller](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs)
+..* [Get personal information](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L39) for the authorization call. See the section 'Call authorize client-side' for more explaination.
+..* Check [if the personal information can be shared](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L55). See the section 'Call authorize client-side' for more explaination.
+..* Endpoint for [fraud notifications](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L69) pushed by Klarna. This URL can configured in Commerce Manager, see the 'Configure Commerce Manager' section.
+..* 
+- Add [KlarnaPaymentsPaymentMethod.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
+- Add [KlarnaPaymentMethodsConfirmation.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
+- Add authoriza
+
+
+
+
 ### Creating session
 A session at Klarna should be created when the visitor is on the checkout page. The CreateOrUpdateSession method will create a new session when it does not exists or update the current one.
 
