@@ -92,7 +92,9 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
 ..* 
 - Add [KlarnaPaymentsPaymentMethod.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
 - Add [KlarnaPaymentMethodsConfirmation.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
-- Add authoriza
+- [Define Authorization token property](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/ViewModels/CheckoutViewModel.cs#L73) on view model, add hiddenfield on [Single-](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/SingleShipmentCheckout.cshtml#L87) and [MultiShipmentCheckout.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/MultiShipmentCheckout.cshtml#L67)
+- [Set authorization token](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs#L109) on payment object. This should be done before calling the payment gateway - cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+- Call CreateOrUpdateSession method in the [Index](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L84) and [Update](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L116) action of the CheckoutController
 
 
 
