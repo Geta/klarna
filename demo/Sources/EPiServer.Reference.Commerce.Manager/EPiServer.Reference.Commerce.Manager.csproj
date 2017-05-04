@@ -133,8 +133,26 @@
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Klarna.Payments.0.0.0.1\lib\net452\Klarna.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.OrderManagement, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Klarna.OrderManagement.0.0.0.1\lib\net452\Klarna.OrderManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.OrderManagement.CommerceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Klarna.OrderManagement.CommerceManager.0.0.0.1\lib\net452\Klarna.OrderManagement.CommerceManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.Payments, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Klarna.Payments.0.0.0.1\lib\net452\Klarna.Payments.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.Payments.CommerceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\EPiServer.Klarna.Payments.CommerceManager.0.0.0.1\lib\net452\Klarna.Payments.CommerceManager.dll</HintPath>
+    </Reference>
     <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
+      <HintPath>..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
     <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -204,6 +222,9 @@
       <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Refit, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\refit.3.0.1\lib\Net45\Refit.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap, Version=3.1.9.463, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <HintPath>..\..\packages\structuremap-signed.3.1.9.463\lib\net40\StructureMap.dll</HintPath>
       <Private>True</Private>
@@ -216,7 +237,14 @@
       <HintPath>..\..\packages\structuremap.web-signed.3.1.6.186\lib\net40\StructureMap.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -272,9 +300,7 @@
     <Content Include="Default.aspx" />
     <Content Include="EPiServerDefault.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="KlarnaPaymentControl.ascx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
+    <Content Include="KlarnaSummary\KlarnaPaymentControl.ascx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -282,13 +308,6 @@
   <ItemGroup>
     <Compile Include="..\AssemblyVersionAuto.cs">
       <Link>AssemblyVersionAuto.cs</Link>
-    </Compile>
-    <Compile Include="KlarnaPaymentControl.ascx.cs">
-      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="KlarnaPaymentControl.ascx.designer.cs">
-      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
     </Compile>
     <Compile Include="Login.aspx.designer.cs">
       <DependentUpon>Login.aspx.cs</DependentUpon>
@@ -376,7 +395,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63149</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
@@ -536,5 +555,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\EPiServer.CommerceManager.10.4.3\build\EPiServer.CommerceManager.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\EPiServer.CommerceManager.10.4.3\build\EPiServer.CommerceManager.targets'))" />
+    <Error Condition="!Exists('..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets'))" />
   </Target>
+  <Import Project="..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets" Condition="Exists('..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets')" />
 </Project>

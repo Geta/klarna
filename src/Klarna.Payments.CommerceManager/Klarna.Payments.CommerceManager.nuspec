@@ -1,27 +1,4 @@
 <?xml version="1.0"?>
-<!--<package >
-  <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
-    <projectUrl>https://github.com/Geta/Klarna</projectUrl>
-    <iconUrl>https://cdn.geta.no/opensource/icons/Geta-logo-3.png</iconUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
-    <copyright>Copyright 2016 Geta</copyright>
-    <tags>EPiServer Commerce 10</tags>
-    <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="10.0.0" />
-      <dependency id="EPiServer.Commerce.Core" version="10.0.0" />
-    </dependencies>
-  </metadata>
-  <files>
-    <file src="readme.txt" target="" />
-  </files>
-</package>-->
-
 <package >
   <metadata>
     <id>EPiServer.Klarna.Payments.CommerceManager</id>

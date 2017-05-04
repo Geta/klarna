@@ -11,4 +11,6 @@ nuget pack Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.cspro
 nuget pack Klarna.OrderManagement\Klarna.OrderManagement.csproj -IncludeReferencedProjects
 nuget pack Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.csproj -IncludeReferencedProjects
 
+copy EPiServer.Klarna.*.nupkg ..\demo\lib /Y
+
 @echo on

@@ -195,17 +195,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KlarnaPaymentControl.ascx.cs">
+    <Compile Include="KlarnaSummary\KlarnaPaymentControl.ascx.cs">
       <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="KlarnaPaymentControl.ascx.designer.cs">
-      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
+    <Compile Include="KlarnaSummary\KlarnaPaymentControl.ascx.designer.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="KlarnaPaymentControl.ascx">
+    <Content Include="KlarnaSummary\KlarnaPaymentControl.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
   </ItemGroup>
