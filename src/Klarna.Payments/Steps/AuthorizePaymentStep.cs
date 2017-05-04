@@ -77,13 +77,16 @@ namespace Klarna.Payments.Steps
             {
                 try
                 {
-                    var result = Task.Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup as ICart)).Result;
+                    var result = Task
+                        .Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup as ICart))
+                        .Result;
 
                     orderGroup.Properties[Common.Constants.KlarnaOrderIdField] = result.OrderId;
                     payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
                     payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
 
-                    AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
+                    AddNoteAndSaveChanges(orderGroup, payment.TransactionType,
+                        $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");
 
                     if (result.FraudStatus == FraudStatus.REJECTED)
                     {
@@ -105,6 +108,10 @@ namespace Klarna.Payments.Steps
                     Logger.Error(exceptionMessage, ex);
                     return false;
                 }
+            }
+            else
+            {
+                message = "authorizationToken is null or empty";
             }
             return false;
         }
