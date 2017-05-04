@@ -92,11 +92,13 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
     - Add [KlarnaPaymentsPaymentMethod.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
 - Add [KlarnaPaymentMethodsConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
 - Create [KlarnaPaymentsPaymentMethod](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs)
+    - [Set the payment status to pending](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs#L41) when the fraud status is pending     
 - Create [KlarnaPaymentsViewModel](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/ViewModels/KlarnaPaymentsViewModel.cs)
 - [Return KlarnaViewModel](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/ViewModels/PaymentMethodViewModelResolver.cs) in PaymentMethodViewModelResolver
 - [Define Authorization token property](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/ViewModels/CheckoutViewModel.cs#L73) on view model, add hiddenfield on [Single-](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/SingleShipmentCheckout.cshtml#L87) and [MultiShipmentCheckout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/MultiShipmentCheckout.cshtml#L67)
 - [Set authorization token](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs#L109) on payment object. This should be done before calling the payment gateway - cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
 - Call CreateOrUpdateSession method in the [Index](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L84), [Update](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L116) and [ChangeAddress](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L123) action of the CheckoutController
+- Call the RedirectToConfirmationUrl to [redirect](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L221) the visitor to the confirmation page after creating a PurchaseOrder
 
 
 
