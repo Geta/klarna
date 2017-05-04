@@ -1,5 +1,3 @@
 ﻿EPiServer.Klarna.Payments.CommerceManager
 
-Configure the Klarna payments method in EPiServer Commerce
- - use KlarnaPayments as System Keyword
- - Set specific Klarna configuration in the Parameters tab
+Read the installation guide on GitHub: https://github.com/Geta/Klarna/blob/master/src/Klarna.Payments/README.md

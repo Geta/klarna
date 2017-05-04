@@ -44,33 +44,31 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
                 if (firstPayment != null)
                 {
                     var paymentMethod = PaymentManager.GetPaymentMethod(firstPayment.PaymentMethodId);
-                    if (paymentMethod != null)
+
+                    if (paymentMethod != null && paymentMethod.PaymentMethod.FirstOrDefault() != null &&
+                        paymentMethod.PaymentMethod.FirstOrDefault().SystemKeyword.Contains("Klarna"))
                     {
-                        if (purchaseOrder.GetFirstForm().Payments.Any(x =>x.PaymentMethodId == paymentMethod.PaymentMethod.FirstOrDefault()?.PaymentMethodId))
-                        {
 
-                            var klarnaOrderService = new KlarnaOrderService(_connectionFactory.Service.GetConnectionConfiguration(paymentMethod));
+                        var klarnaOrderService = new KlarnaOrderService(_connectionFactory.Service.GetConnectionConfiguration(paymentMethod));
 
-                            var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
+                        var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
+                        var orderData = klarnaOrderService.GetOrder(orderId);
 
-                            var orderData = klarnaOrderService.GetOrder(orderId);
+                        OrderIdLabel.Text = orderData.OrderId;
+                        KlarnaReferenceLabel.Text = orderData.KlarnaReference;
+                        MerchantReference1Label.Text = orderData.MerchantReference1;
+                        MerchantReference2Label.Text = orderData.MerchantReference2;
+                        ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
+                        StatusLabel.Text = orderData.Status;
+                        OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
+                        CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
+                        RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
 
-                            OrderIdLabel.Text = orderData.OrderId;
-                            KlarnaReferenceLabel.Text = orderData.KlarnaReference;
-                            MerchantReference1Label.Text = orderData.MerchantReference1;
-                            MerchantReference2Label.Text = orderData.MerchantReference2;
-                            ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
-                            StatusLabel.Text = orderData.Status;
-                            OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
-                            CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
-                            RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
-
-                            preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
-                        }
-                        else
-                        {
-                            Visible = false;
-                        }
+                        preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
+                    }
+                    else
+                    {
+                        Visible = false;
                     }
                 }
             }
