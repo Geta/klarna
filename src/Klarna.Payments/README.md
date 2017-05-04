@@ -81,20 +81,22 @@ sessionRequest.Customer = new Customer
 
 ### Quicksilver demo site implementation
 This repository includes the Quicksilver demo site (https://github.com/Geta/Klarna/tree/master/demo) which contains an example implementation of this package. The following steps are done for implementing this package.
-- Load Klarna api.js on [Layout.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_Layout.cshtml#L87)
-- Implement [Checkout.Klarna.js]( https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.Klarna.js) 
-- [Reload the Klarna widget](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L167) each time something changed on the checkout page
-- [Execute authorization](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L14) at Klarna when Purchase button is clicked
-- Implement [API controller](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs)
-..* [Get personal information](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L39) for the authorization call. See the section 'Call authorize client-side' for more explaination.
-..* Check [if the personal information can be shared](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L55). See the section 'Call authorize client-side' for more explaination.
-..* Endpoint for [fraud notifications](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L69) pushed by Klarna. This URL can configured in Commerce Manager, see the 'Configure Commerce Manager' section.
-..* 
-- Add [KlarnaPaymentsPaymentMethod.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
-- Add [KlarnaPaymentMethodsConfirmation.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
-- [Define Authorization token property](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/ViewModels/CheckoutViewModel.cs#L73) on view model, add hiddenfield on [Single-](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/SingleShipmentCheckout.cshtml#L87) and [MultiShipmentCheckout.cshtml](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/MultiShipmentCheckout.cshtml#L67)
-- [Set authorization token](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs#L109) on payment object. This should be done before calling the payment gateway - cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
-- Call CreateOrUpdateSession method in the [Index](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L84) and [Update](https://github.com/Geta/Klarna/blob/master/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L116) action of the CheckoutController
+- Load Klarna api.js on [Layout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_Layout.cshtml#L87)
+- Implement [Checkout.Klarna.js](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.Klarna.js) 
+- [Reload the Klarna widget](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L167) each time something changed on the checkout page
+- [Execute authorization](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L14) at Klarna when Purchase button is clicked
+- Implement [API controller](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs)
+    - [Get personal information](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L39) for the authorization call. See the section 'Call authorize client-side' for more explaination.
+    - Check [if the personal information can be shared](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L55). See the section 'Call authorize client-side' for more explaination.
+    - Endpoint for [fraud notifications](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L69) pushed by Klarna. This URL can configured in Commerce Manager, see the 'Configure Commerce Manager' section.
+    - Add [KlarnaPaymentsPaymentMethod.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
+- Add [KlarnaPaymentMethodsConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
+- Create [KlarnaPaymentsPaymentMethod](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs)
+- Create [KlarnaPaymentsViewModel](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/ViewModels/KlarnaPaymentsViewModel.cs)
+- [Return KlarnaViewModel](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/ViewModels/PaymentMethodViewModelResolver.cs) in PaymentMethodViewModelResolver
+- [Define Authorization token property](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/ViewModels/CheckoutViewModel.cs#L73) on view model, add hiddenfield on [Single-](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/SingleShipmentCheckout.cshtml#L87) and [MultiShipmentCheckout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/MultiShipmentCheckout.cshtml#L67)
+- [Set authorization token](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs#L109) on payment object. This should be done before calling the payment gateway - cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+- Call CreateOrUpdateSession method in the [Index](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L84), [Update](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L116) and [ChangeAddress](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L123) action of the CheckoutController
 
 
 
