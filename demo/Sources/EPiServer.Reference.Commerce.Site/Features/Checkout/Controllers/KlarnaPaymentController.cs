@@ -81,7 +81,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
-        public virtual PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
+        private PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
         {
             var request = _klarnaService.GetPersonalInformationSession(cart);
             
