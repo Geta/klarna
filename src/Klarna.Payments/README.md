@@ -89,7 +89,7 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
     - [Get personal information](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L39) for the authorization call. See the section 'Call authorize client-side' for more explaination.
     - Check [if the personal information can be shared](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L55). See the section 'Call authorize client-side' for more explaination.
     - Endpoint for [fraud notifications](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L69) pushed by Klarna. This URL can configured in Commerce Manager, see the 'Configure Commerce Manager' section.
-    - Add [KlarnaPaymentsPaymentMethod.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
+- Add [KlarnaPaymentsPaymentMethod.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
 - Add [KlarnaPaymentMethodsConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
 - Create [KlarnaPaymentsPaymentMethod](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs)
     - [Set the payment status to pending](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs#L41) when the fraud status is pending     
