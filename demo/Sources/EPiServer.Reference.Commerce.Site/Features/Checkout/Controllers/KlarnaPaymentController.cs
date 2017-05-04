@@ -33,14 +33,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _cartService = cartService;
         }
 
-        [Route("address/{addressId}")]
-        [AcceptVerbs("GET")]
-        public IHttpActionResult GetAddress(string addressId)
-        {
-            var address = _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == addressId)?.ToAddress();
-            return Ok(address);
-        }
-
         [Route("personal")]
         [AcceptVerbs("POST")]
         [HttpPost]
