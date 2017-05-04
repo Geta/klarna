@@ -72,7 +72,20 @@ Look at the [order notes section](#order-notes) for example order notes regardin
 #### Partial capture
 Upon completing a shipment in a multi-shipment scenario, a partial capture will be done towards Klarna. The partial capture will capture the amount that has to be captured for that specific shipment. If all shipments are completed, the full order amount will have been captured.
 
-![Patrial capture](/docs/screenshots/capture-partial.PNG?raw=true)
+![Partial capture](/docs/screenshots/capture-partial.PNG?raw=true)
+
+#### Change Capture data
+By default all capture data should be set automatically. However, similar to Klarna Payment sessions, it is possible to change capture data before it is sent to Klarna. In order to do so you can create an implementation of ``ICaptureBuilder`` and register it with StructureMap.
+```csharp
+public class DemoCaptureBuilder : ICaptureBuilder
+{
+    public CaptureData Build(CaptureData captureData, IOrderGroup orderGroup, IOrderForm returnOrderForm, IPayment payment)
+    {
+        // Here you can make changes to captureData if needed
+        return captureData;
+    }
+}
+```
 
 ### Release remaining authorization
 In a multi-shipment scenario, each individual shipment can be completed or cancelled. For instance, an order with two shipments, one shipments was fullfilled and the other one was cancelled (partially completed). This means the remaining authorized amount at Klarna needs to be released.
@@ -97,6 +110,19 @@ To create a return in Commerce Manager the order must have the completed status.
 When the return is completed the payment gateway is called to create a refund at Klarna. In the Payments tab, an extra row for the payment refund (called Credit in Commerce Manager) has been added. Also, a note is added at the order.
 
 ![Order payments refund](/docs/screenshots/order-payments-refund.PNG?raw=true "Order payments refund")
+
+#### Change Refund data
+It is possible to change refund data before sending it to Klarna, similar to [changing capture data](#Change-Capture-data) it is possible to do so by creating an implemention of ```IRefundBuilder``` and registering it with StructureMap.
+```csharp
+public class DemoRefundBuilder : IRefundBuilder
+{
+    public Refund Build(Refund refund, IOrderGroup orderGroup, OrderForm returnOrderForm, IPayment payment)
+    {
+        // Here you can make changes to refund if needed
+        return refund;
+    }
+}
+```
 
 ### Cancel
 Whenever an order is cancelled in Commerce Manager the payment gateway is called to alos cancel the payment at Klarna.
