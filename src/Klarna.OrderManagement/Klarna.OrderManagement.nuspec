@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>EPiServer.Klarna.OrderManagement</id>
-    <version>1.0.0.1</version>
+    <version>0.0.0.1</version>
     <title>Klarna Order Management</title>
     <authors>Geta</authors>
     <owners>Geta</owners>

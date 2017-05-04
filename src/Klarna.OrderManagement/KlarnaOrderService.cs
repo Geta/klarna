@@ -18,8 +18,6 @@ namespace Klarna.OrderManagement
     public class KlarnaOrderService : IKlarnaOrderService
     {
         private readonly Client _client;
-        private Injected<RefundBuilder> _refundBuilder;
-        private Injected<CaptureBuilder> _captureBuilder;
 
         public KlarnaOrderService(ConnectionConfiguration connectionConfiguration)
         {
@@ -80,7 +78,11 @@ namespace Klarna.OrderManagement
                 OrderLines = lines,
                 ShippingInfo = new List<ShippingInfo>() { shippingInfo }
             };
-            captureData = _captureBuilder.Service.Build(captureData, orderGroup, orderForm, payment);
+
+            if (ServiceLocator.Current.TryGetExistingInstance(out ICaptureBuilder captureBuilder))
+            {
+                captureData = captureBuilder.Build(captureData, orderGroup, orderForm, payment);
+            }
 
             capture.Create(captureData);
             return capture.Fetch();
@@ -99,8 +101,11 @@ namespace Klarna.OrderManagement
                 OrderLines = lines
             };
 
-            refund = _refundBuilder.Service.Build(refund, orderGroup, orderForm, payment);
-
+            if (ServiceLocator.Current.TryGetExistingInstance(out IRefundBuilder refundBuilder))
+            {
+                refund = refundBuilder.Build(refund, orderGroup, orderForm, payment);
+            }
+            
             order.Refund(refund);
         }
 

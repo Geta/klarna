@@ -22,18 +22,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly CustomerContextFacade _customerContextFacade;
         private readonly IKlarnaService _klarnaService;
         private readonly ICartService _cartService;
-        private readonly SessionBuilder _sessionBuilder;
 
         public KlarnaPaymentController(
             CustomerContextFacade customerContextFacade, 
             IKlarnaService klarnaService, 
-            ICartService cartService,
-            SessionBuilder sessionBuilder)
+            ICartService cartService)
         {
             _klarnaService = klarnaService;
             _customerContextFacade = customerContextFacade;
             _cartService = cartService;
-            _sessionBuilder = sessionBuilder;
         }
 
         [Route("address/{addressId}")]

@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Commerce.Order;
-using Klarna.Payments;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Klarna.Payments;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
-    public class DemoSessionBuilder : SessionBuilder
+    public class DemoSessionBuilder : ISessionBuilder
     {
-        public override Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
+        public Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
         {
             if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
             {

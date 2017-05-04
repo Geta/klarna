@@ -38,7 +38,6 @@ namespace Klarna.Payments
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
-        private readonly SessionBuilder _sessionBuilder;
 
         private Configuration _configuration;
 
@@ -50,8 +49,7 @@ namespace Klarna.Payments
             IContentRepository contentRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator,
-            SessionBuilder sessionBuilder)
+            IOrderGroupCalculator orderGroupCalculator)
         {
             _klarnaServiceApi = ServiceLocator.Current.GetInstance<IKlarnaServiceApi>();
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
@@ -62,7 +60,6 @@ namespace Klarna.Payments
             _orderNumberGenerator = orderNumberGenerator;
             _paymentProcessor = paymentProcessor;
             _orderGroupCalculator = orderGroupCalculator;
-            _sessionBuilder = sessionBuilder;
         }
 
         public Configuration Configuration
@@ -82,7 +79,11 @@ namespace Klarna.Payments
             // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
 
-            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart, canSendPersonalInformation), cart, Configuration);
+            var sessionRequest = GetSessionRequest(cart, canSendPersonalInformation);
+            if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
+            {
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, Configuration);
+            }
             
             var currentCountry = cart.Market.Countries.FirstOrDefault();
             // Clear PI if we're not allowed to send it yet (can be set by custom session builder)
@@ -145,7 +146,11 @@ namespace Klarna.Payments
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
-            var sessionRequest = _sessionBuilder.Build(GetSessionRequest(cart, true), cart, Configuration, true);
+            var sessionRequest = GetSessionRequest(cart, true);
+            if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
+            {
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, Configuration, true);
+            }
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
             sessionRequest.MerchantUrl = new MerchantUrl
@@ -260,7 +265,11 @@ namespace Klarna.Payments
             {
                 request.BillingAddress = payment.BillingAddress.ToAddress();
             }
-            request = _sessionBuilder.Build(request, cart, Configuration, true);
+
+            if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
+            {
+                request = sessionBuilder.Build(request, cart, Configuration, true);
+            }
 
             return new PersonalInformationSession
             {

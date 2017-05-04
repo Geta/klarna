@@ -137,7 +137,7 @@
       <HintPath>..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
     </Reference>
     <Reference Include="Klarna.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Klarna.Payments.0.0.0.1\lib\net452\Klarna.Common.dll</HintPath>
+      <HintPath>..\..\packages\EPiServer.Klarna.OrderManagement.CommerceManager.0.0.0.1\lib\net452\Klarna.Common.dll</HintPath>
     </Reference>
     <Reference Include="Klarna.OrderManagement, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EPiServer.Klarna.OrderManagement.0.0.0.1\lib\net452\Klarna.OrderManagement.dll</HintPath>
@@ -395,7 +395,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>False</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>63149</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

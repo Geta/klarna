@@ -18,8 +18,8 @@ namespace EPiServer.Reference.Commerce.Manager.OrderManagement
         {
             var services = context.Services;
 
-            services.AddTransient<RefundBuilder, DemoRefundBuilder>();
-            services.AddTransient<CaptureBuilder, DemoCaptureBuilder>();
+            services.AddTransient<IRefundBuilder, DemoRefundBuilder>();
+            services.AddTransient<ICaptureBuilder, DemoCaptureBuilder>();
         }
 
         public void Uninitialize(InitializationEngine context) { }
