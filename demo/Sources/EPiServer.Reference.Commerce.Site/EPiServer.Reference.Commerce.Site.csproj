@@ -423,11 +423,13 @@
     <Compile Include="Features\Market\Services\MarketContentLoader.cs" />
     <Compile Include="Features\Payment\Models\PaymentMethodModel.cs" />
     <Compile Include="Features\Payment\PaymentMethods\AuthorizePaymentMethod.cs" />
+    <Compile Include="Features\Payment\PaymentMethods\KlarnaCheckoutPaymentMethod.cs" />
     <Compile Include="Features\Payment\PaymentMethods\KlarnaPaymentsPaymentMethod.cs" />
     <Compile Include="Features\Payment\Services\IPaymentService.cs" />
     <Compile Include="Features\Payment\Services\PaymentService.cs" />
     <Compile Include="Features\Payment\ViewModelFactories\PaymentMethodViewModelFactory.cs" />
     <Compile Include="Features\Payment\ViewModels\AuthorizeViewModel.cs" />
+    <Compile Include="Features\Payment\ViewModels\KlarnaCheckoutViewModel.cs" />
     <Compile Include="Features\Payment\ViewModels\KlarnaPaymentsViewModel.cs" />
     <Compile Include="Features\Product\Controllers\BundleController.cs" />
     <Compile Include="Features\Product\Controllers\PackageController.cs" />
@@ -809,9 +811,9 @@
     <Content Include="modules\_protected\CMS\CMS.zip" />
     <Content Include="App_Data\GeoLiteCity.dat" />
     <Content Include="Views\Shared\_KlarnaPaymentsPaymentMethod.cshtml" />
-    <Content Include="Views\Shared\_KlarnaCheckout.cshtml" />
     <Content Include="Views\Shared\_KlarnaPaymentsConfirmation.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <Content Include="Views\Shared\_KlarnaCheckoutPaymentMethod.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
