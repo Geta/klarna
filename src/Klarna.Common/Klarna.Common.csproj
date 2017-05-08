@@ -194,6 +194,7 @@
     <Compile Include="ConnectionConfiguration.cs" />
     <Compile Include="ConnectionFactory.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Extensions\PaymentMethodExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

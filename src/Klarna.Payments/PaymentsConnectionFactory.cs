@@ -1,6 +1,6 @@
 ﻿using EPiServer.ServiceLocation;
 using Klarna.Common;
-using Klarna.Payments.Extensions;
+using Klarna.Common.Extensions;
 using Mediachase.Commerce.Orders.Dto;
 
 namespace Klarna.Payments

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.UI.WebControls;
 using ISO3166;
+using Klarna.Common.Extensions;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Helpers;
 using Mediachase.Commerce;

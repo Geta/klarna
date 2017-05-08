@@ -2,7 +2,7 @@
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Exceptions;
 
-namespace Klarna.Payments.Extensions
+namespace Klarna.Common.Extensions
 {
     public static class PaymentMethodsExtensions
     {

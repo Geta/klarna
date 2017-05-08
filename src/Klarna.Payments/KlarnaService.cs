@@ -14,6 +14,7 @@ using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
+using Klarna.Common.Extensions;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Helpers;
 using Mediachase.Commerce.Catalog;
