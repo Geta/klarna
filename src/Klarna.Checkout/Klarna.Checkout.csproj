@@ -195,7 +195,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="KlarnaCheckoutGateway.cs" />
+    <Compile Include="KlarnaCheckoutService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
