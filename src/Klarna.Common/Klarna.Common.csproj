@@ -196,6 +196,7 @@
   <ItemGroup>
     <Compile Include="ConnectionConfiguration.cs" />
     <Compile Include="Extensions\LineItemExtensions.cs" />
+    <Compile Include="Extensions\ShipmentExtensions.cs" />
     <Compile Include="Helpers\AmountHelper.cs" />
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="Constants.cs" />

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
-using Klarna.Payments.Models;
+using Klarna.Rest.Models;
 using Mediachase.Commerce.Customers;
 
 namespace Klarna.Payments.Extensions

@@ -16,6 +16,7 @@ using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Helpers;
+using Klarna.Rest.Models;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
@@ -311,24 +312,10 @@ namespace Klarna.Payments
             }
             if (totals.ShippingTotal.Amount > 0)
             {
-                var shipmentOrderLine = new PatchedOrderLine
-                {
-                    Name = shipment.ShippingMethodName,
-                    Quantity = 1,
-                    UnitPrice = AmountHelper.GetAmount(totals.ShippingTotal.Amount),
-                    TotalAmount = AmountHelper.GetAmount(totals.ShippingTotal.Amount),
-                    Type = "shipping_fee"
-                };
-                if (string.IsNullOrEmpty(shipmentOrderLine.Name))
-                {
-                    var shipmentMethod = ShippingManager.GetShippingMethod(shipment.ShippingMethodId).ShippingMethod.FirstOrDefault();
-                    if (shipmentMethod != null)
-                    {
-                        shipmentOrderLine.Name = shipmentMethod.DisplayName;
-                    }
-                }
+                var shipmentOrderLine = shipment.GetOrderLine(totals);
                 list.Add(shipmentOrderLine);
             }
+            
             request.OrderLines = list.ToArray();
 
             if (includePersonalInformation)

@@ -125,32 +125,7 @@ namespace Klarna.Checkout
         {
             var checkout = Client.NewCheckoutOrder();
 
-            var orderLine = new OrderLine
-            {
-                Type = "physical",
-                Reference = "123050",
-                Name = "Tomatoes",
-                Quantity = 10,
-                QuantityUnit = "kg",
-                UnitPrice = 600,
-                TaxRate = 2500,
-                TotalAmount = 6000,
-                TotalTaxAmount = 1200
-            };
-
-            var orderLine2 = new OrderLine
-            {
-                Type = "physical",
-                Reference = "543670",
-                Name = "Bananas",
-                Quantity = 1,
-                QuantityUnit = "bag",
-                UnitPrice = 5000,
-                TaxRate = 2500,
-                TotalAmount = 4000,
-                TotalDiscountAmount = 1000,
-                TotalTaxAmount = 800
-            };
+            var lines = GetOrderLines(cart);
 
             var merchantUrls = new MerchantUrls
             {
@@ -167,7 +142,7 @@ namespace Klarna.Checkout
                 Locale = "en-gb",
                 OrderAmount = 10000,
                 OrderTaxAmount = 2000,
-                OrderLines = new List<OrderLine> {orderLine, orderLine2},
+                OrderLines = lines,
                 MerchantUrls = merchantUrls
             };
 
@@ -205,14 +180,7 @@ namespace Klarna.Checkout
                 OrderTaxAmount = 2200
             };
 
-
-            var lines = new List<OrderLine>();
-            foreach (var item in cart.GetAllLineItems())
-            {
-                var orderLine = item.GetOrderLine(cart.Currency);
-
-                lines.Add(orderLine);
-            }
+            var lines = GetOrderLines(cart);
 
             orderData.OrderLines = lines;
 
@@ -238,6 +206,25 @@ namespace Klarna.Checkout
         public ICart GetCartByKlarnaOrderId(string orderId)
         {
             return null;
+        }
+
+        private List<OrderLine> GetOrderLines(ICart cart)
+        {
+            var lines = new List<OrderLine>();
+            foreach (var item in cart.GetAllLineItems())
+            {
+                var orderLine = item.GetOrderLine(cart.Currency);
+                lines.Add(orderLine);
+            }
+
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var shipment = cart.GetFirstShipment();
+            if (shipment != null && totals.ShippingTotal.Amount > 0)
+            {
+                var shipmentOrderLine = shipment.GetOrderLine(totals);
+                lines.Add(shipmentOrderLine);
+            }
+            return lines;
         }
     }
 }
