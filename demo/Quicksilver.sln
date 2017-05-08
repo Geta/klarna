@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPiServer.Reference.Commerc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPiServer.Reference.Commerce.Shared", "Sources\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj", "{341C8E14-4EAE-4946-9841-45F9818265A8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout", "..\src\Klarna.Checkout\Klarna.Checkout.csproj", "{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{341C8E14-4EAE-4946-9841-45F9818265A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{341C8E14-4EAE-4946-9841-45F9818265A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{341C8E14-4EAE-4946-9841-45F9818265A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

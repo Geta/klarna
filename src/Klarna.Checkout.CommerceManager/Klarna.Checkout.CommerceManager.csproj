@@ -211,7 +211,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\Klarna.Common\Klarna.Common.csproj">
+    <ProjectReference Include="..\Klarna.Common\Klarna.Common.csproj">
       <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
       <Name>Klarna.Common</Name>
     </ProjectReference>
