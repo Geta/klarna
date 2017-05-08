@@ -19,7 +19,7 @@ namespace Klarna.Payments.Initialization
     internal class RefitInitialization : IConfigurableModule
     {
         private static bool _initialized;
-        private Injected<ConnectionFactory> _connectionFactory;
+        private Injected<IConnectionFactory> _connectionFactory;
 
         public void Initialize(InitializationEngine context)
         {

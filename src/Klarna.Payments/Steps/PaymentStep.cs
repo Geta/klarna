@@ -15,7 +15,7 @@ namespace Klarna.Payments.Steps
     {
         protected Injected<IKlarnaPaymentsService> KlarnaService;
         protected IKlarnaOrderService KlarnaOrderService;
-        protected Injected<ConnectionFactory> ConnectionFactory;
+        protected Injected<IConnectionFactory> ConnectionFactory;
         protected PaymentStep Successor;
 
         protected PaymentStep(IPayment payment)

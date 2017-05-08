@@ -33,7 +33,7 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
         }
 
         private Injected<IOrderRepository> _orderRepository;
-        private Injected<ConnectionFactory> _connectionFactory;
+        private Injected<IConnectionFactory> _connectionFactory;
 
         protected void Page_Load(object sender, EventArgs e)
         {
