@@ -5,16 +5,15 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using EPiServer;
-using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
-using EPiServer.Core;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Payments.Models;
-using Mediachase.Commerce;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
 using Klarna.Common.Extensions;
+using Klarna.Common.Helpers;
+using Klarna.Common.Models;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Helpers;
 using Mediachase.Commerce.Catalog;
@@ -85,7 +84,7 @@ namespace Klarna.Payments
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, Configuration);
             }
-            
+
             var currentCountry = cart.Market.Countries.FirstOrDefault();
             // Clear PI if we're not allowed to send it yet (can be set by custom session builder)
             if (!canSendPersonalInformation && !CanSendPersonalInformation(currentCountry))
@@ -303,16 +302,16 @@ namespace Klarna.Payments
 
             var shipment = cart.GetFirstShipment();
 
-            var list = new List<OrderLine>();
+            var list = new List<PatchedOrderLine>();
             foreach (var item in cart.GetAllLineItems())
             {
-                var orderLine = GetOrderLine(item, cart.Currency);
+                var orderLine = item.GetOrderLine(cart.Currency, Configuration.SendProductAndImageUrlField);
 
                 list.Add(orderLine);
             }
             if (totals.ShippingTotal.Amount > 0)
             {
-                var shipmentOrderLine = new OrderLine
+                var shipmentOrderLine = new PatchedOrderLine
                 {
                     Name = shipment.ShippingMethodName,
                     Quantity = 1,
@@ -377,15 +376,7 @@ namespace Klarna.Payments
             return false;
         }
 
-        private string GetVariantImage(ContentReference contentReference)
-        {
-            VariationContent variant;
-            if (_contentRepository.TryGet(contentReference, out variant))
-            {
-                return variant.CommerceMediaCollection.Select(media => _urlResolver.GetUrl(media.AssetLink)).FirstOrDefault();
-            }
-            return string.Empty;
-        }
+        
 
         private Options GetWidgetOptions(PaymentMethodDto paymentMethod)
         {
@@ -408,43 +399,6 @@ namespace Klarna.Payments
             options.RadiusBorder = paymentMethod.GetParameter(Constants.KlarnaWidgetRadiusBorderField, "#0px");
 
             return options;
-        }
-
-        private OrderLine GetOrderLine(ILineItem item, Currency currency)
-        {
-            
-            var orderLine = new OrderLine();
-            orderLine.Quantity = (int)item.Quantity;
-            orderLine.Name = item.DisplayName;
-            if (string.IsNullOrEmpty(orderLine.Name))
-            {
-                var entry = item.GetEntryContent();
-                if (entry != null)
-                {
-                    orderLine.Name = entry.DisplayName;
-                }
-            }
-
-            var unitPrice = item.PlacedPrice;
-            var totalPrice = unitPrice * item.Quantity;
-            var extendedPrice = item.GetExtendedPrice(currency).Amount;
-
-            orderLine.Reference = item.Code;
-            orderLine.UnitPrice = AmountHelper.GetAmount(unitPrice);
-            orderLine.TotalDiscountAmount = AmountHelper.GetAmount(totalPrice - extendedPrice);
-            orderLine.TotalAmount = AmountHelper.GetAmount(extendedPrice);
-            orderLine.Type = "physical";
-
-            if (Configuration.SendProductAndImageUrlField)
-            {
-                var contentLink = _referenceConverter.GetContentLink(item.Code);
-                if (!ContentReference.IsNullOrEmpty(contentLink))
-                {
-                    orderLine.ProductUrl = _urlResolver.GetUrl(contentLink);
-                    orderLine.ProductImageUrl = GetVariantImage(contentLink);
-                }
-            }
-            return orderLine;
         }
 
         private Configuration GetConfiguration()

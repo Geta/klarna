@@ -3,26 +3,34 @@ using System.Collections.Generic;
 using System.Net;
 using EPiServer;
 using EPiServer.Commerce.Order;
+using EPiServer.Core;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
 using Klarna.Common;
+using Klarna.Common.Extensions;
+using Klarna.Common.Helpers;
 using Klarna.Rest;
 using Klarna.Rest.Checkout;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.Checkout
 {
+    public abstract class KlarnaService
+    {
+    }
+
     [ServiceConfiguration(typeof(IKlarnaCheckoutService))]
-    public class KlarnaCheckoutService : IKlarnaCheckoutService
+    public class KlarnaCheckoutService : KlarnaService, IKlarnaCheckoutService
     {
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
-        
+
         private readonly IOrderRepository _orderRepository;
         private readonly ReferenceConverter _referenceConverter;
         private readonly UrlResolver _urlResolver;
@@ -62,11 +70,14 @@ namespace Klarna.Checkout
             {
                 if (_client == null)
                 {
-                    var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+                    var paymentMethod =
+                        PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword,
+                            ContentLanguage.PreferredCulture.Name);
                     if (paymentMethod != null)
                     {
                         var connectionConfiguration = _connectionFactory.GetConnectionConfiguration(paymentMethod);
-                        var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
+                        var connector = ConnectorFactory.Create(connectionConfiguration.Username,
+                            connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
 
                         _client = new Client(connector);
                     }
@@ -156,7 +167,7 @@ namespace Klarna.Checkout
                 Locale = "en-gb",
                 OrderAmount = 10000,
                 OrderTaxAmount = 2000,
-                OrderLines = new List<OrderLine> { orderLine, orderLine2 },
+                OrderLines = new List<OrderLine> {orderLine, orderLine2},
                 MerchantUrls = merchantUrls
             };
 
@@ -194,45 +205,14 @@ namespace Klarna.Checkout
                 OrderTaxAmount = 2200
             };
 
-            var lines = new
-                List<OrderLine>
-                {
-                    new OrderLine()
-                    {
-                        Type = "physical",
-                        Reference = "123050",
-                        Name = "Tomatoes",
-                        Quantity = 10,
-                        QuantityUnit = "kg",
-                        UnitPrice = 600,
-                        TaxRate = 2500,
-                        TotalAmount = 6000,
-                        TotalTaxAmount = 1200
-                    },
-                    new OrderLine()
-                    {
-                        Type = "physical",
-                        Reference = "543670",
-                        Name = "Bananas",
-                        Quantity = 1,
-                        QuantityUnit = "bag",
-                        UnitPrice = 5000,
-                        TaxRate = 2500,
-                        TotalAmount = 4000,
-                        TotalDiscountAmount = 1000,
-                        TotalTaxAmount = 800
-                    },
-                    new OrderLine()
-                    {
-                        Type = "shipping_fee",
-                        Name = "Express delivery",
-                        Quantity = 1,
-                        UnitPrice = 1000,
-                        TaxRate = 2500,
-                        TotalAmount = 1000,
-                        TotalTaxAmount = 200
-                    }
-                };
+
+            var lines = new List<OrderLine>();
+            foreach (var item in cart.GetAllLineItems())
+            {
+                var orderLine = item.GetOrderLine(cart.Currency);
+
+                lines.Add(orderLine);
+            }
 
             orderData.OrderLines = lines;
 
@@ -256,4 +236,3 @@ namespace Klarna.Checkout
         }
     }
 }
-

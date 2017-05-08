@@ -2,7 +2,7 @@
 using System;
 using Mediachase.Commerce;
 
-namespace Klarna.Payments.Helpers
+namespace Klarna.Common.Helpers
 {
     public static class AmountHelper
     {

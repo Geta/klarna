@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using System.Text;
+using Klarna.Common.Models;
 using Klarna.Payments;
 using Klarna.Payments.Models;
 using Refit;
@@ -89,7 +90,7 @@ namespace Test.Integration
             session.OrderTaxAmount = 0;
             session.OrderLines = new[]
             {
-                new OrderLine { Name = "Product a", Quantity = 1, TotalAmount = 1000, UnitPrice = 1000 }
+                new PatchedOrderLine { Name = "Product a", Quantity = 1, TotalAmount = 1000, UnitPrice = 1000 }
             };
             session.Customer = null;
             session.MerchantUrl = new MerchantUrl

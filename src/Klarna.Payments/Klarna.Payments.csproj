@@ -223,7 +223,6 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\CustomerAddressExtensions.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
-    <Compile Include="Helpers\AmountHelper.cs" />
     <Compile Include="Helpers\CartOrderNumberHelper.cs" />
     <Compile Include="Helpers\CountryCodeHelper.cs" />
     <Compile Include="IKlarnaPaymentsService.cs" />
@@ -233,8 +232,14 @@
     <Compile Include="KlarnaPaymentGateway.cs" />
     <Compile Include="KlarnaPaymentsService.cs" />
     <Compile Include="IKlarnaServiceApi.cs" />
+    <Compile Include="Models\Address.cs" />
+    <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\CreateOrderResponse.cs" />
     <Compile Include="Models\Authorization.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\MerchantUrl.cs" />
+    <Compile Include="Models\Options.cs" />
+    <Compile Include="Models\PersonalInformationSession.cs" />
     <Compile Include="Models\Session.cs" />
     <Compile Include="Models\CreateSessionResponse.cs" />
     <Compile Include="Models\IKlarnaCheckout.cs" />

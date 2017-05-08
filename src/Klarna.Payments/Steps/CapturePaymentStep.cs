@@ -2,7 +2,7 @@
 using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.Payments.Helpers;
+using Klarna.Common.Helpers;
 using Mediachase.Commerce.Orders;
 using Refit;
 
