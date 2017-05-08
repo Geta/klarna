@@ -2,10 +2,8 @@ using Newtonsoft.Json;
 
 namespace Klarna.Payments.Models
 {
-    public class Customer
+    public class Customer : Klarna.Rest.Models.Customer
     {
-        [JsonProperty("date_of_birth")]
-        public string DateOfBirth { get; set; }
         [JsonProperty("gender")]
         public string Gender { get; set; }
         [JsonProperty("last_four_ssn")]

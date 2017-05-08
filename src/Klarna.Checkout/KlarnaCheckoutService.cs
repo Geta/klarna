@@ -102,7 +102,7 @@ namespace Klarna.Checkout
         {
             var orderID = "12345";
             var order = Client.NewCheckoutOrder(orderID);
-
+            
             try
             {
                 var orderData = order.Fetch();

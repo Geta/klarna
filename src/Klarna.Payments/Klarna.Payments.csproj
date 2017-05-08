@@ -232,7 +232,6 @@
     <Compile Include="KlarnaPaymentGateway.cs" />
     <Compile Include="KlarnaPaymentsService.cs" />
     <Compile Include="IKlarnaServiceApi.cs" />
-    <Compile Include="Models\Attachment.cs" />
     <Compile Include="Models\CreateOrderResponse.cs" />
     <Compile Include="Models\Authorization.cs" />
     <Compile Include="Models\Customer.cs" />
