@@ -6,7 +6,7 @@ namespace Klarna.Checkout
 {
     public interface IKlarnaCheckoutService
     {
-        CheckoutOrderData CreateOrUpdateSession(ICart cart);
+        CheckoutOrderData CreateOrUpdateOrder(ICart cart);
         CheckoutOrderData GetOrder(ICart cart);
         CheckoutOrderData CreateOrder(ICart cart);
         CheckoutOrderData UpdateOrder(ICart cart);

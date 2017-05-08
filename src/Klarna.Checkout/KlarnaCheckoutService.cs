@@ -75,9 +75,9 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData CreateOrUpdateSession(ICart cart)
+        public CheckoutOrderData CreateOrUpdateOrder(ICart cart)
         {
-            if (string.IsNullOrWhiteSpace(cart.Properties["test"]?.ToString()))
+            if(string.IsNullOrWhiteSpace(cart.Properties["test"]?.ToString()))
             {
                 return CreateOrder(cart);
             }

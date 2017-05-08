@@ -19,6 +19,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using Klarna.Checkout;
 using Klarna.Payments;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -35,6 +36,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private ICart _cart;
         private readonly CheckoutService _checkoutService;
         private readonly IKlarnaPaymentsService _klarnaPaymentsService;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
 
         public CheckoutController(
             ICurrencyService currencyService,
@@ -45,7 +47,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             OrderSummaryViewModelFactory orderSummaryViewModelFactory,
             IRecommendationService recommendationService,
             CheckoutService checkoutService,
-            IKlarnaPaymentsService klarnaPaymentsService)
+            IKlarnaPaymentsService klarnaPaymentsService,
+            IKlarnaCheckoutService klarnaCheckoutService)
         {
             _currencyService = currencyService;
             _controllerExceptionHandler = controllerExceptionHandler;
@@ -56,6 +59,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _recommendationService = recommendationService;
             _checkoutService = checkoutService;
             _klarnaPaymentsService = klarnaPaymentsService;
+            _klarnaCheckoutService = klarnaCheckoutService;
         }
 
         [HttpGet]
@@ -82,6 +86,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderRepository.Save(Cart);
 
             await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
+            _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
 
             // Make sure Klarna values are set
             (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
