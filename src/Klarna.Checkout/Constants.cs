@@ -1,4 +1,4 @@
-﻿namespace Klarna.Payments
+﻿namespace Klarna.Checkout
 {
     public static class Constants
     {

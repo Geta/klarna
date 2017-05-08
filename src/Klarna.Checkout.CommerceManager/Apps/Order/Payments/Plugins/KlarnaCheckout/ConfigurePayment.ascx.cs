@@ -20,9 +20,9 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             }
             _paymentMethodDto = paymentMethod;
 
-            txtUsername.Text = paymentMethod.GetParameter("", string.Empty);
-            txtPassword.Text = paymentMethod.GetParameter("", string.Empty);
-            txtApiUrl.Text = paymentMethod.GetParameter("", string.Empty);
+            txtUsername.Text = paymentMethod.GetParameter(Constants.KlarnaUsernameField, string.Empty);
+            txtPassword.Text = paymentMethod.GetParameter(Constants.KlarnaPasswordField, string.Empty);
+            txtApiUrl.Text = paymentMethod.GetParameter(Constants.KlarnaApiUrlField, string.Empty);
         }
         
         public void SaveChanges(object dto)
@@ -37,9 +37,9 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             {
                 return;
             }
-            paymentMethod.SetParameter("", txtUsername.Text);
-            paymentMethod.SetParameter("", txtPassword.Text);
-            paymentMethod.SetParameter("", txtApiUrl.Text);
+            paymentMethod.SetParameter(Constants.KlarnaUsernameField, txtUsername.Text);
+            paymentMethod.SetParameter(Constants.KlarnaPasswordField, txtPassword.Text);
+            paymentMethod.SetParameter(Constants.KlarnaApiUrlField, txtApiUrl.Text);
         }
     }
 }
