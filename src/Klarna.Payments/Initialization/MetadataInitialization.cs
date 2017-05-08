@@ -20,39 +20,39 @@ namespace Klarna.Payments.Initialization
         {
             MetaDataContext mdContext = CatalogContext.MetaDataContext;
 
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaUsernameField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaPasswordField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaUsernameField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaPasswordField), Common.Constants.OtherPaymentClass);
 
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdField), Constants.CartClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Constants.CartClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationField, MetaDataType.Boolean), Constants.CartClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdField), Common.Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Common.Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationField, MetaDataType.Boolean), Common.Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Common.Constants.CartClass);
 
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaLogoUrlField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorDetailsField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonTextField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorCheckboxField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorCheckboxCheckmarkField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorHeaderField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorLinkField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorBorderField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorBorderSelectedField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextSecondaryField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetRadiusBorderField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaLogoUrlField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorDetailsField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonTextField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorCheckboxField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorCheckboxCheckmarkField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorHeaderField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorLinkField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorBorderField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorBorderSelectedField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextSecondaryField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetRadiusBorderField), Common.Constants.OtherPaymentClass);
 
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.ConfirmationUrlField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NotificationUrlField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.SendProductAndImageUrlField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.UseAttachmentsField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaConfirmationUrlField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.ConfirmationUrlField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NotificationUrlField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.SendProductAndImageUrlField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.UseAttachmentsField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaConfirmationUrlField), Common.Constants.OtherPaymentClass);
             
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentMethodField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Constants.OrderNamespace);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Constants.PurchaseOrderClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.FraudStatusPaymentMethodField), Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.PreAssesmentCountriesField), Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentMethodField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Common.Constants.OrderNamespace);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Common.Constants.PurchaseOrderClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.FraudStatusPaymentMethodField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.PreAssesmentCountriesField), Common.Constants.OtherPaymentClass);
         }
 
         public void Uninitialize(InitializationEngine context)
@@ -67,7 +67,7 @@ namespace Klarna.Payments.Initialization
             if (f == null)
             {
                 Logger.Debug($"Adding meta field '{fieldName}' for Klarna payments integration.");
-                f = MetaField.Create(mdContext, Constants.OrderNamespace, fieldName, fieldName, string.Empty, metaDataType, Int32.MaxValue, true, false, false, false);
+                f = MetaField.Create(mdContext, Common.Constants.OrderNamespace, fieldName, fieldName, string.Empty, metaDataType, Int32.MaxValue, true, false, false, false);
             }
             return f;
         }
