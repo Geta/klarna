@@ -53,6 +53,9 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             txtCheckoutUrl.Text = paymentMethod.GetParameter(Constants.CheckoutUrlField, string.Empty);
             txtPushUrl.Text = paymentMethod.GetParameter(Constants.PushUrlField, string.Empty);
             txtNotificationUrl.Text = paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
+            txtShippingOptionUpdateUrl.Text = paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField, string.Empty);
+            txtAddressUpdateUrl.Text = paymentMethod.GetParameter(Constants.AddressUpdateUrlField, string.Empty);
+            txtOrderValidationUrl.Text = paymentMethod.GetParameter(Constants.OrderValidationUrlField, string.Empty);
         }
         
         public void SaveChanges(object dto)
@@ -93,6 +96,9 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             paymentMethod.SetParameter(Constants.CheckoutUrlField, txtCheckoutUrl.Text);
             paymentMethod.SetParameter(Constants.PushUrlField, txtPushUrl.Text);
             paymentMethod.SetParameter(Constants.NotificationUrlField, txtNotificationUrl.Text);
+            paymentMethod.SetParameter(Constants.ShippingOptionUpdateUrlField, txtShippingOptionUpdateUrl.Text);
+            paymentMethod.SetParameter(Constants.AddressUpdateUrlField, txtAddressUpdateUrl.Text);
+            paymentMethod.SetParameter(Constants.OrderValidationUrlField, txtOrderValidationUrl.Text);
         }
     }
 }

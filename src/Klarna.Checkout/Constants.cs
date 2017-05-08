@@ -29,5 +29,8 @@
         public const string PushUrlField = "PushUrl";
         public const string CheckoutUrlField = "CheckoutUrl";
         public const string NotificationUrlField = "NotificationUrl";
+        public const string ShippingOptionUpdateUrlField = "ShippingOptionUpdateUrl";
+        public const string AddressUpdateUrlField = "AddressUpdateUrl";
+        public const string OrderValidationUrlField = "OrderValidationUrl";
     }
 }

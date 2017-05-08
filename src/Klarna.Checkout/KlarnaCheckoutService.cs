@@ -15,7 +15,9 @@ using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Catalog;
+using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Managers;
+using Mediachase.Commerce.Orders.Search;
 
 namespace Klarna.Checkout
 {
@@ -162,9 +164,9 @@ namespace Klarna.Checkout
             };
 
             var lines = GetOrderLines(cart);
-
+            
             orderData.OrderLines = lines;
-
+            
             try
             {
                 orderData = checkout.Update(orderData);
@@ -186,7 +188,7 @@ namespace Klarna.Checkout
 
         public ICart GetCartByKlarnaOrderId(string orderId)
         {
-            return null;
+            return GetCart(orderId);
         }
 
         private List<OrderLine> GetOrderLines(ICart cart)
@@ -206,6 +208,27 @@ namespace Klarna.Checkout
                 lines.Add(shipmentOrderLine);
             }
             return lines;
+        }
+
+        private ICart GetCart(string orderId)
+        {
+            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            searchOptions.CacheResults = false;
+            searchOptions.StartingRecord = 0;
+            searchOptions.RecordsToRetrieve = 1;
+            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "ShoppingCart" };
+            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+
+            var parameters = new OrderSearchParameters();
+            parameters.SqlMetaWhereClause = $"META.{Common.Constants.KlarnaOrderIdField} LIKE '{orderId}'";
+
+            var cart = OrderContext.Current.FindCarts(parameters, searchOptions)?.FirstOrDefault();
+
+            if (cart != null)
+            {
+                return _orderRepository.LoadCart<ICart>(cart.CustomerId, "Default");
+            }
+            return null;
         }
     }
 }

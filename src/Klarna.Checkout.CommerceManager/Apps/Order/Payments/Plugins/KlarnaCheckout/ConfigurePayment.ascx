@@ -179,6 +179,27 @@
                 <asp:RequiredFieldValidator ID="requiredNotificationUrl" runat="server" ControlToValidate="txtNotificationUrl" ErrorMessage="Notification URL is required." />
             </td>
         </tr>
+        <tr>
+            <td class="FormLabelCell">Shipping option update URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtShippingOptionUpdateUrl" />
+                <asp:RequiredFieldValidator ID="requiredShippingOptionUpdateUrl" runat="server" ControlToValidate="txtShippingOptionUpdateUrl" ErrorMessage="Shipping option update URL is required." />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Address update URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtAddressUpdateUrl" />
+                <asp:RequiredFieldValidator ID="requiredAddressUpdateUrl" runat="server" ControlToValidate="txtAddressUpdateUrl" ErrorMessage="Address update URL is required." />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Order validation URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtOrderValidationUrl" />
+                <asp:RequiredFieldValidator ID="requiredOrderValidationUrl" runat="server" ControlToValidate="txtOrderValidationUrl" ErrorMessage="Order validation URL is required." />
+            </td>
+        </tr>
     </tbody>
 </table>
 </div>
