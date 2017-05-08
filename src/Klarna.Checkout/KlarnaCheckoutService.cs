@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Net;
 using EPiServer;
 using EPiServer.Commerce.Order;
+using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
+using Klarna.Common;
 using Klarna.Rest;
 using Klarna.Rest.Checkout;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Catalog;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.Checkout
 {
@@ -27,6 +30,9 @@ namespace Klarna.Checkout
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly IConnectionFactory _connectionFactory;
+
+        private Client _client;
 
         public KlarnaCheckoutService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
@@ -36,7 +42,8 @@ namespace Klarna.Checkout
             IContentRepository contentRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator)
+            IOrderGroupCalculator orderGroupCalculator,
+            IConnectionFactory connectionFactory)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
@@ -46,6 +53,26 @@ namespace Klarna.Checkout
             _orderNumberGenerator = orderNumberGenerator;
             _paymentProcessor = paymentProcessor;
             _orderGroupCalculator = orderGroupCalculator;
+            _connectionFactory = connectionFactory;
+        }
+
+        public Client Client
+        {
+            get
+            {
+                if (_client == null)
+                {
+                    var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+                    if (paymentMethod != null)
+                    {
+                        var connectionConfiguration = _connectionFactory.GetConnectionConfiguration(paymentMethod);
+                        var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
+
+                        _client = new Client(connector);
+                    }
+                }
+                return _client;
+            }
         }
 
         public CheckoutOrderData CreateOrUpdateSession(ICart cart)
@@ -63,8 +90,7 @@ namespace Klarna.Checkout
         public CheckoutOrderData GetOrder(ICart cart)
         {
             var orderID = "12345";
-            var client = GetClient();
-            var order = client.NewCheckoutOrder(orderID);
+            var order = Client.NewCheckoutOrder(orderID);
 
             try
             {
@@ -86,8 +112,7 @@ namespace Klarna.Checkout
 
         public CheckoutOrderData CreateOrder(ICart cart)
         {
-            var client = GetClient();
-            var checkout = client.NewCheckoutOrder();
+            var checkout = Client.NewCheckoutOrder();
 
             var orderLine = new OrderLine
             {
@@ -160,9 +185,8 @@ namespace Klarna.Checkout
         public CheckoutOrderData UpdateOrder(ICart cart)
         {
             var orderID = "12345";
-            var client = this.GetClient();
 
-            var checkout = client.NewCheckoutOrder(orderID);
+            var checkout = Client.NewCheckoutOrder(orderID);
 
             var orderData = new CheckoutOrderData
             {
@@ -229,16 +253,6 @@ namespace Klarna.Checkout
             }
 
             return null;
-        }
-        private Client GetClient()
-        {
-            const string MerchantId = "0";
-            const string SharedSecret = "sharedSecret";
-
-            var connector = ConnectorFactory.Create(MerchantId, SharedSecret, Client.EuTestBaseUrl);
-
-            var client = new Client(connector);
-            return client;
         }
     }
 }
