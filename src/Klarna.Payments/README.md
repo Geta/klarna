@@ -58,7 +58,7 @@ Set the colors and border size for the Klarna widget. The Klarna logo should be 
 
 After payment is completed the confirmation url must be called. This can be done with this method:
 ```
-_klarnaService.RedirectToConfirmationUrl(purchaseOrder);
+_klarnaPaymentsService.RedirectToConfirmationUrl(purchaseOrder);
 ```
 Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be send to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
@@ -107,7 +107,7 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
 A session at Klarna should be created when the visitor is on the checkout page. The CreateOrUpdateSession method will create a new session when it does not exists or update the current one.
 
 ```
-await _klarnaService.CreateOrUpdateSession(Cart);
+await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
 ```
 
 It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information on the last step of the payment process. Below an example implementation of a DemoSessionBuilder.
@@ -194,7 +194,7 @@ Checkout flow:
 - Server side - During checkout we use the CreateOrUpdateSession to update the session at Klarna (this does not contain any PI)
 - Client side - When the user clicks on 'Place order' we use the Klarna javascript library to do an authorize call, providing the necessary PI.
     - If authorize succeeds we receive an authorization token, which we add to the checkout form and pass on to our server
-    - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaService - AllowedToSharePersonalInformation). 
+    - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaPaymentsService - AllowedToSharePersonalInformation). 
 - Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'thruth'), using this session and the authorization token we can create an order in Klarna.
     - If creating an order fails, the authorize request has been tampered with and the payment fails
     
@@ -204,7 +204,7 @@ Checkout flow:
 The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
 
 ### Fraud status notifications
-In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
+In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaPaymentsService includes a method for handling fraud notifications. Below an example implementation.
 
 ```
 [Route("fraud/")]
@@ -220,7 +220,7 @@ public IHttpActionResult FraudNotification()
     {
         var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
 
-        _klarnaService.FraudUpdate(notification);
+        _klarnaPaymentsService.FraudUpdate(notification);
     }
     return Ok();
 }

@@ -226,12 +226,12 @@
     <Compile Include="Helpers\AmountHelper.cs" />
     <Compile Include="Helpers\CartOrderNumberHelper.cs" />
     <Compile Include="Helpers\CountryCodeHelper.cs" />
-    <Compile Include="IKlarnaService.cs" />
+    <Compile Include="IKlarnaPaymentsService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="Initialization\RefitInitialization.cs" />
     <Compile Include="ISessionBuilder.cs" />
     <Compile Include="KlarnaPaymentGateway.cs" />
-    <Compile Include="KlarnaService.cs" />
+    <Compile Include="KlarnaPaymentsService.cs" />
     <Compile Include="IKlarnaServiceApi.cs" />
     <Compile Include="Models\CreateOrderResponse.cs" />
     <Compile Include="Models\Authorization.cs" />

@@ -13,7 +13,7 @@ namespace Klarna.Payments.Steps
 {
     public abstract class PaymentStep
     {
-        protected Injected<IKlarnaService> KlarnaService;
+        protected Injected<IKlarnaPaymentsService> KlarnaService;
         protected IKlarnaOrderService KlarnaOrderService;
         protected Injected<ConnectionFactory> ConnectionFactory;
         protected PaymentStep Successor;

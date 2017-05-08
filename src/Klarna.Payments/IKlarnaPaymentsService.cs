@@ -4,7 +4,7 @@ using Klarna.Payments.Models;
 
 namespace Klarna.Payments
 {
-    public interface IKlarnaService
+    public interface IKlarnaPaymentsService
     {
         Configuration Configuration { get; }
         Task<bool> CreateOrUpdateSession(ICart cart);

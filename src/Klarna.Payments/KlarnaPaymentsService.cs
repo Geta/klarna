@@ -26,12 +26,12 @@ using Refit;
 
 namespace Klarna.Payments
 {
-    [ServiceConfiguration(typeof(IKlarnaService))]
-    public class KlarnaService : IKlarnaService
+    [ServiceConfiguration(typeof(IKlarnaPaymentsService))]
+    public class KlarnaPaymentsService : IKlarnaPaymentsService
     {
         private readonly IKlarnaServiceApi _klarnaServiceApi;
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
-        private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaService));
+        private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
         private readonly ReferenceConverter _referenceConverter;
         private readonly UrlResolver _urlResolver;
@@ -42,7 +42,7 @@ namespace Klarna.Payments
 
         private Configuration _configuration;
 
-        public KlarnaService(
+        public KlarnaPaymentsService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
             ReferenceConverter referenceConverter,

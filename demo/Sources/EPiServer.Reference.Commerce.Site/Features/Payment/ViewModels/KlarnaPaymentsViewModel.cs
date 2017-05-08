@@ -1,11 +1,10 @@
 ﻿using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
 using EPiServer.ServiceLocation;
+using Klarna.Common.Extensions;
 using Klarna.Payments;
-using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Orders.Managers;
-using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
 {
@@ -16,8 +15,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
         public Injected<ICartService> InjectedCartService { get; set; }
         public ICartService CartService => InjectedCartService.Service;
 
-        public Injected<IKlarnaService> InjectedKlarnaService { get; set; }
-        public IKlarnaService KlarnaService => InjectedKlarnaService.Service;
+        public Injected<IKlarnaPaymentsService> InjectedKlarnaPaymentsService { get; set; }
+        public IKlarnaPaymentsService KlarnaPaymentsService => InjectedKlarnaPaymentsService.Service;
 
         public KlarnaPaymentsViewModel()
         {
@@ -48,7 +47,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
         public void InitializeValues()
         {
             var cart = CartService.LoadCart(CartService.DefaultCartName);
-            ClientToken = KlarnaService.GetClientToken(cart);
+            ClientToken = KlarnaPaymentsService.GetClientToken(cart);
         }
     }
 }
