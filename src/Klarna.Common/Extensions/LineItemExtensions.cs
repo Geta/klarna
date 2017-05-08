@@ -41,6 +41,9 @@ namespace Klarna.Common.Extensions
             orderLine.UnitPrice = AmountHelper.GetAmount(unitPrice);
             orderLine.TotalDiscountAmount = AmountHelper.GetAmount(totalPrice - extendedPrice);
             orderLine.TotalAmount = AmountHelper.GetAmount(extendedPrice);
+            // TODO Tax, check if it also works with payments
+            orderLine.TaxRate = 0;
+            orderLine.TotalTaxAmount = 0;
             orderLine.Type = "physical";
 
             if (includeProductAndImageUrl)

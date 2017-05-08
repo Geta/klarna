@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using EPiServer;
 using EPiServer.Commerce.Order;
-using EPiServer.Core;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
@@ -12,10 +12,8 @@ using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Rest;
-using Klarna.Rest.Checkout;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
-using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders.Managers;
 
@@ -88,37 +86,15 @@ namespace Klarna.Checkout
 
         public CheckoutOrderData CreateOrUpdateOrder(ICart cart)
         {
-            if(string.IsNullOrWhiteSpace(cart.Properties["test"]?.ToString()))
+            var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            if (string.IsNullOrWhiteSpace(orderId))
             {
                 return CreateOrder(cart);
             }
             else
             {
-                return UpdateOrder(cart);
+                return UpdateOrder(orderId, cart);
             }
-        }
-
-        public CheckoutOrderData GetOrder(ICart cart)
-        {
-            var orderID = "12345";
-            var order = Client.NewCheckoutOrder(orderID);
-            
-            try
-            {
-                var orderData = order.Fetch();
-                return orderData;
-            }
-            catch (ApiException ex)
-            {
-                Console.WriteLine(ex.ErrorMessage.ErrorCode);
-                Console.WriteLine(ex.ErrorMessage.ErrorMessages);
-                Console.WriteLine(ex.ErrorMessage.CorrelationId);
-            }
-            catch (WebException ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return null;
         }
 
         public CheckoutOrderData CreateOrder(ICart cart)
@@ -135,13 +111,16 @@ namespace Klarna.Checkout
                 Push = new Uri("http://www.merchant.com/create_order?klarna_order_id={checkout.order.id}")
             };
 
+
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+
             var orderData = new CheckoutOrderData()
             {
-                PurchaseCountry = "gb",
-                PurchaseCurrency = "gbp",
-                Locale = "en-gb",
-                OrderAmount = 10000,
-                OrderTaxAmount = 2000,
+                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
+                PurchaseCurrency = cart.Currency.CurrencyCode,
+                Locale = ContentLanguage.PreferredCulture.Name,
+                OrderAmount = AmountHelper.GetAmount(totals.Total),
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = lines,
                 MerchantUrls = merchantUrls
             };
@@ -151,7 +130,10 @@ namespace Klarna.Checkout
                 checkout.Create(orderData);
                 orderData = checkout.Fetch();
 
-                var orderID = orderData.OrderId;
+                // Store checkout order id on cart
+                cart.Properties[Constants.KlarnaCheckoutOrderIdField] = orderData.OrderId;
+                _orderRepository.Save(cart);
+
                 return orderData;
             }
             catch (ApiException ex)
@@ -168,16 +150,15 @@ namespace Klarna.Checkout
             return null;
         }
 
-        public CheckoutOrderData UpdateOrder(ICart cart)
+        public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
         {
-            var orderID = "12345";
-
-            var checkout = Client.NewCheckoutOrder(orderID);
+            var checkout = Client.NewCheckoutOrder(orderId);
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
 
             var orderData = new CheckoutOrderData
             {
-                OrderAmount = 11000,
-                OrderTaxAmount = 2200
+                OrderAmount = AmountHelper.GetAmount(totals.Total),
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal)
             };
 
             var lines = GetOrderLines(cart);

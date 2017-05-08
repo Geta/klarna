@@ -23,8 +23,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
         public void InitializeValues()
         {
             var cart = CartService.LoadCart(CartService.DefaultCartName);
-
-            HtmlSnippet = KlarnaPaymentsService.GetOrder(cart)?.HtmlSnippet;
+            HtmlSnippet = KlarnaPaymentsService.CreateOrUpdateOrder(cart)?.HtmlSnippet;
         }
     }
 }

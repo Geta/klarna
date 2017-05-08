@@ -15,7 +15,10 @@ namespace Klarna.Common.Extensions
                 Quantity = 1,
                 UnitPrice = AmountHelper.GetAmount(totals.ShippingTotal.Amount),
                 TotalAmount = AmountHelper.GetAmount(totals.ShippingTotal.Amount),
-                Type = "shipping_fee"
+                // TODO Tax, check if it also works with payments
+                TaxRate = 0,
+                TotalTaxAmount = 0,
+            Type = "shipping_fee"
             };
             if (string.IsNullOrEmpty(shipmentOrderLine.Name))
             {

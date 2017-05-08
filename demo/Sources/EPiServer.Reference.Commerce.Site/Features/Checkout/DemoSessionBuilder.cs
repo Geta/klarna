@@ -6,6 +6,8 @@ using Klarna.Payments.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Klarna.Payments;
+using Klarna.Rest.Models;
+using Customer = Klarna.Payments.Models.Customer;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {

@@ -5,7 +5,7 @@ using EPiServer.Personalization.Providers.MaxMind;
 using EPiServer.ServiceLocation;
 using ISO3166;
 
-namespace Klarna.Payments.Helpers
+namespace Klarna.Common.Helpers
 {
     public static class CountryCodeHelper
     {
