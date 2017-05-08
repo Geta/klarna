@@ -186,9 +186,22 @@ namespace Klarna.Checkout
             return null;
         }
 
+        public CheckoutOrderData GetOrder(string orderId)
+        {
+            var checkout = Client.NewCheckoutOrder(orderId);
+
+            return checkout.Fetch();
+        }
+
         public ICart GetCartByKlarnaOrderId(string orderId)
         {
-            return GetCart(orderId);
+            var checkoutOrderData = GetOrder(orderId);
+
+            var cart = GetCart(orderId);
+
+            //TODO: compare checkoutOrderData with cart
+
+            return cart;
         }
 
         private List<OrderLine> GetOrderLines(ICart cart)
