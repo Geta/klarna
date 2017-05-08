@@ -19,10 +19,7 @@ namespace Klarna.Payments.Initialization
         public void Initialize(InitializationEngine context)
         {
             MetaDataContext mdContext = CatalogContext.MetaDataContext;
-
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaUsernameField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaPasswordField), Common.Constants.OtherPaymentClass);
-
+            
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationField, MetaDataType.Boolean), Common.Constants.CartClass);

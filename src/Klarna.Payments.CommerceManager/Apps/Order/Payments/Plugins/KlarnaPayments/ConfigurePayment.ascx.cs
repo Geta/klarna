@@ -28,9 +28,9 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             }
             _paymentMethodDto = paymentMethod;
 
-            txtUsername.Text = paymentMethod.GetParameter(Constants.KlarnaUsernameField, string.Empty);
-            txtPassword.Text = paymentMethod.GetParameter(Constants.KlarnaPasswordField, string.Empty);
-            txtApiUrl.Text = paymentMethod.GetParameter(Constants.KlarnaApiUrlField, string.Empty);
+            txtUsername.Text = paymentMethod.GetParameter(Common.Constants.KlarnaUsernameField, string.Empty);
+            txtPassword.Text = paymentMethod.GetParameter(Common.Constants.KlarnaPasswordField, string.Empty);
+            txtApiUrl.Text = paymentMethod.GetParameter(Common.Constants.KlarnaApiUrlField, string.Empty);
 
             txtKlarnaLogoUrl.Text = paymentMethod.GetParameter(Constants.KlarnaLogoUrlField, string.Empty);
             txtColorDetails.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorDetailsField, string.Empty);
@@ -113,9 +113,9 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             {
                 return;
             }
-            paymentMethod.SetParameter(Constants.KlarnaUsernameField, txtUsername.Text);
-            paymentMethod.SetParameter(Constants.KlarnaPasswordField, txtPassword.Text);
-            paymentMethod.SetParameter(Constants.KlarnaApiUrlField, txtApiUrl.Text);
+            paymentMethod.SetParameter(Common.Constants.KlarnaUsernameField, txtUsername.Text);
+            paymentMethod.SetParameter(Common.Constants.KlarnaPasswordField, txtPassword.Text);
+            paymentMethod.SetParameter(Common.Constants.KlarnaApiUrlField, txtApiUrl.Text);
 
             paymentMethod.SetParameter(Constants.KlarnaLogoUrlField, txtKlarnaLogoUrl.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorDetailsField, txtColorDetails.Text);

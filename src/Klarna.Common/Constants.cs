@@ -8,5 +8,9 @@
         public const string CartClass = "ShoppingCart";
 
         public const string KlarnaOrderIdField = "KlarnaOrderId";
+
+        public const string KlarnaUsernameField = "KlarnaUsername";
+        public const string KlarnaPasswordField = "KlarnaPassword";
+        public const string KlarnaApiUrlField = "KlarnaApiUrl";
     }
 }

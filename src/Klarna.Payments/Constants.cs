@@ -4,10 +4,6 @@
     {
         public const string KlarnaPaymentSystemKeyword = "KlarnaPayments";
 
-        public const string KlarnaUsernameField = "KlarnaUsername";
-        public const string KlarnaPasswordField = "KlarnaPassword";
-        public const string KlarnaApiUrlField = "KlarnaApiUrl";
-        
         // Cart meta fields
         public const string KlarnaSessionIdField = "KlarnaSessionId";
         public const string KlarnaClientTokenField = "KlarnaClientToken";
