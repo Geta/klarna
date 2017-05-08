@@ -234,5 +234,10 @@ namespace Klarna.Checkout
 
             return null;
         }
+
+        public ICart GetCartByKlarnaOrderId(string orderId)
+        {
+            return null;
+        }
     }
 }

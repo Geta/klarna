@@ -232,6 +232,24 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, confirmationSentSuccessfully));
         }
 
+        [HttpGet]
+        public ActionResult KlarnaCheckoutConfirmation(string klarna_order_id)
+        {
+            if (!CartIsNullOrEmpty())
+            {
+                _cartService.MergeShipments(Cart);
+                _orderRepository.Save(Cart);
+            }
+
+            //var viewModel = CreateCheckoutViewModel(currentPage);
+
+            var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(klarna_order_id);
+
+
+
+            return Redirect(_checkoutService.BuildRedirectionUrl(null, null, false));
+        }
+
         public ActionResult OnPurchaseException(ExceptionContext filterContext)
         {
             var currentPage = filterContext.RequestContext.GetRoutedData<CheckoutPage>();

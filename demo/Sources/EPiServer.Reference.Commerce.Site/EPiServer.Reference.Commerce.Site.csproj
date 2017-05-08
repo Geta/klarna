@@ -817,6 +817,7 @@
     <Content Include="Views\Shared\_KlarnaPaymentsConfirmation.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <Content Include="Views\Shared\_KlarnaCheckoutPaymentMethod.cshtml" />
+    <Content Include="Views\Shared\_KlarnaCheckoutConfirmation.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

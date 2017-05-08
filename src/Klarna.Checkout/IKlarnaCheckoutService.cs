@@ -10,5 +10,7 @@ namespace Klarna.Checkout
         CheckoutOrderData GetOrder(ICart cart);
         CheckoutOrderData CreateOrder(ICart cart);
         CheckoutOrderData UpdateOrder(ICart cart);
+
+        ICart GetCartByKlarnaOrderId(string orderId);
     }
 }
