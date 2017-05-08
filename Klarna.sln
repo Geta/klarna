@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Common", "src\Klarna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.OrderManagement.CommerceManager", "src\Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.csproj", "{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout.CommerceManager", "Klarna.Checkout.CommerceManager\Klarna.Checkout.CommerceManager.csproj", "{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout", "Klarna.Checkout\Klarna.Checkout.csproj", "{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +51,14 @@ Global
 		{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
