@@ -39,6 +39,8 @@ namespace Klarna.Checkout
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly IShippingCalculator _shippingCalculator;
+        private readonly ITaxCalculator _taxCalculator;
         private readonly IConnectionFactory _connectionFactory;
 
         private Client _client;
@@ -52,7 +54,9 @@ namespace Klarna.Checkout
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
-            IConnectionFactory connectionFactory)
+            IConnectionFactory connectionFactory, 
+            IShippingCalculator shippingCalculator, 
+            ITaxCalculator taxCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
@@ -63,6 +67,8 @@ namespace Klarna.Checkout
             _paymentProcessor = paymentProcessor;
             _orderGroupCalculator = orderGroupCalculator;
             _connectionFactory = connectionFactory;
+            _shippingCalculator = shippingCalculator;
+            _taxCalculator = taxCalculator;
         }
 
         public Client Client
@@ -147,10 +153,16 @@ namespace Klarna.Checkout
             var checkout = Client.NewCheckoutOrder(orderId);
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
 
+            var shippingTaxTotal =
+                cart.Forms
+                    .SelectMany(x => x.Shipments)
+                    .Select(x => _taxCalculator.GetShippingTaxTotal(x, cart.Market, cart.Currency))
+                    .Aggregate((x, y) => x + y);
+
             var orderData = new PatchedCheckoutOrderData
             {
-                OrderAmount = AmountHelper.GetAmount(totals.Total),
-                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
+                OrderAmount = AmountHelper.GetAmount(totals.SubTotal),
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal - shippingTaxTotal),
                 ShippingOptions = GetShippingOptions(cart),
                 MerchantUrls = GetMerchantUrls(cart)
             } as CheckoutOrderData;
