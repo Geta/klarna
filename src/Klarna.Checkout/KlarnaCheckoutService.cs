@@ -113,8 +113,7 @@ namespace Klarna.Checkout
                 Confirmation = new Uri("http://www.merchant.com/thank-you?klarna_order_id={checkout.order.id}"),
                 Push = new Uri("http://www.merchant.com/create_order?klarna_order_id={checkout.order.id}")
             };
-
-
+            
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
 
             var orderData = new CheckoutOrderData()
@@ -224,21 +223,17 @@ namespace Klarna.Checkout
 
         private List<OrderLine> GetOrderLines(ICart cart)
         {
-            var lines = new List<OrderLine>();
-            foreach (var item in cart.GetAllLineItems())
-            {
-                var orderLine = item.GetOrderLine(cart.Currency);
-                lines.Add(orderLine);
-            }
+            // Only add order lines, Klarna adds shipping costs
+            // https://developers.klarna.com/en/gb/kco-v3/checkout/additional-features/tax-shipping
 
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            var shipment = cart.GetFirstShipment();
-            if (shipment != null && totals.ShippingTotal.Amount > 0)
+            var orderLines = new List<OrderLine>();
+            foreach (var lineItem in cart.GetAllLineItems())
             {
-                var shipmentOrderLine = shipment.GetOrderLine(totals);
-                lines.Add(shipmentOrderLine);
+                var orderLine = lineItem.GetOrderLine(cart.Currency);
+                orderLines.Add(orderLine);
             }
-            return lines;
+            
+            return orderLines;
         }
 
         private ICart GetCart(string orderId)
