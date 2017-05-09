@@ -2,7 +2,7 @@
 
 namespace Klarna.Checkout.Models
 {
-    public class SelectedShippingOption
+    public class ShippingOption
     {
         [JsonProperty("id")]
         public string Id { get; set; }

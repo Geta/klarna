@@ -8,6 +8,7 @@ using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
+using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
@@ -157,11 +158,13 @@ namespace Klarna.Checkout
             var checkout = Client.NewCheckoutOrder(orderId);
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
 
-            var orderData = new CheckoutOrderData
+            var orderData = new PatchedCheckoutOrderData
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
-                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal)
-            };
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
+                ShippingOptions = GetShippingOptions(cart)
+            } as CheckoutOrderData;
+            
 
             var lines = GetOrderLines(cart);
             
@@ -202,6 +205,21 @@ namespace Klarna.Checkout
             //TODO: compare checkoutOrderData with cart
 
             return cart;
+        }
+
+        private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
+        {
+            var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
+            return methods.ShippingMethod.Select(method => new ShippingOption
+            {
+                Id = method.ShippingMethodId.ToString(),
+                Name = method.DisplayName,
+                Price = AmountHelper.GetAmount(method.BasePrice),
+                PreSelected = method.IsDefault,
+                TaxAmount = 1,
+                TaxRate = 1,
+                Description = method.Description
+            });
         }
 
         private List<OrderLine> GetOrderLines(ICart cart)

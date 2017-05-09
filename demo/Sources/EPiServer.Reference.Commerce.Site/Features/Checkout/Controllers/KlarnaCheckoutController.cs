@@ -28,7 +28,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("shippingoptionupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult ShippingOptionUpdate([FromBody]PatchedCheckoutData checkoutData)
+        public IHttpActionResult ShippingOptionUpdate([FromBody]PatchedCheckoutOrderData checkoutData)
         {
             // TODO update cart
             return Ok(checkoutData);
@@ -37,7 +37,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("addressupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult AddressUpdate([FromBody]PatchedCheckoutData checkoutData)
+        public IHttpActionResult AddressUpdate([FromBody]PatchedCheckoutOrderData checkoutData)
         {
             // TODO update cart
             return Ok(checkoutData);
@@ -46,7 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("ordervalidation")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult OrderValidation([FromBody]PatchedCheckoutData checkoutData)
+        public IHttpActionResult OrderValidation([FromBody]PatchedCheckoutOrderData checkoutData)
         {
             // TODO validate order
             return Ok();
