@@ -225,15 +225,15 @@ namespace Klarna.Checkout
         public void UpdateAddress(ICart cart, PatchedCheckoutOrderData checkoutOrderData)
         {
             Guid shippingMethodGuid;
-            if (Guid.TryParse(checkoutOrderData.SelectedShippingOption.Id, out shippingMethodGuid))
+            if (checkoutOrderData.SelectedShippingOption != null && Guid.TryParse(checkoutOrderData.SelectedShippingOption.Id, out shippingMethodGuid))
             {
                 var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(s => s.ShippingMethodId == shippingMethodGuid);
                 if (shipment != null)
                 {
                     shipment.ShippingAddress = checkoutOrderData.ShippingAddress.ToOrderAddress();
                 }
+                _orderRepository.Save(cart);
             }
-            _orderRepository.Save(cart);
         }
 
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)

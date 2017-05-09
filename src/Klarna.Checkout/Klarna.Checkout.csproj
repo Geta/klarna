@@ -196,6 +196,7 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
+    <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="KlarnaCheckoutGateway.cs" />
     <Compile Include="KlarnaCheckoutService.cs" />
     <Compile Include="Models\PatchedCheckoutOrderData.cs" />
