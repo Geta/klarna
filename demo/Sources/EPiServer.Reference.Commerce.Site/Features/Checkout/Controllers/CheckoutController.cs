@@ -17,10 +17,14 @@ using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using System.Web.Mvc;
+using EPiServer.Globalization;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Checkout;
 using Klarna.Payments;
+using Mediachase.Commerce.Orders.Managers;
+using Constants = Klarna.Checkout.Constants;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -235,19 +239,35 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [HttpGet]
         public ActionResult KlarnaCheckoutConfirmation(string klarna_order_id)
         {
-            if (!CartIsNullOrEmpty())
-            {
-                _cartService.MergeShipments(Cart);
-                _orderRepository.Save(Cart);
-            }
-
             //var viewModel = CreateCheckoutViewModel(currentPage);
 
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(klarna_order_id);
+            if (cart != null)
+            {
+                var viewModel = CreateCheckoutViewModel(null);
 
+                var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
+                var paymentViewModel = new PaymentMethodViewModel<PaymentMethodBase>
+                {
+                    PaymentMethodId = paymentRow.PaymentMethodId,
+                    SystemName = paymentRow.SystemKeyword,
+                    FriendlyName = paymentRow.Name,
+                    Description = paymentRow.Description,
+                };
+                viewModel.Payment = paymentViewModel;
 
+                _checkoutService.CreateAndAddPaymentToCart(cart, viewModel);
 
-            return Redirect(_checkoutService.BuildRedirectionUrl(null, null, false));
+                var purchaseOrder = _checkoutService.PlaceOrder(Cart, ModelState, viewModel);
+
+                // create payment
+                // add billing
+                // order validation
+                // create purchase order
+
+                return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, false));
+            }
+            return HttpNotFound();
         }
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)

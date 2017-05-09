@@ -4,6 +4,7 @@ using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
+using Klarna.Checkout.Steps;
 
 namespace Klarna.Checkout
 {
@@ -32,7 +33,9 @@ namespace Klarna.Checkout
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
 
-                return true;
+                var authorizePaymentStep = new AuthorizePaymentStep(payment);
+
+                return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, ref message);
             }
             catch (Exception ex)
             {

@@ -114,7 +114,7 @@ namespace Klarna.Checkout
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = lines,
-                MerchantUrls = GetMerchantUrls()
+                MerchantUrls = GetMerchantUrls(cart)
             };
 
             try
@@ -152,7 +152,7 @@ namespace Klarna.Checkout
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 ShippingOptions = GetShippingOptions(cart),
-                MerchantUrls = GetMerchantUrls()
+                MerchantUrls = GetMerchantUrls(cart)
             } as CheckoutOrderData;
             
 
@@ -254,7 +254,7 @@ namespace Klarna.Checkout
             return orderLines;
         }
 
-        private MerchantUrls GetMerchantUrls()
+        private MerchantUrls GetMerchantUrls(ICart cart)
         {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
@@ -265,10 +265,10 @@ namespace Klarna.Checkout
                     Checkout = new Uri(paymentMethod.GetParameter(Constants.CheckoutUrlField)),
                     Confirmation = new Uri(paymentMethod.GetParameter(Constants.ConfirmationUrlField)),
                     Push = new Uri(paymentMethod.GetParameter(Constants.PushUrlField)),
-                    AddressUpdate = new Uri(paymentMethod.GetParameter(Constants.AddressUpdateUrlField)),
-                    ShippingOptionUpdate = new Uri(paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField)),
+                    AddressUpdate = new Uri(paymentMethod.GetParameter(Constants.AddressUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
+                    ShippingOptionUpdate = new Uri(paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Notification = new Uri(paymentMethod.GetParameter(Constants.NotificationUrlField)),
-                    Validation = new Uri(paymentMethod.GetParameter(Constants.OrderValidationUrlField))
+                    Validation = new Uri(paymentMethod.GetParameter(Constants.OrderValidationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString()))
                 };
             }
             return null;

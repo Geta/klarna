@@ -4,7 +4,7 @@ using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 
-namespace Klarna.Payments.Extensions
+namespace Klarna.Common.Extensions
 {
     public static class OrderGroupExtensions
     {

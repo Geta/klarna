@@ -201,6 +201,8 @@
     <Compile Include="Models\PatchedCheckoutOrderData.cs" />
     <Compile Include="Models\ShippingOption.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Steps\AuthorizePaymentStep.cs" />
+    <Compile Include="Steps\PaymentStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -211,6 +213,10 @@
     <ProjectReference Include="..\Klarna.Common\Klarna.Common.csproj">
       <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
       <Name>Klarna.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
+      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
+      <Name>Klarna.OrderManagement</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,22 +6,21 @@ using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.OrderManagement;
-using Klarna.Payments.Extensions;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders.Managers;
 
-namespace Klarna.Payments.Steps
+namespace Klarna.Checkout.Steps
 {
     public abstract class PaymentStep
     {
-        protected Injected<IKlarnaPaymentsService> KlarnaService;
+        protected Injected<IKlarnaCheckoutService> KlarnaService;
         protected IKlarnaOrderService KlarnaOrderService;
         protected Injected<IConnectionFactory> ConnectionFactory;
         protected PaymentStep Successor;
 
         protected PaymentStep(IPayment payment)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
                 KlarnaOrderService = new KlarnaOrderService(ConnectionFactory.Service.GetConnectionConfiguration(paymentMethod));

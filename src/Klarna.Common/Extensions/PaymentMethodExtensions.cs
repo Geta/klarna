@@ -16,7 +16,7 @@ namespace Klarna.Common.Extensions
                 throw new PaymentException(
                     PaymentException.ErrorType.ConfigurationError,
                     "NO_SETTING",
-                    "Netaxept payment provider: Required setting '" + name + "' is not specified.");
+                    "Klarna payment provider: Required setting '" + name + "' is not specified.");
             }
             return row.Value;
         }
