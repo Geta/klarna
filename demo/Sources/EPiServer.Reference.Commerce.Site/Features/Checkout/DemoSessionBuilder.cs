@@ -49,7 +49,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                 { "customer_account_info", customerAccountInfos}
             };
 
-                session.Attachment = new Klarna.Payments.Models.Attachment
+                session.Attachment = new Attachment
                 {
                     ContentType = "application/vnd.klarna.internal.emd-v2+json",
                     Body = JsonConvert.SerializeObject(emd, converter)
