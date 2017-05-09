@@ -71,9 +71,7 @@ namespace Klarna.Checkout
             {
                 if (_client == null)
                 {
-                    var paymentMethod =
-                        PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword,
-                            ContentLanguage.PreferredCulture.Name);
+                    var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
                     if (paymentMethod != null)
                     {
                         var connectionConfiguration = _connectionFactory.GetConnectionConfiguration(paymentMethod);
@@ -105,14 +103,6 @@ namespace Klarna.Checkout
             var checkout = Client.NewCheckoutOrder();
 
             var lines = GetOrderLines(cart);
-
-            var merchantUrls = new MerchantUrls
-            {
-                Terms = new Uri("http://www.merchant.com/toc"),
-                Checkout = new Uri("http://www.merchant.com/checkout?klarna_order_id={checkout.order.id}"),
-                Confirmation = new Uri("http://www.merchant.com/thank-you?klarna_order_id={checkout.order.id}"),
-                Push = new Uri("http://www.merchant.com/create_order?klarna_order_id={checkout.order.id}")
-            };
             
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
 
@@ -124,7 +114,7 @@ namespace Klarna.Checkout
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = lines,
-                MerchantUrls = merchantUrls
+                MerchantUrls = GetMerchantUrls()
             };
 
             try
@@ -161,7 +151,8 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                ShippingOptions = GetShippingOptions(cart)
+                ShippingOptions = GetShippingOptions(cart),
+                MerchantUrls = GetMerchantUrls()
             } as CheckoutOrderData;
             
 
@@ -206,6 +197,33 @@ namespace Klarna.Checkout
             return cart;
         }
 
+        public void UpdateShippingMethod(ICart cart, PatchedCheckoutOrderData checkoutOrderData)
+        {
+            foreach (var shipment in cart.GetFirstForm().Shipments)
+            {
+                Guid guid;
+                if (Guid.TryParse(checkoutOrderData.SelectedShippingOption.Id, out guid))
+                {
+                    shipment.ShippingMethodId = guid;
+                }
+            }
+            _orderRepository.Save(cart);
+        }
+
+        public void UpdateAddress(ICart cart, PatchedCheckoutOrderData checkoutOrderData)
+        {
+            Guid shippingMethodGuid;
+            if (Guid.TryParse(checkoutOrderData.SelectedShippingOption.Id, out shippingMethodGuid))
+            {
+                var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(s => s.ShippingMethodId == shippingMethodGuid);
+                if (shipment != null)
+                {
+                    shipment.ShippingAddress = checkoutOrderData.ShippingAddress.ToOrderAddress();
+                }
+            }
+            _orderRepository.Save(cart);
+        }
+
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
@@ -234,6 +252,26 @@ namespace Klarna.Checkout
             }
             
             return orderLines;
+        }
+
+        private MerchantUrls GetMerchantUrls()
+        {
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod != null)
+            {
+                return new MerchantUrls
+                {
+                    Terms = new Uri(paymentMethod.GetParameter(Constants.TermsUrlField)),
+                    Checkout = new Uri(paymentMethod.GetParameter(Constants.CheckoutUrlField)),
+                    Confirmation = new Uri(paymentMethod.GetParameter(Constants.ConfirmationUrlField)),
+                    Push = new Uri(paymentMethod.GetParameter(Constants.PushUrlField)),
+                    AddressUpdate = new Uri(paymentMethod.GetParameter(Constants.AddressUpdateUrlField)),
+                    ShippingOptionUpdate = new Uri(paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField)),
+                    Notification = new Uri(paymentMethod.GetParameter(Constants.NotificationUrlField)),
+                    Validation = new Uri(paymentMethod.GetParameter(Constants.OrderValidationUrlField))
+                };
+            }
+            return null;
         }
 
         private ICart GetCart(string orderId)

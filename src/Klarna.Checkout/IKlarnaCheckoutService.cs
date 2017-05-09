@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
+using Klarna.Checkout.Models;
 using Klarna.Rest.Models;
 
 namespace Klarna.Checkout
@@ -11,5 +12,9 @@ namespace Klarna.Checkout
         CheckoutOrderData UpdateOrder(string orderId, ICart cart);
 
         ICart GetCartByKlarnaOrderId(string orderId);
+
+        void UpdateShippingMethod(ICart cart, PatchedCheckoutOrderData checkoutOrderData);
+
+        void UpdateAddress(ICart cart, PatchedCheckoutOrderData checkoutOrderData);
     }
 }
