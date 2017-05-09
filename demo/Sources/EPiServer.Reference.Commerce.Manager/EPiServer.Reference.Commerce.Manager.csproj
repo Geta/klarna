@@ -136,18 +136,6 @@
     <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
     </Reference>
-    <Reference Include="Klarna.OrderManagement, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Klarna.OrderManagement.0.0.0.1\lib\net452\Klarna.OrderManagement.dll</HintPath>
-    </Reference>
-    <Reference Include="Klarna.OrderManagement.CommerceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Klarna.OrderManagement.CommerceManager.0.0.0.1\lib\net452\Klarna.OrderManagement.CommerceManager.dll</HintPath>
-    </Reference>
-    <Reference Include="Klarna.Payments, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Klarna.Payments.0.0.0.1\lib\net452\Klarna.Payments.dll</HintPath>
-    </Reference>
-    <Reference Include="Klarna.Payments.CommerceManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\EPiServer.Klarna.Payments.CommerceManager.0.0.0.1\lib\net452\Klarna.Payments.CommerceManager.dll</HintPath>
-    </Reference>
     <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
@@ -300,7 +288,6 @@
     <Content Include="Default.aspx" />
     <Content Include="EPiServerDefault.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="KlarnaSummary\KlarnaPaymentControl.ascx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -379,6 +366,22 @@
     <ProjectReference Include="..\..\..\src\Klarna.Common\Klarna.Common.csproj">
       <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
       <Name>Klarna.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.csproj">
+      <Project>{30eb451c-21ee-4f1c-a5e1-ec1e4cece607}</Project>
+      <Name>Klarna.OrderManagement.CommerceManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
+      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
+      <Name>Klarna.OrderManagement</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj">
+      <Project>{6e816423-8646-43ce-9192-fb6e2a2f13b8}</Project>
+      <Name>Klarna.Payments.CommerceManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Klarna.Payments\Klarna.Payments.csproj">
+      <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
+      <Name>Klarna.Payments</Name>
     </ProjectReference>
     <ProjectReference Include="..\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj">
       <Project>{341c8e14-4eae-4946-9841-45f9818265a8}</Project>
