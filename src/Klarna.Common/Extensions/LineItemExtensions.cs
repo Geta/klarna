@@ -93,9 +93,9 @@ namespace Klarna.Common.Extensions
             */
 
             var placedPriceExcludingTax = lineItem.PlacedPrice;
-            var totalDiscount = lineItem.GetEntryDiscount();
-            (decimal taxForLineItem, decimal taxPercentage) = GetTotalTaxForLineItem(lineItem.PlacedPrice, lineItem, market, shipment);
-            totalDiscount = totalDiscount * (100 + taxPercentage) / 100;
+            var totalDiscountExcludingTax = lineItem.GetEntryDiscount();
+            (decimal taxForLineItem, decimal taxPercentage) = GetTaxForLineItem(lineItem.PlacedPrice, lineItem, market, shipment);
+            var totalDiscount = totalDiscountExcludingTax * (100 + taxPercentage) / 100;
 
             // Includes tax, excludes discount. (max value: 100000000)
             var unitPrice = AmountHelper.GetAmount(placedPriceExcludingTax + taxForLineItem);
@@ -111,7 +111,7 @@ namespace Klarna.Common.Extensions
             return (unitPrice, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
         }
 
-        private static (decimal taxForLineItem, decimal taxPercentage) GetTotalTaxForLineItem(decimal unitPrice, ILineItem lineItem, IMarket market, IShipment shipment)
+        private static (decimal taxForLineItem, decimal taxPercentage) GetTaxForLineItem(decimal unitPrice, ILineItem lineItem, IMarket market, IShipment shipment)
         {
             decimal taxForLineItem = 0;
             decimal taxPercentage = 0;
@@ -119,9 +119,7 @@ namespace Klarna.Common.Extensions
             if (TryGetTaxCategoryId(lineItem, out int taxCategoryId) &&
                 TryGetTaxValues(market, shipment, taxCategoryId, out ITaxValue[] taxValues))
             {
-                var quantity = lineItem.Quantity;
-                var totalExcludingTax = unitPrice * quantity;
-                taxForLineItem = GetTaxes(taxValues, TaxType.SalesTax, totalExcludingTax);
+                taxForLineItem = GetTaxes(taxValues, TaxType.SalesTax, unitPrice);
 
                 taxPercentage = taxValues
                     .Where(x => x.TaxType == TaxType.SalesTax)
