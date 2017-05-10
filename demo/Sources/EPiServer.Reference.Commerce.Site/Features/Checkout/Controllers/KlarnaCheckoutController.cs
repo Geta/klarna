@@ -32,25 +32,25 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/shippingoptionupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult ShippingOptionUpdate(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+        public IHttpActionResult ShippingOptionUpdate(int orderGroupId, [FromBody]ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
-            _klarnaCheckoutService.UpdateShippingMethod(cart, checkoutData);
+            var response = _klarnaCheckoutService.UpdateShippingMethod(cart, shippingOptionUpdateRequest);
 
-            return Ok(checkoutData);
+            return Ok(response);
         }
 
         [Route("cart/{orderGroupId}/addressupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+        public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]AddressUpdateRequest addressUpdateRequest)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
-            _klarnaCheckoutService.UpdateAddress(cart, checkoutData);
+            var response = _klarnaCheckoutService.UpdateAddress(cart, addressUpdateRequest);
 
-            return Ok(checkoutData);
+            return Ok(response);
         }
 
         [Route("cart/{orderGroupId}/ordervalidation")]

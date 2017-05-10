@@ -15,8 +15,8 @@ namespace Klarna.Checkout
 
         ICart GetCartByKlarnaOrderId(int orderGroupId, string orderId);
 
-        void UpdateShippingMethod(ICart cart, PatchedCheckoutOrderData checkoutOrderData);
+        ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest);
 
-        void UpdateAddress(ICart cart, PatchedCheckoutOrderData checkoutOrderData);
+        AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest);
     }
 }

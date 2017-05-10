@@ -180,32 +180,35 @@ namespace Klarna.Checkout
             return null;
         }
 
-        public void UpdateShippingMethod(ICart cart, PatchedCheckoutOrderData checkoutOrderData)
+        public ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
             foreach (var shipment in cart.GetFirstForm().Shipments)
             {
                 Guid guid;
-                if (Guid.TryParse(checkoutOrderData.SelectedShippingOption.Id, out guid))
+                if (Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out guid))
                 {
                     shipment.ShippingMethodId = guid;
                 }
             }
             _orderRepository.Save(cart);
+
+            return new ShippingOptionUpdateResponse();
         }
 
-        public void UpdateAddress(ICart cart, PatchedCheckoutOrderData checkoutOrderData)
+        public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
         {
             Guid shippingMethodGuid;
-            if (checkoutOrderData.SelectedShippingOption != null && Guid.TryParse(checkoutOrderData.SelectedShippingOption.Id, out shippingMethodGuid))
+            if (addressUpdateRequest.SelectedShippingOption != null && Guid.TryParse(addressUpdateRequest.SelectedShippingOption.Id, out shippingMethodGuid))
             {
                 var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(s => s.ShippingMethodId == shippingMethodGuid);
                 if (shipment != null)
                 {
-                    shipment.ShippingAddress = checkoutOrderData.ShippingAddress.ToOrderAddress(cart);
+                    shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
                     
                 }
                 _orderRepository.Save(cart);
             }
+            return new AddressUpdateResponse();
         }
 
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
