@@ -19,7 +19,7 @@ namespace Klarna.Payments.Models
         [JsonProperty("order_tax_amount")]
         public int OrderTaxAmount { get; set; }
         [JsonProperty("order_lines")]
-        public PatchedOrderLine[] OrderLines { get; set; }
+        public OrderLine[] OrderLines { get; set; }
         [JsonProperty("merchant_urls")]
         public MerchantUrl MerchantUrl { get; set; }
         [JsonProperty("merchant_reference1")]

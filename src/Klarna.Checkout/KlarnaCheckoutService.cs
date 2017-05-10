@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using EPiServer;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
-using EPiServer.Web.Routing;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
@@ -15,7 +13,6 @@ using Klarna.Common.Helpers;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
-using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
@@ -33,13 +30,6 @@ namespace Klarna.Checkout
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
 
         private readonly IOrderRepository _orderRepository;
-        private readonly ReferenceConverter _referenceConverter;
-        private readonly UrlResolver _urlResolver;
-        private readonly IContentRepository _contentRepository;
-        private readonly IOrderNumberGenerator _orderNumberGenerator;
-        private readonly IPaymentProcessor _paymentProcessor;
-        private readonly IOrderGroupCalculator _orderGroupCalculator;
-        private readonly IShippingCalculator _shippingCalculator;
         private readonly ITaxCalculator _taxCalculator;
         private readonly IConnectionFactory _connectionFactory;
 
@@ -48,26 +38,12 @@ namespace Klarna.Checkout
         public KlarnaCheckoutService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
-            ReferenceConverter referenceConverter,
-            UrlResolver urlResolver,
-            IContentRepository contentRepository,
-            IOrderNumberGenerator orderNumberGenerator,
-            IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator,
             IConnectionFactory connectionFactory, 
-            IShippingCalculator shippingCalculator, 
             ITaxCalculator taxCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
-            _referenceConverter = referenceConverter;
-            _urlResolver = urlResolver;
-            _contentRepository = contentRepository;
-            _orderNumberGenerator = orderNumberGenerator;
-            _paymentProcessor = paymentProcessor;
-            _orderGroupCalculator = orderGroupCalculator;
             _connectionFactory = connectionFactory;
-            _shippingCalculator = shippingCalculator;
             _taxCalculator = taxCalculator;
         }
 
@@ -107,21 +83,7 @@ namespace Klarna.Checkout
         public CheckoutOrderData CreateOrder(ICart cart)
         {
             var checkout = Client.NewCheckoutOrder();
-
-            var lines = GetOrderLines(cart);
-            
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-
-            var orderData = new CheckoutOrderData()
-            {
-                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
-                PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = ContentLanguage.PreferredCulture.Name,
-                OrderAmount = AmountHelper.GetAmount(totals.Total),
-                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = lines,
-                MerchantUrls = GetMerchantUrls(cart)
-            };
+            var orderData = GetCheckoutOrderData(cart);
 
             try
             {
@@ -151,27 +113,8 @@ namespace Klarna.Checkout
         public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
         {
             var checkout = Client.NewCheckoutOrder(orderId);
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var orderData = GetCheckoutOrderData(cart);
 
-            var shippingTaxTotal =
-                cart.Forms
-                    .SelectMany(x => x.Shipments)
-                    .Select(x => _taxCalculator.GetShippingTaxTotal(x, cart.Market, cart.Currency))
-                    .Aggregate((x, y) => x + y);
-
-            var orderData = new PatchedCheckoutOrderData
-            {
-                OrderAmount = AmountHelper.GetAmount(totals.SubTotal),
-                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal - shippingTaxTotal),
-                ShippingOptions = GetShippingOptions(cart),
-                MerchantUrls = GetMerchantUrls(cart)
-            } as CheckoutOrderData;
-            
-
-            var lines = GetOrderLines(cart);
-            
-            orderData.OrderLines = lines;
-            
             try
             {
                 orderData = checkout.Update(orderData);
@@ -189,6 +132,32 @@ namespace Klarna.Checkout
             }
 
             return null;
+        }
+
+        private CheckoutOrderData GetCheckoutOrderData(ICart cart)
+        {
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var shippingTaxTotal =
+                cart.Forms
+                    .SelectMany(x => x.Shipments)
+                    .Select(x => _taxCalculator.GetShippingTaxTotal(x, cart.Market, cart.Currency))
+                    .Aggregate((x, y) => x + y);
+            var orderTaxTotal = totals.TaxTotal - shippingTaxTotal;
+
+            var orderData = new PatchedCheckoutOrderData
+            {
+                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
+                PurchaseCurrency = cart.Currency.CurrencyCode,
+                Locale = ContentLanguage.PreferredCulture.Name,
+                // Non-negative, minor units. Total amount of the order, including tax and any discounts.
+                OrderAmount = AmountHelper.GetAmount(totals.SubTotal + orderTaxTotal),
+                // Non-negative, minor units. The total tax amount of the order.
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal - shippingTaxTotal),
+                ShippingOptions = GetShippingOptions(cart),
+                MerchantUrls = GetMerchantUrls(cart),
+                OrderLines = GetOrderLines(cart)
+            } as CheckoutOrderData;
+            return orderData;
         }
 
         public CheckoutOrderData GetOrder(string orderId)
@@ -255,11 +224,12 @@ namespace Klarna.Checkout
         {
             // Only add order lines, Klarna adds shipping costs
             // https://developers.klarna.com/en/gb/kco-v3/checkout/additional-features/tax-shipping
-
+            var market = cart.Market;
+            var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
             foreach (var lineItem in cart.GetAllLineItems())
             {
-                var orderLine = lineItem.GetOrderLine(cart.Currency);
+                var orderLine = lineItem.GetOrderLine(market, shipment, cart.Currency);
                 orderLines.Add(orderLine);
             }
             
@@ -288,7 +258,7 @@ namespace Klarna.Checkout
 
         private ICart GetCart(string orderId)
         {
-            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            var searchOptions = new OrderSearchOptions();
             searchOptions.CacheResults = false;
             searchOptions.StartingRecord = 0;
             searchOptions.RecordsToRetrieve = 1;

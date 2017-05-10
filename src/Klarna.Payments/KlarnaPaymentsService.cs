@@ -303,10 +303,10 @@ namespace Klarna.Payments
 
             var shipment = cart.GetFirstShipment();
 
-            var list = new List<PatchedOrderLine>();
+            var list = new List<OrderLine>();
             foreach (var item in cart.GetAllLineItems())
             {
-                var orderLine = item.GetOrderLine(cart.Currency, Configuration.SendProductAndImageUrlField);
+                var orderLine = item.GetOrderLine(cart.Market, shipment, cart.Currency, Configuration.SendProductAndImageUrlField);
 
                 list.Add(orderLine);
             }
