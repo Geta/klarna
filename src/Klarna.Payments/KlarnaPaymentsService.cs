@@ -17,6 +17,7 @@ using Klarna.Common.Models;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Helpers;
 using Klarna.Rest.Models;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
@@ -312,7 +313,8 @@ namespace Klarna.Payments
             }
             if (totals.ShippingTotal.Amount > 0)
             {
-                var shipmentOrderLine = shipment.GetOrderLine(totals);
+                // TODO: Shipping tax
+                var shipmentOrderLine = shipment.GetOrderLine(totals,  new Money(0, cart.Currency));
                 list.Add(shipmentOrderLine);
             }
             

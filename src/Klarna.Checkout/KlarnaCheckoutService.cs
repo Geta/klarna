@@ -137,22 +137,15 @@ namespace Klarna.Checkout
         private CheckoutOrderData GetCheckoutOrderData(ICart cart)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            var shippingTaxTotal =
-                cart.Forms
-                    .SelectMany(x => x.Shipments)
-                    .Select(x => _taxCalculator.GetShippingTaxTotal(x, cart.Market, cart.Currency))
-                    .Aggregate((x, y) => x + y);
-            var orderTaxTotal = totals.TaxTotal - shippingTaxTotal;
-
-            var orderData = new PatchedCheckoutOrderData
+           var orderData = new PatchedCheckoutOrderData
             {
                 PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = ContentLanguage.PreferredCulture.Name,
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.
-                OrderAmount = AmountHelper.GetAmount(totals.SubTotal + orderTaxTotal),
+                OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
-                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal - shippingTaxTotal),
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 ShippingOptions = GetShippingOptions(cart),
                 MerchantUrls = GetMerchantUrls(cart),
                 OrderLines = GetOrderLines(cart)
@@ -228,8 +221,6 @@ namespace Klarna.Checkout
 
         private List<OrderLine> GetOrderLines(ICart cart)
         {
-            // Only add order lines, Klarna adds shipping costs
-            // https://developers.klarna.com/en/gb/kco-v3/checkout/additional-features/tax-shipping
             var market = cart.Market;
             var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
@@ -238,7 +229,15 @@ namespace Klarna.Checkout
                 var orderLine = lineItem.GetOrderLine(market, shipment, cart.Currency);
                 orderLines.Add(orderLine);
             }
-            
+
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            if (shipment != null && totals.ShippingTotal.Amount > 0)
+            {
+                var shippingTaxTotal = _taxCalculator.GetShippingTaxTotal(shipment, cart.Market, cart.Currency);
+                var shipmentOrderLine = shipment.GetOrderLine(totals, shippingTaxTotal);
+                orderLines.Add(shipmentOrderLine);
+            }
+
             return orderLines;
         }
 
