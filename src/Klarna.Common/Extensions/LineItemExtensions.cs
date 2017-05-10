@@ -93,26 +93,25 @@ namespace Klarna.Common.Extensions
             */
 
             var placedPriceExcludingTax = lineItem.PlacedPrice;
-            var priceExcludingTax = GetPriceExcludingTax(lineItem);
-            (decimal taxForLineItem, decimal taxPercentage) = GetTaxForLineItem(lineItem, market, shipment);
-            var totalPrice = priceExcludingTax * lineItem.Quantity;
-            var extendedPrice = lineItem.GetExtendedPrice(currency).Amount;
+            var totalDiscount = lineItem.GetEntryDiscount();
+            (decimal taxForLineItem, decimal taxPercentage) = GetTotalTaxForLineItem(lineItem.PlacedPrice, lineItem, market, shipment);
+            totalDiscount = totalDiscount * (100 + taxPercentage) / 100;
 
             // Includes tax, excludes discount. (max value: 100000000)
             var unitPrice = AmountHelper.GetAmount(placedPriceExcludingTax + taxForLineItem);
             // Non - negative minor units. Includes tax
-            int? totalDiscountAmount = AmountHelper.GetAmount(totalPrice - extendedPrice);
-            // Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within ±quantity. (max value: 100000000)
-            var totalAmount = (int) (lineItem.Quantity * unitPrice - (totalDiscountAmount ?? 0));
+            int totalDiscountAmount = AmountHelper.GetAmount(totalDiscount);
+            // Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within quantity. (max value: 100000000)
+            var totalAmount = (int) (lineItem.Quantity * unitPrice - totalDiscountAmount);
             // Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
             var taxRate = AmountHelper.GetAmount(taxPercentage);
-            // Must be within ±1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
+            // Must be within 1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
             var totalTaxAmount = totalAmount - totalAmount * 10000 / (10000 + taxRate);
 
-            return (unitPrice, taxRate, totalDiscountAmount.Value, totalAmount, totalTaxAmount);
+            return (unitPrice, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
         }
 
-        private static (decimal taxForLineItem, decimal taxPercentage) GetTaxForLineItem(ILineItem lineItem, IMarket market, IShipment shipment)
+        private static (decimal taxForLineItem, decimal taxPercentage) GetTotalTaxForLineItem(decimal unitPrice, ILineItem lineItem, IMarket market, IShipment shipment)
         {
             decimal taxForLineItem = 0;
             decimal taxPercentage = 0;
@@ -121,7 +120,7 @@ namespace Klarna.Common.Extensions
                 TryGetTaxValues(market, shipment, taxCategoryId, out ITaxValue[] taxValues))
             {
                 var quantity = lineItem.Quantity;
-                var totalExcludingTax = GetPriceExcludingTax(lineItem) * quantity;
+                var totalExcludingTax = unitPrice * quantity;
                 taxForLineItem = GetTaxes(taxValues, TaxType.SalesTax, totalExcludingTax);
 
                 taxPercentage = taxValues
@@ -160,24 +159,10 @@ namespace Klarna.Common.Extensions
 
             var categoryNameById = CatalogTaxManager.GetTaxCategoryNameById(taxCategoryId);
 
-            IOrderAddress shipmentAddress;
-            if (shipment.ShippingAddress == null)
-            {
-                shipmentAddress = new OrderAddress();
-                shipmentAddress.CountryCode = market.Countries.FirstOrDefault();
-            }
-            else
-            {
-                shipmentAddress = shipment.ShippingAddress;
-            }
+            var shipmentAddress = shipment.ShippingAddress ?? new OrderAddress {CountryCode = market.Countries.FirstOrDefault()};
             
-            taxValues = OrderContext.Current.GetTaxes(Guid.Empty, categoryNameById, market.DefaultLanguage.Name, shipment.ShippingAddress).ToArray();
+            taxValues = OrderContext.Current.GetTaxes(Guid.Empty, categoryNameById, market.DefaultLanguage.Name, shipmentAddress).ToArray();
             return taxValues.Any();
-        }
-
-        private static Decimal GetPriceExcludingTax(ILineItem item)
-        {
-            return item.PlacedPrice - (item.TryGetDiscountValue(x => x.OrderAmount) + item.TryGetDiscountValue(x => x.EntryAmount)) / item.Quantity;
         }
 
         private static Decimal GetTaxes(IEnumerable<ITaxValue> taxes, TaxType taxtype, Decimal basePrice)
