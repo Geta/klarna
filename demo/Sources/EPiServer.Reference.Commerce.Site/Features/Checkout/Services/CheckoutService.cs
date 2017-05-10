@@ -179,7 +179,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
             var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(checkoutViewModel.CurrentPage.ContentLink);
 
-            return new UrlBuilder(confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
+            return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
         }
     }
 }

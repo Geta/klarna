@@ -28,5 +28,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels
         public Money TaxTotal { get; set; }
         public Money CartTotal { get; set; }
         public Money OrderLevelDiscountTotal { get; set; }
+        public string KlarnaCheckoutHtmlSnippet { get; set; }
+        public bool IsKlarnaCheckout { get; set; }
     }
 }

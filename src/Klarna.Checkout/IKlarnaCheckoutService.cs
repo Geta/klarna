@@ -11,7 +11,9 @@ namespace Klarna.Checkout
         CheckoutOrderData CreateOrder(ICart cart);
         CheckoutOrderData UpdateOrder(string orderId, ICart cart);
 
-        ICart GetCartByKlarnaOrderId(string orderId);
+        CheckoutOrderData GetOrder(string orderId);
+
+        ICart GetCartByKlarnaOrderId(int orderGroupId, string orderId);
 
         void UpdateShippingMethod(ICart cart, PatchedCheckoutOrderData checkoutOrderData);
 

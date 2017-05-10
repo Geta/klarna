@@ -167,15 +167,17 @@ namespace Klarna.Checkout
             return checkout.Fetch();
         }
 
-        public ICart GetCartByKlarnaOrderId(string orderId)
+        public ICart GetCartByKlarnaOrderId(int orderGroupdId, string orderId)
         {
-            var checkoutOrderData = GetOrder(orderId);
+            //var checkoutOrderData = GetOrder(orderId);
 
-            var cart = GetCart(orderId);
+            var cart = _orderRepository.Load<ICart>(orderGroupdId);
 
-            //TODO: compare checkoutOrderData with cart
-
-            return cart;
+            //if (cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString() == orderId)
+            //{
+                return cart;
+            //}
+            return null;
         }
 
         public void UpdateShippingMethod(ICart cart, PatchedCheckoutOrderData checkoutOrderData)
@@ -199,7 +201,8 @@ namespace Klarna.Checkout
                 var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(s => s.ShippingMethodId == shippingMethodGuid);
                 if (shipment != null)
                 {
-                    shipment.ShippingAddress = checkoutOrderData.ShippingAddress.ToOrderAddress();
+                    shipment.ShippingAddress = checkoutOrderData.ShippingAddress.ToOrderAddress(cart);
+                    
                 }
                 _orderRepository.Save(cart);
             }
@@ -245,34 +248,13 @@ namespace Klarna.Checkout
                 {
                     Terms = new Uri(paymentMethod.GetParameter(Constants.TermsUrlField)),
                     Checkout = new Uri(paymentMethod.GetParameter(Constants.CheckoutUrlField)),
-                    Confirmation = new Uri(paymentMethod.GetParameter(Constants.ConfirmationUrlField)),
+                    Confirmation = new Uri(paymentMethod.GetParameter(Constants.ConfirmationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Push = new Uri(paymentMethod.GetParameter(Constants.PushUrlField)),
                     AddressUpdate = new Uri(paymentMethod.GetParameter(Constants.AddressUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     ShippingOptionUpdate = new Uri(paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Notification = new Uri(paymentMethod.GetParameter(Constants.NotificationUrlField)),
                     Validation = new Uri(paymentMethod.GetParameter(Constants.OrderValidationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString()))
                 };
-            }
-            return null;
-        }
-
-        private ICart GetCart(string orderId)
-        {
-            var searchOptions = new OrderSearchOptions();
-            searchOptions.CacheResults = false;
-            searchOptions.StartingRecord = 0;
-            searchOptions.RecordsToRetrieve = 1;
-            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "ShoppingCart" };
-            searchOptions.Namespace = "Mediachase.Commerce.Orders";
-
-            var parameters = new OrderSearchParameters();
-            parameters.SqlMetaWhereClause = $"META.{Common.Constants.KlarnaOrderIdField} LIKE '{orderId}'";
-
-            var cart = OrderContext.Current.FindCarts(parameters, searchOptions)?.FirstOrDefault();
-
-            if (cart != null)
-            {
-                return _orderRepository.LoadCart<ICart>(cart.CustomerId, "Default");
             }
             return null;
         }

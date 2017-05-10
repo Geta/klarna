@@ -9,18 +9,23 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Web.Mvc.Html;
 using System.Web.Mvc;
+using Klarna.Checkout;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
     public class OrderConfirmationController : OrderConfirmationControllerBase<OrderConfirmationPage>
     {
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+
         public OrderConfirmationController(
             ConfirmationService confirmationService,
             AddressBookService addressBookService,
             CustomerContextFacade customerContextFacade,
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator)
+            IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
+            IKlarnaCheckoutService klarnaCheckoutService)
             : base(confirmationService, addressBookService, customerContextFacade, orderGroupTotalsCalculator)
         {
+            _klarnaCheckoutService = klarnaCheckoutService;
         }
 
         [HttpGet]
@@ -44,6 +49,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 var viewModel = CreateViewModel(currentPage, order);
                 viewModel.NotificationMessage = notificationMessage;
+
+                if (!string.IsNullOrEmpty(order.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString()))
+                {
+                    var klarnaOrder = _klarnaCheckoutService.GetOrder(order.Properties[Constants.KlarnaCheckoutOrderIdField].ToString());
+                    viewModel.KlarnaCheckoutHtmlSnippet = klarnaOrder.HtmlSnippet;
+                    viewModel.IsKlarnaCheckout = true;
+                }
 
                 return View(viewModel);
             }

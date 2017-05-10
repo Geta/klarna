@@ -1,4 +1,5 @@
 using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders;
@@ -7,6 +8,8 @@ namespace Klarna.Common.Extensions
 {
     public static class AddressExtensions
     {
+        private static Injected<IOrderGroupFactory> _orderGroupFactory;
+
         public static Address ToAddress(this IOrderAddress orderAddress)
         {
             var address = new Address();
@@ -24,9 +27,11 @@ namespace Klarna.Common.Extensions
             return address;
         }
 
-        public static IOrderAddress ToOrderAddress(this Address address)
+        public static IOrderAddress ToOrderAddress(this Address address, ICart cart)
         {
-            var orderAddress = new OrderAddress();
+            var orderAddress = cart.CreateOrderAddress(_orderGroupFactory.Service);
+            orderAddress.Id = $"{address.StreetAddress}{address.StreetAddress2}{address.City}";
+
             orderAddress.FirstName = address.GivenName;
             orderAddress.LastName = address.FamilyName;
             orderAddress.Line1 = address.StreetAddress;

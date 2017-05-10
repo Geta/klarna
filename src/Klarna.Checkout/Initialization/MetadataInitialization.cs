@@ -20,7 +20,6 @@ namespace Klarna.Checkout.Initialization
         {
             MetaDataContext mdContext = CatalogContext.MetaDataContext;
             
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaCheckoutOrderIdField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaCheckoutOrderIdField), Common.Constants.PurchaseOrderClass);
         }
 

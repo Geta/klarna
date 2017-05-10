@@ -21,6 +21,8 @@ using System.Web.Http.Results;
 using System.Web.Mvc;
 using EPiServer.Globalization;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
+using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using Klarna.Checkout;
 using Klarna.Payments;
 using Mediachase.Commerce.Orders.Managers;
@@ -41,6 +43,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly CheckoutService _checkoutService;
         private readonly IKlarnaPaymentsService _klarnaPaymentsService;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+        private readonly IContentLoader _contentLoader;
 
         public CheckoutController(
             ICurrencyService currencyService,
@@ -52,7 +55,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             IRecommendationService recommendationService,
             CheckoutService checkoutService,
             IKlarnaPaymentsService klarnaPaymentsService,
-            IKlarnaCheckoutService klarnaCheckoutService)
+            IKlarnaCheckoutService klarnaCheckoutService,
+            IContentLoader contentLoader)
         {
             _currencyService = currencyService;
             _controllerExceptionHandler = controllerExceptionHandler;
@@ -64,6 +68,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService = checkoutService;
             _klarnaPaymentsService = klarnaPaymentsService;
             _klarnaCheckoutService = klarnaCheckoutService;
+            _contentLoader = contentLoader;
         }
 
         [HttpGet]
@@ -237,28 +242,52 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         }
 
         [HttpGet]
-        public ActionResult KlarnaCheckoutConfirmation(string klarna_order_id)
+        public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
         {
             //var viewModel = CreateCheckoutViewModel(currentPage);
 
-            var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(klarna_order_id);
+            var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {
-                var viewModel = CreateCheckoutViewModel(null);
+                var contentLink = _contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage;
+
+                var viewModel = CreateCheckoutViewModel(_contentLoader.Get<CheckoutPage>(contentLink));
 
                 var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
-                var paymentViewModel = new PaymentMethodViewModel<PaymentMethodBase>
+                var paymentViewModel = new PaymentMethodViewModel<KlarnaCheckoutPaymentMethod>
                 {
                     PaymentMethodId = paymentRow.PaymentMethodId,
                     SystemName = paymentRow.SystemKeyword,
                     FriendlyName = paymentRow.Name,
                     Description = paymentRow.Description,
+                    PaymentMethod = new KlarnaCheckoutPaymentMethod()
                 };
+
                 viewModel.Payment = paymentViewModel;
+                viewModel.Payment.PaymentMethod.PaymentMethodId = paymentRow.PaymentMethodId;
+
+                var order = _klarnaCheckoutService.GetOrder(klarna_order_id);
+                
+                viewModel.BillingAddress = new AddressModel
+                {
+                    Name = $"{order.BillingAddress.StreetAddress}{order.BillingAddress.StreetAddress2}{order.BillingAddress.City}",
+                    FirstName = order.BillingAddress.GivenName,
+                    LastName = order.BillingAddress.FamilyName,
+                    Email = order.BillingAddress.Email,
+                    DaytimePhoneNumber = order.BillingAddress.Phone,
+                    Line1 = order.BillingAddress.StreetAddress,
+                    Line2 = order.BillingAddress.StreetAddress2,
+                    PostalCode = order.BillingAddress.PostalCode,
+                    City = order.BillingAddress.City,
+                    CountryName = order.BillingAddress.Country
+                };
 
                 _checkoutService.CreateAndAddPaymentToCart(cart, viewModel);
 
-                var purchaseOrder = _checkoutService.PlaceOrder(Cart, ModelState, viewModel);
+                var purchaseOrder = _checkoutService.PlaceOrder(cart, ModelState, viewModel);
+
+                purchaseOrder.Properties[Constants.KlarnaCheckoutOrderIdField] = klarna_order_id;
+                _orderRepository.Save(purchaseOrder);
 
                 // create payment
                 // add billing
