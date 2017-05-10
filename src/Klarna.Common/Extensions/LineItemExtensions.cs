@@ -159,6 +159,18 @@ namespace Klarna.Common.Extensions
             }
 
             var categoryNameById = CatalogTaxManager.GetTaxCategoryNameById(taxCategoryId);
+
+            IOrderAddress shipmentAddress;
+            if (shipment.ShippingAddress == null)
+            {
+                shipmentAddress = new OrderAddress();
+                shipmentAddress.CountryCode = market.Countries.FirstOrDefault();
+            }
+            else
+            {
+                shipmentAddress = shipment.ShippingAddress;
+            }
+            
             taxValues = OrderContext.Current.GetTaxes(Guid.Empty, categoryNameById, market.DefaultLanguage.Name, shipment.ShippingAddress).ToArray();
             return taxValues.Any();
         }

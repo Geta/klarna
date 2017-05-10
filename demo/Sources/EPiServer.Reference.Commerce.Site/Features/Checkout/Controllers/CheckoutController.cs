@@ -99,6 +99,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             // Make sure Klarna values are set
             (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
+            (viewModel.Payment as KlarnaCheckoutViewModel)?.InitializeValues();
 
             return View(viewModel.ViewName, viewModel);
         }
