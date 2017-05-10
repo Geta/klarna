@@ -10,6 +10,7 @@ using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
+using Klarna.Common.Models;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
@@ -224,19 +225,48 @@ namespace Klarna.Checkout
             var market = cart.Market;
             var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
+
+            // Line items
             foreach (var lineItem in cart.GetAllLineItems())
             {
-                var orderLine = lineItem.GetOrderLine(market, shipment, cart.Currency);
+                var orderLine = lineItem.GetOrderLine();
                 orderLines.Add(orderLine);
             }
 
+            // Shipment
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             if (shipment != null && totals.ShippingTotal.Amount > 0)
             {
-                var shippingTaxTotal = _taxCalculator.GetShippingTaxTotal(shipment, cart.Market, cart.Currency);
-                var shipmentOrderLine = shipment.GetOrderLine(totals, shippingTaxTotal);
+                var shipmentOrderLine = shipment.GetOrderLine(totals);
                 orderLines.Add(shipmentOrderLine);
             }
+
+            // Sales tax
+            orderLines.Add(new PatchedOrderLine()
+            {
+                Type = "sales_tax",
+                Name = "Sales Tax",
+                Quantity = 1,
+                TotalAmount = AmountHelper.GetAmount(totals.TaxTotal),
+                UnitPrice = AmountHelper.GetAmount(totals.TaxTotal),
+                TotalTaxAmount = 0,
+                TaxRate = 0
+            });
+
+            // Order level discounts
+            var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
+            var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
+            var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
+            orderLines.Add(new PatchedOrderLine()
+            {
+                Type = "discount",
+                Name = "Discount",
+                Quantity = 1,
+                TotalAmount = -AmountHelper.GetAmount(totalDiscount),
+                UnitPrice = -AmountHelper.GetAmount(totalDiscount),
+                TotalTaxAmount = 0,
+                TaxRate = 0
+            });
 
             return orderLines;
         }

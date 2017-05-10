@@ -307,17 +307,19 @@ namespace Klarna.Payments
             var list = new List<OrderLine>();
             foreach (var item in cart.GetAllLineItems())
             {
-                var orderLine = item.GetOrderLine(cart.Market, shipment, cart.Currency, Configuration.SendProductAndImageUrlField);
+                var orderLine = item.GetOrderLine(Configuration.SendProductAndImageUrlField);
 
                 list.Add(orderLine);
             }
             if (totals.ShippingTotal.Amount > 0)
             {
-                // TODO: Shipping tax
-                var shipmentOrderLine = shipment.GetOrderLine(totals,  new Money(0, cart.Currency));
+                var shipmentOrderLine = shipment.GetOrderLine(totals);
                 list.Add(shipmentOrderLine);
             }
-            
+
+            // TODO: Tax
+            // TODO: Discounts
+
             request.OrderLines = list.ToArray();
 
             if (includePersonalInformation)

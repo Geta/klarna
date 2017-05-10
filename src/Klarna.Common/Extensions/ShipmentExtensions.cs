@@ -8,33 +8,18 @@ namespace Klarna.Common.Extensions
 {
     public static class ShipmentExtensions
     {
-        public static PatchedOrderLine GetOrderLine(this IShipment shipment, OrderGroupTotals totals, Money shippingTaxTotal)
+        public static PatchedOrderLine GetOrderLine(this IShipment shipment, OrderGroupTotals totals)
         {
-            /*
-           unit_price integer required
-               Minor units. Includes tax, excludes discount. (max value: 100000000)
-           tax_rate integer required
-               Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
-           total_amount integer required
-               Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within ±quantity. (max value: 100000000)
-           total_tax_amount integer required
-               Must be within ±1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
-           total_discount_amount integer
-               Non - negative minor units. Includes tax.
-           */
-
-            var priceIncludingTax = totals.ShippingTotal + shippingTaxTotal;
-
             var shipmentOrderLine = new PatchedOrderLine
             {
                 Name = shipment.ShippingMethodName,
                 Quantity = 1,
-                UnitPrice = AmountHelper.GetAmount(priceIncludingTax),
-                TotalAmount = AmountHelper.GetAmount(priceIncludingTax),
+                UnitPrice = AmountHelper.GetAmount(totals.ShippingTotal),
+                TotalAmount = AmountHelper.GetAmount(totals.ShippingTotal),
                 // TODO Get ITaxValue percentage, check if it also works with payments
-                TaxRate = AmountHelper.GetAmount(100 * (priceIncludingTax.Amount / totals.ShippingTotal.Amount - 1)),
-                TotalTaxAmount = AmountHelper.GetAmount(shippingTaxTotal),
-            Type = "shipping_fee"
+                TaxRate = 0,
+                TotalTaxAmount = 0,
+                Type = "shipping_fee"
             };
             if (string.IsNullOrEmpty(shipmentOrderLine.Name))
             {
