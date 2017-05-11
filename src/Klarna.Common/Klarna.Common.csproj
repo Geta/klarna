@@ -208,6 +208,8 @@
     <Compile Include="Extensions\ShipmentExtensions.cs" />
     <Compile Include="Helpers\AmountHelper.cs" />
     <Compile Include="Helpers\CountryCodeHelper.cs" />
+    <Compile Include="Helpers\CountryRegionProvider.cs" />
+    <Compile Include="Helpers\ICountryRegionProvider.cs" />
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />

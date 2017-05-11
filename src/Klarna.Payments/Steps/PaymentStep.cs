@@ -6,7 +6,6 @@ using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.OrderManagement;
-using Klarna.Payments.Extensions;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders.Managers;
 

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Web.Http;
-using System.Web.Http.Description;
 using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
-using EPiServer.ServiceLocation;
 using Klarna.Payments;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
+using Klarna.Common.Extensions;
 using Klarna.Common.Models;
-using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
 

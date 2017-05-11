@@ -10,6 +10,7 @@ namespace Klarna.Common.Helpers
     public static class CountryCodeHelper
     {
         private static Injected<GeolocationProvider> GeoLocationProvider { get; set; }
+        private static Injected<ICountryRegionProvider> CountryRegionProvider { get; set; }
 
         public static string GetTwoLetterCountryCode(string threeLetterCode)
         {
@@ -53,6 +54,15 @@ namespace Klarna.Common.Helpers
                 }
             }
             return string.Empty;
+        }
+
+        public static string GetStateName(string twoLetterCountryCode, string stateCode)
+        {
+            return CountryRegionProvider.Service.GetStateName(twoLetterCountryCode, stateCode);
+        }
+        public static string GetStateCode(string twoLetterCountryCode, string stateName)
+        {
+            return CountryRegionProvider.Service.GetStateCode(twoLetterCountryCode, stateName);
         }
     }
 }
