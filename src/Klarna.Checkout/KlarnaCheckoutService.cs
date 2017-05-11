@@ -230,7 +230,7 @@ namespace Klarna.Checkout
             result.ErrorType = ErrorType.unsupported_shipping_address;
             result.ErrorText = "Blaaat";
 
-            return null;
+            return result;
         }
 
         public override IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)

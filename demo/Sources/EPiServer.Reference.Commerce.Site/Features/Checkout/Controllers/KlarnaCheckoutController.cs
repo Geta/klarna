@@ -1,4 +1,6 @@
-﻿using System.Web.Http;
+﻿using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Logging;
@@ -58,19 +60,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/ordervalidation")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+        public HttpResponseMessage OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
             var errorResult = _klarnaCheckoutService.ValidateOrder(cart, checkoutData);
             if (errorResult == null)
             {
-                return Ok();
+                return Request.CreateResponse(HttpStatusCode.OK);
             }
-
-            ModelState.AddModelError(errorResult.ErrorType.ToString(), errorResult.ErrorText);
-
-            return BadRequest(ModelState);
+            return Request.CreateResponse(HttpStatusCode.BadRequest, errorResult);
         }
 
         [Route("fraud/")]

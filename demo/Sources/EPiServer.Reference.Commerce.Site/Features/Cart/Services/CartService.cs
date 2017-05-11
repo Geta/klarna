@@ -248,7 +248,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             cart.ValidateOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _lineItemValidator);
             cart.UpdatePlacedPriceOrRemoveLineItems(_customerContext.GetContactById(cart.CustomerId), (item, issue) => validationIssues.AddValidationIssues(item, issue), _placedPriceProcessor);
             cart.UpdateInventoryOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _inventoryProcessor);
-
+            
             cart.ApplyDiscounts(_promotionEngine, new PromotionEngineSettings());
 
             return validationIssues;

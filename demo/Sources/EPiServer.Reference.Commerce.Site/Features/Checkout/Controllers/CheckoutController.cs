@@ -293,7 +293,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
                     var purchaseOrder = _checkoutService.PlaceOrder(cart, ModelState, viewModel);
 
-                    purchaseOrder.Properties[Constants.KlarnaCheckoutOrderIdField] = klarna_order_id;
+                    purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarna_order_id;
+
                     _orderRepository.Save(purchaseOrder);
 
                     // create payment
