@@ -19,5 +19,7 @@ namespace Klarna.Checkout
         ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest);
 
         AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest);
+
+        ErrorResult ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData);
     }
 }

@@ -6,7 +6,6 @@ using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
-using Klarna.Payments.Models;
 using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -63,8 +62,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
-            // TODO validate order
-            return Ok();
+            var errorResult = _klarnaCheckoutService.ValidateOrder(cart, checkoutData);
+            if (errorResult == null)
+            {
+                return Ok();
+            }
+
+            ModelState.AddModelError(errorResult.ErrorType.ToString(), errorResult.ErrorText);
+
+            return BadRequest(ModelState);
         }
 
         [Route("fraud/")]

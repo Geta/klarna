@@ -201,6 +201,8 @@
     <Compile Include="KlarnaCheckoutService.cs" />
     <Compile Include="Models\AddressUpdateResponse.cs" />
     <Compile Include="Models\AddressUpdateRequest.cs" />
+    <Compile Include="Models\ErrorResult.cs" />
+    <Compile Include="Models\ErrorType.cs" />
     <Compile Include="Models\PatchedCheckoutOrderData.cs" />
     <Compile Include="Models\ShippingOption.cs" />
     <Compile Include="Models\ShippingOptionUpdateRequest.cs" />

@@ -224,6 +224,15 @@ namespace Klarna.Checkout
             };
         }
 
+        public ErrorResult ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
+        {
+            var result = new ErrorResult();
+            result.ErrorType = ErrorType.unsupported_shipping_address;
+            result.ErrorText = "Blaaat";
+
+            return null;
+        }
+
         public override IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
         {
             OrderSearchOptions searchOptions = new OrderSearchOptions();

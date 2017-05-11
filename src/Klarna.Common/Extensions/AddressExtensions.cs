@@ -39,7 +39,10 @@ namespace Klarna.Common.Extensions
             orderAddress.PostalCode = address.PostalCode;
             orderAddress.City = address.City;
             // TODO parse region
-            orderAddress.RegionName = orderAddress.RegionCode = address.Region.Equals("CA") ? "California" : address.Region.Equals("NY") ? "New York": address.Region;
+            if(!string.IsNullOrEmpty(address.Region))
+            { 
+                orderAddress.RegionName = orderAddress.RegionCode = address.Region.Equals("CA") ? "California" : address.Region.Equals("NY") ? "New York": address.Region;
+            }
             orderAddress.CountryCode = CountryCodeHelper.GetThreeLetterCountryCode(address.Country);
             orderAddress.Email = address.Email;
             orderAddress.DaytimePhoneNumber = address.Phone;
