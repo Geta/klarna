@@ -65,21 +65,31 @@
     },
     refreshView: function () {
 
-        var view = $("#CheckoutView");
+        var selectedPaymentMethod = $(".jsChangePayment:checked").val();
 
-        if (view.length == 0) {
-            return;
+        if (window._klarnaCheckout && selectedPaymentMethod === "KlarnaCheckout") {
+            window._klarnaCheckout(function (api) {
+                api.resume();
+            });
         }
-        var url = view.data('url');
-        $.ajax({
-            cache: false,
-            type: "GET",
-            url: view.data('url'),
-            success: function (result) {
-                view.replaceWith($(result));
-                Checkout.initializeAddressAreas();
+        else {
+
+            var view = $("#CheckoutView");
+
+            if (view.length == 0) {
+                return;
             }
-        });
+            var url = view.data('url');
+            $.ajax({
+                cache: false,
+                type: "GET",
+                url: view.data('url'),
+                success: function(result) {
+                    view.replaceWith($(result));
+                    Checkout.initializeAddressAreas();
+                }
+            });
+        }
     },
     newAddress: function (e) {
         e.preventDefault();

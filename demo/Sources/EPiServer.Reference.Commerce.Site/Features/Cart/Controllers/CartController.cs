@@ -4,6 +4,7 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
 using System.Web.Mvc;
+using Klarna.Checkout;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
 {
@@ -14,18 +15,21 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
         private readonly IOrderRepository _orderRepository;
         private readonly IRecommendationService _recommendationService;
         readonly CartViewModelFactory _cartViewModelFactory;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         
 
         public CartController(
             ICartService cartService,
             IOrderRepository orderRepository,
             IRecommendationService recommendationService,
-            CartViewModelFactory cartViewModelFactory)
+            CartViewModelFactory cartViewModelFactory,
+            IKlarnaCheckoutService klarnaCheckoutService)
         {
             _cartService = cartService;
             _orderRepository = orderRepository;
             _recommendationService = recommendationService;
             _cartViewModelFactory = cartViewModelFactory;
+            _klarnaCheckoutService = klarnaCheckoutService;
         }
 
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
@@ -75,6 +79,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
             _cartService.ChangeCartItem(Cart, shipmentId, code, quantity, size, newSize);
             _orderRepository.Save(Cart);
             _recommendationService.SendCartTrackingData(HttpContext);
+
+            _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+
             return MiniCartDetails();
         }
 

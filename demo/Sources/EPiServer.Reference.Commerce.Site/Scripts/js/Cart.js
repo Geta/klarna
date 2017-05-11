@@ -39,6 +39,8 @@
             return;
         }
 
+        Cart.suspendKlarnaCheckout();
+        
         var formContainer = $("#" + form.data("container"));
         $.ajax({
             type: "POST",
@@ -107,6 +109,16 @@
     preventSubmit: function (e) {
         if (e.keyCode == 13) {
             e.preventDefault();
+        }
+    },
+
+    suspendKlarnaCheckout: function() {
+        var selectedPaymentMethod = $(".jsChangePayment:checked").val();
+
+        if (window._klarnaCheckout && selectedPaymentMethod === "KlarnaCheckout") {
+            window._klarnaCheckout(function (api) {
+                api.suspend();
+            });
         }
     }
 };
