@@ -35,7 +35,7 @@ namespace Klarna.Checkout
         public KlarnaCheckoutService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
-            IConnectionFactory connectionFactory, 
+            IConnectionFactory connectionFactory,
             ITaxCalculator taxCalculator,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
@@ -136,7 +136,7 @@ namespace Klarna.Checkout
         private CheckoutOrderData GetCheckoutOrderData(ICart cart)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-           var orderData = new PatchedCheckoutOrderData
+            var orderData = new PatchedCheckoutOrderData
             {
                 PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
@@ -167,7 +167,7 @@ namespace Klarna.Checkout
 
             //if (cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString() == orderId)
             //{
-                return cart;
+            return cart;
             //}
             return null;
         }
@@ -184,7 +184,14 @@ namespace Klarna.Checkout
             }
             _orderRepository.Save(cart);
 
-            return new ShippingOptionUpdateResponse();
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            return new ShippingOptionUpdateResponse
+            {
+                OrderAmount = AmountHelper.GetAmount(totals.Total),
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
+                OrderLines = GetOrderLines(cart),
+                PurchaseCurrency = cart.Currency.CurrencyCode
+            };
         }
 
         public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
@@ -196,7 +203,7 @@ namespace Klarna.Checkout
                 if (shipment != null)
                 {
                     shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
-                    
+
                 }
                 _orderRepository.Save(cart);
             }
