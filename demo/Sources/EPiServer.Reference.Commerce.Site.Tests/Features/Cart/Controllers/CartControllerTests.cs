@@ -90,7 +90,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Cart.Controllers
                     };
                 })
                 .Verifiable();
-            _subject = new CartController(_cartServiceMock.Object, _orderRepositoryMock.Object, Mock.Of<IRecommendationService>(), _cartViewModelFactoryMock.Object);
+            _subject = new CartController(_cartServiceMock.Object, _orderRepositoryMock.Object, Mock.Of<IRecommendationService>(), _cartViewModelFactoryMock.Object, null);
         }
     }
 }

@@ -26,6 +26,16 @@ namespace Klarna.Common.Helpers
             return ISO3166.Country.List;
         }
 
+        public static IEnumerable<string> GetTwoLetterCountryCodes(IEnumerable<string> threeLetterCodes)
+        {
+            var newList = new List<string>();
+            foreach (var item in threeLetterCodes)
+            {
+                newList.Add(GetTwoLetterCountryCode(item));
+            }
+            return newList;
+        }
+
         public static string GetContinentByCountry(string countryCode)
         {
             var continents = GeoLocationProvider.Service.GetContinentCodes();

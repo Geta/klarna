@@ -20,10 +20,10 @@ namespace Klarna.Checkout.Models
         public long Price { get; set; }
 
         [JsonProperty("tax_amount")]
-        public long TaxAmount { get; set; }
+        public int? TaxAmount { get; set; }
 
         [JsonProperty("tax_rate")]
-        public long TaxRate { get; set; }
+        public int? TaxRate { get; set; }
 
         [JsonProperty("preselected")]
         public bool PreSelected { get; set; }

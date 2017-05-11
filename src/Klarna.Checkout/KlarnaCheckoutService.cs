@@ -146,6 +146,7 @@ namespace Klarna.Checkout
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             var orderData = new PatchedCheckoutOrderData
             {
+                ShippingCountries = GetCountries().ToList(),
                 PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = ContentLanguage.PreferredCulture.Name,
@@ -328,6 +329,13 @@ namespace Klarna.Checkout
                 };
             }
             return null;
+        }
+
+        private IEnumerable<string> GetCountries()
+        {
+            var countries = CountryManager.GetCountries();
+
+            return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
         }
     }
 }
