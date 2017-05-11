@@ -35,6 +35,5 @@
 
         // Payment fields
         public const string AuthorizationTokenPaymentMethodField = "AuthorizationTokenPaymentMethod";
-        public const string FraudStatusPaymentMethodField = "FraudStatusPaymentMethod";
     }
 }

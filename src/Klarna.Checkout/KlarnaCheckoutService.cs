@@ -20,10 +20,6 @@ using Mediachase.Commerce.Orders.Search;
 
 namespace Klarna.Checkout
 {
-    public abstract class KlarnaService
-    {
-    }
-
     [ServiceConfiguration(typeof(IKlarnaCheckoutService))]
     public class KlarnaCheckoutService : KlarnaService, IKlarnaCheckoutService
     {
@@ -40,7 +36,9 @@ namespace Klarna.Checkout
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
             IConnectionFactory connectionFactory, 
-            ITaxCalculator taxCalculator)
+            ITaxCalculator taxCalculator,
+            IPaymentProcessor paymentProcessor,
+            IOrderGroupCalculator orderGroupCalculator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
@@ -203,6 +201,27 @@ namespace Klarna.Checkout
                 _orderRepository.Save(cart);
             }
             return new AddressUpdateResponse();
+        }
+
+        public override IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
+        {
+            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            searchOptions.CacheResults = false;
+            searchOptions.StartingRecord = 0;
+            searchOptions.RecordsToRetrieve = 1;
+            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
+            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+
+            var parameters = new OrderSearchParameters();
+            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaCheckoutOrderIdField} LIKE '{orderId}'";
+
+            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
+
+            if (purchaseOrder != null)
+            {
+                return _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
+            }
+            return null;
         }
 
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)

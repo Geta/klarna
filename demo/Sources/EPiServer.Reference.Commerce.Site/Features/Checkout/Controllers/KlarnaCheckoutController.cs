@@ -5,6 +5,9 @@ using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
+using Klarna.Common.Models;
+using Klarna.Payments.Models;
+using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -61,6 +64,25 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
             // TODO validate order
+            return Ok();
+        }
+
+        [Route("fraud/")]
+        [AcceptVerbs("Post")]
+        [HttpPost]
+        public IHttpActionResult FraudNotification()
+        {
+            var requestParams = Request.Content.ReadAsStringAsync().Result;
+
+            _log.Error("KlarnaCheckoutController.FraudNotification called: " + requestParams);
+
+            if (!string.IsNullOrEmpty(requestParams))
+            {
+                var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
+
+                _klarnaCheckoutService.FraudUpdate(notification);
+
+            }
             return Ok();
         }
     }

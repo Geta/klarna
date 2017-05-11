@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
+using Klarna.Common;
 using Klarna.Rest.Models;
 
 namespace Klarna.Checkout
 {
-    public interface IKlarnaCheckoutService
+    public interface IKlarnaCheckoutService : IKlarnaService
     {
         CheckoutOrderData CreateOrUpdateOrder(ICart cart);
         CheckoutOrderData CreateOrder(ICart cart);

@@ -134,9 +134,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
                 return purchaseOrder;
             }
-            catch (PaymentException)
+            catch (PaymentException ex)
             {
-                modelState.AddModelError("", _localizationService.GetString("/Checkout/Payment/Errors/ProcessingPaymentFailure"));
+                modelState.AddModelError("", ex.Message + _localizationService.GetString("/Checkout/Payment/Errors/ProcessingPaymentFailure"));
             }
             return null;
         }

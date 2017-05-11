@@ -9,6 +9,7 @@ using EPiServer.ServiceLocation;
 using Klarna.Payments;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
+using Klarna.Common.Models;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;

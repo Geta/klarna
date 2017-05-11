@@ -1,10 +1,12 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
+using Klarna.Common;
+using Klarna.Common.Models;
 using Klarna.Payments.Models;
 
 namespace Klarna.Payments
 {
-    public interface IKlarnaPaymentsService
+    public interface IKlarnaPaymentsService : IKlarnaService
     {
         Configuration Configuration { get; }
         Task<bool> CreateOrUpdateSession(ICart cart);

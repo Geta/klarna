@@ -11,13 +11,10 @@ using EPiServer.ServiceLocation;
 using Klarna.Payments.Models;
 using EPiServer.Logging;
 using EPiServer.Web.Routing;
+using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
-using Klarna.Common.Models;
-using Klarna.Payments.Extensions;
-using Klarna.Payments.Helpers;
 using Klarna.Rest.Models;
-using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
@@ -28,7 +25,7 @@ using Refit;
 namespace Klarna.Payments
 {
     [ServiceConfiguration(typeof(IKlarnaPaymentsService))]
-    public class KlarnaPaymentsService : IKlarnaPaymentsService
+    public class KlarnaPaymentsService : KlarnaService, IKlarnaPaymentsService
     {
         private readonly IKlarnaServiceApi _klarnaServiceApi;
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
@@ -51,7 +48,7 @@ namespace Klarna.Payments
             IContentRepository contentRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator)
+            IOrderGroupCalculator orderGroupCalculator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
             _klarnaServiceApi = ServiceLocator.Current.GetInstance<IKlarnaServiceApi>();
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
@@ -174,30 +171,6 @@ namespace Klarna.Payments
             }
         }
 
-        public void FraudUpdate(NotificationModel notification)
-        {
-            var order = GetPurchaseOrderByKlarnaOrderId(notification.OrderId);
-            if (order != null)
-            {
-                var orderForm = order.GetFirstForm();
-                var payment = orderForm.Payments.FirstOrDefault();
-                if (payment != null && payment.Status == PaymentStatus.Pending.ToString())
-                {
-                    payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.Status.ToString();
-
-                    try
-                    {
-                        order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex.Message, ex);
-                    }
-                    _orderRepository.Save(order);
-                }
-            }
-        }
-
         public void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder)
         {
             if (purchaseOrder == null)
@@ -279,6 +252,27 @@ namespace Klarna.Payments
                 BillingAddress = request.BillingAddress,
                 ShippingAddress = request.ShippingAddress
             };
+        }
+
+        public override IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
+        {
+            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            searchOptions.CacheResults = false;
+            searchOptions.StartingRecord = 0;
+            searchOptions.RecordsToRetrieve = 1;
+            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
+            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+
+            var parameters = new OrderSearchParameters();
+            parameters.SqlMetaWhereClause = $"META.{Common.Constants.KlarnaOrderIdField} LIKE '{orderId}'";
+
+            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
+
+            if (purchaseOrder != null)
+            {
+                return _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
+            }
+            return null;
         }
 
         private Session GetSessionRequest(ICart cart, bool includePersonalInformation = false)
@@ -404,27 +398,6 @@ namespace Klarna.Payments
                 configuration.UseAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
             }
             return configuration;
-        }
-
-        private IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
-        {
-            OrderSearchOptions searchOptions = new OrderSearchOptions();
-            searchOptions.CacheResults = false;
-            searchOptions.StartingRecord = 0;
-            searchOptions.RecordsToRetrieve = 1;
-            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
-            searchOptions.Namespace = "Mediachase.Commerce.Orders";
-
-            var parameters = new OrderSearchParameters();
-            parameters.SqlMetaWhereClause = $"META.{Common.Constants.KlarnaOrderIdField} LIKE '{orderId}'";
-
-            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
-
-            if (purchaseOrder != null)
-            {
-                return _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
-            }
-            return null;
         }
     }
 }

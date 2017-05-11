@@ -12,5 +12,7 @@
         public const string KlarnaUsernameField = "KlarnaUsername";
         public const string KlarnaPasswordField = "KlarnaPassword";
         public const string KlarnaApiUrlField = "KlarnaApiUrl";
+
+        public const string FraudStatusPaymentMethodField = "FraudStatusPaymentMethod";
     }
 }

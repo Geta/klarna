@@ -40,7 +40,7 @@ namespace Klarna.Payments.Steps
 
         private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
-            if (payment.Properties[Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
+            if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
             {
                 payment.Status = PaymentStatus.Processed.ToString();
 
@@ -48,7 +48,7 @@ namespace Klarna.Payments.Steps
 
                 return true;
             }
-            else if (payment.Properties[Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
+            else if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
             {
                 payment.Status = PaymentStatus.Failed.ToString();
 
@@ -56,7 +56,7 @@ namespace Klarna.Payments.Steps
 
                 return false;
             }
-            else if (payment.Properties[Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
+            else if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
             {
                 //TODO Fraud status stopped
 
@@ -66,7 +66,7 @@ namespace Klarna.Payments.Steps
 
                 return false;
             }
-            message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Constants.FraudStatusPaymentMethodField]} or no fraud notifications received so far.";
+            message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Common.Constants.FraudStatusPaymentMethodField]} or no fraud notifications received so far.";
             return false;
         }
 
@@ -82,7 +82,7 @@ namespace Klarna.Payments.Steps
                         .Result;
 
                     orderGroup.Properties[Common.Constants.KlarnaOrderIdField] = result.OrderId;
-                    payment.Properties[Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
+                    payment.Properties[Common.Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
                     payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
 
                     AddNoteAndSaveChanges(orderGroup, payment.TransactionType,

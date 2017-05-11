@@ -1,7 +1,8 @@
-﻿using Newtonsoft.Json;
+﻿using Klarna.Payments.Models;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Klarna.Payments.Models
+namespace Klarna.Common.Models
 {
     public class NotificationModel
     {

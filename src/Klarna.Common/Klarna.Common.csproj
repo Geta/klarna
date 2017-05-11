@@ -211,13 +211,20 @@
     <Compile Include="IConnectionFactory.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
+    <Compile Include="IKlarnaService.cs" />
     <Compile Include="KlarnaConnectionFactory.cs" />
+    <Compile Include="KlarnaService.cs" />
+    <Compile Include="Models\FraudStatus.cs" />
+    <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\PatchedOrderLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Steps\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

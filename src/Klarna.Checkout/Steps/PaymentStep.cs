@@ -36,7 +36,7 @@ namespace Klarna.Checkout.Steps
         
         protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string transactionType, string noteMessage)
         {
-            var noteTitle = $"Klarna payment {transactionType.ToLower()}";
+            var noteTitle = $"Klarna checkout {transactionType.ToLower()}";
 
             orderGroup.AddNote(noteTitle, $"Payment {transactionType.ToLower()}: {noteMessage}");
         }
