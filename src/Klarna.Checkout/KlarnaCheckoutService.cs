@@ -95,6 +95,7 @@ namespace Klarna.Checkout
 
                 return orderData;
             }
+            //TODO handle exceptions
             catch (ApiException ex)
             {
                 Console.WriteLine(ex.ErrorMessage.ErrorCode);
@@ -117,8 +118,15 @@ namespace Klarna.Checkout
             try
             {
                 orderData = checkout.Update(orderData);
+                // TODO check pre-set data (update cart?)
+                var shipment = cart.GetFirstShipment();
+                if (shipment != null)
+                {
+                    shipment.ShippingAddress = orderData.ShippingAddress.ToOrderAddress(cart);
+                }
                 return orderData;
             }
+            //TODO handle exceptions
             catch (ApiException ex)
             {
                 Console.WriteLine(ex.ErrorMessage.ErrorCode);
@@ -174,15 +182,13 @@ namespace Klarna.Checkout
 
         public ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
-            foreach (var shipment in cart.GetFirstForm().Shipments)
+            var shipment = cart.GetFirstShipment();
+            if (shipment != null && Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out Guid guid))
             {
-                Guid guid;
-                if (Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out guid))
-                {
-                    shipment.ShippingMethodId = guid;
-                }
+                shipment.ShippingMethodId = guid;
+                shipment.ShippingAddress = shippingOptionUpdateRequest.ShippingAddress.ToOrderAddress(cart);
+                _orderRepository.Save(cart);
             }
-            _orderRepository.Save(cart);
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             return new ShippingOptionUpdateResponse
@@ -196,14 +202,12 @@ namespace Klarna.Checkout
 
         public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
         {
-            Guid shippingMethodGuid;
-            if (addressUpdateRequest.SelectedShippingOption != null && Guid.TryParse(addressUpdateRequest.SelectedShippingOption.Id, out shippingMethodGuid))
+            if (addressUpdateRequest.SelectedShippingOption != null && Guid.TryParse(addressUpdateRequest.SelectedShippingOption.Id, out Guid shippingMethodGuid))
             {
                 var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(s => s.ShippingMethodId == shippingMethodGuid);
                 if (shipment != null)
                 {
                     shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
-
                 }
                 _orderRepository.Save(cart);
             }
@@ -249,8 +253,8 @@ namespace Klarna.Checkout
                 Name = method.DisplayName,
                 Price = AmountHelper.GetAmount(method.BasePrice),
                 PreSelected = method.IsDefault,
-                TaxAmount = 1,
-                TaxRate = 1,
+                TaxAmount = 0,
+                TaxRate = 0,
                 Description = method.Description
             });
         }

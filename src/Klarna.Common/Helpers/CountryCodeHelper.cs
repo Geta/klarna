@@ -11,9 +11,14 @@ namespace Klarna.Common.Helpers
     {
         private static Injected<GeolocationProvider> GeoLocationProvider { get; set; }
 
-        public static string GetTwoLetterCountryCode(string code)
+        public static string GetTwoLetterCountryCode(string threeLetterCode)
         {
-            return ISO3166.Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(code, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode;
+            return ISO3166.Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(threeLetterCode, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode;
+        }
+
+        public static string GetThreeLetterCountryCode(string twoLetterCode)
+        {
+            return ISO3166.Country.List.FirstOrDefault(x => x.TwoLetterCode.Equals(twoLetterCode, StringComparison.InvariantCultureIgnoreCase))?.ThreeLetterCode;
         }
 
         public static IEnumerable<Country> GetCountryCodes()
