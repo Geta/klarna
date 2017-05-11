@@ -14,6 +14,7 @@ using Klarna.Common.Models;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
@@ -31,6 +32,7 @@ namespace Klarna.Checkout
         private readonly IConnectionFactory _connectionFactory;
 
         private Client _client;
+        
 
         public KlarnaCheckoutService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
@@ -83,6 +85,13 @@ namespace Klarna.Checkout
         {
             var checkout = Client.NewCheckoutOrder();
             var orderData = GetCheckoutOrderData(cart);
+
+            // KCO_4: In case of signed in user the email address and default address details will be prepopulated by data from Merchant system.
+            var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
+            if (customerContact?.PreferredBillingAddress != null)
+            {
+                orderData.BillingAddress = customerContact.PreferredBillingAddress.ToAddress();
+            }
 
             try
             {
