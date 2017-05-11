@@ -207,7 +207,16 @@ namespace Klarna.Checkout
                 }
                 _orderRepository.Save(cart);
             }
-            return new AddressUpdateResponse();
+
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            return new AddressUpdateResponse
+            {
+                OrderAmount = AmountHelper.GetAmount(totals.Total),
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
+                OrderLines = GetOrderLines(cart),
+                PurchaseCurrency = cart.Currency.CurrencyCode,
+                ShippingOptions = GetShippingOptions(cart)
+            };
         }
 
         public override IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
