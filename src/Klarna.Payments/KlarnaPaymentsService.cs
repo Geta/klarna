@@ -14,6 +14,7 @@ using EPiServer.Web.Routing;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
+using Klarna.Common.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
@@ -277,8 +278,17 @@ namespace Klarna.Payments
 
         private Session GetSessionRequest(ICart cart, bool includePersonalInformation = false)
         {
-            var request = new Session();
-            request.PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
+            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var request = new Session
+            {
+                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
+                OrderAmount = AmountHelper.GetAmount(totals.Total),
+                // Non-negative, minor units. The total tax amount of the order.
+                OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
+                PurchaseCurrency = cart.Currency.CurrencyCode,
+                Locale = ContentLanguage.PreferredCulture.Name,
+                OrderLines = GetOrderLines(cart, totals).ToArray()
+            };
 
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
@@ -290,41 +300,17 @@ namespace Klarna.Payments
                 };
                 request.Options = GetWidgetOptions(paymentMethod);
             }
-
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            request.OrderAmount = AmountHelper.GetAmount(totals.Total);
-            request.PurchaseCurrency = cart.Currency.CurrencyCode;
-            request.Locale = ContentLanguage.PreferredCulture.Name;
-
-            var shipment = cart.GetFirstShipment();
-
-            var list = new List<OrderLine>();
-            foreach (var item in cart.GetAllLineItems())
-            {
-                var orderLine = item.GetOrderLine(Configuration.SendProductAndImageUrlField);
-
-                list.Add(orderLine);
-            }
-            if (totals.ShippingTotal.Amount > 0)
-            {
-                var shipmentOrderLine = shipment.GetOrderLine(totals);
-                list.Add(shipmentOrderLine);
-            }
-
-            // TODO: Tax
-            // TODO: Discounts
-
-            request.OrderLines = list.ToArray();
-
+            
             if (includePersonalInformation)
             {
+                var shipment = cart.GetFirstShipment();
                 var payment = cart.GetFirstForm()?.Payments.FirstOrDefault();
 
-                if (shipment != null && shipment.ShippingAddress != null)
+                if (shipment?.ShippingAddress != null)
                 {
                     request.ShippingAddress = shipment.ShippingAddress.ToAddress();
                 }
-                if (payment != null && payment.BillingAddress != null)
+                if (payment?.BillingAddress != null)
                 {
                     request.BillingAddress = payment.BillingAddress.ToAddress();
                 }

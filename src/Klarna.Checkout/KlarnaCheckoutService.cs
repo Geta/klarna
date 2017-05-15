@@ -165,7 +165,7 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 ShippingOptions = GetShippingOptions(cart),
                 MerchantUrls = GetMerchantUrls(cart),
-                OrderLines = GetOrderLines(cart)
+                OrderLines = GetOrderLines(cart, totals)
             } as CheckoutOrderData;
             return orderData;
         }
@@ -205,7 +205,7 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = GetOrderLines(cart),
+                OrderLines = GetOrderLines(cart, totals),
                 PurchaseCurrency = cart.Currency.CurrencyCode
             };
         }
@@ -227,7 +227,7 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = GetOrderLines(cart),
+                OrderLines = GetOrderLines(cart, totals),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 ShippingOptions = GetShippingOptions(cart)
             };
@@ -276,57 +276,6 @@ namespace Klarna.Checkout
                 TaxRate = 0,
                 Description = method.Description
             });
-        }
-
-        private List<OrderLine> GetOrderLines(ICart cart)
-        {
-            var market = cart.Market;
-            var shipment = cart.GetFirstShipment();
-            var orderLines = new List<OrderLine>();
-
-            // Line items
-            foreach (var lineItem in cart.GetAllLineItems())
-            {
-                var orderLine = lineItem.GetOrderLine();
-                orderLines.Add(orderLine);
-            }
-
-            // Shipment
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            if (shipment != null && totals.ShippingTotal.Amount > 0)
-            {
-                var shipmentOrderLine = shipment.GetOrderLine(totals);
-                orderLines.Add(shipmentOrderLine);
-            }
-
-            // Sales tax
-            orderLines.Add(new PatchedOrderLine()
-            {
-                Type = "sales_tax",
-                Name = "Sales Tax",
-                Quantity = 1,
-                TotalAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                UnitPrice = AmountHelper.GetAmount(totals.TaxTotal),
-                TotalTaxAmount = 0,
-                TaxRate = 0
-            });
-
-            // Order level discounts
-            var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
-            var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
-            var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
-            orderLines.Add(new PatchedOrderLine()
-            {
-                Type = "discount",
-                Name = "Discount",
-                Quantity = 1,
-                TotalAmount = -AmountHelper.GetAmount(totalDiscount),
-                UnitPrice = -AmountHelper.GetAmount(totalDiscount),
-                TotalTaxAmount = 0,
-                TaxRate = 0
-            });
-
-            return orderLines;
         }
 
         private MerchantUrls GetMerchantUrls(ICart cart)
