@@ -203,6 +203,8 @@
     <Compile Include="Models\AddressUpdateRequest.cs" />
     <Compile Include="Models\ErrorResult.cs" />
     <Compile Include="Models\ErrorType.cs" />
+    <Compile Include="Models\AdditionalCheckbox.cs" />
+    <Compile Include="Models\PatchedCheckoutOptions.cs" />
     <Compile Include="Models\PatchedCheckoutOrderData.cs" />
     <Compile Include="Models\ShippingOption.cs" />
     <Compile Include="Models\ShippingOptionUpdateRequest.cs" />

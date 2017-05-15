@@ -246,7 +246,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
         {
             //var viewModel = CreateCheckoutViewModel(currentPage);
-
+            
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {

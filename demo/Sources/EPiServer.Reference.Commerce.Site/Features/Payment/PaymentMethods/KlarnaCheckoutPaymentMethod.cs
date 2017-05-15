@@ -5,6 +5,7 @@ using Mediachase.Commerce.Orders;
 using System;
 using System.ComponentModel;
 using Klarna.Checkout;
+using Klarna.Payments.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
@@ -35,7 +36,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public override void PostProcess(IPayment payment)
         {
-           
+            if (payment.Properties[Klarna.Common.Constants.FraudStatusPaymentMethodField]?.ToString() == FraudStatus.PENDING.ToString())
+            {
+                payment.Status = PaymentStatus.Pending.ToString();
+            }
         }
 
         public override bool ValidateData()

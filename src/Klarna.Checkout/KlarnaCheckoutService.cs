@@ -16,6 +16,7 @@ using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
 
@@ -153,6 +154,7 @@ namespace Klarna.Checkout
         private CheckoutOrderData GetCheckoutOrderData(ICart cart)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+
             var orderData = new PatchedCheckoutOrderData
             {
                 ShippingCountries = GetCountries().ToList(),
@@ -167,7 +169,45 @@ namespace Klarna.Checkout
                 MerchantUrls = GetMerchantUrls(cart),
                 OrderLines = GetOrderLines(cart, totals)
             } as CheckoutOrderData;
+
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod != null)
+            {
+                orderData.Options = GetOptions(paymentMethod);
+            }
             return orderData;
+        }
+
+        private CheckoutOptions GetOptions(PaymentMethodDto paymentMethod)
+        {
+            var options = new PatchedCheckoutOptions
+            {
+                RequireValidateCallbackSuccess = bool.Parse(paymentMethod.GetParameter(Constants.RequireValidateCallbackSuccessField, "false")),
+                AllowSeparateShippingAddress = bool.Parse(paymentMethod.GetParameter(Constants.AllowSeparateShippingAddressField, "false")),
+                ColorButton = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonField, "#FF9900"),
+                ColorButtonText = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonTextField, "#FF9900"),
+                ColorCheckbox = paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxField, "#FF9900"),
+                ColorCheckboxCheckmark = paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, "#FF9900"),
+                ColorHeader = paymentMethod.GetParameter(Constants.KlarnaWidgetColorHeaderField, "#FF9900"),
+                ColorLink = paymentMethod.GetParameter(Constants.KlarnaWidgetColorLinkField, "#FF9900"),
+                DateOfBirthMandatory = bool.Parse(paymentMethod.GetParameter(Constants.DateOfBirthMandatoryField, "false")),
+                ShowSubtotalDetail = bool.Parse(paymentMethod.GetParameter(Constants.ShowSubtotalDetailField, "false")),
+                TitleMandatory = bool.Parse(paymentMethod.GetParameter(Constants.TitleMandatoryField, "false")),
+                RadiusBorder = paymentMethod.GetParameter(Constants.KlarnaWidgetRadiusBorderField, "5px"),
+                ShippingDetails = paymentMethod.GetParameter(Constants.ShippingDetailsField, string.Empty),
+            };
+
+            var additionalCheckboxText = paymentMethod.GetParameter(Constants.AdditionalCheckboxTextField, string.Empty);
+            if (!string.IsNullOrEmpty(additionalCheckboxText))
+            {
+                options.AdditionalCheckbox = new AdditionalCheckbox
+                {
+                    Text = additionalCheckboxText,
+                    Checked = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxDefaultCheckedField, "false")),
+                    Required = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxRequiredField, "false")),
+                };
+            }
+            return options;
         }
 
         public CheckoutOrderData GetOrder(string orderId)
@@ -239,27 +279,6 @@ namespace Klarna.Checkout
             result.ErrorType = ErrorType.unsupported_shipping_address;
             result.ErrorText = "Blaaat";
 
-            return result;
-        }
-
-        public override IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
-        {
-            OrderSearchOptions searchOptions = new OrderSearchOptions();
-            searchOptions.CacheResults = false;
-            searchOptions.StartingRecord = 0;
-            searchOptions.RecordsToRetrieve = 1;
-            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
-            searchOptions.Namespace = "Mediachase.Commerce.Orders";
-
-            var parameters = new OrderSearchParameters();
-            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaCheckoutOrderIdField} LIKE '{orderId}'";
-
-            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
-
-            if (purchaseOrder != null)
-            {
-                return _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
-            }
             return null;
         }
 

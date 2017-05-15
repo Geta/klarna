@@ -90,5 +90,21 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
             return Ok();
         }
+
+        [Route("push/")]
+        [AcceptVerbs("Post")]
+        [HttpPost]
+        public IHttpActionResult PushNotification()
+        {
+            var requestParams = Request.Content.ReadAsStringAsync().Result;
+
+            _log.Error("KlarnaCheckoutController.PushNotification called: " + requestParams);
+
+            if (!string.IsNullOrEmpty(requestParams))
+            {
+
+            }
+            return Ok(requestParams);
+        }
     }
 }

@@ -18,8 +18,9 @@ namespace Klarna.Checkout.Steps
             if (payment.TransactionType == TransactionType.Authorization.ToString())
             {
                 // Fraud status update
-                if (payment.Status == PaymentStatus.Pending.ToString() && !string.IsNullOrEmpty(orderGroup.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString()))
+                if (payment.Status == PaymentStatus.Pending.ToString() && !string.IsNullOrEmpty(orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString()))
                 {
+                    
                     return ProcessFraudUpdate(payment, orderGroup, ref message);
                 }
                 else
@@ -68,6 +69,8 @@ namespace Klarna.Checkout.Steps
 
         private bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
+            AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Authorize completed");
+
             return true;
         }
     }

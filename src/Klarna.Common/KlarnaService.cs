@@ -8,6 +8,7 @@ using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Rest.Models;
+using Mediachase.Commerce.Orders.Search;
 
 namespace Klarna.Common
 {
@@ -98,6 +99,26 @@ namespace Klarna.Common
             return orderLines;
         }
 
-        public abstract IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId);
+        
+        protected IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
+        {
+            OrderSearchOptions searchOptions = new OrderSearchOptions();
+            searchOptions.CacheResults = false;
+            searchOptions.StartingRecord = 0;
+            searchOptions.RecordsToRetrieve = 1;
+            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
+            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+
+            var parameters = new OrderSearchParameters();
+            parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{orderId}'";
+
+            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
+
+            if (purchaseOrder != null)
+            {
+                return _orderRepository.Load<IPurchaseOrder>(purchaseOrder.OrderGroupId);
+            }
+            return null;
+        }
     }
 }
