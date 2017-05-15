@@ -39,19 +39,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateSearchTrackingData(searchTerm, productCodes, httpContext);
-            return _trackingService.Send(trackingData, httpContext);
+            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
         }
 
         public TrackingResponseData SendOrderTracking(HttpContextBase httpContext, IPurchaseOrder order)
         {
             var trackingData = _trackingDataFactory.CreateOrderTrackingData(order, httpContext);
-            return _trackingService.Send(trackingData, httpContext);
+            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
         }
 
         public TrackingResponseData SendCategoryTracking(HttpContextBase httpContext, NodeContent category)
         {
             var trackingData = _trackingDataFactory.CreateCategoryTrackingData(category, httpContext);
-            return _trackingService.Send(trackingData, httpContext);
+            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
         }
 
         public TrackingResponseData SendFacetTrackingData(HttpContextBase httpContext, string facet)
@@ -70,19 +70,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
                 trackingData = _trackingDataFactory.CreateAttributeTrackingData(parts[0], parts[1], httpContext);
             }
 
-            return _trackingService.Send(trackingData, httpContext);
+            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
         }
 
         public TrackingResponseData SendCartTrackingData(HttpContextBase httpContext)
         {
             var trackingData = _trackingDataFactory.CreateCartTrackingData(httpContext);
-            return _trackingService.Send(trackingData, httpContext);
+            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
         }
 
         public TrackingResponseData SendWishListTrackingData(HttpContextBase httpContext)
         {
             var trackingData = _trackingDataFactory.CreateWishListTrackingData(httpContext);
-            return _trackingService.Send(trackingData, httpContext);
+            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
         }
     }
 }

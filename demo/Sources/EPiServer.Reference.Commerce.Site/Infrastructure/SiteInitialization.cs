@@ -83,14 +83,14 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             services.AddTransient<HttpContextBase>(locator => HttpContext.Current.ContextBaseOrNull());
 
             services.AddTransient<ISessionBuilder, DemoSessionBuilder>();
-
-            DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.Container));
+            
+            DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.StructureMap()));
             GlobalConfiguration.Configure(config =>
             {
                 config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.LocalOnly;
                 config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings();
                 config.Formatters.XmlFormatter.UseXmlSerializer = true;
-                config.DependencyResolver = new StructureMapResolver(context.Container);
+                config.DependencyResolver = new StructureMapResolver(context.StructureMap());
                 config.MapHttpAttributeRoutes();
             });
         }

@@ -19,14 +19,14 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Recommendations.Servi
         public void SendSearchTracking_WhenSearchQuery_ShouldCallTrackingService()
         {
             _subject.SendSearchTracking(Mock.Of<HttpContextBase>(), "test", Enumerable.Empty<string>());
-            _trackingServiceMock.Verify(x => x.Send(It.IsAny<SearchTrackingData>(), It.IsAny<HttpContextBase>()), Times.Once);
+            _trackingServiceMock.Verify(x => x.Send(It.IsAny<SearchTrackingData>(), It.IsAny<HttpContextBase>(), RetrieveRecommendationMode.Enabled), Times.Once);
         }
 
         [Fact]
         public void SendSearchTracking_WhenNoSearchQuery_ShouldNotCallTrackingService()
         {
             _subject.SendSearchTracking(Mock.Of<HttpContextBase>(), "", Enumerable.Empty<string>());
-            _trackingServiceMock.Verify(x => x.Send(It.IsAny<SearchTrackingData>(), It.IsAny<HttpContextBase>()), Times.Never);
+            _trackingServiceMock.Verify(x => x.Send(It.IsAny<SearchTrackingData>(), It.IsAny<HttpContextBase>(), RetrieveRecommendationMode.Enabled), Times.Never);
         }
 
         [Fact]
@@ -39,7 +39,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Recommendations.Servi
             _referenceConverterMock.Verify(x => x.GetContentLink(It.Is<string>(y => y == nodeCode)), Times.Once);
             _contentLoaderMock.Verify(x => x.Get<FashionNode>(It.IsAny<ContentReference>()), Times.Once);
             _trackingDataFactoryMock.Verify(x => x.CreateCategoryTrackingData(It.IsAny<NodeContent>(), It.IsAny<HttpContextBase>()), Times.Once);
-            _trackingServiceMock.Verify(x => x.Send(It.IsAny<TrackingDataBase>(), It.IsAny<HttpContextBase>()), Times.Once);
+            _trackingServiceMock.Verify(x => x.Send(It.IsAny<TrackingDataBase>(), It.IsAny<HttpContextBase>(), RetrieveRecommendationMode.Enabled), Times.Once);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Recommendations.Servi
                 x =>
                     x.CreateAttributeTrackingData(It.Is<string>(y => y == attributeKey),
                         It.Is<string>(y => y == attributeValue), It.IsAny<HttpContextBase>()), Times.Once);
-            _trackingServiceMock.Verify(x => x.Send(It.IsAny<TrackingDataBase>(), It.IsAny<HttpContextBase>()), Times.Once);
+            _trackingServiceMock.Verify(x => x.Send(It.IsAny<TrackingDataBase>(), It.IsAny<HttpContextBase>(), RetrieveRecommendationMode.Enabled), Times.Once);
         }
 
         private readonly RecommendationService _subject;
