@@ -26,8 +26,8 @@ namespace Klarna.Checkout
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
 
+        private readonly IKlarnaOrderValidator _klarnaOrderValidator;
         private readonly IOrderRepository _orderRepository;
-        private readonly ITaxCalculator _taxCalculator;
         private readonly IConnectionFactory _connectionFactory;
         private readonly IKlarnaOrderService _klarnaOrderService;
 
@@ -38,15 +38,14 @@ namespace Klarna.Checkout
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
             IConnectionFactory connectionFactory,
-            ITaxCalculator taxCalculator,
             IPaymentProcessor paymentProcessor,
-            IOrderGroupCalculator orderGroupCalculator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
+            IOrderGroupCalculator orderGroupCalculator,
+            IKlarnaOrderValidator klarnaOrderValidator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
             _connectionFactory = connectionFactory;
-            _taxCalculator = taxCalculator;
-
+            _klarnaOrderValidator = klarnaOrderValidator;
             _klarnaOrderService = new KlarnaOrderService(_connectionFactory.GetConnectionConfiguration(PaymentMethodDto));
         }
 
@@ -121,13 +120,11 @@ namespace Klarna.Checkout
             //TODO handle exceptions
             catch (ApiException ex)
             {
-                Console.WriteLine(ex.ErrorMessage.ErrorCode);
-                Console.WriteLine(ex.ErrorMessage.ErrorMessages);
-                Console.WriteLine(ex.ErrorMessage.CorrelationId);
+                _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
             }
             catch (WebException ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message, ex);
             }
 
             return null;
@@ -152,13 +149,11 @@ namespace Klarna.Checkout
             //TODO handle exceptions
             catch (ApiException ex)
             {
-                Console.WriteLine(ex.ErrorMessage.ErrorCode);
-                Console.WriteLine(ex.ErrorMessage.ErrorMessages);
-                Console.WriteLine(ex.ErrorMessage.CorrelationId);
+                _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
             }
             catch (WebException ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.Error(ex.Message, ex);
             }
 
             return null;
@@ -167,7 +162,7 @@ namespace Klarna.Checkout
         private CheckoutOrderData GetCheckoutOrderData(ICart cart)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-
+            var shipment = cart.GetFirstShipment();
             var orderData = new PatchedCheckoutOrderData
             {
                 ShippingCountries = GetCountries().ToList(),
@@ -180,7 +175,8 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 ShippingOptions = GetShippingOptions(cart),
                 MerchantUrls = GetMerchantUrls(cart),
-                OrderLines = GetOrderLines(cart, totals)
+                OrderLines = GetOrderLines(cart, totals),
+                ShippingAddress = shipment?.ShippingAddress?.ToAddress()
             } as CheckoutOrderData;
             
             if (PaymentMethodDto != null)
@@ -285,13 +281,11 @@ namespace Klarna.Checkout
             };
         }
 
-        public ErrorResult ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
+        public bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
         {
-            var result = new ErrorResult();
-            result.ErrorType = ErrorType.unsupported_shipping_address;
-            result.ErrorText = "Blaaat";
-
-            return null;
+            // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
+            var localCheckoutOrderData = GetCheckoutOrderData(cart) as PatchedCheckoutOrderData;
+            return _klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData);
         }
 
         public void CancelOrder(ICart cart)

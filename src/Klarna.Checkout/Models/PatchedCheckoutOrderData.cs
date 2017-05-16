@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Klarna.Rest.Models;
 using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models

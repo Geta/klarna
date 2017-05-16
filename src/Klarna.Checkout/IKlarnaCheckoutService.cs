@@ -20,8 +20,8 @@ namespace Klarna.Checkout
 
         AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest);
 
-        ErrorResult ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData);
-
         void CancelOrder(ICart cart);
+
+        bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData);
     }
 }

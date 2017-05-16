@@ -1,13 +1,16 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using EPiServer.Commerce.Order;
-using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Logging;
-using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
+using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
+using Mediachase.Commerce.Orders;
 using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -16,21 +19,37 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
     public class KlarnaCheckoutController : ApiController
     {
         private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
-        private readonly CustomerContextFacade _customerContextFacade;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
-        private readonly ICartService _cartService;
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderGroupFactory _orderGroupFactory;
+        private readonly ILineItemValidator _lineItemValidator;
+        private readonly ICartService _cartService;
+        
 
         public KlarnaCheckoutController(
-            CustomerContextFacade customerContextFacade,
             IKlarnaCheckoutService klarnaCheckoutService, 
-            ICartService cartService,
-            IOrderRepository orderRepository)
+            IOrderRepository orderRepository, 
+            IOrderGroupFactory orderGroupFactory, 
+            ILineItemValidator lineItemValidator, 
+            ICartService cartService)
         {
             _klarnaCheckoutService = klarnaCheckoutService;
-            _customerContextFacade = customerContextFacade;
-            _cartService = cartService;
             _orderRepository = orderRepository;
+            _orderGroupFactory = orderGroupFactory;
+            _lineItemValidator = lineItemValidator;
+            _cartService = cartService;
+        }
+
+        [Route("cart/{orderGroupId}/push")]
+        [AcceptVerbs("POST")]
+        [HttpPost]
+        public IHttpActionResult Push(int orderGroupId, [FromBody]ShippingOptionUpdateRequest shippingOptionUpdateRequest)
+        {
+            var cart = _orderRepository.Load<ICart>(orderGroupId);
+
+            var response = _klarnaCheckoutService.UpdateShippingMethod(cart, shippingOptionUpdateRequest);
+
+            return Ok(response);
         }
 
         [Route("cart/{orderGroupId}/shippingoptionupdate")]
@@ -60,19 +79,52 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/ordervalidation")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public HttpResponseMessage OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+        public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
-            //var newCart = _orderRepository.Create<ICart>(cart.CustomerId, cart.Name);
-            //newCart.CopyFrom(cart, null);
-
-            var errorResult = _klarnaCheckoutService.ValidateOrder(cart, checkoutData);
-            if (errorResult == null)
+            // Validate order amount, shipping address
+            if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
             {
-                return Request.CreateResponse(HttpStatusCode.OK);
+                var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
+                httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+                return ResponseMessage(httpResponseMessage);
             }
-            return Request.CreateResponse(HttpStatusCode.BadRequest, errorResult);
+
+            // Validate cart lineitems
+            var validationIssues = new Dictionary<ILineItem, ValidationIssue>();
+            cart.ValidateOrRemoveLineItems((lineItem, validationIssue) =>
+            {
+                validationIssues.Add(lineItem, validationIssue);
+            }, _lineItemValidator);
+
+            if (validationIssues.Any())
+            {
+                var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
+                httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+                return ResponseMessage(httpResponseMessage);
+            }
+
+            // To return an error like this you need require_validate_callback_success set to true
+            if (checkoutData.ShippingAddress.PostalCode.Equals("94108-2704"))
+            {
+                var errorResult = new ErrorResult()
+                {
+                    ErrorType = ErrorType.address_error,
+                    ErrorText = "Can't ship to postalcode 94108-2704"
+                };
+                return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResult));
+            }
+
+            // Order is valid, create on hold cart in epi
+            cart.Name = OrderStatus.OnHold.ToString();
+            _orderRepository.Save(cart);
+
+            // Create new default cart
+            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, _cartService.DefaultCartName);
+            _orderRepository.Save(newCart);
+
+            return Ok();
         }
 
         [Route("fraud/")]

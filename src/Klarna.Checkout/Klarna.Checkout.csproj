@@ -196,9 +196,11 @@
   <ItemGroup>
     <Compile Include="Constants.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
+    <Compile Include="IKlarnaOrderValidator.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="KlarnaCheckoutGateway.cs" />
     <Compile Include="KlarnaCheckoutService.cs" />
+    <Compile Include="KlarnaOrderValidator.cs" />
     <Compile Include="Models\AddressUpdateResponse.cs" />
     <Compile Include="Models\AddressUpdateRequest.cs" />
     <Compile Include="Models\ErrorResult.cs" />
