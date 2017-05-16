@@ -23,5 +23,7 @@ namespace Klarna.Checkout
         void CancelOrder(ICart cart);
 
         bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData);
+
+        void UpdateMerchantReference1(IPurchaseOrder purchaseOrder);
     }
 }

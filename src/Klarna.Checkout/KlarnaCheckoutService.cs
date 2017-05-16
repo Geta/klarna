@@ -15,6 +15,7 @@ using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Customers;
+using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 
@@ -155,7 +156,6 @@ namespace Klarna.Checkout
             {
                 _logger.Error(ex.Message, ex);
             }
-
             return null;
         }
 
@@ -297,6 +297,15 @@ namespace Klarna.Checkout
 
                 cart.Properties[Constants.KlarnaCheckoutOrderIdField] = null;
                 _orderRepository.Save(cart);
+            }
+        }
+
+        public void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
+        {
+            var orderId = purchaseOrder.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            if (!string.IsNullOrWhiteSpace(orderId) && purchaseOrder is PurchaseOrder)
+            {
+                _klarnaOrderService.UpdateMerchantReferences(orderId, ((PurchaseOrder)purchaseOrder).TrackingNumber, null);
             }
         }
 

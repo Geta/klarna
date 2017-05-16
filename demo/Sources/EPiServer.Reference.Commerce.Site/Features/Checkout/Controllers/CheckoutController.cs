@@ -300,12 +300,17 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     if (purchaseOrder == null) //something went wrong while creating a purchase order, cancel  order at Klarna
                     {
                         _klarnaCheckoutService.CancelOrder(cart);
-                        return HttpNotFound();
+
+                        ModelState.AddModelError("", "Error occurred while creating a purchase order");
+
+                        return RedirectToAction("Index");
                     }
 
                     purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarna_order_id;
 
                     _orderRepository.Save(purchaseOrder);
+
+                    _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
 
                     // create payment
                     // add billing
