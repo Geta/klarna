@@ -23,7 +23,10 @@ using EPiServer.Globalization;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
+using EPiServer.ServiceLocation;
 using Klarna.Checkout;
+using Klarna.Common;
+using Klarna.OrderManagement;
 using Klarna.Payments;
 using Mediachase.Commerce.Orders.Managers;
 using Constants = Klarna.Checkout.Constants;
@@ -271,9 +274,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
                     viewModel.Payment = paymentViewModel;
                     viewModel.Payment.PaymentMethod.PaymentMethodId = paymentRow.PaymentMethodId;
-
-
-
+                    
                     viewModel.BillingAddress = new AddressModel
                     {
                         Name =
@@ -292,6 +293,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     _checkoutService.CreateAndAddPaymentToCart(cart, viewModel);
 
                     var purchaseOrder = _checkoutService.PlaceOrder(cart, ModelState, viewModel);
+                    if (purchaseOrder == null) //something went wrong while creating a purchase order, cancel  order at Klarna
+                    {
+                        _klarnaCheckoutService.CancelOrder(cart);
+                        return HttpNotFound();
+                    }
 
                     purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarna_order_id;
 

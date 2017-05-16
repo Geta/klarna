@@ -64,6 +64,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
+            //var newCart = _orderRepository.Create<ICart>(cart.CustomerId, cart.Name);
+            //newCart.CopyFrom(cart, null);
+
             var errorResult = _klarnaCheckoutService.ValidateOrder(cart, checkoutData);
             if (errorResult == null)
             {

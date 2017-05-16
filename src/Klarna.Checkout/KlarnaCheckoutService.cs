@@ -10,15 +10,13 @@ using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
-using Klarna.Common.Models;
+using Klarna.OrderManagement;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce.Customers;
-using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
-using Mediachase.Commerce.Orders.Search;
 
 namespace Klarna.Checkout
 {
@@ -31,10 +29,11 @@ namespace Klarna.Checkout
         private readonly IOrderRepository _orderRepository;
         private readonly ITaxCalculator _taxCalculator;
         private readonly IConnectionFactory _connectionFactory;
+        private readonly IKlarnaOrderService _klarnaOrderService;
 
         private Client _client;
+        private PaymentMethodDto _paymentMethodDto;
         
-
         public KlarnaCheckoutService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
@@ -47,7 +46,22 @@ namespace Klarna.Checkout
             _orderRepository = orderRepository;
             _connectionFactory = connectionFactory;
             _taxCalculator = taxCalculator;
+
+            _klarnaOrderService = new KlarnaOrderService(_connectionFactory.GetConnectionConfiguration(PaymentMethodDto));
         }
+
+        public PaymentMethodDto PaymentMethodDto
+        {
+            get
+            {
+                if (_paymentMethodDto == null)
+                {
+                    _paymentMethodDto = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+                }
+                return _paymentMethodDto;
+            }
+        }
+
 
         public Client Client
         {
@@ -55,13 +69,12 @@ namespace Klarna.Checkout
             {
                 if (_client == null)
                 {
-                    var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
-                    if (paymentMethod != null)
+                    if (PaymentMethodDto != null)
                     {
-                        var connectionConfiguration = _connectionFactory.GetConnectionConfiguration(paymentMethod);
+                        var connectionConfiguration = _connectionFactory.GetConnectionConfiguration(PaymentMethodDto);
                         var connector = ConnectorFactory.Create(connectionConfiguration.Username,
                             connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
-
+                        
                         _client = new Client(connector);
                     }
                 }
@@ -169,11 +182,10 @@ namespace Klarna.Checkout
                 MerchantUrls = GetMerchantUrls(cart),
                 OrderLines = GetOrderLines(cart, totals)
             } as CheckoutOrderData;
-
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
+            
+            if (PaymentMethodDto != null)
             {
-                orderData.Options = GetOptions(paymentMethod);
+                orderData.Options = GetOptions(PaymentMethodDto);
             }
             return orderData;
         }
@@ -282,6 +294,18 @@ namespace Klarna.Checkout
             return null;
         }
 
+        public void CancelOrder(ICart cart)
+        {
+            var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            if (!string.IsNullOrWhiteSpace(orderId))
+            {
+                _klarnaOrderService.CancelOrder(orderId);
+
+                cart.Properties[Constants.KlarnaCheckoutOrderIdField] = null;
+                _orderRepository.Save(cart);
+            }
+        }
+
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
@@ -299,19 +323,18 @@ namespace Klarna.Checkout
 
         private MerchantUrls GetMerchantUrls(ICart cart)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
+            if (PaymentMethodDto != null)
             {
                 return new MerchantUrls
                 {
-                    Terms = new Uri(paymentMethod.GetParameter(Constants.TermsUrlField)),
-                    Checkout = new Uri(paymentMethod.GetParameter(Constants.CheckoutUrlField)),
-                    Confirmation = new Uri(paymentMethod.GetParameter(Constants.ConfirmationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Push = new Uri(paymentMethod.GetParameter(Constants.PushUrlField)),
-                    AddressUpdate = new Uri(paymentMethod.GetParameter(Constants.AddressUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    ShippingOptionUpdate = new Uri(paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Notification = new Uri(paymentMethod.GetParameter(Constants.NotificationUrlField)),
-                    Validation = new Uri(paymentMethod.GetParameter(Constants.OrderValidationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString()))
+                    Terms = new Uri(PaymentMethodDto.GetParameter(Constants.TermsUrlField)),
+                    Checkout = new Uri(PaymentMethodDto.GetParameter(Constants.CheckoutUrlField)),
+                    Confirmation = new Uri(PaymentMethodDto.GetParameter(Constants.ConfirmationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
+                    Push = new Uri(PaymentMethodDto.GetParameter(Constants.PushUrlField)),
+                    AddressUpdate = new Uri(PaymentMethodDto.GetParameter(Constants.AddressUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
+                    ShippingOptionUpdate = new Uri(PaymentMethodDto.GetParameter(Constants.ShippingOptionUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
+                    Notification = new Uri(PaymentMethodDto.GetParameter(Constants.NotificationUrlField)),
+                    Validation = new Uri(PaymentMethodDto.GetParameter(Constants.OrderValidationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString()))
                 };
             }
             return null;
