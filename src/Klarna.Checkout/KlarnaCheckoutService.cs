@@ -309,6 +309,11 @@ namespace Klarna.Checkout
             }
         }
 
+        public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        {
+            _klarnaOrderService.AcknowledgeOrder(purchaseOrder);
+        }
+
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
@@ -336,7 +341,7 @@ namespace Klarna.Checkout
                     Push = new Uri(PaymentMethodDto.GetParameter(Constants.PushUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     AddressUpdate = new Uri(PaymentMethodDto.GetParameter(Constants.AddressUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     ShippingOptionUpdate = new Uri(PaymentMethodDto.GetParameter(Constants.ShippingOptionUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Notification = new Uri(PaymentMethodDto.GetParameter(Constants.NotificationUrlField)),
+                    Notification = new Uri(PaymentMethodDto.GetParameter(Constants.NotificationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Validation = new Uri(PaymentMethodDto.GetParameter(Constants.OrderValidationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString()))
                 };
             }

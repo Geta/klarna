@@ -257,7 +257,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 if (order.Status == "checkout_complete")
                 {
                     CheckoutViewModel viewModel;
-                    var purchaseOrder = _checkoutService.CreateKlarnaOrder(klarna_order_id, order, cart, ModelState, out viewModel);
+                    var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart, ModelState, out viewModel);
                     if (purchaseOrder == null)
                     {
                         ModelState.AddModelError("", "Error occurred while creating a purchase order");

@@ -29,7 +29,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
 
         public KlarnaCheckoutController(
-            IKlarnaCheckoutService klarnaCheckoutService, 
+            IKlarnaCheckoutService klarnaCheckoutService,
             IOrderRepository orderRepository, 
             ILineItemValidator lineItemValidator, 
             ICartService cartService, 
@@ -41,57 +41,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _cartService = cartService;
             _checkoutService = checkoutService;
         }
-
-        [Route("cart/{orderGroupId}/push")]
-        [AcceptVerbs("POST")]
-        [HttpPost]
-        public IHttpActionResult Push(int orderGroupId, string klarna_order_id)
-        {
-            if (klarna_order_id == null)
-            {
-                return BadRequest();
-            }
-            var purchaseOrder = _klarnaCheckoutService.GetPurchaseOrderByKlarnaOrderId(klarna_order_id) 
-                ?? GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
-            if (purchaseOrder == null)
-            {
-                return NotFound();
-            }
-
-            // Update merchant reference
-            _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
-
-
-            // Acknowledge the order through the order management API
-
-
-
-
-
-            return Ok();
-        }
-
-        private IPurchaseOrder GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
-        {
-            // Check if we still have a cart and have to create an order
-            IPurchaseOrder purchaseOrder = null;
-            var cart = _orderRepository.Load<ICart>(orderGroupId);
-            var cartKlarnaOrderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
-            if (cartKlarnaOrderId == null || !cartKlarnaOrderId.Equals(klarnaOrderId))
-            {
-                return null;
-            }
-
-            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId);
-            if (order.Status.Equals("checkout_complete"))
-            {
-                CheckoutViewModel viewModel;
-                purchaseOrder = _checkoutService.CreateKlarnaOrder(klarnaOrderId, order, cart,
-                    new System.Web.Mvc.ModelStateDictionary(), out viewModel);
-            }
-            return purchaseOrder;
-        }
-
+        
         [Route("cart/{orderGroupId}/shippingoptionupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
@@ -167,14 +117,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
-        [Route("fraud/")]
-        [AcceptVerbs("Post")]
+        [Route("cart/{orderGroupId}/fraud")]
+        [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult FraudNotification()
+        public IHttpActionResult FraudNotification(int orderGroupId, string klarna_order_id)
         {
-            var requestParams = Request.Content.ReadAsStringAsync().Result;
+            var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            if (purchaseOrder == null)
+            {
+                return NotFound();
+            }
 
-            _log.Error("KlarnaCheckoutController.FraudNotification called: " + requestParams);
+            var requestParams = Request.Content.ReadAsStringAsync().Result;
 
             if (!string.IsNullOrEmpty(requestParams))
             {
@@ -186,20 +140,57 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
-        [Route("push/")]
-        [AcceptVerbs("Post")]
+        [Route("cart/{orderGroupId}/push")]
+        [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult PushNotification()
+        public IHttpActionResult Push(int orderGroupId, string klarna_order_id)
         {
-            var requestParams = Request.Content.ReadAsStringAsync().Result;
-
-            _log.Error("KlarnaCheckoutController.PushNotification called: " + requestParams);
-
-            if (!string.IsNullOrEmpty(requestParams))
+            if (klarna_order_id == null)
             {
-
+                return BadRequest();
             }
-            return Ok(requestParams);
+            var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            if (purchaseOrder == null)
+            {
+                return NotFound();
+            }
+
+            // Update merchant reference
+            _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
+
+            // Acknowledge the order through the order management API
+            _klarnaCheckoutService.AcknowledgeOrder(purchaseOrder);
+
+            return Ok();
+        }
+
+        private IPurchaseOrder GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
+        {
+            // Check if the order has been created already
+            var purchaseOrder = _klarnaCheckoutService.GetPurchaseOrderByKlarnaOrderId(klarnaOrderId);
+            if (purchaseOrder != null)
+            {
+                return purchaseOrder;
+            }
+
+            // Check if we still have a cart and can create an order
+            var cart = _orderRepository.Load<ICart>(orderGroupId);
+            var cartKlarnaOrderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            if (cartKlarnaOrderId == null || !cartKlarnaOrderId.Equals(klarnaOrderId))
+            {
+                return null;
+            }
+
+            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId);
+            if (!order.Status.Equals("checkout_complete"))
+            {
+                // Won't create order, Klarna checkout not complete
+                return null;
+            }
+            CheckoutViewModel viewModel;
+            purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarnaOrderId, order, cart,
+                new System.Web.Mvc.ModelStateDictionary(), out viewModel);
+            return purchaseOrder;
         }
     }
 }

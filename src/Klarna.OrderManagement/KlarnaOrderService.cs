@@ -26,6 +26,11 @@ namespace Klarna.OrderManagement
             _client = new Client(connector);
         }
 
+        public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        {
+            _client.NewOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).Acknowledge();
+        }
+
         public void CancelOrder(string orderId)
         {
             var order = _client.NewOrder(orderId);

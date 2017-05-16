@@ -29,5 +29,6 @@ namespace Klarna.OrderManagement
         void ExtendAuthorizationTime(string orderId);
 
         void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails);
+        void AcknowledgeOrder(IPurchaseOrder purchaseOrder);
     }
 }

@@ -200,7 +200,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
         }
 
-        public IPurchaseOrder CreateKlarnaOrder(
+        public IPurchaseOrder CreatePurchaseOrderForKlarna(
             string klarnaOrderId, 
             CheckoutOrderData order, 
             ICart cart,
@@ -245,8 +245,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             CreateAndAddPaymentToCart(cart, viewModel);
 
             var purchaseOrder = PlaceOrder(cart, modelState, viewModel);
-            if (purchaseOrder == null) //something went wrong while creating a purchase order, cancel  order at Klarna
+            if (purchaseOrder == null) 
             {
+                // TODO schedule cancel order, could be not available in OM yet
+                //something went wrong while creating a purchase order, have to SCHEDULE cancel order at Klarna
                 _klarnaCheckoutService.CancelOrder(cart);
                 return null;
             }
