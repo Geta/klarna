@@ -26,8 +26,10 @@ using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.ServiceLocation;
 using Klarna.Checkout;
 using Klarna.Common;
+using Klarna.Common.Extensions;
 using Klarna.OrderManagement;
 using Klarna.Payments;
+using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders.Managers;
 using Constants = Klarna.Checkout.Constants;
 
@@ -248,74 +250,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [HttpGet]
         public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
         {
-            //var viewModel = CreateCheckoutViewModel(currentPage);
-            
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {
                 var order = _klarnaCheckoutService.GetOrder(klarna_order_id);
                 if (order.Status == "checkout_complete")
                 {
-                    var contentLink = _contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage;
-
-                    var viewModel = CreateCheckoutViewModel(_contentLoader.Get<CheckoutPage>(contentLink));
-
-                    var paymentRow =
-                        PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword,
-                            ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
-                    var paymentViewModel = new PaymentMethodViewModel<KlarnaCheckoutPaymentMethod>
+                    CheckoutViewModel viewModel;
+                    var purchaseOrder = _checkoutService.CreateKlarnaOrder(klarna_order_id, order, cart, ModelState, out viewModel);
+                    if (purchaseOrder == null)
                     {
-                        PaymentMethodId = paymentRow.PaymentMethodId,
-                        SystemName = paymentRow.SystemKeyword,
-                        FriendlyName = paymentRow.Name,
-                        Description = paymentRow.Description,
-                        PaymentMethod = new KlarnaCheckoutPaymentMethod()
-                    };
-
-                    viewModel.Payment = paymentViewModel;
-                    viewModel.Payment.PaymentMethod.PaymentMethodId = paymentRow.PaymentMethodId;
-                    
-                    viewModel.BillingAddress = new AddressModel
-                    {
-                        Name =
-                            $"{order.BillingAddress.StreetAddress}{order.BillingAddress.StreetAddress2}{order.BillingAddress.City}",
-                        FirstName = order.BillingAddress.GivenName,
-                        LastName = order.BillingAddress.FamilyName,
-                        Email = order.BillingAddress.Email,
-                        DaytimePhoneNumber = order.BillingAddress.Phone,
-                        Line1 = order.BillingAddress.StreetAddress,
-                        Line2 = order.BillingAddress.StreetAddress2,
-                        PostalCode = order.BillingAddress.PostalCode,
-                        City = order.BillingAddress.City,
-                        CountryName = order.BillingAddress.Country
-                    };
-
-                    _checkoutService.CreateAndAddPaymentToCart(cart, viewModel);
-
-                    cart.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarna_order_id;
-
-                    _orderRepository.Save(cart);
-
-                    var purchaseOrder = _checkoutService.PlaceOrder(cart, ModelState, viewModel);
-                    if (purchaseOrder == null) //something went wrong while creating a purchase order, cancel  order at Klarna
-                    {
-                        _klarnaCheckoutService.CancelOrder(cart);
-
                         ModelState.AddModelError("", "Error occurred while creating a purchase order");
 
                         return RedirectToAction("Index");
                     }
-
-                    purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarna_order_id;
-
-                    _orderRepository.Save(purchaseOrder);
-
-                    _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
-
-                    // create payment
-                    // add billing
-                    // order validation
-                    // create purchase order
 
                     return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, false));
                 }
@@ -326,6 +274,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
             return HttpNotFound();
         }
+
+      
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)
         {

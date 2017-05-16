@@ -333,7 +333,7 @@ namespace Klarna.Checkout
                     Terms = new Uri(PaymentMethodDto.GetParameter(Constants.TermsUrlField)),
                     Checkout = new Uri(PaymentMethodDto.GetParameter(Constants.CheckoutUrlField)),
                     Confirmation = new Uri(PaymentMethodDto.GetParameter(Constants.ConfirmationUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Push = new Uri(PaymentMethodDto.GetParameter(Constants.PushUrlField)),
+                    Push = new Uri(PaymentMethodDto.GetParameter(Constants.PushUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     AddressUpdate = new Uri(PaymentMethodDto.GetParameter(Constants.AddressUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     ShippingOptionUpdate = new Uri(PaymentMethodDto.GetParameter(Constants.ShippingOptionUpdateUrlField).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Notification = new Uri(PaymentMethodDto.GetParameter(Constants.NotificationUrlField)),

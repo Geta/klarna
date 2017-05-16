@@ -418,6 +418,14 @@
       <Project>{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}</Project>
       <Name>Klarna.Checkout</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Klarna.Common\Klarna.Common.csproj">
+      <Project>{C5B383DF-10B4-4330-A000-F981DB51DA89}</Project>
+      <Name>Klarna.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\Klarna.Payments\Klarna.Payments.csproj">
+      <Project>{D32786DF-E314-4E0D-A0DD-0047FA2316F9}</Project>
+      <Name>Klarna.Payments</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj">
       <Project>{341c8e14-4eae-4946-9841-45f9818265a8}</Project>
       <Name>EPiServer.Reference.Commerce.Shared</Name>

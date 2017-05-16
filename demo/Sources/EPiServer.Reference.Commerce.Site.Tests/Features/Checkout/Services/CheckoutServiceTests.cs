@@ -12,6 +12,7 @@ using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
 using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
@@ -20,6 +21,7 @@ using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes;
 using FluentAssertions;
+using Klarna.Checkout;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
@@ -313,7 +315,11 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
               _customerContextFacadeMock.Object,
               new MemoryLocalizationService(),
               _mailServiceMock.Object,
-              null);
+              null,
+              Mock.Of<IContentLoader>(),
+              Mock.Of<IKlarnaCheckoutService>(),
+              null
+              );
         }
     }
 }

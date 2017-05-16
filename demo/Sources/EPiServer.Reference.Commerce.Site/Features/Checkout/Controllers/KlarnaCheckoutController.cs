@@ -7,6 +7,8 @@ using System.Web.Http;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
+using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
@@ -21,35 +23,73 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         private readonly IOrderRepository _orderRepository;
-        private readonly IOrderGroupFactory _orderGroupFactory;
         private readonly ILineItemValidator _lineItemValidator;
         private readonly ICartService _cartService;
-        
+        private readonly CheckoutService _checkoutService;
+
 
         public KlarnaCheckoutController(
             IKlarnaCheckoutService klarnaCheckoutService, 
             IOrderRepository orderRepository, 
-            IOrderGroupFactory orderGroupFactory, 
             ILineItemValidator lineItemValidator, 
-            ICartService cartService)
+            ICartService cartService, 
+            CheckoutService checkoutService)
         {
             _klarnaCheckoutService = klarnaCheckoutService;
             _orderRepository = orderRepository;
-            _orderGroupFactory = orderGroupFactory;
             _lineItemValidator = lineItemValidator;
             _cartService = cartService;
+            _checkoutService = checkoutService;
         }
 
         [Route("cart/{orderGroupId}/push")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult Push(int orderGroupId, [FromBody]ShippingOptionUpdateRequest shippingOptionUpdateRequest)
+        public IHttpActionResult Push(int orderGroupId, string klarna_order_id)
         {
+            if (klarna_order_id == null)
+            {
+                return BadRequest();
+            }
+            var purchaseOrder = _klarnaCheckoutService.GetPurchaseOrderByKlarnaOrderId(klarna_order_id) 
+                ?? GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            if (purchaseOrder == null)
+            {
+                return NotFound();
+            }
+
+            // Update merchant reference
+            _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
+
+
+            // Acknowledge the order through the order management API
+
+
+
+
+
+            return Ok();
+        }
+
+        private IPurchaseOrder GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
+        {
+            // Check if we still have a cart and have to create an order
+            IPurchaseOrder purchaseOrder = null;
             var cart = _orderRepository.Load<ICart>(orderGroupId);
+            var cartKlarnaOrderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            if (cartKlarnaOrderId == null || !cartKlarnaOrderId.Equals(klarnaOrderId))
+            {
+                return null;
+            }
 
-            var response = _klarnaCheckoutService.UpdateShippingMethod(cart, shippingOptionUpdateRequest);
-
-            return Ok(response);
+            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId);
+            if (order.Status.Equals("checkout_complete"))
+            {
+                CheckoutViewModel viewModel;
+                purchaseOrder = _checkoutService.CreateKlarnaOrder(klarnaOrderId, order, cart,
+                    new System.Web.Mvc.ModelStateDictionary(), out viewModel);
+            }
+            return purchaseOrder;
         }
 
         [Route("cart/{orderGroupId}/shippingoptionupdate")]

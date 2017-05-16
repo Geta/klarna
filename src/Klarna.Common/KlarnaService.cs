@@ -100,14 +100,16 @@ namespace Klarna.Common
         }
 
         
-        protected IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
+        public IPurchaseOrder GetPurchaseOrderByKlarnaOrderId(string orderId)
         {
-            OrderSearchOptions searchOptions = new OrderSearchOptions();
-            searchOptions.CacheResults = false;
-            searchOptions.StartingRecord = 0;
-            searchOptions.RecordsToRetrieve = 1;
-            searchOptions.Classes = new System.Collections.Specialized.StringCollection { "PurchaseOrder" };
-            searchOptions.Namespace = "Mediachase.Commerce.Orders";
+            OrderSearchOptions searchOptions = new OrderSearchOptions
+            {
+                CacheResults = false,
+                StartingRecord = 0,
+                RecordsToRetrieve = 1,
+                Classes = new System.Collections.Specialized.StringCollection {"PurchaseOrder"},
+                Namespace = "Mediachase.Commerce.Orders"
+            };
 
             var parameters = new OrderSearchParameters();
             parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{orderId}'";

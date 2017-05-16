@@ -8,19 +8,26 @@ using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Framework.Localization;
+using EPiServer.Globalization;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Shared.Services;
 using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
+using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
+using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
+using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
-using Klarna.Payments;
+using Klarna.Checkout;
 using Klarna.Payments.Helpers;
+using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 {
@@ -37,6 +44,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         private readonly IMailService _mailService;
         private readonly IPromotionEngine _promotionEngine;
         private readonly ILogger _log = LogManager.GetLogger(typeof(CheckoutService));
+        private readonly IContentLoader _contentLoader; 
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+        private readonly CheckoutViewModelFactory _checkoutViewModelFactory;
+
+      
 
         public AuthenticatedPurchaseValidation AuthenticatedPurchaseValidation { get; private set; }
         public AnonymousPurchaseValidation AnonymousPurchaseValidation { get; private set; }
@@ -52,7 +64,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             CustomerContextFacade customerContext,
             LocalizationService localizationService,
             IMailService mailService, 
-            IPromotionEngine promotionEngine)
+            IPromotionEngine promotionEngine, 
+            IContentLoader contentLoader, 
+            IKlarnaCheckoutService klarnaCheckoutService, 
+            CheckoutViewModelFactory checkoutViewModelFactory)
         {
             _addressBookService = addressBookService;
             _orderGroupFactory = orderGroupFactory;
@@ -64,6 +79,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             _localizationService = localizationService;
             _mailService = mailService;
             _promotionEngine = promotionEngine;
+            _contentLoader = contentLoader;
+            _klarnaCheckoutService = klarnaCheckoutService;
+            _checkoutViewModelFactory = checkoutViewModelFactory;
 
             AuthenticatedPurchaseValidation = new AuthenticatedPurchaseValidation(_localizationService);
             AnonymousPurchaseValidation = new AnonymousPurchaseValidation(_localizationService);
@@ -104,10 +122,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         {
             var total = cart.GetTotal(_orderGroupCalculator);
             var payment = viewModel.Payment.PaymentMethod.CreatePayment(total.Amount, cart);
-            
-            if (payment.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword))
+            if (payment.PaymentMethodName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
             {
-                payment.Properties[Constants.AuthorizationTokenPaymentMethodField] = viewModel.AuthorizationToken;
+                payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentMethodField] = viewModel.AuthorizationToken;
             }
 
             cart.AddPayment(payment, _orderGroupFactory);
@@ -181,6 +198,63 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(checkoutViewModel.CurrentPage.ContentLink);
 
             return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
+        }
+
+        public IPurchaseOrder CreateKlarnaOrder(
+            string klarnaOrderId, 
+            CheckoutOrderData order, 
+            ICart cart,
+            ModelStateDictionary modelState,
+            out CheckoutViewModel viewModel)
+        {
+            var contentLink = _contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage;
+
+            viewModel = _checkoutViewModelFactory.CreateCheckoutViewModel(cart, _contentLoader.Get<CheckoutPage>(contentLink));
+
+            var paymentRow =
+                PaymentManager.GetPaymentMethodBySystemName(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword,
+                        ContentLanguage.PreferredCulture.Name)
+                    .PaymentMethod.FirstOrDefault();
+            var paymentViewModel = new PaymentMethodViewModel<KlarnaCheckoutPaymentMethod>
+            {
+                PaymentMethodId = paymentRow.PaymentMethodId,
+                SystemName = paymentRow.SystemKeyword,
+                FriendlyName = paymentRow.Name,
+                Description = paymentRow.Description,
+                PaymentMethod = new KlarnaCheckoutPaymentMethod()
+            };
+
+            viewModel.Payment = paymentViewModel;
+            viewModel.Payment.PaymentMethod.PaymentMethodId = paymentRow.PaymentMethodId;
+
+            viewModel.BillingAddress = new AddressModel
+            {
+                Name =
+                    $"{order.BillingAddress.StreetAddress}{order.BillingAddress.StreetAddress2}{order.BillingAddress.City}",
+                FirstName = order.BillingAddress.GivenName,
+                LastName = order.BillingAddress.FamilyName,
+                Email = order.BillingAddress.Email,
+                DaytimePhoneNumber = order.BillingAddress.Phone,
+                Line1 = order.BillingAddress.StreetAddress,
+                Line2 = order.BillingAddress.StreetAddress2,
+                PostalCode = order.BillingAddress.PostalCode,
+                City = order.BillingAddress.City,
+                CountryName = order.BillingAddress.Country
+            };
+
+            CreateAndAddPaymentToCart(cart, viewModel);
+
+            var purchaseOrder = PlaceOrder(cart, modelState, viewModel);
+            if (purchaseOrder == null) //something went wrong while creating a purchase order, cancel  order at Klarna
+            {
+                _klarnaCheckoutService.CancelOrder(cart);
+                return null;
+            }
+
+            purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarnaOrderId;
+
+            _orderRepository.Save(purchaseOrder);
+            return purchaseOrder;
         }
     }
 }
