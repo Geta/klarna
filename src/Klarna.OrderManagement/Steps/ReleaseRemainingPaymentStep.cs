@@ -2,34 +2,33 @@
 using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.OrderManagement.Steps;
+using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders;
-using Refit;
 
-namespace Klarna.Payments.Steps
+namespace Klarna.OrderManagement.Steps
 {
-    public class CancelPaymentStep : PaymentStep
+    public class ReleaseRemainingPaymentStep : PaymentStep
     {
-        private static readonly ILogger Logger = LogManager.GetLogger(typeof(CancelPaymentStep));
+        private static readonly ILogger Logger = LogManager.GetLogger(typeof(ReleaseRemainingPaymentStep));
 
-        public CancelPaymentStep(IPayment payment) : base(payment)
+        public ReleaseRemainingPaymentStep(IPayment payment) : base(payment)
         {
         }
 
         public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message)
         {
-            if (payment.TransactionType == TransactionType.Void.ToString())
+            if (payment.TransactionType == KlarnaAdditionalTransactionType.ReleaseRemainingAuthorization.ToString())
             {
                 try
                 {
                     var orderId = orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
                     if (!string.IsNullOrEmpty(orderId))
                     {
-                        KlarnaOrderService.CancelOrder(orderId);
+                        KlarnaOrderService.ReleaseRemaininAuthorization(orderId);
 
                         payment.Status = PaymentStatus.Processed.ToString();
 
-                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Order cancelled at Klarna");
+                        AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Released remaining authorization at Klarna");
 
                         return true;
                     }

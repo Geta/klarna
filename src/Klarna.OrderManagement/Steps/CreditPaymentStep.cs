@@ -3,12 +3,11 @@ using System.Linq;
 using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.OrderManagement.Steps;
+using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus;
-using Refit;
 
-namespace Klarna.Payments.Steps
+namespace Klarna.OrderManagement.Steps
 {
     public class CreditPaymentStep : PaymentStep
     {

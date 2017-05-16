@@ -35,8 +35,12 @@ namespace Klarna.Checkout
                 }
                 var authorizePaymentStep = new AuthorizePaymentStep(payment);
                 var capturePaymentStep = new CapturePaymentStep(payment);
+                var creditPaymentStep = new CreditPaymentStep(payment);
+                var cancelPaymentStep = new CancelPaymentStep(payment);
 
                 authorizePaymentStep.SetSuccessor(capturePaymentStep);
+                capturePaymentStep.SetSuccessor(creditPaymentStep);
+                creditPaymentStep.SetSuccessor(cancelPaymentStep);
 
                 return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, ref message);
             }
