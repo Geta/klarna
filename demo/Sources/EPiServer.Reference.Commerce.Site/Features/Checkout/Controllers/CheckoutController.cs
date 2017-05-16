@@ -256,8 +256,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 var order = _klarnaCheckoutService.GetOrder(klarna_order_id);
                 if (order.Status == "checkout_complete")
                 {
-                    CheckoutViewModel viewModel;
-                    var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart, ModelState, out viewModel);
+                    var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
                     if (purchaseOrder == null)
                     {
                         ModelState.AddModelError("", "Error occurred while creating a purchase order");
@@ -265,7 +264,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, false));
+                    return Redirect(_checkoutService.BuildRedirectionUrl(purchaseOrder));
                 }
                 else
                 {
@@ -274,7 +273,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
             return HttpNotFound();
         }
-
       
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)

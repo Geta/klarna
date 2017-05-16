@@ -200,37 +200,36 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
         }
 
-        public IPurchaseOrder CreatePurchaseOrderForKlarna(
-            string klarnaOrderId, 
-            CheckoutOrderData order, 
-            ICart cart,
-            ModelStateDictionary modelState,
-            out CheckoutViewModel viewModel)
+        public virtual string BuildRedirectionUrl(IPurchaseOrder purchaseOrder)
         {
-            var contentLink = _contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage;
-
-            viewModel = _checkoutViewModelFactory.CreateCheckoutViewModel(cart, _contentLoader.Get<CheckoutPage>(contentLink));
-
-            var paymentRow =
-                PaymentManager.GetPaymentMethodBySystemName(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword,
-                        ContentLanguage.PreferredCulture.Name)
-                    .PaymentMethod.FirstOrDefault();
-            var paymentViewModel = new PaymentMethodViewModel<KlarnaCheckoutPaymentMethod>
+            var queryCollection = new NameValueCollection
             {
-                PaymentMethodId = paymentRow.PaymentMethodId,
-                SystemName = paymentRow.SystemKeyword,
-                FriendlyName = paymentRow.Name,
-                Description = paymentRow.Description,
-                PaymentMethod = new KlarnaCheckoutPaymentMethod()
+                {"contactId", _customerContext.CurrentContactId.ToString()},
+                {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
             };
+            
+            var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(_contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage);
 
-            viewModel.Payment = paymentViewModel;
-            viewModel.Payment.PaymentMethod.PaymentMethodId = paymentRow.PaymentMethodId;
+            return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) { QueryCollection = queryCollection }.ToString();
+        }
 
-            viewModel.BillingAddress = new AddressModel
+        public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrderData order, ICart cart)
+        {
+            var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
+
+            var payment = cart.CreatePayment(_orderGroupFactory);
+            payment.PaymentType = PaymentType.Other;
+            payment.PaymentMethodId = paymentRow.PaymentMethodId;
+            payment.PaymentMethodName = Constants.KlarnaCheckoutSystemKeyword;
+            payment.Amount = cart.GetTotal(_orderGroupCalculator).Amount;
+            payment.Status = PaymentStatus.Pending.ToString();
+            payment.TransactionType = TransactionType.Authorization.ToString();
+            
+            cart.AddPayment(payment, _orderGroupFactory);
+
+            var billingAddress = new AddressModel
             {
-                Name =
-                    $"{order.BillingAddress.StreetAddress}{order.BillingAddress.StreetAddress2}{order.BillingAddress.City}",
+                Name = $"{order.BillingAddress.StreetAddress}{order.BillingAddress.StreetAddress2}{order.BillingAddress.City}",
                 FirstName = order.BillingAddress.GivenName,
                 LastName = order.BillingAddress.FamilyName,
                 Email = order.BillingAddress.Email,
@@ -242,21 +241,33 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 CountryName = order.BillingAddress.Country
             };
 
-            CreateAndAddPaymentToCart(cart, viewModel);
+            payment.BillingAddress = _addressBookService.ConvertToAddress(billingAddress, cart);
 
-            var purchaseOrder = PlaceOrder(cart, modelState, viewModel);
-            if (purchaseOrder == null) 
+            cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+
+            var totalProcessedAmount = cart.GetFirstForm().Payments.Where(x => x.Status.Equals(PaymentStatus.Processed.ToString())).Sum(x => x.Amount);
+            if (totalProcessedAmount != cart.GetTotal(_orderGroupCalculator).Amount)
             {
-                // TODO schedule cancel order, could be not available in OM yet
-                //something went wrong while creating a purchase order, have to SCHEDULE cancel order at Klarna
-                _klarnaCheckoutService.CancelOrder(cart);
-                return null;
+                throw new InvalidOperationException("Wrong amount");
             }
 
-            purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarnaOrderId;
+            var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
+            var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
+            _orderRepository.Delete(cart.OrderLink);
 
-            _orderRepository.Save(purchaseOrder);
-            return purchaseOrder;
+            if (purchaseOrder == null)
+            {
+                _klarnaCheckoutService.CancelOrder(cart);
+
+                return null;
+            }
+            else
+            {
+                purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarnaOrderId;
+
+                _orderRepository.Save(purchaseOrder);
+                return purchaseOrder;
+            }
         }
     }
 }

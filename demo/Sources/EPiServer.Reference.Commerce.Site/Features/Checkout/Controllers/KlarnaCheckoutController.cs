@@ -187,9 +187,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 // Won't create order, Klarna checkout not complete
                 return null;
             }
-            CheckoutViewModel viewModel;
-            purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarnaOrderId, order, cart,
-                new System.Web.Mvc.ModelStateDictionary(), out viewModel);
+            purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarnaOrderId, order, cart);
             return purchaseOrder;
         }
     }

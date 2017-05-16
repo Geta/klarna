@@ -14,15 +14,7 @@ namespace Klarna.Checkout.Steps
         public override bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
             AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Authorize completed");
-
-            var orderId = orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
-
-            var order = KlarnaOrderService.GetOrder(orderId);
-            if (order != null)
-            {
-                // TODO: check if fraude propery is pending 
-            }
-
+            
             return true;
         }
     }
