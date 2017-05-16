@@ -4,6 +4,7 @@ using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
+using Klarna.OrderManagement.Steps;
 using Klarna.Payments.Steps;
 
 namespace Klarna.Payments

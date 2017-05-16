@@ -3,6 +3,9 @@ using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
+using Klarna.Common;
+using Klarna.OrderManagement.Steps;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Orders;
 using Refit;
@@ -12,6 +15,7 @@ namespace Klarna.Payments.Steps
     public class AuthorizePaymentStep : PaymentStep
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStep));
+        private Injected<IKlarnaPaymentsService> _paymentService;
 
         public AuthorizePaymentStep(IPayment payment) : base(payment)
         {
@@ -78,7 +82,7 @@ namespace Klarna.Payments.Steps
                 try
                 {
                     var result = Task
-                        .Run(() => KlarnaService.Service.CreateOrder(authorizationToken, orderGroup as ICart))
+                        .Run(() => _paymentService.Service.CreateOrder(authorizationToken, orderGroup as ICart))
                         .Result;
 
                     orderGroup.Properties[Common.Constants.KlarnaOrderIdField] = result.OrderId;

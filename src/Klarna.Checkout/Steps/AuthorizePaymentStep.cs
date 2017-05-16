@@ -1,5 +1,6 @@
 ﻿using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.OrderManagement.Steps;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Orders;
 

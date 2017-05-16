@@ -245,9 +245,7 @@
     <Compile Include="Steps\ReleaseRemainingPaymentStep.cs" />
     <Compile Include="Steps\CreditPaymentStep.cs" />
     <Compile Include="Steps\CancelPaymentStep.cs" />
-    <Compile Include="Steps\CapturePaymentStep.cs" />
     <Compile Include="Steps\AuthorizePaymentStep.cs" />
-    <Compile Include="Steps\PaymentStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

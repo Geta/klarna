@@ -1,29 +1,31 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using EPiServer.Commerce.Order;
-using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Extensions;
-using Klarna.OrderManagement;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 
-namespace Klarna.Checkout.Steps
+namespace Klarna.OrderManagement.Steps
 {
     public abstract class PaymentStep
     {
-        protected Injected<IKlarnaCheckoutService> KlarnaService;
-        protected IKlarnaOrderService KlarnaOrderService;
-        protected Injected<IConnectionFactory> ConnectionFactory;
         protected PaymentStep Successor;
+
+        protected PaymentMethodDto PaymentMethod { get; set; }
+
+        protected Injected<IConnectionFactory> ConnectionFactory;
+        protected IKlarnaOrderService KlarnaOrderService;
 
         protected PaymentStep(IPayment payment)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
+            PaymentMethod = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
+            if (PaymentMethod != null)
             {
-                KlarnaOrderService = new KlarnaOrderService(ConnectionFactory.Service.GetConnectionConfiguration(paymentMethod));
+                KlarnaOrderService = new KlarnaOrderService(ConnectionFactory.Service.GetConnectionConfiguration(PaymentMethod));
             }
         }
 
@@ -36,7 +38,7 @@ namespace Klarna.Checkout.Steps
         
         protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string transactionType, string noteMessage)
         {
-            var noteTitle = $"Klarna checkout {transactionType.ToLower()}";
+            var noteTitle = $"{PaymentMethod.PaymentMethod.FirstOrDefault()?.Name} {transactionType.ToLower()}";
 
             orderGroup.AddNote(noteTitle, $"Payment {transactionType.ToLower()}: {noteMessage}");
         }

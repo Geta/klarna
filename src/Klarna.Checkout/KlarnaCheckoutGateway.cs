@@ -5,6 +5,7 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
 using Klarna.Checkout.Steps;
+using Klarna.OrderManagement.Steps;
 
 namespace Klarna.Checkout
 {
@@ -32,8 +33,10 @@ namespace Klarna.Checkout
                 {
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
-
                 var authorizePaymentStep = new AuthorizePaymentStep(payment);
+                var capturePaymentStep = new CapturePaymentStep(payment);
+
+                authorizePaymentStep.SetSuccessor(capturePaymentStep);
 
                 return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, ref message);
             }

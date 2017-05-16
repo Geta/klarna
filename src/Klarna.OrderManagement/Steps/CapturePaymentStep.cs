@@ -3,10 +3,10 @@ using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.Common.Helpers;
+using Klarna.Rest.Transport;
 using Mediachase.Commerce.Orders;
-using Refit;
 
-namespace Klarna.Payments.Steps
+namespace Klarna.OrderManagement.Steps
 {
     public class CapturePaymentStep : PaymentStep
     {
@@ -50,7 +50,6 @@ namespace Klarna.Payments.Steps
                         return false;
                     }
                 }
-
                 return true;
             }
             else if (Successor != null)
