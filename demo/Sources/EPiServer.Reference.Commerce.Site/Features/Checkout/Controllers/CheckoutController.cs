@@ -292,6 +292,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
                     _checkoutService.CreateAndAddPaymentToCart(cart, viewModel);
 
+                    cart.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarna_order_id;
+
+                    _orderRepository.Save(cart);
+
                     var purchaseOrder = _checkoutService.PlaceOrder(cart, ModelState, viewModel);
                     if (purchaseOrder == null) //something went wrong while creating a purchase order, cancel  order at Klarna
                     {

@@ -127,7 +127,6 @@ namespace Klarna.OrderManagement
         public OrderData GetOrder(string orderId)
         {
             var order = _client.NewOrder(orderId);
-
             return order.Fetch();
         }
 

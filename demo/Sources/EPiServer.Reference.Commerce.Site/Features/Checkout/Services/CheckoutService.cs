@@ -104,6 +104,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         {
             var total = cart.GetTotal(_orderGroupCalculator);
             var payment = viewModel.Payment.PaymentMethod.CreatePayment(total.Amount, cart);
+            
             if (payment.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword))
             {
                 payment.Properties[Constants.AuthorizationTokenPaymentMethodField] = viewModel.AuthorizationToken;
