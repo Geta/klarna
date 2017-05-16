@@ -58,7 +58,7 @@ namespace Klarna.Common
             // Line items
             foreach (var lineItem in cart.GetAllLineItems())
             {
-                var orderLine = lineItem.GetOrderLine();
+                var orderLine = lineItem.GetOrderLine(cart.Market, cart.GetFirstShipment(), cart.Currency);
                 orderLines.Add(orderLine);
             }
 
