@@ -1,34 +1,28 @@
-using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Mediachase.Commerce.Orders;
 
 namespace Klarna.Common.Extensions
 {
     public static class ShipmentExtensions
     {
 #pragma warning disable 649
-        private static Injected<IShippingCalculator> _shippingCalculator;
         private static Injected<ITaxCalculator> _taxCalculator;
 #pragma warning restore 649
 
         public static PatchedOrderLine GetOrderLine(this IShipment shipment, ICart cart, OrderGroupTotals totals)
         {
             var shippingTaxTotal = _taxCalculator.Service.GetShippingTaxTotal(shipment, cart.Market, cart.Currency);
-
-            var shippingTaxValue =  OrderContext.Current.GetTaxes(Guid.Empty, "General Sales", cart.Market.DefaultLanguage.Name, shipment.ShippingAddress).ToArray().FirstOrDefault(t => t.TaxType == TaxType.ShippingTax);
-
             var total = AmountHelper.GetAmount(totals.ShippingTotal);
             var totalTaxAmount = 0;
             var taxRate = 0;
 
-            if (shippingTaxValue != null && shippingTaxTotal.Amount > 0)
+            if (shippingTaxTotal.Amount > 0)
             {
                 totalTaxAmount = AmountHelper.GetAmount(shippingTaxTotal.Amount);
-                taxRate = AmountHelper.GetAmount((decimal)shippingTaxValue.Percentage);
+                taxRate = AmountHelper.GetAmount((shippingTaxTotal.Amount / totals.ShippingTotal.Amount) * 100);
 
                 total = total + totalTaxAmount;
             }
