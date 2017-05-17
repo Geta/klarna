@@ -65,7 +65,8 @@ namespace Klarna.Common
             // Shipment
             if (shipment != null && orderGroupTotals.ShippingTotal.Amount > 0)
             {
-                var shipmentOrderLine = shipment.GetOrderLine(orderGroupTotals);
+                //var shipmentOrderLine = shipment.GetOrderLine(orderGroupTotals);
+                var shipmentOrderLine = shipment.GetOrderLine(cart, orderGroupTotals);
                 orderLines.Add(shipmentOrderLine);
             }
 
