@@ -14,7 +14,8 @@ namespace Klarna.Checkout
                    checkoutData.ShippingAddress != null &&
                    otherCheckoutOrderData.ShippingAddress != null &&
                    checkoutData.ShippingAddress.PostalCode.Equals(otherCheckoutOrderData.ShippingAddress.PostalCode, StringComparison.InvariantCultureIgnoreCase) &&
-                   checkoutData.ShippingAddress.Region.Equals(otherCheckoutOrderData.ShippingAddress.Region, StringComparison.InvariantCultureIgnoreCase) &&
+                   (checkoutData.ShippingAddress.Region == null && otherCheckoutOrderData.ShippingAddress.Region == null ||
+                   checkoutData.ShippingAddress.Region.Equals(otherCheckoutOrderData.ShippingAddress.Region, StringComparison.InvariantCultureIgnoreCase)) &&
                    checkoutData.ShippingAddress.Country.Equals(otherCheckoutOrderData.ShippingAddress.Country, StringComparison.InvariantCultureIgnoreCase);
         }
     }

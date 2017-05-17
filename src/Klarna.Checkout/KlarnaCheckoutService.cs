@@ -107,6 +107,16 @@ namespace Klarna.Checkout
                 orderData.BillingAddress = customerContact.PreferredBillingAddress.ToAddress();
             }
 
+            if (orderData.Options.AllowSeparateShippingAddress.HasValue &&
+                orderData.Options.AllowSeparateShippingAddress.Value)
+            {
+                var shipment = cart.GetFirstShipment();
+                if (shipment.ShippingAddress != null)
+                {
+                    orderData.ShippingAddress = shipment.ShippingAddress.ToAddress();
+                }
+            }
+
             try
             {
                 checkout.Create(orderData);
