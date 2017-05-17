@@ -70,7 +70,7 @@ namespace Klarna.Common
             }
 
             // Sales tax
-            orderLines.Add(new PatchedOrderLine()
+            /*orderLines.Add(new PatchedOrderLine()
             {
                 Type = "sales_tax",
                 Name = "Sales Tax",
@@ -79,10 +79,10 @@ namespace Klarna.Common
                 UnitPrice = AmountHelper.GetAmount(orderGroupTotals.TaxTotal),
                 TotalTaxAmount = 0,
                 TaxRate = 0
-            });
+            });*/
 
             // Order level discounts
-            var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
+            /*var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
             var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
             var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
             orderLines.Add(new PatchedOrderLine()
@@ -94,7 +94,7 @@ namespace Klarna.Common
                 UnitPrice = -AmountHelper.GetAmount(totalDiscount),
                 TotalTaxAmount = 0,
                 TaxRate = 0
-            });
+            });*/
 
             return orderLines;
         }

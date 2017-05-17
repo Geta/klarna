@@ -129,42 +129,46 @@ namespace Klarna.Common.Extensions
             total_discount_amount integer
                 Non - negative minor units. Includes tax.
             */
+            
+            // All excluding tax
+            var unitPrice = lineItem.PlacedPrice; 
+            var totalPriceWithoutDiscount = lineItem.PlacedPrice * lineItem.Quantity;
+            var extendedPrice = lineItem.GetExtendedPrice(currency).Amount;
+            var discountAmount = (totalPriceWithoutDiscount - extendedPrice);
 
-            var placedPriceExcludingTax = lineItem.PlacedPrice;
-            var totalDiscountExcludingTax = lineItem.GetEntryDiscount();
-            (decimal taxForLineItem, decimal taxPercentage) = GetTaxForLineItem(lineItem.PlacedPrice, lineItem, market, shipment);
-            var totalDiscount = totalDiscountExcludingTax * (100 + taxPercentage) / 100;
+            // Tax value
+            var taxValues = GetTaxForLineItem(lineItem, market, shipment);
+            var taxPercentage = taxValues
+                .Where(x => x.TaxType == TaxType.SalesTax)
+                .Sum(x => (decimal)x.Percentage);
 
             // Includes tax, excludes discount. (max value: 100000000)
-            var unitPrice = AmountHelper.GetAmount(placedPriceExcludingTax + taxForLineItem);
+            var unitPriceIncludingTax = AmountHelper.GetAmount(PriceIncludingTax(unitPrice, taxValues, TaxType.SalesTax));
             // Non - negative minor units. Includes tax
-            int totalDiscountAmount = AmountHelper.GetAmount(totalDiscount);
+            int totalDiscountAmount = AmountHelper.GetAmount(PriceIncludingTax(discountAmount, taxValues, TaxType.SalesTax));
             // Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within quantity. (max value: 100000000)
-            var totalAmount = (int)(lineItem.Quantity * unitPrice - totalDiscountAmount);
+            var totalAmount = AmountHelper.GetAmount(PriceIncludingTax(extendedPrice, taxValues, TaxType.SalesTax));
             // Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
             var taxRate = AmountHelper.GetAmount(taxPercentage);
             // Must be within 1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
-            var totalTaxAmount = totalAmount - totalAmount * 10000 / (10000 + taxRate);
+            var totalTaxAmount = AmountHelper.GetAmount(GetTaxes(extendedPrice, taxValues, TaxType.SalesTax));
 
-            return (unitPrice, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
+            return (unitPriceIncludingTax, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
         }
 
-        private static (decimal taxForLineItem, decimal taxPercentage) GetTaxForLineItem(decimal unitPrice, ILineItem lineItem, IMarket market, IShipment shipment)
+        private static decimal PriceIncludingTax(decimal basePrice, IEnumerable<ITaxValue> taxes, TaxType taxtype)
         {
-            decimal taxForLineItem = 0;
-            decimal taxPercentage = 0;
+            return basePrice + GetTaxes(basePrice, taxes, taxtype);
+        }
 
+        private static ITaxValue[] GetTaxForLineItem(ILineItem lineItem, IMarket market, IShipment shipment)
+        {
             if (TryGetTaxCategoryId(lineItem, out int taxCategoryId) &&
                 TryGetTaxValues(market, shipment, taxCategoryId, out ITaxValue[] taxValues))
             {
-                taxForLineItem = GetTaxes(taxValues, TaxType.SalesTax, unitPrice);
-
-                taxPercentage = taxValues
-                    .Where(x => x.TaxType == TaxType.SalesTax)
-                    .Average(x => (decimal)x.Percentage);
-
+                return taxValues;
             }
-            return (taxForLineItem, taxPercentage);
+            return Enumerable.Empty<ITaxValue>().ToArray();
         }
 
         private static bool TryGetTaxCategoryId(ILineItem item, out int taxCategoryId)
@@ -201,11 +205,11 @@ namespace Klarna.Common.Extensions
             return taxValues.Any();
         }
 
-        private static Decimal GetTaxes(IEnumerable<ITaxValue> taxes, TaxType taxtype, Decimal basePrice)
+        private static decimal GetTaxes(decimal basePrice, IEnumerable<ITaxValue> taxes, TaxType taxtype)
         {
             return taxes
                 .Where(x => x.TaxType == taxtype)
-                .Sum(x => basePrice * (Decimal)x.Percentage * new Decimal(1, 0, 0, false, 2));
+                .Sum(x => basePrice * (decimal)x.Percentage * new decimal(1, 0, 0, false, 2));
         }
 
     }

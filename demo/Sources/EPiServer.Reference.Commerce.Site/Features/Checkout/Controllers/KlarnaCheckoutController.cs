@@ -172,7 +172,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 return purchaseOrder;
             }
-
+            
             // Check if we still have a cart and can create an order
             var cart = _orderRepository.Load<ICart>(orderGroupId);
             var cartKlarnaOrderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
