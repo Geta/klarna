@@ -39,6 +39,10 @@ namespace Klarna.Common.Helpers
 
         public static string GetContinentByCountry(string countryCode)
         {
+            if (string.IsNullOrEmpty(countryCode))
+            {
+                return String.Empty;;
+            }
             var continents = GeoLocationProvider.Service.GetContinentCodes();
 
             if (countryCode.Length == 3)

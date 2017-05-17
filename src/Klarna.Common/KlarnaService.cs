@@ -55,6 +55,8 @@ namespace Klarna.Common
             var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
 
+            var includedTaxesOnLineItems = CountryCodeHelper.GetContinentByCountry(shipment.ShippingAddress?.CountryCode).Equals("NA", StringComparison.InvariantCultureIgnoreCase);
+
             // Line items
             foreach (var lineItem in cart.GetAllLineItems())
             {
@@ -65,38 +67,24 @@ namespace Klarna.Common
             // Shipment
             if (shipment != null && orderGroupTotals.ShippingTotal.Amount > 0)
             {
-                //var shipmentOrderLine = shipment.GetOrderLine(orderGroupTotals);
-                var shipmentOrderLine = shipment.GetOrderLine(cart, orderGroupTotals);
+                var shipmentOrderLine = shipment.GetOrderLine(cart, orderGroupTotals, includedTaxesOnLineItems);
                 orderLines.Add(shipmentOrderLine);
             }
 
-            // Sales tax
-            /*orderLines.Add(new PatchedOrderLine()
+            if (!includedTaxesOnLineItems)
             {
-                Type = "sales_tax",
-                Name = "Sales Tax",
-                Quantity = 1,
-                TotalAmount = AmountHelper.GetAmount(orderGroupTotals.TaxTotal),
-                UnitPrice = AmountHelper.GetAmount(orderGroupTotals.TaxTotal),
-                TotalTaxAmount = 0,
-                TaxRate = 0
-            });*/
-
-            // Order level discounts
-            /*var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
-            var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
-            var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
-            orderLines.Add(new PatchedOrderLine()
-            {
-                Type = "discount",
-                Name = "Discount",
-                Quantity = 1,
-                TotalAmount = -AmountHelper.GetAmount(totalDiscount),
-                UnitPrice = -AmountHelper.GetAmount(totalDiscount),
-                TotalTaxAmount = 0,
-                TaxRate = 0
-            });*/
-
+                // Sales tax
+                orderLines.Add(new PatchedOrderLine()
+                {
+                    Type = "sales_tax",
+                    Name = "Sales Tax",
+                    Quantity = 1,
+                    TotalAmount = AmountHelper.GetAmount(orderGroupTotals.TaxTotal),
+                    UnitPrice = AmountHelper.GetAmount(orderGroupTotals.TaxTotal),
+                    TotalTaxAmount = 0,
+                    TaxRate = 0
+                });
+            }
             return orderLines;
         }
 
