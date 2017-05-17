@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
-using EPiServer.Commerce.Order.Internal;
 using EPiServer.Core;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
@@ -13,7 +10,6 @@ using Klarna.Common.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
-using Mediachase.Commerce.Catalog.Managers;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.Common.Extensions
@@ -24,6 +20,7 @@ namespace Klarna.Common.Extensions
         private static Injected<ReferenceConverter> _referenceConverter;
         private static Injected<UrlResolver> _urlResolver;
         private static Injected<IContentRepository> _contentRepository;
+        private static Injected<ILineItemTaxCalculator> _lineItemTaxCalculator;
 #pragma warning restore 649
 
         private static string GetVariantImage(ContentReference contentReference)
@@ -102,7 +99,7 @@ namespace Klarna.Common.Extensions
             orderLine.TotalTaxAmount = totalTaxAmount;
             // TODO Tax, check if it also works with payments
             orderLine.TaxRate = taxRate;
-            
+
             if (includeProductAndImageUrl)
             {
                 var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Code);
@@ -129,88 +126,32 @@ namespace Klarna.Common.Extensions
             total_discount_amount integer
                 Non - negative minor units. Includes tax.
             */
-            
+            var taxType = TaxType.SalesTax;
+
             // All excluding tax
-            var unitPrice = lineItem.PlacedPrice; 
+            var unitPrice = lineItem.PlacedPrice;
             var totalPriceWithoutDiscount = lineItem.PlacedPrice * lineItem.Quantity;
             var extendedPrice = lineItem.GetExtendedPrice(currency).Amount;
             var discountAmount = (totalPriceWithoutDiscount - extendedPrice);
 
             // Tax value
-            var taxValues = GetTaxForLineItem(lineItem, market, shipment);
+            var taxValues = _lineItemTaxCalculator.Service.GetTaxValuesForLineItem(lineItem, market, shipment);
             var taxPercentage = taxValues
-                .Where(x => x.TaxType == TaxType.SalesTax)
+                .Where(x => x.TaxType == taxType)
                 .Sum(x => (decimal)x.Percentage);
 
             // Includes tax, excludes discount. (max value: 100000000)
-            var unitPriceIncludingTax = AmountHelper.GetAmount(PriceIncludingTax(unitPrice, taxValues, TaxType.SalesTax));
+            var unitPriceIncludingTax = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.PriceIncludingTax(unitPrice, taxValues, taxType));
             // Non - negative minor units. Includes tax
-            int totalDiscountAmount = AmountHelper.GetAmount(PriceIncludingTax(discountAmount, taxValues, TaxType.SalesTax));
+            int totalDiscountAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.PriceIncludingTax(discountAmount, taxValues, taxType));
             // Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within quantity. (max value: 100000000)
-            var totalAmount = AmountHelper.GetAmount(PriceIncludingTax(extendedPrice, taxValues, TaxType.SalesTax));
+            var totalAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.PriceIncludingTax(extendedPrice, taxValues, taxType));
             // Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
             var taxRate = AmountHelper.GetAmount(taxPercentage);
             // Must be within 1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
-            var totalTaxAmount = AmountHelper.GetAmount(GetTaxes(extendedPrice, taxValues, TaxType.SalesTax));
+            var totalTaxAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.GetTaxes(extendedPrice, taxValues, taxType));
 
             return (unitPriceIncludingTax, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
         }
-
-        private static decimal PriceIncludingTax(decimal basePrice, IEnumerable<ITaxValue> taxes, TaxType taxtype)
-        {
-            return basePrice + GetTaxes(basePrice, taxes, taxtype);
-        }
-
-        private static ITaxValue[] GetTaxForLineItem(ILineItem lineItem, IMarket market, IShipment shipment)
-        {
-            if (TryGetTaxCategoryId(lineItem, out int taxCategoryId) &&
-                TryGetTaxValues(market, shipment, taxCategoryId, out ITaxValue[] taxValues))
-            {
-                return taxValues;
-            }
-            return Enumerable.Empty<ITaxValue>().ToArray();
-        }
-
-        private static bool TryGetTaxCategoryId(ILineItem item, out int taxCategoryId)
-        {
-            var contentLink = _referenceConverter.Service.GetContentLink(item.Code);
-            if (ContentReference.IsNullOrEmpty(contentLink))
-            {
-                taxCategoryId = 0;
-                return false;
-            }
-            var pricing = _contentRepository.Service.Get<EntryContentBase>(contentLink) as IPricing;
-            if (pricing?.TaxCategoryId == null)
-            {
-                taxCategoryId = 0;
-                return false;
-            }
-            taxCategoryId = pricing.TaxCategoryId.Value;
-            return true;
-        }
-
-        private static bool TryGetTaxValues(IMarket market, IShipment shipment, int taxCategoryId, out ITaxValue[] taxValues)
-        {
-            if (shipment == null)
-            {
-                taxValues = Enumerable.Empty<ITaxValue>().ToArray();
-                return false;
-            }
-
-            var categoryNameById = CatalogTaxManager.GetTaxCategoryNameById(taxCategoryId);
-
-            var shipmentAddress = shipment.ShippingAddress ?? new OrderAddress { CountryCode = market.Countries.FirstOrDefault() };
-
-            taxValues = OrderContext.Current.GetTaxes(Guid.Empty, categoryNameById, market.DefaultLanguage.Name, shipmentAddress).ToArray();
-            return taxValues.Any();
-        }
-
-        private static decimal GetTaxes(decimal basePrice, IEnumerable<ITaxValue> taxes, TaxType taxtype)
-        {
-            return taxes
-                .Where(x => x.TaxType == taxtype)
-                .Sum(x => basePrice * (decimal)x.Percentage * new decimal(1, 0, 0, false, 2));
-        }
-
     }
 }

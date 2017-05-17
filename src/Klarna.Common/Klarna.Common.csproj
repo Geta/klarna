@@ -204,7 +204,9 @@
     <Compile Include="ConnectionConfiguration.cs" />
     <Compile Include="Extensions\AddressExtensions.cs" />
     <Compile Include="Extensions\CustomerAddressExtensions.cs" />
+    <Compile Include="Extensions\ILineItemTaxCalculator.cs" />
     <Compile Include="Extensions\LineItemExtensions.cs" />
+    <Compile Include="Extensions\LineItemTaxCalculator.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
     <Compile Include="Extensions\ShipmentExtensions.cs" />
     <Compile Include="Helpers\AmountHelper.cs" />
