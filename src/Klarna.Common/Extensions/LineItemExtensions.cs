@@ -36,42 +36,28 @@ namespace Klarna.Common.Extensions
 
         public static OrderLine GetOrderLine(this ILineItem lineItem, bool includeProductAndImageUrl = false)
         {
-            var orderLine = new PatchedOrderLine
-            {
-                Quantity = (int)lineItem.Quantity,
-                Name = lineItem.DisplayName,
-                Reference = lineItem.Code,
-                Type = "physical"
-            };
-
-            if (string.IsNullOrEmpty(orderLine.Name))
-            {
-                var entry = lineItem.GetEntryContent();
-                if (entry != null)
-                {
-                    orderLine.Name = entry.DisplayName;
-                }
-            }
-            // Prices should include tax?
-            orderLine.UnitPrice = AmountHelper.GetAmount(lineItem.PlacedPrice);
-            orderLine.TotalAmount = AmountHelper.GetAmount(lineItem.PlacedPrice * lineItem.Quantity);
-            orderLine.TotalDiscountAmount = 0;
-            orderLine.TotalTaxAmount = 0;
-            orderLine.TaxRate = 0;
-
-            if (includeProductAndImageUrl)
-            {
-                var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Code);
-                if (!ContentReference.IsNullOrEmpty(contentLink))
-                {
-                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink);
-                    orderLine.ProductImageUrl = GetVariantImage(contentLink);
-                }
-            }
-            return orderLine;
+            return GetOrderLine(
+                lineItem,
+                includeProductAndImageUrl,
+                AmountHelper.GetAmount(lineItem.PlacedPrice),
+                AmountHelper.GetAmount(lineItem.PlacedPrice * lineItem.Quantity),
+                0, 0, 0);
         }
 
-        public static OrderLine GetOrderLine(this ILineItem lineItem, IMarket market, IShipment shipment, Currency currency, bool includeProductAndImageUrl = false)
+        public static OrderLine GetOrderLineWithTax(this ILineItem lineItem, IMarket market, IShipment shipment, Currency currency, bool includeProductAndImageUrl = false)
+        {
+            (int unitPrice, int taxRate, int totalDiscountAmount, int totalAmount, int totalTaxAmount) = GetPrices(lineItem, market, shipment, currency);
+            return GetOrderLine(
+                lineItem, 
+                includeProductAndImageUrl, 
+                unitPrice, 
+                totalAmount,
+                totalDiscountAmount,
+                totalTaxAmount, 
+                taxRate);
+        }
+
+        private static OrderLine GetOrderLine(ILineItem lineItem, bool includeProductAndImageUrl, int unitPrice, int totalAmount, int totalDiscountAmount, int totalTaxAmount, int taxRate)
         {
             var orderLine = new PatchedOrderLine
             {
@@ -90,14 +76,10 @@ namespace Klarna.Common.Extensions
                 }
             }
 
-            (int unitPrice, int taxRate, int totalDiscountAmount, int totalAmount, int totalTaxAmount) = GetPrices(lineItem, market, shipment, currency);
-
-
             orderLine.UnitPrice = unitPrice;
-            orderLine.TotalDiscountAmount = totalDiscountAmount;
             orderLine.TotalAmount = totalAmount;
+            orderLine.TotalDiscountAmount = totalDiscountAmount;
             orderLine.TotalTaxAmount = totalTaxAmount;
-            // TODO Tax, check if it also works with payments
             orderLine.TaxRate = taxRate;
 
             if (includeProductAndImageUrl)
@@ -131,7 +113,7 @@ namespace Klarna.Common.Extensions
             // All excluding tax
             var unitPrice = lineItem.PlacedPrice;
             var totalPriceWithoutDiscount = lineItem.PlacedPrice * lineItem.Quantity;
-            var extendedPrice = lineItem.GetExtendedPrice(currency).Amount;
+            var extendedPrice = lineItem.GetDiscountedPrice(currency).Amount;
             var discountAmount = (totalPriceWithoutDiscount - extendedPrice);
 
             // Tax value
