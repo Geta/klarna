@@ -130,29 +130,29 @@ namespace Klarna.Common
                 orderLines.Add(shipmentOrderLine);
             }
 
-            // Order level discounts with tax
-            var totalOrderAmountWithoutDiscount = orderLines.Where(x => x.TotalAmount.HasValue).Sum(x => x.TotalAmount.Value);
-            var totalOrderAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.Total.Amount);
-            var orderLevelDiscountIncludingTax = totalOrderAmountWithoutDiscount - totalOrderAmountWithDiscount;
-
             // Without tax
             var orderLevelDiscount = AmountHelper.GetAmount(cart.GetOrderDiscountTotal(cart.Currency));
-
-            // Tax
-            var discountTax = (orderLevelDiscountIncludingTax - orderLevelDiscount);
-
-
-            orderLines.Add(new PatchedOrderLine()
+            if (orderLevelDiscount > 0)
             {
-                Type = "discount",
-                Name = "Discount",
-                Quantity = 1,
-                TotalAmount = orderLevelDiscountIncludingTax * -1,
-                UnitPrice = orderLevelDiscountIncludingTax * -1,
-                TotalTaxAmount = discountTax * -1,
-                TaxRate = AmountHelper.GetAmount(((decimal)discountTax) / orderLevelDiscount * 100)
-            });
+                // Order level discounts with tax
+                var totalOrderAmountWithoutDiscount = orderLines.Where(x => x.TotalAmount.HasValue).Sum(x => x.TotalAmount.Value);
+                var totalOrderAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.Total.Amount);
+                var orderLevelDiscountIncludingTax = totalOrderAmountWithoutDiscount - totalOrderAmountWithDiscount;
+                
+                // Tax
+                var discountTax = (orderLevelDiscountIncludingTax - orderLevelDiscount);
 
+                orderLines.Add(new PatchedOrderLine()
+                {
+                    Type = "discount",
+                    Name = "Discount",
+                    Quantity = 1,
+                    TotalAmount = orderLevelDiscountIncludingTax * -1,
+                    UnitPrice = orderLevelDiscountIncludingTax * -1,
+                    TotalTaxAmount = discountTax * -1,
+                    TaxRate = AmountHelper.GetAmount(((decimal) discountTax) / orderLevelDiscount * 100)
+                });
+            }
             return orderLines;
         }
 
