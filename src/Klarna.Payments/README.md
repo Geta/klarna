@@ -34,12 +34,14 @@ For the Commerce Manager site run the following package:
 
 Login into Commerce Manager and open **Administration -> Order System -> Payments**. Then click **New** and in **Overview** tab fill:
 
-- **Name**
-- **System Keyword** - KlarnaPayments
-- **Language**
-- **Class Name** - choose **Klarna.Payments.KlarnaPaymentGateway**
-- **Payment Class** - choose **Mediachase.Commerce.Orders.OtherPayment**
+- **Name(*)**
+- **System Keyword(*)** - KlarnaPayments
+- **Language(*)** - allows a specific language to be specified for the payment gateway
+- **Class Name(*)** - choose **Klarna.Payments.KlarnaPaymentGateway**
+- **Payment Class(*)** - choose **Mediachase.Commerce.Orders.OtherPayment**
 - **IsActive** - **Yes**
+
+(*) mandatory
 - select shipping methods available for this payment
 
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
@@ -48,7 +50,7 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 
 **Connection string**
 
-Connection string configurations for the connection with the Klarna APi. See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls
+Connection string configurations for the connection with the Klarna APi. See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls. Klarna API requires HTTPS.
 
 **Widget settings**
 
