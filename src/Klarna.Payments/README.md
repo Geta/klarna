@@ -35,7 +35,7 @@ For the Commerce Manager site run the following package:
 Login into Commerce Manager and open **Administration -> Order System -> Payments**. Then click **New** and in **Overview** tab fill:
 
 - **Name(*)**
-- **System Keyword(*)** - KlarnaPayments
+- **System Keyword(*)** - KlarnaPayments (the integration will not work when something else is entered in this field)
 - **Language(*)** - allows a specific language to be specified for the payment gateway
 - **Class Name(*)** - choose **Klarna.Payments.KlarnaPaymentGateway**
 - **Payment Class(*)** - choose **Mediachase.Commerce.Orders.OtherPayment**
