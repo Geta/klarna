@@ -467,6 +467,7 @@
     <Compile Include="Features\Cart\ViewModelFactories\ShipmentViewModelFactory.cs" />
     <Compile Include="Features\Checkout\Controllers\KlarnaCheckoutController.cs" />
     <Compile Include="Features\Checkout\Controllers\KlarnaPaymentController.cs" />
+    <Compile Include="Features\Checkout\DemoCheckoutOrderDataBuilder.cs" />
     <Compile Include="Features\Checkout\DemoSessionBuilder.cs" />
     <Compile Include="Features\Checkout\Services\AnonymousPurchaseValidation.cs" />
     <Compile Include="Features\Checkout\Services\AuthenticatedPurchaseValidation.cs" />
