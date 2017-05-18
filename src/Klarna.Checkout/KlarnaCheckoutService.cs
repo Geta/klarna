@@ -98,7 +98,7 @@ namespace Klarna.Checkout
         public CheckoutOrderData CreateOrder(ICart cart)
         {
             var checkout = Client.NewCheckoutOrder();
-            var orderData = GetCheckoutOrderData(cart);
+            var orderData = GetCheckoutOrderData(cart, PaymentMethodDto);
 
             // KCO_4: In case of signed in user the email address and default address details will be prepopulated by data from Merchant system.
             var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
@@ -148,7 +148,7 @@ namespace Klarna.Checkout
         public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
         {
             var checkout = Client.NewCheckoutOrder(orderId);
-            var orderData = GetCheckoutOrderData(cart);
+            var orderData = GetCheckoutOrderData(cart, PaymentMethodDto);
 
             try
             {
@@ -185,10 +185,11 @@ namespace Klarna.Checkout
             }
         }
 
-        private CheckoutOrderData GetCheckoutOrderData(ICart cart)
+        private CheckoutOrderData GetCheckoutOrderData(ICart cart, PaymentMethodDto paymentMethodDto)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             var shipment = cart.GetFirstShipment();
+            
             var orderData = new PatchedCheckoutOrderData
             {
                 ShippingCountries = GetCountries().ToList(),
@@ -199,15 +200,26 @@ namespace Klarna.Checkout
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                ShippingOptions = GetShippingOptions(cart),
                 MerchantUrls = GetMerchantUrls(cart),
                 OrderLines = GetOrderLines(cart, totals),
                 ShippingAddress = shipment?.ShippingAddress?.ToAddress()
-            } as CheckoutOrderData;
-            
-            if (PaymentMethodDto != null)
+            };
+
+            // KCO_6 Setting to let the user select shipping options in the iframe
+            var shippingOptionsInIFrame = bool.Parse(paymentMethodDto.GetParameter(Constants.ShippingOptionsInIFrameField, "true"));
+            orderData.ShippingOptions = shippingOptionsInIFrame
+                ? GetShippingOptions(cart)
+                : Enumerable.Empty<ShippingOption>();
+            // KCO_6 Should not fill SelectedShippingOption 
+            orderData.SelectedShippingOption = shippingOptionsInIFrame || shipment == null
+                ? null
+                : ShippingManager.GetShippingMethod(shipment.ShippingMethodId)
+                    ?.ShippingMethod?.FirstOrDefault()
+                    ?.ToShippingOption();
+
+            if (paymentMethodDto != null)
             {
-                orderData.Options = GetOptions(PaymentMethodDto);
+                orderData.Options = GetOptions(paymentMethodDto);
             }
             return orderData;
         }
@@ -303,7 +315,7 @@ namespace Klarna.Checkout
         public bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
-            var localCheckoutOrderData = GetCheckoutOrderData(cart) as PatchedCheckoutOrderData;
+            var localCheckoutOrderData = GetCheckoutOrderData(cart, PaymentMethodDto) as PatchedCheckoutOrderData;
             return _klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData);
         }
 
@@ -336,16 +348,7 @@ namespace Klarna.Checkout
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
-            return methods.ShippingMethod.Select(method => new ShippingOption
-            {
-                Id = method.ShippingMethodId.ToString(),
-                Name = method.DisplayName,
-                Price = AmountHelper.GetAmount(method.BasePrice),
-                PreSelected = method.IsDefault,
-                TaxAmount = 0,
-                TaxRate = 0,
-                Description = method.Description
-            });
+            return methods.ShippingMethod.Select(method => method.ToShippingOption());
         }
 
         private MerchantUrls GetMerchantUrls(ICart cart)
@@ -372,6 +375,24 @@ namespace Klarna.Checkout
             var countries = CountryManager.GetCountries();
 
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
+        }
+    }
+
+
+    public static class ShippingMethodExtensions
+    {
+        public static ShippingOption ToShippingOption(this ShippingMethodDto.ShippingMethodRow method)
+        {
+            return new ShippingOption
+            {
+                Id = method.ShippingMethodId.ToString(),
+                Name = method.DisplayName,
+                Price = AmountHelper.GetAmount(method.BasePrice),
+                PreSelected = method.IsDefault,
+                TaxAmount = 0,
+                TaxRate = 0,
+                Description = method.Description
+            };
         }
     }
 }

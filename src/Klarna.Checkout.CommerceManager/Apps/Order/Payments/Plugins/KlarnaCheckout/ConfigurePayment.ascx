@@ -84,6 +84,12 @@
             </td>
         </tr>
         <tr>
+            <td class="FormLabelCell">Select shipping option in Klarna Checkout iFrame:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="shippingOptionsInIFrameCheckBox" />
+            </td>
+        </tr>
+        <tr>
             <td class="FormLabelCell">Allow separate shipping address:</td>
             <td class="FormFieldCell">
                 <asp:CheckBox runat="server" ID="allowSeparateShippingAddressCheckBox" />

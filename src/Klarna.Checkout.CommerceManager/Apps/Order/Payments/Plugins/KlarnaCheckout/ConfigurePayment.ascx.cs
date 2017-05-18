@@ -31,6 +31,8 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             txtColorLink.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorLinkField, string.Empty);
             txtRadiusBorder.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetRadiusBorderField, string.Empty);
             txtColorCheckboxCheckmark.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, string.Empty);
+            var shippingOptionsInIFrame = bool.Parse(paymentMethod.GetParameter(Constants.ShippingOptionsInIFrameField, "true"));
+            shippingOptionsInIFrameCheckBox.Checked = shippingOptionsInIFrame;
             var allowSeparateShippingAddress = bool.Parse(paymentMethod.GetParameter(Constants.AllowSeparateShippingAddressField, "false"));
             allowSeparateShippingAddressCheckBox.Checked = allowSeparateShippingAddress;
             var dateOfBirthMandatory = bool.Parse(paymentMethod.GetParameter(Constants.DateOfBirthMandatoryField, "false"));
@@ -81,6 +83,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorLinkField, txtColorLink.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetRadiusBorderField, txtRadiusBorder.Text);
             paymentMethod.SetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, txtColorCheckboxCheckmark.Text);
+            paymentMethod.SetParameter(Constants.ShippingOptionsInIFrameField, (shippingOptionsInIFrameCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.AllowSeparateShippingAddressField, (allowSeparateShippingAddressCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.DateOfBirthMandatoryField, (dateOfBirthMandatoryCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.ShippingDetailsField, txtShippingDetails.Text);

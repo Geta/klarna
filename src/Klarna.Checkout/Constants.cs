@@ -14,6 +14,7 @@
         public const string KlarnaWidgetColorBorderField = "KlarnaWidgetColorBorder";
         public const string KlarnaWidgetRadiusBorderField = "KlarnaWidgetRadiusBorder";
         public const string KlarnaWidgetColorCheckboxCheckmarkField = "KlarnaWidgetColorCheckboxCheckmark";
+        public const string ShippingOptionsInIFrameField = "ShippingOptionsInIFrame";
         public const string AllowSeparateShippingAddressField = "AllowSeparateShippingAddress";
         public const string DateOfBirthMandatoryField = "DateOfBirthMandatory";
         public const string ShippingDetailsField = "ShippingDetails";
