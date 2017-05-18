@@ -4,8 +4,8 @@ EPiServer Klarna payments integration
 ## What is Klarna.Payments?
 
 Klarna.Payments is a library which helps to integrate Klarna Payments as one of the payment options in your EPiServer Commerce sites.
-This library consists of two assemblies: 
-* Klarna.Payments basically the integration between EPiServer and the Klarna Payments API (v3) (https://developers.klarna.com/api/#payments-api)
+This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna: 
+* Klarna.Payments is the integration between EPiServer and the Klarna Payments API (https://developers.klarna.com/api/#payments-api)
 * Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
 
 ### Payment process
@@ -60,9 +60,9 @@ After payment is completed the confirmation url must be called. This can be done
 ```
 _klarnaService.RedirectToConfirmationUrl(purchaseOrder);
 ```
-Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be send to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
+Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
-The 'PreAssement' field indicates if customer information should be send to Klarna. Klarna will review this information to verify if the customer can buy via Klarna. This setting can be enabled per country. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
+The 'PreAssement' field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This setting can be enabled per country. This option is only available in the U.S. market and will be ignored for all other markets. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
 
 ```
 sessionRequest.Customer = new Customer
@@ -88,7 +88,7 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
 - Implement [API controller](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs)
     - [Get personal information](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L39) for the authorization call. See the section 'Call authorize client-side' for more explaination.
     - Check [if the personal information can be shared](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L55). See the section 'Call authorize client-side' for more explaination.
-    - Endpoint for [fraud notifications](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L69) pushed by Klarna. This URL can configured in Commerce Manager, see the 'Configure Commerce Manager' section.
+    - Endpoint for [fraud notifications](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L69) pushed by Klarna. This URL can be configured in Commerce Manager, see the 'Configure Commerce Manager' section.
 - Add [KlarnaPaymentsPaymentMethod.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsPaymentMethod.cshtml) view
 - Add [KlarnaPaymentMethodsConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
 - Create [KlarnaPaymentsPaymentMethod](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs)
@@ -198,7 +198,7 @@ Checkout flow:
 - Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'thruth'), using this session and the authorization token we can create an order in Klarna.
     - If creating an order fails, the authorize request has been tampered with and the payment fails
     
- In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the clarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
+ In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
 
 ### Create order
 The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
