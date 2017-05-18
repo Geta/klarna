@@ -8,9 +8,9 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 
 ### Steps integrated with EPiServer Commerce
 - **Capture** - either partially (multi-shipment) or full capture the payment amount
-- **Release remaining authorization** - release remaining authorization when the payment amount has not been fully captured
+- **Release remaining authorization** - release remaining authorization when the payment amount has not been fully captured. Note: this action should only occur when for example order line 1 is captured and the remaining order lines will not be captured.
 - **Refund** - either partially or full refund an amount
-- **Cancel** - cancel payment
+- **Cancel** - full cancel of an order
 
 ### (*) Other steps only available in the code
 - **Get Klarna order**
@@ -53,7 +53,7 @@ Unfortunately a manual configuration needs to be done in the XML file to make su
 </Block>
 ```
 
-Note: these steps needs to be done each time Commerce Manager is updated. 
+Note: these steps need to be done each time Commerce Manager is updated. 
 
 ### Capture
 Capturing payments is done by completing a shipment in Commerce Manager. Follow these steps to complete a shipment:
@@ -125,7 +125,7 @@ public class DemoRefundBuilder : IRefundBuilder
 ```
 
 ### Cancel
-Whenever an order is cancelled in Commerce Manager the payment gateway is called to alos cancel the payment at Klarna.
+Whenever an order is cancelled in Commerce Manager the payment gateway is called to also cancel the payment at Klarna.
 An order in Commerce Manager can only be can cancelled when the items haven't been shipped yet. 
 ![Cancel order](/docs/screenshots/order-cancel.png?raw=true "Cancel order")
 
