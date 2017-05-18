@@ -62,6 +62,17 @@ namespace Klarna.Checkout
             }
         }
 
+        public Configuration Configuration
+        {
+            get
+            {
+                if (_configuration == null)
+                {
+                    _configuration = GetConfiguration();
+                }
+                return _configuration;
+            }
+        }
 
         public Client Client
         {
@@ -376,23 +387,35 @@ namespace Klarna.Checkout
 
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
         }
-    }
 
-
-    public static class ShippingMethodExtensions
-    {
-        public static ShippingOption ToShippingOption(this ShippingMethodDto.ShippingMethodRow method)
+        private Configuration GetConfiguration()
         {
-            return new ShippingOption
+            var configuration = new Configuration();
+
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod != null)
             {
-                Id = method.ShippingMethodId.ToString(),
-                Name = method.DisplayName,
-                Price = AmountHelper.GetAmount(method.BasePrice),
-                PreSelected = method.IsDefault,
-                TaxAmount = 0,
-                TaxRate = 0,
-                Description = method.Description
-            };
+                configuration.ShippingOptionsInIFrame = bool.Parse(paymentMethod.GetParameter(Constants.ShippingOptionsInIFrameField, "true"));
+                configuration.AllowSeparateShippingAddress = bool.Parse(paymentMethod.GetParameter(Constants.AllowSeparateShippingAddressField, "false"));
+                configuration.DateOfBirthMandatory = bool.Parse(paymentMethod.GetParameter(Constants.DateOfBirthMandatoryField, "false"));
+                configuration.ShippingDetailsText = paymentMethod.GetParameter(Constants.ShippingDetailsField, string.Empty);
+                configuration.TitleMandatory = bool.Parse(paymentMethod.GetParameter(Constants.TitleMandatoryField, "false"));
+                configuration.ShowSubtotalDetail = bool.Parse(paymentMethod.GetParameter(Constants.ShowSubtotalDetailField, "false"));
+                configuration.RequireValidateCallbackSuccess = bool.Parse(paymentMethod.GetParameter(Constants.RequireValidateCallbackSuccessField, "false"));
+                configuration.AdditionalCheckboxText = paymentMethod.GetParameter(Constants.AdditionalCheckboxTextField, string.Empty);
+                configuration.AdditionalCheckboxDefaultChecked = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxDefaultCheckedField, "false"));
+                configuration.AdditionalCheckboxRequired = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxRequiredField, "false"));
+
+                configuration.ConfirmationUrl = paymentMethod.GetParameter(Constants.ConfirmationUrlField, string.Empty);
+                configuration.TermsUrl = paymentMethod.GetParameter(Constants.TermsUrlField, string.Empty);
+                configuration.CheckoutUrl = paymentMethod.GetParameter(Constants.CheckoutUrlField, string.Empty);
+                configuration.PushUrl = paymentMethod.GetParameter(Constants.PushUrlField, string.Empty);
+                configuration.NotificationUrl = paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
+                configuration.ShippingOptionUpdateUrl = paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField, string.Empty);
+                configuration.AddressUpdateUrl = paymentMethod.GetParameter(Constants.AddressUpdateUrlField, string.Empty);
+                configuration.OrderValidationUrl = paymentMethod.GetParameter(Constants.OrderValidationUrlField, string.Empty);
+            }
+            return configuration;
         }
     }
 }

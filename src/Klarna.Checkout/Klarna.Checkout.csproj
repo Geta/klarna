@@ -194,6 +194,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />
@@ -213,6 +214,7 @@
     <Compile Include="Models\ShippingOptionUpdateRequest.cs" />
     <Compile Include="Models\ShippingOptionUpdateResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShippingMethodExtensions.cs" />
     <Compile Include="Steps\AuthorizePaymentStep.cs" />
   </ItemGroup>
   <ItemGroup>
