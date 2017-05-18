@@ -34,7 +34,8 @@ namespace Klarna.Checkout
 
         private Client _client;
         private PaymentMethodDto _paymentMethodDto;
-        
+        private Configuration _configuration;
+
         public KlarnaCheckoutService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
@@ -217,16 +218,19 @@ namespace Klarna.Checkout
             };
 
             // KCO_6 Setting to let the user select shipping options in the iframe
-            var shippingOptionsInIFrame = bool.Parse(paymentMethodDto.GetParameter(Constants.ShippingOptionsInIFrameField, "true"));
-            orderData.ShippingOptions = shippingOptionsInIFrame
-                ? GetShippingOptions(cart)
-                : Enumerable.Empty<ShippingOption>();
-            // KCO_6 Should not fill SelectedShippingOption 
-            orderData.SelectedShippingOption = shippingOptionsInIFrame || shipment == null
-                ? null
-                : ShippingManager.GetShippingMethod(shipment.ShippingMethodId)
-                    ?.ShippingMethod?.FirstOrDefault()
-                    ?.ToShippingOption();
+            if (Configuration.ShippingOptionsInIFrame)
+            {
+                orderData.ShippingOptions = GetShippingOptions(cart);
+            }
+            else 
+            {
+                if (shipment != null)
+                {
+                    orderData.SelectedShippingOption = ShippingManager.GetShippingMethod(shipment.ShippingMethodId)
+                        ?.ShippingMethod?.FirstOrDefault()
+                        ?.ToShippingOption();
+                }
+            }
 
             if (paymentMethodDto != null)
             {
@@ -359,7 +363,21 @@ namespace Klarna.Checkout
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
-            return methods.ShippingMethod.Select(method => method.ToShippingOption());
+            var shippingOptions = methods.ShippingMethod.Select(method => method.ToShippingOption()).ToList();
+            var shipment = cart.GetFirstShipment();
+            if (shipment == null)
+            {
+                return shippingOptions;
+            }
+
+            // Try to preselect a shipping option
+            var selectedShipment =
+                shippingOptions.FirstOrDefault(x => x.Id.Equals(shipment.ShippingMethodId.ToString()));
+            if (selectedShipment != null)
+            {
+                selectedShipment.PreSelected = true;
+            }
+            return shippingOptions;
         }
 
         private MerchantUrls GetMerchantUrls(ICart cart)
