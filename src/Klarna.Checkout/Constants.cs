@@ -24,6 +24,9 @@
         public const string AdditionalCheckboxTextField = "AdditionalCheckboxText";
         public const string AdditionalCheckboxDefaultCheckedField = "AdditionalCheckboxDefaultChecked";
         public const string AdditionalCheckboxRequiredField = "AdditionalCheckboxRequired";
+        public const string SendShippingCountriesField = "SendShippingCountries";
+        public const string PrefillAddressField = "PrefillAddress";
+        public const string SendShippingOptionsPriorAddressesField = "SendShippingOptionsPriorAddresses";
 
         public const string ConfirmationUrlField = "ConfirmationUrl";
         public const string TermsUrlField = "TermsUrl";

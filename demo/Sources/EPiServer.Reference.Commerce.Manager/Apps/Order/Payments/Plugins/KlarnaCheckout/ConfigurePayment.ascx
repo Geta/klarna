@@ -84,6 +84,18 @@
             </td>
         </tr>
         <tr>
+            <td class="FormLabelCell">Shipping details:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtShippingDetails" />
+            </td>
+        </tr>
+        <tr>
+         <td class="FormLabelCell">Select shipping option in Klarna Checkout iFrame:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="shippingOptionsInIFrameCheckBox" />
+            </td>
+        </tr>
+        <tr>
             <td class="FormLabelCell">Allow separate shipping address:</td>
             <td class="FormFieldCell">
                 <asp:CheckBox runat="server" ID="allowSeparateShippingAddressCheckBox" />
@@ -93,12 +105,6 @@
             <td class="FormLabelCell">Date of birth mandatory:</td>
             <td class="FormFieldCell">
                 <asp:CheckBox runat="server" ID="dateOfBirthMandatoryCheckBox" />
-            </td>
-        </tr>
-        <tr>
-            <td class="FormLabelCell">Shipping details:</td>
-            <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtShippingDetails" />
             </td>
         </tr>
          <tr>
@@ -114,11 +120,30 @@
             </td>
         </tr>
         <tr>
-            <td class="FormLabelCell">Require validate callback success:</td>
+            <td class="FormLabelCell">Send shipping countries:</td>
             <td class="FormFieldCell">
-                <asp:CheckBox runat="server" ID="requireValidateCallbackSuccessCheckBox" />
+                <asp:CheckBox runat="server" ID="sendShippingCountriesCheckBox" />
             </td>
         </tr>
+        <tr>
+            <td class="FormLabelCell">Prefill addresses:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="prefillAddressCheckBox" />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Send shipping options prior to filling addresses:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="SendShippingOptionsPriorAddressesCheckBox" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+    
+<h2>Klarna Widget additional checkbox</h2>
+    
+<table class="DataForm">
+    <tbody>
         <tr>
             <td class="FormLabelCell">Additional checkbox text:</td>
             <td class="FormFieldCell">
@@ -140,7 +165,7 @@
     </tbody>
 </table>
     
-<h2>Other setting</h2>
+<h2>Merchant URL's</h2>
 
 <table class="DataForm">
     <tbody>
@@ -198,6 +223,12 @@
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtOrderValidationUrl" />
                 <asp:RequiredFieldValidator ID="requiredOrderValidationUrl" runat="server" ControlToValidate="txtOrderValidationUrl" ErrorMessage="Order validation URL is required." />
+            </td>
+        </tr>
+        <tr>
+            <td class="FormLabelCell">Require validate callback success:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="requireValidateCallbackSuccessCheckBox" />
             </td>
         </tr>
     </tbody>

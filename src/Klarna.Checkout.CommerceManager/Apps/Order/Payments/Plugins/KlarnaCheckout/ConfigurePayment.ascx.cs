@@ -42,8 +42,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             titleMandatoryCheckBox.Checked = titleMandatory;
             var showSubtotalDetail = bool.Parse(paymentMethod.GetParameter(Constants.ShowSubtotalDetailField, "false"));
             showSubtotalDetailCheckBox.Checked = showSubtotalDetail;
-            var requireValidateCallbackSuccess = bool.Parse(paymentMethod.GetParameter(Constants.RequireValidateCallbackSuccessField, "false"));
-            requireValidateCallbackSuccessCheckBox.Checked = requireValidateCallbackSuccess;
+
+            var sendShippingCountries = bool.Parse(paymentMethod.GetParameter(Constants.SendShippingCountriesField, "false"));
+            sendShippingCountriesCheckBox.Checked = sendShippingCountries;
+            var prefillAddress = bool.Parse(paymentMethod.GetParameter(Constants.PrefillAddressField, "false"));
+            prefillAddressCheckBox.Checked = prefillAddress;
+            var sendShippingOptionsPriorAddresses = bool.Parse(paymentMethod.GetParameter(Constants.SendShippingOptionsPriorAddressesField, "false"));
+            SendShippingOptionsPriorAddressesCheckBox.Checked = sendShippingOptionsPriorAddresses;
+
+
             additionalCheckboxTextTextBox.Text = paymentMethod.GetParameter(Constants.AdditionalCheckboxTextField, string.Empty);
             var additionalCheckboxDefaultChecked = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxDefaultCheckedField, "false"));
             additionalCheckboxDefaultCheckedCheckBox.Checked = additionalCheckboxDefaultChecked;
@@ -58,6 +65,8 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             txtShippingOptionUpdateUrl.Text = paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField, string.Empty);
             txtAddressUpdateUrl.Text = paymentMethod.GetParameter(Constants.AddressUpdateUrlField, string.Empty);
             txtOrderValidationUrl.Text = paymentMethod.GetParameter(Constants.OrderValidationUrlField, string.Empty);
+            var requireValidateCallbackSuccess = bool.Parse(paymentMethod.GetParameter(Constants.RequireValidateCallbackSuccessField, "false"));
+            requireValidateCallbackSuccessCheckBox.Checked = requireValidateCallbackSuccess;
         }
         
         public void SaveChanges(object dto)
@@ -89,7 +98,11 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             paymentMethod.SetParameter(Constants.ShippingDetailsField, txtShippingDetails.Text);
             paymentMethod.SetParameter(Constants.TitleMandatoryField, (titleMandatoryCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.ShowSubtotalDetailField, (showSubtotalDetailCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.RequireValidateCallbackSuccessField, (requireValidateCallbackSuccessCheckBox.Checked ? "true" : "false"));
+
+            paymentMethod.SetParameter(Constants.SendShippingCountriesField, (sendShippingCountriesCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.PrefillAddressField, (prefillAddressCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.AdditionalCheckboxRequiredField, (additionalCheckboxRequiredCheckBox.Checked ? "true" : "false"));
+
             paymentMethod.SetParameter(Constants.AdditionalCheckboxTextField, additionalCheckboxTextTextBox.Text);
             paymentMethod.SetParameter(Constants.AdditionalCheckboxDefaultCheckedField, (additionalCheckboxDefaultCheckedCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.AdditionalCheckboxRequiredField, (additionalCheckboxRequiredCheckBox.Checked ? "true" : "false"));
@@ -102,6 +115,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             paymentMethod.SetParameter(Constants.ShippingOptionUpdateUrlField, txtShippingOptionUpdateUrl.Text);
             paymentMethod.SetParameter(Constants.AddressUpdateUrlField, txtAddressUpdateUrl.Text);
             paymentMethod.SetParameter(Constants.OrderValidationUrlField, txtOrderValidationUrl.Text);
+            paymentMethod.SetParameter(Constants.RequireValidateCallbackSuccessField, (requireValidateCallbackSuccessCheckBox.Checked ? "true" : "false"));
         }
     }
 }

@@ -130,6 +130,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.TextBox txtColorCheckboxCheckmark;
         
         /// <summary>
+        /// txtShippingDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtShippingDetails;
+        
+        /// <summary>
         /// shippingOptionsInIFrameCheckBox control.
         /// </summary>
         /// <remarks>
@@ -157,15 +166,6 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.CheckBox dateOfBirthMandatoryCheckBox;
         
         /// <summary>
-        /// txtShippingDetails control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtShippingDetails;
-        
-        /// <summary>
         /// titleMandatoryCheckBox control.
         /// </summary>
         /// <remarks>
@@ -184,13 +184,31 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.CheckBox showSubtotalDetailCheckBox;
         
         /// <summary>
-        /// requireValidateCallbackSuccessCheckBox control.
+        /// sendShippingCountriesCheckBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox requireValidateCallbackSuccessCheckBox;
+        protected global::System.Web.UI.WebControls.CheckBox sendShippingCountriesCheckBox;
+        
+        /// <summary>
+        /// prefillAddressCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox prefillAddressCheckBox;
+        
+        /// <summary>
+        /// SendShippingOptionsPriorAddressesCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox SendShippingOptionsPriorAddressesCheckBox;
         
         /// <summary>
         /// additionalCheckboxTextTextBox control.
@@ -362,5 +380,14 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredOrderValidationUrl;
+        
+        /// <summary>
+        /// requireValidateCallbackSuccessCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox requireValidateCallbackSuccessCheckBox;
     }
 }
