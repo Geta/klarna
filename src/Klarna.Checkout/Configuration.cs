@@ -12,6 +12,9 @@ namespace Klarna.Checkout
         public string AdditionalCheckboxText { get; set; }
         public bool AdditionalCheckboxDefaultChecked { get; set; }
         public bool AdditionalCheckboxRequired { get; set; }
+        public bool SendShippingCountries { get; set; }
+        public bool PrefillAddress { get; set; }
+        public bool SendShippingOptionsPriorAddresses { get; set; }
         public string ConfirmationUrl { get; set; }
         public string TermsUrl { get; set; }
         public string CheckoutUrl { get; set; }

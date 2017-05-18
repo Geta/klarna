@@ -101,7 +101,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
             paymentMethod.SetParameter(Constants.SendShippingCountriesField, (sendShippingCountriesCheckBox.Checked ? "true" : "false"));
             paymentMethod.SetParameter(Constants.PrefillAddressField, (prefillAddressCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.AdditionalCheckboxRequiredField, (additionalCheckboxRequiredCheckBox.Checked ? "true" : "false"));
+            paymentMethod.SetParameter(Constants.SendShippingOptionsPriorAddressesField, (SendShippingOptionsPriorAddressesCheckBox.Checked ? "true" : "false"));
 
             paymentMethod.SetParameter(Constants.AdditionalCheckboxTextField, additionalCheckboxTextTextBox.Text);
             paymentMethod.SetParameter(Constants.AdditionalCheckboxDefaultCheckedField, (additionalCheckboxDefaultCheckedCheckBox.Checked ? "true" : "false"));

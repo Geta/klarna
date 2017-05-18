@@ -112,28 +112,30 @@ namespace Klarna.Checkout
             var checkout = Client.NewCheckoutOrder();
             var orderData = GetCheckoutOrderData(cart, PaymentMethodDto);
 
-            // KCO_4: In case of signed in user the email address and default address details will be prepopulated by data from Merchant system.
-            var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
-            if (customerContact?.PreferredBillingAddress != null)
+            if (Configuration.PrefillAddress)
             {
-                orderData.BillingAddress = customerContact.PreferredBillingAddress.ToAddress();
-            }
-
-            if (orderData.Options.AllowSeparateShippingAddress.HasValue &&
-                orderData.Options.AllowSeparateShippingAddress.Value)
-            {
-                var shipment = cart.GetFirstShipment();
-                if (shipment.ShippingAddress != null)
+                // KCO_4: In case of signed in user the email address and default address details will be prepopulated by data from Merchant system.
+                var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
+                if (customerContact?.PreferredBillingAddress != null)
                 {
-                    orderData.ShippingAddress = shipment.ShippingAddress.ToAddress();
+                    orderData.BillingAddress = customerContact.PreferredBillingAddress.ToAddress();
+                }
+
+                if (orderData.Options.AllowSeparateShippingAddress.HasValue &&
+                    orderData.Options.AllowSeparateShippingAddress.Value)
+                {
+                    var shipment = cart.GetFirstShipment();
+                    if (shipment.ShippingAddress != null)
+                    {
+                        orderData.ShippingAddress = shipment.ShippingAddress.ToAddress();
+                    }
                 }
             }
-
             try
             {
                 if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
                 {
-                    checkoutOrderDataBuilder.Build(orderData, cart);
+                    checkoutOrderDataBuilder.Build(orderData, cart, Configuration);
                 }
                 checkout.Create(orderData);
                 orderData = checkout.Fetch();
@@ -166,7 +168,7 @@ namespace Klarna.Checkout
             {
                 if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
                 {
-                    checkoutOrderDataBuilder.Build(orderData, cart);
+                    checkoutOrderDataBuilder.Build(orderData, cart, Configuration);
                 }
                 orderData = checkout.Update(orderData);
                 // TODO check pre-set data (update cart?)
@@ -204,7 +206,6 @@ namespace Klarna.Checkout
             
             var orderData = new PatchedCheckoutOrderData
             {
-                ShippingCountries = GetCountries().ToList(),
                 PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = ContentLanguage.PreferredCulture.Name,
@@ -213,22 +214,29 @@ namespace Klarna.Checkout
                 // Non-negative, minor units. The total tax amount of the order.
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 MerchantUrls = GetMerchantUrls(cart),
-                OrderLines = GetOrderLines(cart, totals),
-                ShippingAddress = shipment?.ShippingAddress?.ToAddress()
+                OrderLines = GetOrderLines(cart, totals)
             };
 
-            // KCO_6 Setting to let the user select shipping options in the iframe
-            if (Configuration.ShippingOptionsInIFrame)
+            if (Configuration.SendShippingCountries)
             {
-                orderData.ShippingOptions = GetShippingOptions(cart);
+                orderData.ShippingCountries = GetCountries().ToList();
             }
-            else 
+
+            // KCO_6 Setting to let the user select shipping options in the iframe
+            if (Configuration.SendShippingOptionsPriorAddresses)
             {
-                if (shipment != null)
+                if (Configuration.ShippingOptionsInIFrame)
                 {
-                    orderData.SelectedShippingOption = ShippingManager.GetShippingMethod(shipment.ShippingMethodId)
-                        ?.ShippingMethod?.FirstOrDefault()
-                        ?.ToShippingOption();
+                    orderData.ShippingOptions = GetShippingOptions(cart);
+                }
+                else
+                {
+                    if (shipment != null)
+                    {
+                        orderData.SelectedShippingOption = ShippingManager.GetShippingMethod(shipment.ShippingMethodId)
+                            ?.ShippingMethod?.FirstOrDefault()
+                            ?.ToShippingOption();
+                    }
                 }
             }
 
@@ -423,6 +431,10 @@ namespace Klarna.Checkout
                 configuration.AdditionalCheckboxText = paymentMethod.GetParameter(Constants.AdditionalCheckboxTextField, string.Empty);
                 configuration.AdditionalCheckboxDefaultChecked = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxDefaultCheckedField, "false"));
                 configuration.AdditionalCheckboxRequired = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxRequiredField, "false"));
+
+                configuration.SendShippingCountries = bool.Parse(paymentMethod.GetParameter(Constants.SendShippingCountriesField, "false"));
+                configuration.SendShippingOptionsPriorAddresses = bool.Parse(paymentMethod.GetParameter(Constants.SendShippingOptionsPriorAddressesField, "false"));
+                configuration.PrefillAddress = bool.Parse(paymentMethod.GetParameter(Constants.PrefillAddressField, "false"));
 
                 configuration.ConfirmationUrl = paymentMethod.GetParameter(Constants.ConfirmationUrlField, string.Empty);
                 configuration.TermsUrl = paymentMethod.GetParameter(Constants.TermsUrlField, string.Empty);

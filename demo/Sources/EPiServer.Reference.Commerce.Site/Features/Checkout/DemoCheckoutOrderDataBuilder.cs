@@ -7,15 +7,17 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
     {
-        public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart)
+        public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, Klarna.Checkout.Configuration configuration)
         {
-            // Try to parse address into dutch address lines
-            if (checkoutOrderData.ShippingAddress.Country.Equals("NL"))
+            if (configuration.PrefillAddress)
             {
-                var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingAddress);
-                checkoutOrderData.ShippingAddress = dutchAddress;
+                // Try to parse address into dutch address lines
+                if (checkoutOrderData.ShippingAddress.Country.Equals("NL"))
+                {
+                    var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingAddress);
+                    checkoutOrderData.ShippingAddress = dutchAddress;
+                }
             }
-
             return checkoutOrderData;
         }
 
