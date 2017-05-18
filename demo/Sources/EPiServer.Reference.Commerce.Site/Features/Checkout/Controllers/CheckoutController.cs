@@ -110,16 +110,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             if (viewModel.Payment.SystemName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
             {
                 await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
+                (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
             }
             if (viewModel.Payment.SystemName.Equals(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword))
             {
                 _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+                (viewModel.Payment as KlarnaCheckoutViewModel)?.InitializeValues();
             }
-
-            // Make sure Klarna values are set
-            (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
-            (viewModel.Payment as KlarnaCheckoutViewModel)?.InitializeValues();
-            
             return View(viewModel.ViewName, viewModel);
         }
 
