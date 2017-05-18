@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Editor;
@@ -9,7 +8,9 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Web.Mvc.Html;
 using System.Web.Mvc;
+using EPiServer.Globalization;
 using Klarna.Checkout;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -50,7 +51,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 var viewModel = CreateViewModel(currentPage, order);
                 viewModel.NotificationMessage = notificationMessage;
 
-                if (!string.IsNullOrEmpty(order.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString()))
+                var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
+
+                if (paymentMethod != null && order.GetFirstForm().Payments.Any(x => x.PaymentMethodId == paymentMethod.PaymentMethodId && !string.IsNullOrEmpty(order.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString())))
                 {
                     var klarnaOrder = _klarnaCheckoutService.GetOrder(order.Properties[Constants.KlarnaCheckoutOrderIdField].ToString());
                     viewModel.KlarnaCheckoutHtmlSnippet = klarnaOrder.HtmlSnippet;
