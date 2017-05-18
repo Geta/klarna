@@ -73,13 +73,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
-            // Validate order amount, shipping address
-            if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
-            {
-                var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
-                return ResponseMessage(httpResponseMessage);
-            }
+           
 
             // Validate cart lineitems
             var validationIssues = new Dictionary<ILineItem, ValidationIssue>();
@@ -95,10 +89,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return ResponseMessage(httpResponseMessage);
             }
 
+            // Validate billing address if necessary
             // To return an error like this you need require_validate_callback_success set to true
-            if (checkoutData.ShippingAddress.PostalCode.Equals("94108-2704"))
+            if (checkoutData.BillingAddress.PostalCode.Equals("94108-2704"))
             {
-                var errorResult = new ErrorResult()
+                var errorResult = new ErrorResult
                 {
                     ErrorType = ErrorType.address_error,
                     ErrorText = "Can't ship to postalcode 94108-2704"
@@ -106,13 +101,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResult));
             }
 
-            // Order is valid, create on hold cart in epi
-            cart.Name = OrderStatus.OnHold.ToString();
-            _orderRepository.Save(cart);
-
-            // Create new default cart
-            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, _cartService.DefaultCartName);
-            _orderRepository.Save(newCart);
+            // Validate order amount, shipping address
+            if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
+            {
+                var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
+                httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+                return ResponseMessage(httpResponseMessage);
+            }
 
             return Ok();
         }

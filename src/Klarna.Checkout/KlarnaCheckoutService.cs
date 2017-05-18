@@ -86,7 +86,7 @@ namespace Klarna.Checkout
                         var connectionConfiguration = _connectionFactory.GetConnectionConfiguration(PaymentMethodDto);
                         var connector = ConnectorFactory.Create(connectionConfiguration.Username,
                             connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
-                        
+
                         _client = new Client(connector);
                     }
                 }
@@ -203,7 +203,7 @@ namespace Klarna.Checkout
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             var shipment = cart.GetFirstShipment();
-            
+
             var orderData = new PatchedCheckoutOrderData
             {
                 PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
@@ -314,16 +314,13 @@ namespace Klarna.Checkout
 
         public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
         {
-            if (addressUpdateRequest.SelectedShippingOption != null && Guid.TryParse(addressUpdateRequest.SelectedShippingOption.Id, out Guid shippingMethodGuid))
+            var shipment = cart.GetFirstShipment();
+            if (shipment != null)
             {
-                var shipment = cart.GetFirstForm().Shipments.FirstOrDefault(s => s.ShippingMethodId == shippingMethodGuid);
-                if (shipment != null)
-                {
-                    shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
-                }
+                shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
                 _orderRepository.Save(cart);
             }
-
+            
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             return new AddressUpdateResponse
             {
@@ -331,7 +328,7 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                ShippingOptions = GetShippingOptions(cart)
+                ShippingOptions = Configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart) : Enumerable.Empty<ShippingOption>()
             };
         }
 
@@ -339,7 +336,20 @@ namespace Klarna.Checkout
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
             var localCheckoutOrderData = GetCheckoutOrderData(cart, PaymentMethodDto) as PatchedCheckoutOrderData;
-            return _klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData);
+            if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
+            {
+                return false;
+            }
+
+            // Order is valid, create on hold cart in epi
+            cart.Name = OrderStatus.OnHold.ToString();
+            _orderRepository.Save(cart);
+
+            // Create new default cart
+            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, "Default");
+            _orderRepository.Save(newCart);
+
+            return true;
         }
 
         public void CancelOrder(ICart cart)
