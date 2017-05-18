@@ -1,32 +1,37 @@
-EPiServer Klarna payments integration
+EPiServer Klarna checkout integration
 =============
 
-## What is Klarna.Payments?
+## What is Klarna.Checkout?
 
-Klarna.Payments is a library which helps to integrate Klarna Payments as one of the payment options in your EPiServer Commerce sites.
+Klarna.Checkout is a library which helps to integrate Klarna Checkout as one of the payment options in your EPiServer Commerce sites.
 This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna: 
-* Klarna.Payments is the integration between EPiServer and the Klarna Payments API (https://developers.klarna.com/api/#payments-api)
-* Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
+* Klarna.Checkout is the integration between EPiServer and the Klarna Checkout API (https://developers.klarna.com/api/#checkout-api-order)
+* Klarna.Checkout.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
 
 ### Payment process
-- **Visitor visit's checkout page** - Klarna session is created or updated 
-- **Klarna widget is loaded (payment option)**  
-- **Visitor presses the Purchase button**  - Klarna payment authorize is called client-side 
-- **Klarna: Create order** - When payment authorization is completed then create order (payment gateway) at Klarna
-- **EPiServer: Create purchase order** - Create purchase order in EPiServer
+- **Visitor visit's checkout page** - Klarna order is created or updated 
+- **Klarna checkout widget is loaded (payment option)**  
+    - Visitor can enter shipping and payment information
+    - Callback url's are called for updating information in EPiServer, but also to return information like available shipment option and calculate taxes.
+- **Visitor presses the Place order**
+    - Order validation callback is called for the last checks before finalizing the order
+- **Finalize order at Klarna**
+- **Visitor is redirected to confirmation callback**
+    - Purchase order is created in EPiServer
+- **Visitor is redirected to confirmation page
 - **Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are send to the configured notification URL (configured in Commerce Manager)
 
-More information about the Klarna Payments flow: https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods
+More information about the Klarna Checkout flow: https://developers.klarna.com/en/gb/kco-v3/checkout
 
 ## How to get started?
 
 Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 
-    Install-Package Klarna.Payments
+    Install-Package Klarna.Checkout
 
 For the Commerce Manager site run the following package:
 
-    Install-Package Klarna.Payments.CommerceManager
+    Install-Package Klarna.Checkout.CommerceManager
 
 ## Setup
 
@@ -35,9 +40,9 @@ For the Commerce Manager site run the following package:
 Login into Commerce Manager and open **Administration -> Order System -> Payments**. Then click **New** and in **Overview** tab fill:
 
 - **Name(*)**
-- **System Keyword(*)** - KlarnaPayments (the integration will not work when something else is entered in this field)
+- **System Keyword(*)** - KlarnaCheckout (the integration will not work when something else is entered in this field)
 - **Language(*)** - allows a specific language to be specified for the payment gateway
-- **Class Name(*)** - choose **Klarna.Payments.KlarnaPaymentGateway**
+- **Class Name(*)** - choose **Klarna.Checkout.KlarnaCheckoutGateway**
 - **Payment Class(*)** - choose **Mediachase.Commerce.Orders.OtherPayment**
 - **IsActive** - **Yes**
 
