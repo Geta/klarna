@@ -119,6 +119,10 @@ namespace Klarna.Checkout
 
             try
             {
+                if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
+                {
+                    checkoutOrderDataBuilder.Build(orderData, cart);
+                }
                 checkout.Create(orderData);
                 orderData = checkout.Fetch();
 
@@ -148,6 +152,10 @@ namespace Klarna.Checkout
 
             try
             {
+                if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
+                {
+                    checkoutOrderDataBuilder.Build(orderData, cart);
+                }
                 orderData = checkout.Update(orderData);
                 // TODO check pre-set data (update cart?)
                 var shipment = cart.GetFirstShipment();
