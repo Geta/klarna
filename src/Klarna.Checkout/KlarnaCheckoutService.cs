@@ -132,17 +132,17 @@ namespace Klarna.Checkout
 
                 return orderData;
             }
-            //TODO handle exceptions
             catch (ApiException ex)
             {
                 _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
+                throw;
             }
             catch (WebException ex)
             {
                 _logger.Error(ex.Message, ex);
-            }
 
-            return null;
+                throw;
+            }
         }
 
         public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
@@ -165,16 +165,24 @@ namespace Klarna.Checkout
                 }
                 return orderData;
             }
-            //TODO handle exceptions
             catch (ApiException ex)
             {
+                // Create new session if current one is not found
+                if (ex.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return CreateOrder(cart);
+                }
+
                 _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
+
+                throw;
             }
             catch (WebException ex)
             {
                 _logger.Error(ex.Message, ex);
+
+                throw;
             }
-            return null;
         }
 
         private CheckoutOrderData GetCheckoutOrderData(ICart cart)
@@ -245,15 +253,8 @@ namespace Klarna.Checkout
 
         public ICart GetCartByKlarnaOrderId(int orderGroupdId, string orderId)
         {
-            //var checkoutOrderData = GetOrder(orderId);
-
             var cart = _orderRepository.Load<ICart>(orderGroupdId);
-
-            //if (cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString() == orderId)
-            //{
             return cart;
-            //}
-            return null;
         }
 
         public ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
