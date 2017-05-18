@@ -15,7 +15,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
 
         public KlarnaCheckoutViewModel()
         {
-            InitializeValues();
+
         }
 
         public string HtmlSnippet { get; set; }

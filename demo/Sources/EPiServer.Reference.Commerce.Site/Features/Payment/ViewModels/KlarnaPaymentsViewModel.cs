@@ -20,7 +20,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
 
         public KlarnaPaymentsViewModel()
         {
-            InitializeValues();
+
         }
 
         public string ClientToken { get; set; }

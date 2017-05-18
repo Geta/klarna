@@ -10,7 +10,7 @@
             <div class="radio">
                 <label>
                     @{ string checkState = method.SystemName == Model.Payment.SystemName ? "checked" : string.Empty; }
-                    <input type="radio" class="jsChangePayment" name="SystemName" value="@method.SystemName" @checkState/> @method.FriendlyName
+                    <input type="radio" class="jsChangePayment" name="SystemName" onclick="window.location = '?paymentMethod=@method.SystemName'" value="@method.SystemName" @checkState/> @method.FriendlyName
                 </label>
             </div>
         }

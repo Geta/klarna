@@ -86,7 +86,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return View("EmptyCart");
             }
 
-            var viewModel = CreateCheckoutViewModel(currentPage);
+            IPaymentMethodViewModel<PaymentMethodBase> paymentMethod = null;
+            var selectedPaymentMethod = Request["paymentMethod"];
+            if (!string.IsNullOrEmpty(selectedPaymentMethod))
+            {
+                paymentMethod = PaymentMethodViewModelResolver.Resolve(selectedPaymentMethod);
+                paymentMethod.SystemName = selectedPaymentMethod;
+            }
+
+            var viewModel = CreateCheckoutViewModel(currentPage, paymentMethod);
 
             Cart.Currency = _currencyService.GetCurrentCurrency();
             
@@ -99,13 +107,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
-            _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+            if (viewModel.Payment.SystemName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
+            {
+                await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
+            }
+            if (viewModel.Payment.SystemName.Equals(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword))
+            {
+                _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+            }
 
             // Make sure Klarna values are set
             (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
             (viewModel.Payment as KlarnaCheckoutViewModel)?.InitializeValues();
-
+            
             return View(viewModel.ViewName, viewModel);
         }
 

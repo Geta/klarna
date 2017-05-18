@@ -1,7 +1,7 @@
 ﻿var Checkout = {
     init: function () {
         $(document)
-            .on('change', '.jsChangePayment', Checkout.changePayment)
+            //.on('change', '.jsChangePayment', Checkout.changePayment)
             .on('change', '.jsChangeShipment', Checkout.changeShipment)
             .on('change', '.jsChangeAddress', Checkout.changeAddress)
             .on('change', '.jsChangeTaxAddress', Checkout.changeTaxAddress)
