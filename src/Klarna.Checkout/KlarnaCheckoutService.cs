@@ -336,6 +336,7 @@ namespace Klarna.Checkout
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
             var localCheckoutOrderData = GetCheckoutOrderData(cart, PaymentMethodDto) as PatchedCheckoutOrderData;
+            localCheckoutOrderData.ShippingAddress = cart.GetFirstShipment().ShippingAddress.ToAddress();
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
             {
                 return false;
