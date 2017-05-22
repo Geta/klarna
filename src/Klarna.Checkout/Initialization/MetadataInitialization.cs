@@ -21,6 +21,7 @@ namespace Klarna.Checkout.Initialization
             MetaDataContext mdContext = CatalogContext.MetaDataContext;
             
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaCheckoutOrderIdField), Common.Constants.PurchaseOrderClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaSerializedMarketOptions), Common.Constants.OtherPaymentClass);
         }
 
         public void Uninitialize(InitializationEngine context)

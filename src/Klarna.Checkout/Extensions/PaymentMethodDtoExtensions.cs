@@ -17,6 +17,7 @@ namespace Klarna.Checkout.Extensions
             var configurationForMarket = allConfigurations.FirstOrDefault(x => x.MarketId.Equals(marketId.ToString(), StringComparison.InvariantCultureIgnoreCase));
             if (configurationForMarket == null)
             {
+                return new Configuration();
                 throw new Exception(
                     $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }

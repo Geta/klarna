@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Extensions;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Web.Console.Interfaces;
 
@@ -11,13 +12,14 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
     public partial class ConfigurePayment : System.Web.UI.UserControl, IGatewayControl
     {
         private PaymentMethodDto _paymentMethodDto;
-        private Injected<IKlarnaCheckoutService> _klarnaCheckoutService; 
+        private IKlarnaCheckoutService _klarnaCheckoutService;
 
         public string ValidationGroup { get; set; }
 
         
         protected void Page_Load(object sender, EventArgs e)
         {
+            _klarnaCheckoutService = ServiceLocator.Current.GetInstance<IKlarnaCheckoutService>();
             if (!base.IsPostBack && this._paymentMethodDto != null && this._paymentMethodDto.PaymentMethodParameter != null)
             {
                 var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
@@ -27,7 +29,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
                     Configuration configuration = null;
                     try
                     {
-                        configuration = _klarnaCheckoutService.Service.GetConfiguration(markets.FirstOrDefault().MarketId);
+                        configuration = _klarnaCheckoutService.GetConfiguration(markets.FirstOrDefault().MarketId);
                     }
                     catch
                     {
@@ -166,7 +168,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
                 {
                     try
                     {
-                        list.Add(_klarnaCheckoutService.Service.GetConfiguration(item.MarketId));
+                        list.Add(_klarnaCheckoutService.GetConfiguration(item.MarketId));
                     }
                     catch { }
                 }
@@ -180,7 +182,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             Configuration configuration = null;
             try
             {
-                configuration = _klarnaCheckoutService.Service.GetConfiguration(marketDropDownList.SelectedValue);
+                configuration = _klarnaCheckoutService.GetConfiguration(new MarketId(marketDropDownList.SelectedValue));
             }
             catch
             {
