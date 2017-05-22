@@ -25,17 +25,11 @@ namespace Klarna.Payments.Initialization
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationField, MetaDataType.Boolean), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Common.Constants.CartClass);
             
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.ConfirmationUrlField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NotificationUrlField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.SendProductAndImageUrlField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.UseAttachmentsField), Common.Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaConfirmationUrlField), Common.Constants.OtherPaymentClass);
-            
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentMethodField), Common.Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Common.Constants.OrderNamespace);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Common.Constants.PurchaseOrderClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.FraudStatusPaymentMethodField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.PreAssesmentCountriesField), Common.Constants.OtherPaymentClass);
         }
 
         public void Uninitialize(InitializationEngine context)

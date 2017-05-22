@@ -50,7 +50,7 @@ namespace Klarna.Payments
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
             var config = GetConfiguration(cart.Market.MarketId);
 
-            var sessionRequest = GetSessionRequest(cart, canSendPersonalInformation);
+            var sessionRequest = GetSessionRequest(cart, config, canSendPersonalInformation);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config);
@@ -117,10 +117,10 @@ namespace Klarna.Payments
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
-            var sessionRequest = GetSessionRequest(cart, true);
+            var config = GetConfiguration(cart.Market.MarketId);
+            var sessionRequest = GetSessionRequest(cart, config, true);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                var config = GetConfiguration(cart.Market.MarketId);
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, true);
             }
 
@@ -156,7 +156,9 @@ namespace Klarna.Payments
                 var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword));
                 if (payment != null)
                 {
-                    var url = payment.Properties[Constants.KlarnaConfirmationUrlField]?.ToString();
+                    var config = GetConfiguration(purchaseOrder.Market.MarketId);
+
+                    var url = config.ConfirmationUrl;
                     if (!string.IsNullOrEmpty(url))
                     {
                         HttpContext.Current.Response.Redirect(url);
@@ -228,7 +230,7 @@ namespace Klarna.Payments
             };
         }
 
-        private Session GetSessionRequest(ICart cart, bool includePersonalInformation = false)
+        private Session GetSessionRequest(ICart cart, Configuration config, bool includePersonalInformation = false)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             var request = new Session
@@ -239,7 +241,7 @@ namespace Klarna.Payments
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = ContentLanguage.PreferredCulture.Name,
-                OrderLines = GetOrderLines(cart, totals).ToArray()
+                OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrlField).ToArray()
             };
 
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
@@ -247,8 +249,8 @@ namespace Klarna.Payments
             {
                 request.MerchantUrl = new MerchantUrl
                 {
-                    Confirmation = paymentMethod.GetParameter(Constants.ConfirmationUrlField),
-                    Notification = paymentMethod.GetParameter(Constants.NotificationUrlField),
+                    Confirmation = config.ConfirmationUrl,
+                    Notification = config.NotificationUrl,
                 };
                 request.Options = GetWidgetOptions(paymentMethod, cart.Market.MarketId);
             }

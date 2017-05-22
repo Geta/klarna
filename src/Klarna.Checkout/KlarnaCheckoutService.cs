@@ -231,7 +231,7 @@ namespace Klarna.Checkout
                 // Non-negative, minor units. The total tax amount of the order.
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 MerchantUrls = GetMerchantUrls(cart),
-                OrderLines = GetOrderLines(cart, totals)
+                OrderLines = GetOrderLines(cart, totals, false)
             };
 
             if (Configuration.SendShippingCountries)
@@ -325,7 +325,7 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = GetOrderLines(cart, totals),
+                OrderLines = GetOrderLines(cart, totals, false),
                 PurchaseCurrency = cart.Currency.CurrencyCode
             };
         }
@@ -344,7 +344,7 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = GetOrderLines(cart, totals),
+                OrderLines = GetOrderLines(cart, totals, false),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 ShippingOptions = Configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart) : Enumerable.Empty<ShippingOption>()
             };

@@ -23,5 +23,8 @@ namespace Klarna.Payments
         public string WidgetSelectedBorderColor { get; set; }
         public string WidgetTextColor { get; set; }
         public string WidgetTextSecondaryColor { get; set; }
+
+        public string ConfirmationUrl { get; set; }
+        public string NotificationUrl { get; set; }
     }
 }

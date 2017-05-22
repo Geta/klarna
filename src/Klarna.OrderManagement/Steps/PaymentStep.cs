@@ -17,13 +17,15 @@ namespace Klarna.OrderManagement.Steps
         protected PaymentStep Successor;
 
         protected PaymentMethodDto PaymentMethod { get; set; }
+        public MarketId MarketId { get; }
 
         protected IKlarnaOrderService KlarnaOrderService;
 
         protected PaymentStep(IPayment payment, MarketId marketId)
         {
+            MarketId = marketId;
+
             PaymentMethod = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
-            
             if (PaymentMethod != null)
             {
                 KlarnaOrderService = new KlarnaOrderService(PaymentMethod.GetConnectionConfiguration(marketId));

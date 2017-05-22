@@ -50,19 +50,19 @@ namespace Klarna.Common
             }
         }
 
-        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals)
+        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField)
         {
             var shipment = cart.GetFirstShipment();
             var includedTaxesOnLineItems = !CountryCodeHelper.GetContinentByCountry(shipment.ShippingAddress?.CountryCode).Equals("NA", StringComparison.InvariantCultureIgnoreCase);
-            return GetOrderLines(cart, orderGroupTotals, includedTaxesOnLineItems);
+            return GetOrderLines(cart, orderGroupTotals, includedTaxesOnLineItems, sendProductAndImageUrlField);
         }
 
-        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems)
+        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems, bool sendProductAndImageUrl)
         {
-            return includeTaxOnLineItems ? GetOrderLinesWithTax(cart, orderGroupTotals) : GetOrderLinesWithoutTax(cart, orderGroupTotals);
+            return includeTaxOnLineItems ? GetOrderLinesWithTax(cart, orderGroupTotals, sendProductAndImageUrl) : GetOrderLinesWithoutTax(cart, orderGroupTotals, sendProductAndImageUrl);
         }
 
-        private List<OrderLine> GetOrderLinesWithoutTax(ICart cart, OrderGroupTotals orderGroupTotals)
+        private List<OrderLine> GetOrderLinesWithoutTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
         {
             var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
@@ -70,7 +70,7 @@ namespace Klarna.Common
             // Line items
             foreach (var lineItem in cart.GetAllLineItems())
             {
-                var orderLine = lineItem.GetOrderLine();
+                var orderLine = lineItem.GetOrderLine(sendProductAndImageUrl);
                 orderLines.Add(orderLine);
             }
 
@@ -111,7 +111,7 @@ namespace Klarna.Common
             return orderLines;
         }
 
-        private List<OrderLine> GetOrderLinesWithTax(ICart cart, OrderGroupTotals orderGroupTotals)
+        private List<OrderLine> GetOrderLinesWithTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
         {
             var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
@@ -119,7 +119,7 @@ namespace Klarna.Common
             // Line items
             foreach (var lineItem in cart.GetAllLineItems())
             {
-                var orderLine = lineItem.GetOrderLineWithTax(cart.Market, cart.GetFirstShipment(), cart.Currency);
+                var orderLine = lineItem.GetOrderLineWithTax(cart.Market, cart.GetFirstShipment(), cart.Currency, sendProductAndImageUrl);
                 orderLines.Add(orderLine);
             }
 
