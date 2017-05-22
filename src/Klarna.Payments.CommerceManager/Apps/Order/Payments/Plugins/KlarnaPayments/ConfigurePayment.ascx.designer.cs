@@ -13,6 +13,24 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
     public partial class ConfigurePayment {
         
         /// <summary>
+        /// ConfigureUpdatePanelContentPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.UpdatePanel ConfigureUpdatePanelContentPanel;
+        
+        /// <summary>
+        /// marketDropDownList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList marketDropDownList;
+        
+        /// <summary>
         /// txtUsername control.
         /// </summary>
         /// <remarks>

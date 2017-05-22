@@ -350,6 +350,9 @@
     <Content Include="Apps\Order\Payments\Plugins\KlarnaCheckout\ConfigurePayment.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Apps\Order\Payments\Plugins\KlarnaPayments\ConfigurePayment.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
     <Content Include="App_Data\log\placeholder.txt" />
     <Content Include="BlobStorage\Public\placeholder.txt" />
     <Content Include="Default.aspx" />

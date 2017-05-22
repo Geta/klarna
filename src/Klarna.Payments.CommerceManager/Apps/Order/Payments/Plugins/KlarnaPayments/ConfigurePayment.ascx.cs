@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
+using EPiServer.ServiceLocation;
 using ISO3166;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
+using Klarna.Payments.Extensions;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Web.Console.Interfaces;
 
@@ -12,8 +15,34 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
     public partial class ConfigurePayment : System.Web.UI.UserControl, IGatewayControl
     {
         private PaymentMethodDto _paymentMethodDto;
+        private Injected<IKlarnaPaymentsService> _klarnaPaymentService;
 
         public string ValidationGroup { get; set; }
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!base.IsPostBack && this._paymentMethodDto != null && this._paymentMethodDto.PaymentMethodParameter != null)
+            {
+                var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
+
+                if (markets != null)
+                {
+                    Configuration configuration = null;
+                    try
+                    {
+                        configuration = _paymentMethodDto.GetConfiguration(markets.FirstOrDefault().MarketId);
+                    }
+                    catch
+                    {
+                        configuration = new Configuration();
+                    }
+                    BindData(configuration);
+
+                    marketDropDownList.DataSource = markets.Select(m => m.MarketId);
+                    marketDropDownList.DataBind();
+                }
+            }
+        }
 
         public void LoadObject(object dto)
         {
@@ -24,31 +53,32 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
                 return;
             }
             _paymentMethodDto = paymentMethod;
+        }
 
-            txtUsername.Text = paymentMethod.GetParameter(Common.Constants.KlarnaUsernameField, string.Empty);
-            txtPassword.Text = paymentMethod.GetParameter(Common.Constants.KlarnaPasswordField, string.Empty);
-            txtApiUrl.Text = paymentMethod.GetParameter(Common.Constants.KlarnaApiUrlField, string.Empty);
+        private void BindData(Configuration configuration)
+        {
+            txtUsername.Text = configuration.Username;
+            txtPassword.Text = configuration.Password;
+            txtApiUrl.Text = configuration.ApiUrl;
 
-            txtKlarnaLogoUrl.Text = paymentMethod.GetParameter(Constants.KlarnaLogoUrlField, string.Empty);
-            txtColorDetails.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorDetailsField, string.Empty);
-            txtColorButton.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonField, string.Empty);
-            txtColorButtonText.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonTextField, string.Empty);
-            txtColorCheckbox.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxField, string.Empty);
-            txtColorCheckboxCheckmark.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, string.Empty);
-            txtColorHeader.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorHeaderField, string.Empty);
-            txtColorLink.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorLinkField, string.Empty);
-            txtColorBorder.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorBorderField, string.Empty);
-            txtColorBorderSelected.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorBorderSelectedField, string.Empty);
-            txtColorText.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorTextField, string.Empty);
-            txtColorTextSecondary.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetColorTextSecondaryField, string.Empty);
-            txtRadiusBorder.Text = paymentMethod.GetParameter(Constants.KlarnaWidgetRadiusBorderField, string.Empty);
+            txtKlarnaLogoUrl.Text = configuration.LogoUrl;
+            txtColorDetails.Text = configuration.WidgetDetailsColor;
+            txtColorButton.Text = configuration.WidgetButtonColor;
+            txtColorButtonText.Text = configuration.WidgetButtonColor;
+            txtColorCheckbox.Text = configuration.WidgetCheckboxColor;
+            txtColorCheckboxCheckmark.Text = configuration.WidgetCheckboxCheckmarkColor;
+            txtColorHeader.Text = configuration.WidgetHeaderColor;
+            txtColorLink.Text = configuration.WidgetLinkColor;
+            txtColorBorder.Text = configuration.WidgetBorderColor;
+            txtColorBorderSelected.Text = configuration.WidgetSelectedBorderColor;
+            txtColorText.Text = configuration.WidgetTextColor;
+            txtColorTextSecondary.Text = configuration.WidgetTextSecondaryColor;
+            txtRadiusBorder.Text = configuration.WidgetBorderRadius;
 
-            txtConfirmationUrl.Text = paymentMethod.GetParameter(Constants.ConfirmationUrlField, string.Empty);
-            txtNotificationUrl.Text = paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
-            var sendProductAndImageUrl = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
-            SendProductAndImageUrlCheckBox.Checked = sendProductAndImageUrl;
-            var useAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
-            UseAttachmentsCheckBox.Checked = useAttachments;
+            //txtConfirmationUrl.Text = configuration.conf
+            //txtNotificationUrl.Text = confi paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
+            SendProductAndImageUrlCheckBox.Checked = configuration.SendProductAndImageUrlField;
+            UseAttachmentsCheckBox.Checked = configuration.UseAttachments;
         }
 
         public override void DataBind()
@@ -57,7 +87,25 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
 
             var countries = CountryCodeHelper.GetCountryCodes().ToList();
 
-            var preAssesmentCountries = _paymentMethodDto.GetParameter(Constants.PreAssesmentCountriesField, string.Empty)?.Split(',');
+            Configuration configuration = null;
+            try
+            {
+                if (!IsPostBack)
+                {
+                    var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
+                    configuration = _paymentMethodDto.GetConfiguration(markets.FirstOrDefault().MarketId);
+                }
+                else
+                {
+                    configuration = _paymentMethodDto.GetConfiguration(marketDropDownList.SelectedValue);
+                }
+            }
+            catch
+            {
+                configuration = new Configuration();
+            }
+
+            var preAssesmentCountries = configuration.CustomerPreAssessmentCountries;
 
             var selectedCountries = countries.Where(x => preAssesmentCountries.Any(c => c == x.ThreeLetterCode)).OrderBy(x => x.Name).ToList();
 
@@ -85,6 +133,9 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
 
         private void BindTargetGrid(IEnumerable<Country> countries)
         {
+            this.ltlSelector.ClearTargetItems();
+            this.lbTarget.Items.Clear();
+
             if (countries.Any())
             {
                 this.lbTarget.Items.Clear();
@@ -110,28 +161,34 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             {
                 return;
             }
-            paymentMethod.SetParameter(Common.Constants.KlarnaUsernameField, txtUsername.Text);
-            paymentMethod.SetParameter(Common.Constants.KlarnaPasswordField, txtPassword.Text);
-            paymentMethod.SetParameter(Common.Constants.KlarnaApiUrlField, txtApiUrl.Text);
+            var list = GetMarketConfigurations(paymentMethod);
+            var currentMarket = marketDropDownList.SelectedValue;
 
-            paymentMethod.SetParameter(Constants.KlarnaLogoUrlField, txtKlarnaLogoUrl.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorDetailsField, txtColorDetails.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonField, txtColorButton.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonTextField, txtColorButtonText.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorCheckboxField, txtColorCheckbox.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, txtColorCheckboxCheckmark.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorHeaderField, txtColorHeader.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorLinkField, txtColorLink.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorBorderField, txtColorBorder.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorBorderSelectedField, txtColorBorderSelected.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorTextField, txtColorText.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorTextSecondaryField, txtColorTextSecondary.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetRadiusBorderField, txtRadiusBorder.Text);
+            var configuration = new Configuration();
+            configuration.MarketId = currentMarket;
 
-            paymentMethod.SetParameter(Constants.ConfirmationUrlField, txtConfirmationUrl.Text);
-            paymentMethod.SetParameter(Constants.NotificationUrlField, txtNotificationUrl.Text);
-            paymentMethod.SetParameter(Constants.SendProductAndImageUrlField, (SendProductAndImageUrlCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.UseAttachmentsField, (UseAttachmentsCheckBox.Checked ? "true" : "false"));
+            configuration.Username = txtUsername.Text;
+            configuration.Password = txtPassword.Text;
+            configuration.ApiUrl = txtApiUrl.Text;
+
+            configuration.LogoUrl = txtKlarnaLogoUrl.Text;
+            configuration.WidgetDetailsColor = txtColorDetails.Text;
+            configuration.WidgetButtonColor = txtColorButton.Text;
+            configuration.WidgetButtonTextColor = txtColorButtonText.Text;
+            configuration.WidgetCheckboxColor = txtColorCheckbox.Text;
+            configuration.WidgetCheckboxCheckmarkColor = txtColorCheckboxCheckmark.Text;
+            configuration.WidgetHeaderColor = txtColorHeader.Text;
+            configuration.WidgetLinkColor = txtColorLink.Text;
+            configuration.WidgetBorderColor = txtColorBorder.Text;
+            configuration.WidgetSelectedBorderColor = txtColorBorderSelected.Text;
+            configuration.WidgetTextColor = txtColorText.Text;
+            configuration.WidgetTextSecondaryColor = txtColorTextSecondary.Text;
+            configuration.WidgetBorderRadius = txtRadiusBorder.Text;
+
+            //configuration.WidgetBorderRadius = txtConfirmationUrl.Text;
+            //configuration.WidgetBorderRadius = txtNotificationUrl.Text;
+            configuration.SendProductAndImageUrlField = SendProductAndImageUrlCheckBox.Checked;
+            configuration.UseAttachments = UseAttachmentsCheckBox.Checked;
 
             var selectedCountries = new List<string>();
             
@@ -139,7 +196,51 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             {
                 selectedCountries.Add(item.Value);
             }
-            paymentMethod.SetParameter(Constants.PreAssesmentCountriesField, string.Join(",", selectedCountries));
+            configuration.CustomerPreAssessmentCountries = selectedCountries;
+
+            var currentConfiguration = list.FirstOrDefault(x => x.MarketId == currentMarket);
+            if (currentConfiguration != null)
+            {
+                list.Remove(currentConfiguration);
+            }
+            list.Add(configuration);
+
+            paymentMethod.SetParameter(Common.Constants.KlarnaSerializedMarketOptions, Newtonsoft.Json.JsonConvert.SerializeObject(list));
+        }
+
+        private List<Configuration> GetMarketConfigurations(PaymentMethodDto paymentMethod)
+        {
+            var list = new List<Configuration>();
+            var markets = paymentMethod.PaymentMethod.FirstOrDefault()?.GetMarketPaymentMethodsRows();
+            if (markets != null)
+            {
+                foreach (var item in markets)
+                {
+                    try
+                    {
+                        list.Add(paymentMethod.GetConfiguration(item.MarketId));
+                    }
+                    catch { }
+                }
+            }
+            return list;
+        }
+
+        protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
+
+            Configuration configuration = null;
+            try
+            {
+                configuration = _paymentMethodDto.GetConfiguration(marketDropDownList.SelectedValue);
+            }
+            catch
+            {
+                configuration = new Configuration();
+            }
+            BindData(configuration);
+
+            ConfigureUpdatePanelContentPanel.Update();
         }
     }
 }

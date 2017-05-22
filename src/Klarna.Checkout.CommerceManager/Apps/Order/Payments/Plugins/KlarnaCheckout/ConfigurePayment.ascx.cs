@@ -15,34 +15,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
         public string ValidationGroup { get; set; }
 
-
-        /*public override void DataBind()
-        {
-            var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
-
-            if (markets != null)
-            {
-                Configuration configuration = null;
-                try
-                {
-                    if (IsPostBack)
-                    {
-                        configuration = _klarnaCheckoutService.Service.GetConfiguration(marketDropDownList.SelectedValue);
-                    }
-                    else
-                    {
-                        configuration =
-                            _klarnaCheckoutService.Service.GetConfiguration(markets.FirstOrDefault().MarketId);
-                    }
-                }
-                catch
-                {
-                    configuration = new Configuration();
-                }
-                SetValues(configuration, markets);
-            }
-        }*/
-
+        
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!base.IsPostBack && this._paymentMethodDto != null && this._paymentMethodDto.PaymentMethodParameter != null)
@@ -81,17 +54,17 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
         public void BindData(Configuration configuration)
         {
-            txtUsername.Text = configuration.AddressUpdateUrl;
-            txtPassword.Text = configuration.AddressUpdateUrl;
-            txtApiUrl.Text = configuration.AddressUpdateUrl;
+            txtUsername.Text = configuration.Username;
+            txtPassword.Text = configuration.Password;
+            txtApiUrl.Text = configuration.ApiUrl;
 
-            txtColorButton.Text = configuration.AddressUpdateUrl;
-            txtColorButtonText.Text = configuration.AddressUpdateUrl;
-            txtColorCheckbox.Text = configuration.AddressUpdateUrl;
-            txtColorHeader.Text = configuration.AddressUpdateUrl;
-            txtColorLink.Text = configuration.AddressUpdateUrl;
-            txtRadiusBorder.Text = configuration.AddressUpdateUrl;
-            txtColorCheckboxCheckmark.Text = configuration.AddressUpdateUrl;
+            txtColorButton.Text = configuration.WidgetButtonColor;
+            txtColorButtonText.Text = configuration.WidgetButtonTextColor;
+            txtColorCheckbox.Text = configuration.WidgetCheckboxColor;
+            txtColorHeader.Text = configuration.WidgetHeaderColor;
+            txtColorLink.Text = configuration.WidgetLinkColor;
+            txtRadiusBorder.Text = configuration.WidgetBorderRadius;
+            txtColorCheckboxCheckmark.Text = configuration.WidgetCheckboxCheckmarkColor;
 
             shippingOptionsInIFrameCheckBox.Checked = configuration.ShippingOptionsInIFrame;
             allowSeparateShippingAddressCheckBox.Checked = configuration.AllowSeparateShippingAddress;
@@ -140,13 +113,13 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             configuration.AddressUpdateUrl = txtPassword.Text;
             configuration.AddressUpdateUrl = txtApiUrl.Text;
 
-            configuration.AddressUpdateUrl = txtColorButton.Text;
-            configuration.AddressUpdateUrl = txtColorButtonText.Text;
-            configuration.AddressUpdateUrl = txtColorCheckbox.Text;
-            configuration.AddressUpdateUrl = txtColorHeader.Text;
-            configuration.AddressUpdateUrl = txtColorLink.Text;
-            configuration.AddressUpdateUrl = txtRadiusBorder.Text;
-            configuration.AddressUpdateUrl = txtColorCheckboxCheckmark.Text;
+            configuration.WidgetButtonColor = txtColorButton.Text;
+            configuration.WidgetButtonTextColor = txtColorButtonText.Text;
+            configuration.WidgetCheckboxColor = txtColorCheckbox.Text;
+            configuration.WidgetHeaderColor = txtColorHeader.Text;
+            configuration.WidgetLinkColor = txtColorLink.Text;
+            configuration.WidgetBorderRadius = txtRadiusBorder.Text;
+            configuration.WidgetCheckboxCheckmarkColor = txtColorCheckboxCheckmark.Text;
             configuration.ShippingOptionsInIFrame = shippingOptionsInIFrameCheckBox.Checked;
             configuration.AllowSeparateShippingAddress = allowSeparateShippingAddressCheckBox.Checked;
             configuration.DateOfBirthMandatory = dateOfBirthMandatoryCheckBox.Checked;
@@ -176,12 +149,10 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             var currentConfiguration = list.FirstOrDefault(x => x.MarketId == currentMarket);
             if (currentConfiguration != null)
             {
-                currentConfiguration = configuration;
+                list.Remove(currentConfiguration);
             }
-            else
-            {
-                list.Add(configuration);
-            }
+            list.Add(configuration);
+
             paymentMethod.SetParameter(Common.Constants.KlarnaSerializedMarketOptions, Newtonsoft.Json.JsonConvert.SerializeObject(list));
         }
 
