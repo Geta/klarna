@@ -15,20 +15,13 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
         public string ValidationGroup { get; set; }
 
-        public void LoadObject(object dto)
+
+        /*public override void DataBind()
         {
-            var paymentMethod = dto as PaymentMethodDto;
+            var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
 
-            if (paymentMethod == null)
+            if (markets != null)
             {
-                return;
-            }
-            _paymentMethodDto = paymentMethod;
-
-            var markets = paymentMethod.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
-
-            if(markets != null)
-            {     
                 Configuration configuration = null;
                 try
                 {
@@ -46,47 +39,85 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
                 {
                     configuration = new Configuration();
                 }
-
-                txtUsername.Text = configuration.AddressUpdateUrl;
-                txtPassword.Text = configuration.AddressUpdateUrl;
-                txtApiUrl.Text = configuration.AddressUpdateUrl;
-
-                txtColorButton.Text = configuration.AddressUpdateUrl;
-                txtColorButtonText.Text = configuration.AddressUpdateUrl;
-                txtColorCheckbox.Text = configuration.AddressUpdateUrl;
-                txtColorHeader.Text = configuration.AddressUpdateUrl;
-                txtColorLink.Text = configuration.AddressUpdateUrl;
-                txtRadiusBorder.Text = configuration.AddressUpdateUrl;
-                txtColorCheckboxCheckmark.Text = configuration.AddressUpdateUrl;
-                
-                shippingOptionsInIFrameCheckBox.Checked = configuration.ShippingOptionsInIFrame;
-                allowSeparateShippingAddressCheckBox.Checked = configuration.AllowSeparateShippingAddress;
-                dateOfBirthMandatoryCheckBox.Checked = configuration.DateOfBirthMandatory;
-                txtShippingDetails.Text = configuration.ShippingDetailsText;
-                titleMandatoryCheckBox.Checked = configuration.TitleMandatory;
-                showSubtotalDetailCheckBox.Checked = configuration.ShowSubtotalDetail;
-                
-                sendShippingCountriesCheckBox.Checked = configuration.SendShippingCountries;
-                prefillAddressCheckBox.Checked = configuration.PrefillAddress;
-                SendShippingOptionsPriorAddressesCheckBox.Checked = configuration.SendShippingOptionsPriorAddresses;
-
-
-                additionalCheckboxTextTextBox.Text = configuration.AdditionalCheckboxText;
-                additionalCheckboxDefaultCheckedCheckBox.Checked = configuration.AdditionalCheckboxDefaultChecked;
-                additionalCheckboxRequiredCheckBox.Checked = configuration.AdditionalCheckboxRequired;
-
-                txtConfirmationUrl.Text = configuration.ConfirmationUrl;
-                txtTermsUrl.Text = configuration.TermsUrl;
-                txtCheckoutUrl.Text = configuration.CheckoutUrl;
-                txtPushUrl.Text = configuration.PushUrl;
-                txtNotificationUrl.Text = configuration.NotificationUrl;
-                txtShippingOptionUpdateUrl.Text = configuration.ShippingOptionUpdateUrl;
-                txtAddressUpdateUrl.Text = configuration.AddressUpdateUrl;
-                txtOrderValidationUrl.Text = configuration.OrderValidationUrl;
-                requireValidateCallbackSuccessCheckBox.Checked = configuration.RequireValidateCallbackSuccess;
-            
-                marketDropDownList.DataSource = markets.Select(m => m.MarketId);
+                SetValues(configuration, markets);
             }
+        }*/
+
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!base.IsPostBack && this._paymentMethodDto != null && this._paymentMethodDto.PaymentMethodParameter != null)
+            {
+                var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
+
+                if (markets != null)
+                {
+                    Configuration configuration = null;
+                    try
+                    {
+                        configuration = _klarnaCheckoutService.Service.GetConfiguration(markets.FirstOrDefault().MarketId);
+                    }
+                    catch
+                    {
+                        configuration = new Configuration();
+                    }
+                    BindData(configuration);
+
+                    marketDropDownList.DataSource = markets.Select(m => m.MarketId);
+                    marketDropDownList.DataBind();
+                }
+            }
+        }
+
+        public void LoadObject(object dto)
+        {
+            var paymentMethod = dto as PaymentMethodDto;
+
+            if (paymentMethod == null)
+            {
+                return;
+            }
+            _paymentMethodDto = paymentMethod;
+        }
+
+        public void BindData(Configuration configuration)
+        {
+            txtUsername.Text = configuration.AddressUpdateUrl;
+            txtPassword.Text = configuration.AddressUpdateUrl;
+            txtApiUrl.Text = configuration.AddressUpdateUrl;
+
+            txtColorButton.Text = configuration.AddressUpdateUrl;
+            txtColorButtonText.Text = configuration.AddressUpdateUrl;
+            txtColorCheckbox.Text = configuration.AddressUpdateUrl;
+            txtColorHeader.Text = configuration.AddressUpdateUrl;
+            txtColorLink.Text = configuration.AddressUpdateUrl;
+            txtRadiusBorder.Text = configuration.AddressUpdateUrl;
+            txtColorCheckboxCheckmark.Text = configuration.AddressUpdateUrl;
+
+            shippingOptionsInIFrameCheckBox.Checked = configuration.ShippingOptionsInIFrame;
+            allowSeparateShippingAddressCheckBox.Checked = configuration.AllowSeparateShippingAddress;
+            dateOfBirthMandatoryCheckBox.Checked = configuration.DateOfBirthMandatory;
+            txtShippingDetails.Text = configuration.ShippingDetailsText;
+            titleMandatoryCheckBox.Checked = configuration.TitleMandatory;
+            showSubtotalDetailCheckBox.Checked = configuration.ShowSubtotalDetail;
+
+            sendShippingCountriesCheckBox.Checked = configuration.SendShippingCountries;
+            prefillAddressCheckBox.Checked = configuration.PrefillAddress;
+            SendShippingOptionsPriorAddressesCheckBox.Checked = configuration.SendShippingOptionsPriorAddresses;
+
+
+            additionalCheckboxTextTextBox.Text = configuration.AdditionalCheckboxText;
+            additionalCheckboxDefaultCheckedCheckBox.Checked = configuration.AdditionalCheckboxDefaultChecked;
+            additionalCheckboxRequiredCheckBox.Checked = configuration.AdditionalCheckboxRequired;
+
+            txtConfirmationUrl.Text = configuration.ConfirmationUrl;
+            txtTermsUrl.Text = configuration.TermsUrl;
+            txtCheckoutUrl.Text = configuration.CheckoutUrl;
+            txtPushUrl.Text = configuration.PushUrl;
+            txtNotificationUrl.Text = configuration.NotificationUrl;
+            txtShippingOptionUpdateUrl.Text = configuration.ShippingOptionUpdateUrl;
+            txtAddressUpdateUrl.Text = configuration.AddressUpdateUrl;
+            txtOrderValidationUrl.Text = configuration.OrderValidationUrl;
+            requireValidateCallbackSuccessCheckBox.Checked = configuration.RequireValidateCallbackSuccess;
         }
         
         public void SaveChanges(object dto)
@@ -175,6 +206,18 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
         {
 
+            Configuration configuration = null;
+            try
+            {
+                configuration = _klarnaCheckoutService.Service.GetConfiguration(marketDropDownList.SelectedValue);
+            }
+            catch
+            {
+                configuration = new Configuration();
+            }
+            BindData(configuration);
+
+            ConfigureUpdatePanelContentPanel.Update();
         }
     }
 }

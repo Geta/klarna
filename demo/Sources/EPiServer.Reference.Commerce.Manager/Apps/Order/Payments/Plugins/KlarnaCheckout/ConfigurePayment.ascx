@@ -1,6 +1,9 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ConfigurePayment.ascx.cs" Inherits="Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaCheckout.ConfigurePayment" %>
 <%@ Register TagPrefix="mc" Namespace="Mediachase.BusinessFoundation" Assembly="Mediachase.BusinessFoundation, Version=10.4.3.0, Culture=neutral, PublicKeyToken=41d2e7a615ba286c" %>
 
+
+ <asp:UpdatePanel UpdateMode="Conditional" ID="ConfigureUpdatePanelContentPanel" runat="server" RenderMode="Inline" ChildrenAsTriggers="true">
+                    <ContentTemplate>
 <style>
     .karnapayment-parameters table.DataForm tbody tr td.FormLabelCell { width: 200px; }
     .karnapayment-parameters h2 { margin-top: 20px }
@@ -247,3 +250,4 @@
     </tbody>
 </table>
 </div>
+                        </ContentTemplate></asp:UpdatePanel>
