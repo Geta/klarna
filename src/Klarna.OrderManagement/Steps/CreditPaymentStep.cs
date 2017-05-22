@@ -4,6 +4,7 @@ using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus;
 
@@ -13,7 +14,7 @@ namespace Klarna.OrderManagement.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(CreditPaymentStep));
 
-        public CreditPaymentStep(IPayment payment) : base(payment)
+        public CreditPaymentStep(IPayment payment, MarketId marketId) : base(payment, marketId)
         {
         }
 

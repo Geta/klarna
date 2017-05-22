@@ -33,10 +33,11 @@ namespace Klarna.Checkout
                 {
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
-                var authorizePaymentStep = new AuthorizePaymentStep(payment);
-                var capturePaymentStep = new CapturePaymentStep(payment);
-                var creditPaymentStep = new CreditPaymentStep(payment);
-                var cancelPaymentStep = new CancelPaymentStep(payment);
+                
+                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.Market.MarketId);
+                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.Market.MarketId);
+                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.Market.MarketId);
+                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.Market.MarketId);
 
                 authorizePaymentStep.SetSuccessor(capturePaymentStep);
                 capturePaymentStep.SetSuccessor(creditPaymentStep);

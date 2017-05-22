@@ -8,7 +8,6 @@ namespace Klarna.Payments
 {
     public interface IKlarnaPaymentsService : IKlarnaService
     {
-        Configuration Configuration { get; }
         Task<bool> CreateOrUpdateSession(ICart cart);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(ICart cart);

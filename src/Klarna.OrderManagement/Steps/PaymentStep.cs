@@ -6,6 +6,7 @@ using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 
@@ -17,15 +18,15 @@ namespace Klarna.OrderManagement.Steps
 
         protected PaymentMethodDto PaymentMethod { get; set; }
 
-        protected Injected<IConnectionFactory> ConnectionFactory;
         protected IKlarnaOrderService KlarnaOrderService;
 
-        protected PaymentStep(IPayment payment)
+        protected PaymentStep(IPayment payment, MarketId marketId)
         {
             PaymentMethod = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
+            
             if (PaymentMethod != null)
             {
-                KlarnaOrderService = new KlarnaOrderService(ConnectionFactory.Service.GetConnectionConfiguration(PaymentMethod));
+                KlarnaOrderService = new KlarnaOrderService(PaymentMethod.GetConnectionConfiguration(marketId));
             }
         }
 

@@ -24,21 +24,7 @@ namespace Klarna.Payments.Initialization
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationField, MetaDataType.Boolean), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempField), Common.Constants.CartClass);
-
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaLogoUrlField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorDetailsField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorButtonTextField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorCheckboxField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorCheckboxCheckmarkField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorHeaderField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorLinkField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorBorderField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorBorderSelectedField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetColorTextSecondaryField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaWidgetRadiusBorderField), Common.Constants.OtherPaymentClass);
-
+            
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.ConfirmationUrlField), Common.Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.NotificationUrlField), Common.Constants.OtherPaymentClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.SendProductAndImageUrlField), Common.Constants.OtherPaymentClass);

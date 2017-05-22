@@ -1,26 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web;
-using EPiServer;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Payments.Models;
 using EPiServer.Logging;
-using EPiServer.Web.Routing;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
-using Klarna.Common.Models;
+using Klarna.Payments.Extensions;
 using Klarna.Rest.Models;
-using Mediachase.Commerce.Catalog;
-using Mediachase.Commerce.Orders;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
-using Mediachase.Commerce.Orders.Search;
 using Refit;
 
 namespace Klarna.Payments
@@ -32,21 +27,13 @@ namespace Klarna.Payments
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
-        private readonly ReferenceConverter _referenceConverter;
-        private readonly UrlResolver _urlResolver;
-        private readonly IContentRepository _contentRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
-        private readonly IPaymentProcessor _paymentProcessor;
-        private readonly IOrderGroupCalculator _orderGroupCalculator;
 
         private Configuration _configuration;
 
         public KlarnaPaymentsService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
-            ReferenceConverter referenceConverter,
-            UrlResolver urlResolver,
-            IContentRepository contentRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
@@ -54,35 +41,19 @@ namespace Klarna.Payments
             _klarnaServiceApi = ServiceLocator.Current.GetInstance<IKlarnaServiceApi>();
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
-            _referenceConverter = referenceConverter;
-            _urlResolver = urlResolver;
-            _contentRepository = contentRepository;
             _orderNumberGenerator = orderNumberGenerator;
-            _paymentProcessor = paymentProcessor;
-            _orderGroupCalculator = orderGroupCalculator;
-        }
-
-        public Configuration Configuration
-        {
-            get
-            {
-                if (_configuration == null)
-                {
-                    _configuration = GetConfiguration();
-                }
-                return _configuration;
-            }
         }
 
         public async Task<bool> CreateOrUpdateSession(ICart cart)
         {
             // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
+            var config = GetConfiguration(cart.Market.MarketId);
 
             var sessionRequest = GetSessionRequest(cart, canSendPersonalInformation);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                sessionRequest = sessionBuilder.Build(sessionRequest, cart, Configuration);
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config);
             }
 
             var currentCountry = cart.Market.Countries.FirstOrDefault();
@@ -94,7 +65,7 @@ namespace Klarna.Payments
                 sessionRequest.BillingAddress = null;
 
                 // If the pre assessment is not enabled then don't send the customer information to Klarna
-                if (!Configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
+                if (!config.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
                 {
                     sessionRequest.Customer = null;
                 }
@@ -149,7 +120,8 @@ namespace Klarna.Payments
             var sessionRequest = GetSessionRequest(cart, true);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                sessionRequest = sessionBuilder.Build(sessionRequest, cart, Configuration, true);
+                var config = GetConfiguration(cart.Market.MarketId);
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, true);
             }
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
@@ -244,7 +216,8 @@ namespace Klarna.Payments
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                request = sessionBuilder.Build(request, cart, Configuration, true);
+                var config = GetConfiguration(cart.Market.MarketId);
+                request = sessionBuilder.Build(request, cart, config, true);
             }
 
             return new PersonalInformationSession
@@ -277,7 +250,7 @@ namespace Klarna.Payments
                     Confirmation = paymentMethod.GetParameter(Constants.ConfirmationUrlField),
                     Notification = paymentMethod.GetParameter(Constants.NotificationUrlField),
                 };
-                request.Options = GetWidgetOptions(paymentMethod);
+                request.Options = GetWidgetOptions(paymentMethod, cart.Market.MarketId);
             }
             
             if (includePersonalInformation)
@@ -326,43 +299,41 @@ namespace Klarna.Payments
             return false;
         }
 
-        
-
-        private Options GetWidgetOptions(PaymentMethodDto paymentMethod)
+        private Options GetWidgetOptions(PaymentMethodDto paymentMethod, MarketId marketId)
         {
+            var configuration = paymentMethod.GetConfiguration(marketId);
             var options = new Options();
 
-            options.ColorDetails = paymentMethod.GetParameter(Constants.KlarnaWidgetColorDetailsField, "#C0FFEE");
-            options.ColorButton = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonField, "#C0FFEE");
-            options.ColorButtonText = paymentMethod.GetParameter(Constants.KlarnaWidgetColorButtonTextField, "#C0FFEE");
-            options.ColorCheckbox = paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxField, "#C0FFEE");
-            options.ColorCheckboxCheckmark =
-                paymentMethod.GetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, "#C0FFEE");
-            options.ColorHeader = paymentMethod.GetParameter(Constants.KlarnaWidgetColorHeaderField, "#C0FFEE");
-            options.ColorLink = paymentMethod.GetParameter(Constants.KlarnaWidgetColorLinkField, "#C0FFEE");
-            options.ColorBorder = paymentMethod.GetParameter(Constants.KlarnaWidgetColorBorderField, "#C0FFEE");
-            options.ColorBorderSelected = paymentMethod.GetParameter(Constants.KlarnaWidgetColorBorderSelectedField,
-                "#C0FFEE");
-            options.ColorText = paymentMethod.GetParameter(Constants.KlarnaWidgetColorTextField, "#C0FFEE");
-            options.ColorTextSecondary = paymentMethod.GetParameter(Constants.KlarnaWidgetColorTextSecondaryField,
-                "#C0FFEE");
-            options.RadiusBorder = paymentMethod.GetParameter(Constants.KlarnaWidgetRadiusBorderField, "#0px");
+            options.ColorDetails = configuration.WidgetDetailsColor;
+            options.ColorButton = configuration.WidgetButtonColor;
+            options.ColorButtonText = configuration.WidgetButtonTextColor;
+            options.ColorCheckbox = configuration.WidgetCheckboxColor;
+            options.ColorCheckboxCheckmark = configuration.WidgetCheckboxCheckmarkColor;
+            options.ColorHeader = configuration.WidgetHeaderColor;
+            options.ColorLink = configuration.WidgetLinkColor;
+            options.ColorBorder = configuration.WidgetBorderColor;
+            options.ColorBorderSelected = configuration.WidgetSelectedBorderColor;
+            options.ColorText = configuration.WidgetTextColor;
+            options.ColorTextSecondary = configuration.WidgetTextSecondaryColor;
+            options.RadiusBorder = configuration.WidgetBorderRadius;
 
             return options;
         }
 
-        private Configuration GetConfiguration()
+        public Configuration GetConfiguration(IMarket market)
         {
-            var configuration = new Configuration();
+            return GetConfiguration(market.MarketId);
+        }
 
+        public Configuration GetConfiguration(MarketId marketId)
+        {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
+            if (paymentMethod == null)
             {
-                configuration.CustomerPreAssessmentCountries = paymentMethod.GetParameter(Constants.PreAssesmentCountriesField, string.Empty)?.Split(',');
-                configuration.SendProductAndImageUrlField = bool.Parse(paymentMethod.GetParameter(Constants.SendProductAndImageUrlField, "false"));
-                configuration.UseAttachments = bool.Parse(paymentMethod.GetParameter(Constants.UseAttachmentsField, "false"));
+                throw new Exception(
+                    $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }
-            return configuration;
+            return paymentMethod.GetConfiguration(marketId);
         }
     }
 }

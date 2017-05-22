@@ -1,10 +1,10 @@
+using Klarna.Common;
 using Mediachase.Commerce;
 
 namespace Klarna.Checkout
 {
-    public class Configuration
+    public class Configuration : ConnectionConfiguration
     {
-        public string MarketId { get; set; }
         public bool ShippingOptionsInIFrame { get; set; }
         public bool AllowSeparateShippingAddress { get; set; }
         public bool DateOfBirthMandatory { get; set; }
@@ -26,5 +26,12 @@ namespace Klarna.Checkout
         public string ShippingOptionUpdateUrl { get; set; }
         public string AddressUpdateUrl { get; set; }
         public string OrderValidationUrl { get; set; }
+        public string WidgetButtonColor { get; set; }
+        public string WidgetButtonTextColor { get; set; }
+        public string WidgetCheckboxColor { get; set; }
+        public string WidgetCheckboxCheckmarkColor { get; set; }
+        public string WidgetHeaderColor { get; set; }
+        public string WidgetLinkColor { get; set; }
+        public string WidgetBorderRadius { get; set; }
     }
 }

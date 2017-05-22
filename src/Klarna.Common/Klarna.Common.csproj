@@ -213,11 +213,10 @@
     <Compile Include="Helpers\CountryCodeHelper.cs" />
     <Compile Include="Helpers\CountryRegionProvider.cs" />
     <Compile Include="Helpers\ICountryRegionProvider.cs" />
-    <Compile Include="IConnectionFactory.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
     <Compile Include="IKlarnaService.cs" />
-    <Compile Include="KlarnaConnectionFactory.cs" />
+    <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="KlarnaService.cs" />
     <Compile Include="Models\FraudStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />

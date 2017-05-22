@@ -5,6 +5,7 @@ using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.Common;
 using Klarna.Payments.Models;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement.Steps
@@ -13,7 +14,7 @@ namespace Klarna.OrderManagement.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStepBase));
 
-        protected AuthorizePaymentStepBase(IPayment payment) : base(payment)
+        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId) : base(payment, marketId)
         {
         }
         

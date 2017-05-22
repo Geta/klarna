@@ -1,6 +1,7 @@
 ﻿using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.OrderManagement.Steps;
+using Mediachase.Commerce;
 
 namespace Klarna.Checkout.Steps
 {
@@ -8,7 +9,7 @@ namespace Klarna.Checkout.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStep));
 
-        public AuthorizePaymentStep(IPayment payment) : base(payment)
+        public AuthorizePaymentStep(IPayment payment, MarketId marketId) : base(payment, marketId)
         {
         }
         public override bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message)

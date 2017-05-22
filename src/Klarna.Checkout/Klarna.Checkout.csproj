@@ -196,6 +196,7 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />

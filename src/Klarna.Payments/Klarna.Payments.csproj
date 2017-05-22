@@ -221,6 +221,7 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="Helpers\CartOrderNumberHelper.cs" />
     <Compile Include="IKlarnaPaymentsService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />

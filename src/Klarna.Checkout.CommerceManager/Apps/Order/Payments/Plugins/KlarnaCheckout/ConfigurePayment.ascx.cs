@@ -151,7 +151,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             {
                 list.Add(configuration);
             }
-            paymentMethod.SetParameter(Constants.KlarnaSerializedMarketOptions, Newtonsoft.Json.JsonConvert.SerializeObject(list));
+            paymentMethod.SetParameter(Common.Constants.KlarnaSerializedMarketOptions, Newtonsoft.Json.JsonConvert.SerializeObject(list));
         }
 
         private List<Configuration> GetMarketConfigurations(PaymentMethodDto paymentMethod)
