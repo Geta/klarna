@@ -140,9 +140,7 @@ namespace Klarna.Checkout
                 checkout.Create(orderData);
                 orderData = checkout.Fetch();
 
-                // Store checkout order id on cart
-                cart.Properties[Constants.KlarnaCheckoutOrderIdField] = orderData.OrderId;
-                _orderRepository.Save(cart);
+                cart = UpdateCartWithOrderData(cart, orderData);
 
                 return orderData;
             }
@@ -154,7 +152,6 @@ namespace Klarna.Checkout
             catch (WebException ex)
             {
                 _logger.Error(ex.Message, ex);
-
                 throw;
             }
         }
@@ -171,12 +168,9 @@ namespace Klarna.Checkout
                     checkoutOrderDataBuilder.Build(orderData, cart, Configuration);
                 }
                 orderData = checkout.Update(orderData);
-                // TODO check pre-set data (update cart?)
-                var shipment = cart.GetFirstShipment();
-                if (shipment != null)
-                {
-                    shipment.ShippingAddress = orderData.ShippingAddress.ToOrderAddress(cart);
-                }
+
+                cart = UpdateCartWithOrderData(cart, orderData);
+
                 return orderData;
             }
             catch (ApiException ex)
@@ -197,6 +191,23 @@ namespace Klarna.Checkout
 
                 throw;
             }
+        }
+
+        private ICart UpdateCartWithOrderData(ICart cart, CheckoutOrderData orderData)
+        {
+            var shipment = cart.GetFirstShipment();
+            if (shipment != null && orderData.ShippingAddress != null)
+            {
+                shipment.ShippingAddress = orderData.ShippingAddress.ToOrderAddress(cart);
+                _orderRepository.Save(cart);
+            }
+
+            // Store checkout order id on cart
+            cart.Properties[Constants.KlarnaCheckoutOrderIdField] = orderData.OrderId;
+
+            _orderRepository.Save(cart);
+
+            return cart;
         }
 
         private CheckoutOrderData GetCheckoutOrderData(ICart cart, PaymentMethodDto paymentMethodDto)
