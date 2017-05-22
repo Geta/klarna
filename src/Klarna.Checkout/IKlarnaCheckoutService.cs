@@ -3,6 +3,7 @@ using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Rest.Models;
+using Mediachase.Commerce;
 
 namespace Klarna.Checkout
 {
@@ -26,5 +27,7 @@ namespace Klarna.Checkout
 
         void UpdateMerchantReference1(IPurchaseOrder purchaseOrder);
         void AcknowledgeOrder(IPurchaseOrder purchaseOrder);
+        Configuration GetConfiguration(IMarket market);
+        Configuration GetConfiguration(MarketId marketId);
     }
 }

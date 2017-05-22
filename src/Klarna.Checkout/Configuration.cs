@@ -1,7 +1,10 @@
+using Mediachase.Commerce;
+
 namespace Klarna.Checkout
 {
     public class Configuration
     {
+        public MarketId MarketId { get; set; }
         public bool ShippingOptionsInIFrame { get; set; }
         public bool AllowSeparateShippingAddress { get; set; }
         public bool DateOfBirthMandatory { get; set; }

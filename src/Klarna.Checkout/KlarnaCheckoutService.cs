@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
+using EPiServer.Business.Commerce.Exception;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
@@ -14,10 +16,13 @@ using Klarna.OrderManagement;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
+using Newtonsoft.Json;
+using ConfigurationException = EPiServer.Business.Commerce.Exception.ConfigurationException;
 
 namespace Klarna.Checkout
 {
@@ -31,6 +36,7 @@ namespace Klarna.Checkout
         private readonly IOrderRepository _orderRepository;
         private readonly IConnectionFactory _connectionFactory;
         private readonly IKlarnaOrderService _klarnaOrderService;
+        private readonly ICurrentMarket _currentMarket;
 
         private Client _client;
         private PaymentMethodDto _paymentMethodDto;
@@ -42,12 +48,14 @@ namespace Klarna.Checkout
             IConnectionFactory connectionFactory,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
-            IKlarnaOrderValidator klarnaOrderValidator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
+            IKlarnaOrderValidator klarnaOrderValidator, 
+            ICurrentMarket currentMarket) : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
             _connectionFactory = connectionFactory;
             _klarnaOrderValidator = klarnaOrderValidator;
+            _currentMarket = currentMarket;
             _klarnaOrderService = new KlarnaOrderService(_connectionFactory.GetConnectionConfiguration(PaymentMethodDto));
         }
 
@@ -69,7 +77,7 @@ namespace Klarna.Checkout
             {
                 if (_configuration == null)
                 {
-                    _configuration = GetConfiguration();
+                    _configuration = GetConfiguration(_currentMarket.GetCurrentMarket());
                 }
                 return _configuration;
             }
@@ -390,6 +398,30 @@ namespace Klarna.Checkout
             _klarnaOrderService.AcknowledgeOrder(purchaseOrder);
         }
 
+        public Configuration GetConfiguration(IMarket market)
+        {
+            return GetConfiguration(market.MarketId);
+        }
+
+        public Configuration GetConfiguration(MarketId marketId)
+        {
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            if (paymentMethod == null)
+            {
+                throw new ConfigurationException(
+                    $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
+            }
+
+            var allConfigurations = JsonConvert.DeserializeObject<Configuration[]>(paymentMethod.GetParameter(Constants.KlarnaSerializedMarketOptions, "[]"));
+            var configurationForMarket = allConfigurations.FirstOrDefault(x => x.MarketId.Equals(marketId));
+            if (configurationForMarket == null)
+            {
+                throw new ConfigurationException(
+                    $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
+            }
+            return configurationForMarket;
+        }
+
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
@@ -432,42 +464,7 @@ namespace Klarna.Checkout
         private IEnumerable<string> GetCountries()
         {
             var countries = CountryManager.GetCountries();
-
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
-        }
-
-        private Configuration GetConfiguration()
-        {
-            var configuration = new Configuration();
-
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
-            {
-                configuration.ShippingOptionsInIFrame = bool.Parse(paymentMethod.GetParameter(Constants.ShippingOptionsInIFrameField, "true"));
-                configuration.AllowSeparateShippingAddress = bool.Parse(paymentMethod.GetParameter(Constants.AllowSeparateShippingAddressField, "false"));
-                configuration.DateOfBirthMandatory = bool.Parse(paymentMethod.GetParameter(Constants.DateOfBirthMandatoryField, "false"));
-                configuration.ShippingDetailsText = paymentMethod.GetParameter(Constants.ShippingDetailsField, string.Empty);
-                configuration.TitleMandatory = bool.Parse(paymentMethod.GetParameter(Constants.TitleMandatoryField, "false"));
-                configuration.ShowSubtotalDetail = bool.Parse(paymentMethod.GetParameter(Constants.ShowSubtotalDetailField, "false"));
-                configuration.RequireValidateCallbackSuccess = bool.Parse(paymentMethod.GetParameter(Constants.RequireValidateCallbackSuccessField, "false"));
-                configuration.AdditionalCheckboxText = paymentMethod.GetParameter(Constants.AdditionalCheckboxTextField, string.Empty);
-                configuration.AdditionalCheckboxDefaultChecked = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxDefaultCheckedField, "false"));
-                configuration.AdditionalCheckboxRequired = bool.Parse(paymentMethod.GetParameter(Constants.AdditionalCheckboxRequiredField, "false"));
-
-                configuration.SendShippingCountries = bool.Parse(paymentMethod.GetParameter(Constants.SendShippingCountriesField, "false"));
-                configuration.SendShippingOptionsPriorAddresses = bool.Parse(paymentMethod.GetParameter(Constants.SendShippingOptionsPriorAddressesField, "false"));
-                configuration.PrefillAddress = bool.Parse(paymentMethod.GetParameter(Constants.PrefillAddressField, "false"));
-
-                configuration.ConfirmationUrl = paymentMethod.GetParameter(Constants.ConfirmationUrlField, string.Empty);
-                configuration.TermsUrl = paymentMethod.GetParameter(Constants.TermsUrlField, string.Empty);
-                configuration.CheckoutUrl = paymentMethod.GetParameter(Constants.CheckoutUrlField, string.Empty);
-                configuration.PushUrl = paymentMethod.GetParameter(Constants.PushUrlField, string.Empty);
-                configuration.NotificationUrl = paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
-                configuration.ShippingOptionUpdateUrl = paymentMethod.GetParameter(Constants.ShippingOptionUpdateUrlField, string.Empty);
-                configuration.AddressUpdateUrl = paymentMethod.GetParameter(Constants.AddressUpdateUrlField, string.Empty);
-                configuration.OrderValidationUrl = paymentMethod.GetParameter(Constants.OrderValidationUrlField, string.Empty);
-            }
-            return configuration;
         }
     }
 }

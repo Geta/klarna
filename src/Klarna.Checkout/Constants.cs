@@ -6,6 +6,8 @@
 
         public const string KlarnaCheckoutOrderIdField = "KlarnaCheckoutOrderId";
 
+        public const string KlarnaSerializedMarketOptions = "KlarnaSerializedMarketOptions";
+
         public const string KlarnaWidgetColorButtonField = "KlarnaWidgetColorButton";
         public const string KlarnaWidgetColorButtonTextField = "KlarnaWidgetColorButtonText";
         public const string KlarnaWidgetColorCheckboxField = "KlarnaWidgetColorCheckbox";
