@@ -7,6 +7,19 @@
 </style>
 
 <div class="karnapayment-parameters">
+
+<h2>Market</h2>
+    
+<table class="DataForm">
+    <tbody>
+         <tr>
+            <td class="FormLabelCell">Select a market:</td>
+            <td class="FormFieldCell">
+                <asp:DropDownList runat="server" ID="marketDropDownList" OnSelectedIndexChanged="marketDropDownList_OnSelectedIndexChanged" AutoPostBack="True" />
+            </td>
+        </tr>
+    </tbody>
+</table>
     
 <h2>Klarna connection setting</h2>
 

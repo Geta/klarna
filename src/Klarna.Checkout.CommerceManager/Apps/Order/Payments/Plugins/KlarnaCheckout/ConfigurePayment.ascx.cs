@@ -1,4 +1,7 @@
-﻿using Klarna.Common.Extensions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Klarna.Common.Extensions;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Web.Console.Interfaces;
 
@@ -67,6 +70,12 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             txtOrderValidationUrl.Text = paymentMethod.GetParameter(Constants.OrderValidationUrlField, string.Empty);
             var requireValidateCallbackSuccess = bool.Parse(paymentMethod.GetParameter(Constants.RequireValidateCallbackSuccessField, "false"));
             requireValidateCallbackSuccessCheckBox.Checked = requireValidateCallbackSuccess;
+
+            var markets = paymentMethod.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
+            if (markets != null)
+            {
+                marketDropDownList.DataSource = markets.Select(m => m.MarketId);
+            }
         }
         
         public void SaveChanges(object dto)
@@ -81,41 +90,72 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             {
                 return;
             }
-            paymentMethod.SetParameter(Common.Constants.KlarnaUsernameField, txtUsername.Text);
-            paymentMethod.SetParameter(Common.Constants.KlarnaPasswordField, txtPassword.Text);
-            paymentMethod.SetParameter(Common.Constants.KlarnaApiUrlField, txtApiUrl.Text);
+            var list = GetMarketConfigurations(paymentMethod);
+
+            var configuration = new Configuration();
+            configuration.AddressUpdateUrl = txtUsername.Text;
+            configuration.AddressUpdateUrl = txtPassword.Text;
+            configuration.AddressUpdateUrl = txtApiUrl.Text;
+
+            configuration.AddressUpdateUrl = txtColorButton.Text;
+            configuration.AddressUpdateUrl = txtColorButtonText.Text;
+            configuration.AddressUpdateUrl = txtColorCheckbox.Text;
+            configuration.AddressUpdateUrl = txtColorHeader.Text;
+            configuration.AddressUpdateUrl = txtColorLink.Text;
+            configuration.AddressUpdateUrl = txtRadiusBorder.Text;
+            configuration.AddressUpdateUrl = txtColorCheckboxCheckmark.Text;
+            configuration.ShippingOptionsInIFrame = shippingOptionsInIFrameCheckBox.Checked;
+            configuration.AllowSeparateShippingAddress = allowSeparateShippingAddressCheckBox.Checked;
+            configuration.DateOfBirthMandatory = dateOfBirthMandatoryCheckBox.Checked;
+            configuration.ShippingDetailsText = txtShippingDetails.Text;
+            configuration.TitleMandatory = titleMandatoryCheckBox.Checked;
+            configuration.ShowSubtotalDetail = showSubtotalDetailCheckBox.Checked;
+
+            configuration.SendShippingCountries = sendShippingCountriesCheckBox.Checked;
+            configuration.PrefillAddress = prefillAddressCheckBox.Checked;
+            configuration.SendShippingOptionsPriorAddresses = SendShippingOptionsPriorAddressesCheckBox.Checked;
+
+            configuration.AdditionalCheckboxText = additionalCheckboxTextTextBox.Text;
+            configuration.AdditionalCheckboxDefaultChecked = additionalCheckboxDefaultCheckedCheckBox.Checked;
+            configuration.AdditionalCheckboxRequired = additionalCheckboxRequiredCheckBox.Checked;
+
+            configuration.ConfirmationUrl = txtConfirmationUrl.Text;
+            configuration.TermsUrl = txtTermsUrl.Text;
+            configuration.CheckoutUrl = txtCheckoutUrl.Text;
+            configuration.PushUrl = txtPushUrl.Text;
+            configuration.NotificationUrl = txtNotificationUrl.Text;
+            configuration.ShippingOptionUpdateUrl = txtShippingOptionUpdateUrl.Text;
+            configuration.AddressUpdateUrl = txtAddressUpdateUrl.Text;
+            configuration.OrderValidationUrl = txtOrderValidationUrl.Text;
+            configuration.RequireValidateCallbackSuccess = requireValidateCallbackSuccessCheckBox.Checked;
+
+            var currentConfiguration = list.FirstOrDefault(x => true);
+            if (currentConfiguration != null)
+            {
+                currentConfiguration = configuration;
+            }
+            else
+            {
+                list.Add(configuration);
+            }
+            list.Add(configuration);
+
+            paymentMethod.SetParameter(Constants.OrderValidationUrlField, Newtonsoft.Json.JsonConvert.SerializeObject(list));
+        }
+
+        private List<Configuration> GetMarketConfigurations(PaymentMethodDto paymentMethod)
+        {
+            var list = new List<Configuration>();
+            var markets = paymentMethod.PaymentMethod.FirstOrDefault()?.GetMarketPaymentMethodsRows();
+            //list.AddRange(markets.Select(m => ));
+
+            return null;
             
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonField, txtColorButton.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorButtonTextField, txtColorButtonText.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorCheckboxField, txtColorCheckbox.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorHeaderField, txtColorHeader.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorLinkField, txtColorLink.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetRadiusBorderField, txtRadiusBorder.Text);
-            paymentMethod.SetParameter(Constants.KlarnaWidgetColorCheckboxCheckmarkField, txtColorCheckboxCheckmark.Text);
-            paymentMethod.SetParameter(Constants.ShippingOptionsInIFrameField, (shippingOptionsInIFrameCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.AllowSeparateShippingAddressField, (allowSeparateShippingAddressCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.DateOfBirthMandatoryField, (dateOfBirthMandatoryCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.ShippingDetailsField, txtShippingDetails.Text);
-            paymentMethod.SetParameter(Constants.TitleMandatoryField, (titleMandatoryCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.ShowSubtotalDetailField, (showSubtotalDetailCheckBox.Checked ? "true" : "false"));
+        }
 
-            paymentMethod.SetParameter(Constants.SendShippingCountriesField, (sendShippingCountriesCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.PrefillAddressField, (prefillAddressCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.SendShippingOptionsPriorAddressesField, (SendShippingOptionsPriorAddressesCheckBox.Checked ? "true" : "false"));
+        protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
+        {
 
-            paymentMethod.SetParameter(Constants.AdditionalCheckboxTextField, additionalCheckboxTextTextBox.Text);
-            paymentMethod.SetParameter(Constants.AdditionalCheckboxDefaultCheckedField, (additionalCheckboxDefaultCheckedCheckBox.Checked ? "true" : "false"));
-            paymentMethod.SetParameter(Constants.AdditionalCheckboxRequiredField, (additionalCheckboxRequiredCheckBox.Checked ? "true" : "false"));
-
-            paymentMethod.SetParameter(Constants.ConfirmationUrlField, txtConfirmationUrl.Text);
-            paymentMethod.SetParameter(Constants.TermsUrlField, txtTermsUrl.Text);
-            paymentMethod.SetParameter(Constants.CheckoutUrlField, txtCheckoutUrl.Text);
-            paymentMethod.SetParameter(Constants.PushUrlField, txtPushUrl.Text);
-            paymentMethod.SetParameter(Constants.NotificationUrlField, txtNotificationUrl.Text);
-            paymentMethod.SetParameter(Constants.ShippingOptionUpdateUrlField, txtShippingOptionUpdateUrl.Text);
-            paymentMethod.SetParameter(Constants.AddressUpdateUrlField, txtAddressUpdateUrl.Text);
-            paymentMethod.SetParameter(Constants.OrderValidationUrlField, txtOrderValidationUrl.Text);
-            paymentMethod.SetParameter(Constants.RequireValidateCallbackSuccessField, (requireValidateCallbackSuccessCheckBox.Checked ? "true" : "false"));
         }
     }
 }
