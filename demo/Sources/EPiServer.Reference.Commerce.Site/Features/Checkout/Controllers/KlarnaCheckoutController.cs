@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using System.Web.Http.Description;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
@@ -45,6 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/shippingoptionupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
+        [ResponseType(typeof(ShippingOptionUpdateResponse))]
         public IHttpActionResult ShippingOptionUpdate(int orderGroupId, [FromBody]ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
@@ -57,12 +59,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/addressupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
+        [ResponseType(typeof(AddressUpdateResponse))]
         public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]AddressUpdateRequest addressUpdateRequest)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
-
             var response = _klarnaCheckoutService.UpdateAddress(cart, addressUpdateRequest);
-
             return Ok(response);
         }
 
@@ -72,8 +73,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
-
-           
 
             // Validate cart lineitems
             var validationIssues = new Dictionary<ILineItem, ValidationIssue>();
@@ -89,7 +88,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return ResponseMessage(httpResponseMessage);
             }
 
-            // Validate billing address if necessary
+            // Validate billing address if necessary (this is just an example)
             // To return an error like this you need require_validate_callback_success set to true
             if (checkoutData.BillingAddress.PostalCode.Equals("94108-2704"))
             {
@@ -124,13 +123,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
 
             var requestParams = Request.Content.ReadAsStringAsync().Result;
-
             if (!string.IsNullOrEmpty(requestParams))
             {
                 var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
-
                 _klarnaCheckoutService.FraudUpdate(notification);
-
             }
             return Ok();
         }

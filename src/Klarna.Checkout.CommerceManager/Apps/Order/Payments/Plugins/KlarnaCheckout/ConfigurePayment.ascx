@@ -24,7 +24,7 @@
     </tbody>
 </table>
     
-<h2>Klarna connection setting</h2>
+<h2>Klarna connection settings</h2>
 
 
 <table class="DataForm">
@@ -53,7 +53,7 @@
     </tbody>
 </table>
     
-<h2>Klarna widget setting</h2>
+<h2>Klarna widget settings</h2>
 
 <table class="DataForm">
     <tbody>
@@ -188,15 +188,15 @@
     </tbody>
 </table>
     
-<h2>Merchant URL's</h2>
+<h2>Merchant/callback URLs</h2>
 
 <table class="DataForm">
     <tbody>
          <tr>
-            <td class="FormLabelCell">Confirmation URL:</td>
+            <td class="FormLabelCell">Checkout URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtConfirmationUrl" />
-                <asp:RequiredFieldValidator ID="requiredConfirmationUrl" runat="server" ControlToValidate="txtConfirmationUrl" ErrorMessage="Confirmation URL is required." />
+                <asp:TextBox runat="server" ID="txtCheckoutUrl" />
+                <asp:RequiredFieldValidator ID="requiredCheckoutUrl" runat="server" ControlToValidate="txtCheckoutUrl" ErrorMessage="Checkout URL is required." />
             </td>
         </tr>
         <tr>
@@ -207,13 +207,6 @@
             </td>
         </tr>
          <tr>
-            <td class="FormLabelCell">Checkout URL:</td>
-            <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtCheckoutUrl" />
-                <asp:RequiredFieldValidator ID="requiredCheckoutUrl" runat="server" ControlToValidate="txtCheckoutUrl" ErrorMessage="Checkout URL is required." />
-            </td>
-        </tr>
-         <tr>
             <td class="FormLabelCell">Push URL:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtPushUrl" />
@@ -221,7 +214,7 @@
             </td>
         </tr>
          <tr>
-            <td class="FormLabelCell">Notification URL:</td>
+            <td class="FormLabelCell">Notification/fraud URL:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtNotificationUrl" />
                 <asp:RequiredFieldValidator ID="requiredNotificationUrl" runat="server" ControlToValidate="txtNotificationUrl" ErrorMessage="Notification URL is required." />
@@ -246,6 +239,13 @@
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtOrderValidationUrl" />
                 <asp:RequiredFieldValidator ID="requiredOrderValidationUrl" runat="server" ControlToValidate="txtOrderValidationUrl" ErrorMessage="Order validation URL is required." />
+            </td>
+        </tr>
+         <tr>
+            <td class="FormLabelCell">Confirmation URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtConfirmationUrl" />
+                <asp:RequiredFieldValidator ID="requiredConfirmationUrl" runat="server" ControlToValidate="txtConfirmationUrl" ErrorMessage="Confirmation URL is required." />
             </td>
         </tr>
         <tr>

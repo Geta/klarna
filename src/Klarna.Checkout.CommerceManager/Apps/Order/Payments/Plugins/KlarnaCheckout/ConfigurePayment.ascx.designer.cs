@@ -19,7 +19,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.UpdatePanel ConfigureUpdatePanelContentPanel;
+        protected global::System.Web.UI.WebControls.UpdatePanel ConfigureUpdatePanelContentPanel;
         
         /// <summary>
         /// marketDropDownList control.
@@ -319,22 +319,22 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.CheckBox additionalCheckboxRequiredCheckBox;
         
         /// <summary>
-        /// txtConfirmationUrl control.
+        /// txtCheckoutUrl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtConfirmationUrl;
+        protected global::System.Web.UI.WebControls.TextBox txtCheckoutUrl;
         
         /// <summary>
-        /// requiredConfirmationUrl control.
+        /// requiredCheckoutUrl control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredConfirmationUrl;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredCheckoutUrl;
         
         /// <summary>
         /// txtTermsUrl control.
@@ -353,24 +353,6 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredTermsUrl;
-        
-        /// <summary>
-        /// txtCheckoutUrl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtCheckoutUrl;
-        
-        /// <summary>
-        /// requiredCheckoutUrl control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredCheckoutUrl;
         
         /// <summary>
         /// txtPushUrl control.
@@ -461,6 +443,24 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredOrderValidationUrl;
+        
+        /// <summary>
+        /// txtConfirmationUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtConfirmationUrl;
+        
+        /// <summary>
+        /// requiredConfirmationUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredConfirmationUrl;
         
         /// <summary>
         /// requireValidateCallbackSuccessCheckBox control.
