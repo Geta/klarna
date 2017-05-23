@@ -23,7 +23,7 @@ namespace Klarna.Payments
     [ServiceConfiguration(typeof(IKlarnaPaymentsService))]
     public class KlarnaPaymentsService : KlarnaService, IKlarnaPaymentsService
     {
-        private readonly IKlarnaServiceApi _klarnaServiceApi;
+        private readonly Injected<IKlarnaServiceApi> _klarnaServiceApi;
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
@@ -38,7 +38,6 @@ namespace Klarna.Payments
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
-            _klarnaServiceApi = ServiceLocator.Current.GetInstance<IKlarnaServiceApi>();
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
             _orderNumberGenerator = orderNumberGenerator;
@@ -75,7 +74,7 @@ namespace Klarna.Payments
             {
                 try
                 {
-                    await _klarnaServiceApi.UpdateSession(sessionId, sessionRequest).ConfigureAwait(false);
+                    await _klarnaServiceApi.Service.UpdateSession(sessionId, sessionRequest).ConfigureAwait(false);
 
                     return true;
                 }
@@ -112,7 +111,7 @@ namespace Klarna.Payments
 
         public async Task<Session> GetSession(ICart cart)
         {
-            return await _klarnaServiceApi.GetSession(GetSessionId(cart)).ConfigureAwait(false);
+            return await _klarnaServiceApi.Service.GetSession(GetSessionId(cart)).ConfigureAwait(false);
         }
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
@@ -129,14 +128,14 @@ namespace Klarna.Payments
             {
                 Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?trackingNumber={sessionRequest.MerchantReference1}",
             };
-            return await _klarnaServiceApi.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
+            return await _klarnaServiceApi.Service.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
         }
 
         public async Task CancelAuthorization(string authorizationToken)
         {
             try
             {
-                await _klarnaServiceApi.CancelAuthorization(authorizationToken).ConfigureAwait(false);
+                await _klarnaServiceApi.Service.CancelAuthorization(authorizationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -283,7 +282,7 @@ namespace Klarna.Payments
         {
             try
             {
-                var response = await _klarnaServiceApi.CreatNewSession(sessionRequest).ConfigureAwait(false);
+                var response = await _klarnaServiceApi.Service.CreatNewSession(sessionRequest).ConfigureAwait(false);
 
                 cart.Properties[Constants.KlarnaSessionIdField] = response.SessionId;
                 cart.Properties[Constants.KlarnaClientTokenField] = response.ClientToken;

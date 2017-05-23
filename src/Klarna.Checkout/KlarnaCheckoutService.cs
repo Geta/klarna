@@ -193,6 +193,11 @@ namespace Klarna.Checkout
             }
             catch (WebException ex)
             {
+                if ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return CreateOrder(cart);
+                }
+
                 _logger.Error(ex.Message, ex);
 
                 throw;
