@@ -42,42 +42,54 @@ For the Commerce Manager site run the following package:
   
 Login into Commerce Manager and open **Administration -> Order System -> Payments**. Then click **New** and in **Overview** tab fill:
 
+(*) mandatory
+
 - Name(*)
 - System Keyword(*) - KlarnaCheckout (the integration will not work when something else is entered in this field)
 - Language(*) - allows a specific language to be specified for the payment gateway
 - Class Name(*) - choose **Klarna.Checkout.KlarnaCheckoutGateway**
 - Payment Class(*) - choose **Mediachase.Commerce.Orders.OtherPayment**
 - IsActive - **Yes**
+- Select shipping methods available for this payment
+- Select markets available for this payment
 
-(*) mandatory
-- select shipping methods available for this payment
+Click OK in order to save the Payment for the first time. After saving, return to the payment and go to the parameters tab
+- **Market**
+  - Select the market you want to set up
+  - This will reflect the selected markets from the **Markets** tab (after saving)
+- **Klarna connection settings**
+  - Username(*) - provided by Klarna
+  - Password(*) - provided by Klarna
+  - ApiUrl(*) - provided by Klarna
+    - See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls. Klarna API requires HTTPS.
+- **Widget settings**
+  - [Some widget styling settings](https://developers.klarna.com/en/gb/kco-v3/checkout/extra-features)
+  - Shipping details, see [same link](https://developers.klarna.com/en/gb/kco-v3/checkout/extra-features)
+  - Select shipping option in Klarna Checkout iFrame - Unless you want to have your own shipping options selector, set this to true
+  - Allow separate shipping address - If true, the consumer can enter different billing and shipping addresses. Default: false
+  - Date of birth mandatory - If true, the consumer cannot skip date of birth. Default: false
+  - Title mandatory - If specified to false, title becomes optional. Only available for orders for country GB.
+  - Show subtotal detail - If true, the Order Detail subtodals view is expanded. Default: false
+  - Send shipping countries - sends available countries from the Epi country dictionary
+  - Prefill addresses - send address information on order creation in Klarna (preferred shipping/billing address)
+  - Send shipping options prior to filling addresses - send in available shipping options even if address is unknown
+- **Klarna Widget additional checkbox**
+  - [Another extra feature](https://developers.klarna.com/en/gb/kco-v3/checkout/extra-features) which enables you to add a checkbox within the Klarna checkout iFrame
+- **Merchant/callback URLs**
+  - Checkout url (*) - URL of merchant checkout page. Should be different than terms, confirmation and push URLs.
+  - Terms url (*) - URL of merchant terms and conditions. Should be different than checkout, confirmation and push URLs
+  - Push url (*) - URL that will be requested when an order is completed. Should be different than checkout and confirmation URLs
+  - Notification/fraud url - URL for notifications on pending orders
+  - Shipping option update url - URL for shipping option update - must be https
+  - Address update url - URL for shipping, tax and purchase currency updates. Will be called on address changes -must be https
+  - Order validation url - URL that will be requested for final merchant validation - must be https
+  - Confirmation url (*) - URL of merchant confirmation page. Should be different than checkout and confirmation URLs
 
-![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
+The Klarna.Checkout package will replace ``{orderGroupId}`` in any of the urls with the id of the cart. Klarna does a similar thing, they will replace ``{checkout.order.id}`` with the actual klarna order id (for example on confirmation url below)
 
-- navigate to parameters tab and fill in settings (see screenshot below)
+![Checkout payment method settings](/docs/screenshots/checkout-parameters.PNG?raw=true "Checkout payment method parameters")  
 
-**Connection string**
-
-Connection string configurations for the connection with the Klarna APi. See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls. Klarna API requires HTTPS.
-
-**Widget settings**
-
-Set the colors and border size for the Klarna widget. The Klarna logo should be placed by the developer somewhere on the checkout/payment page.
-
-**Other settings**
-
-After payment is completed the confirmation url must be called. This can be done with this method:
-```
-_klarnaService.RedirectToConfirmationUrl(purchaseOrder);
-```
-Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. 
-
-
-![Payment method settings](/docs/screenshots/payment-parameters.PNG?raw=true "Payment method parameters")
-
-**Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager nuget (see above)**
-
-- In the **Markets** tab select a market for which this payment will be available.
+**Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager package (see above)**
   
 </details>
 
@@ -100,7 +112,7 @@ Read more about the different parameters: https://developers.klarna.com/api/#pay
 </details>
 
 <details>
-<summary>Callbacks</summary>
+<summary>Callbacks (click to expand)</summary>
 During the checkout process Klarna trigger one of the following callbacks.
 
 #### [Shipping optionupdate](https://developers.klarna.com/en/us/kco-v3/checkout/additional-features/tax-shipping)
@@ -211,7 +223,7 @@ public IHttpActionResult FraudNotification(int orderGroupId, string klarna_order
 
 </details>
 <details>
-<summary>Callbacks</summary>
+<summary>Order notes (click to expand)</summary>
 
 The KlarnaPaymentGateway save notes about payment updates at the order.
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
