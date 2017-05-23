@@ -12,10 +12,9 @@ namespace Klarna.Common.Extensions
         public static ConnectionConfiguration GetConnectionConfiguration(this PaymentMethodDto paymentMethodDto,
             MarketId marketId)
         {
-            var configurations = JsonConvert.DeserializeObject<ConnectionConfiguration[]>(paymentMethodDto.GetParameter(Constants.KlarnaSerializedMarketOptions, "[]"));
-            var config = configurations.FirstOrDefault(x => x.MarketId.Equals(marketId.ToString()));
+            var configuration = JsonConvert.DeserializeObject<ConnectionConfiguration>(paymentMethodDto.GetParameter($"{marketId.Value}_{Constants.KlarnaSerializedMarketOptions}", string.Empty));
 
-            if (config == null)
+            if (configuration == null)
             {
                 throw new Exception(
                     $"PaymentMethod {paymentMethodDto.PaymentMethod.FirstOrDefault()?.SystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
@@ -23,9 +22,9 @@ namespace Klarna.Common.Extensions
 
             return new ConnectionConfiguration
             {
-                ApiUrl = config.ApiUrl,
-                Username = config.Username,
-                Password = config.Password
+                ApiUrl = configuration.ApiUrl,
+                Username = configuration.Username,
+                Password = configuration.Password
             };
         }
     }
