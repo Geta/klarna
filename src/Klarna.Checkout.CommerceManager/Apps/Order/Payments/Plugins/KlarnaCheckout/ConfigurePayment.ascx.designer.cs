@@ -19,7 +19,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.UpdatePanel ConfigureUpdatePanelContentPanel;
+        protected global::System.Web.UI.UpdatePanel ConfigureUpdatePanelContentPanel;
         
         /// <summary>
         /// marketDropDownList control.
