@@ -1,6 +1,4 @@
-﻿using System;
-using EPiServer.Globalization;
-using Klarna.Common.Extensions;
+﻿using Klarna.Common.Extensions;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Newtonsoft.Json;
@@ -17,8 +15,6 @@ namespace Klarna.Payments.Extensions
             if (configuration == null)
             {
                 return new PaymentsConfiguration();
-                throw new Exception(
-                    $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }
             return configuration;
         }
