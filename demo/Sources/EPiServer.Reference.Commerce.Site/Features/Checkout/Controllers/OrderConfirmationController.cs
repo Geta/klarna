@@ -46,7 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 order = _confirmationService.GetByTrackingNumber(trackingNumber);
             }
 
-            if (order != null && order.CustomerId == _customerContext.CurrentContactId)
+            if (order != null/* && order.CustomerId == _customerContext.CurrentContactId*/)
             {
                 var viewModel = CreateViewModel(currentPage, order);
                 viewModel.NotificationMessage = notificationMessage;

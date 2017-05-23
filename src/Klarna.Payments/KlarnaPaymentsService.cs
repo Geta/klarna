@@ -156,9 +156,7 @@ namespace Klarna.Payments
                 var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword));
                 if (payment != null)
                 {
-                    var config = GetConfiguration(purchaseOrder.Market.MarketId);
-
-                    var url = config.ConfirmationUrl;
+                    var url = payment.Properties[Constants.KlarnaConfirmationUrlField]?.ToString();
                     if (!string.IsNullOrEmpty(url))
                     {
                         HttpContext.Current.Response.Redirect(url);
