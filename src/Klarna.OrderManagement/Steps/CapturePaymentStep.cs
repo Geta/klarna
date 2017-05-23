@@ -27,7 +27,7 @@ namespace Klarna.OrderManagement.Steps
         ///     The amount captured never can be greater than the authorized.
         /// When an order is Partally Captured the status of the order in Klarna is PART_CAPTURED
         /// </summary>
-        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message)
+        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
         {
             if (payment.TransactionType == TransactionType.Capture.ToString())
             {
@@ -37,7 +37,7 @@ namespace Klarna.OrderManagement.Steps
                 {
                     try
                     {
-                        var captureData = KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment", orderGroup, orderForm, payment);
+                        var captureData = KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment", orderGroup, orderForm, payment, shipment);
                         AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Captured {payment.Amount}, id {captureData.CaptureId}");
                     }
                     catch (Exception ex) when (ex is ApiException || ex is WebException)
@@ -55,7 +55,7 @@ namespace Klarna.OrderManagement.Steps
             }
             else if (Successor != null)
             {
-                return Successor.Process(payment, orderForm, orderGroup, ref message);
+                return Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
             }
             return false;
         }

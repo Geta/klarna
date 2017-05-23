@@ -16,7 +16,7 @@ namespace Klarna.OrderManagement.Steps
         {
         }
 
-        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, ref string message)
+        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
         {
             if (payment.TransactionType == KlarnaAdditionalTransactionType.ReleaseRemainingAuthorization.ToString())
             {
@@ -47,7 +47,7 @@ namespace Klarna.OrderManagement.Steps
             }
             else if (Successor != null)
             {
-                return Successor.Process(payment, orderForm, orderGroup, ref message);
+                return Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
             }
             return false;
         }

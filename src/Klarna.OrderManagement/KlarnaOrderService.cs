@@ -62,21 +62,11 @@ namespace Klarna.OrderManagement
             order.UpdateMerchantReferences(updateMerchantReferences);
         }
 
-        public CaptureData CaptureOrder(
-            string orderId,
-            int? amount,
-            string description,
-            IOrderGroup orderGroup,
-            IOrderForm orderForm,
-            IPayment payment)
+        public CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
         {
             var order = Client.NewOrder(orderId);
             var capture = Client.NewCapture(order.Location);
 
-            var shipment =
-                orderForm.Shipments.FirstOrDefault(x => x.GetShippingItemsTotal(orderGroup.Currency).Amount +
-                                                        (x.GetShippingCost(orderGroup.Market, orderGroup.Currency).Amount - x.GetShipmentDiscountPrice(orderGroup.Currency).Amount) ==
-                                                        payment.Amount);
             if (shipment == null)
             {
                 throw new InvalidOperationException("Can't find correct shipment");

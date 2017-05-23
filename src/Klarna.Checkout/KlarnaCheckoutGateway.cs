@@ -43,7 +43,7 @@ namespace Klarna.Checkout
                 capturePaymentStep.SetSuccessor(creditPaymentStep);
                 creditPaymentStep.SetSuccessor(cancelPaymentStep);
 
-                return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, ref message);
+                return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, OrderGroup.GetFirstShipment(), ref message);
             }
             catch (Exception ex)
             {
