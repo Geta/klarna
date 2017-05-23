@@ -4,6 +4,7 @@
     {
         public const string KlarnaCheckoutSystemKeyword = "KlarnaCheckout";
 
-        public const string KlarnaCheckoutOrderIdField = "KlarnaCheckoutOrderId";
+        // Cart property fields
+        public const string KlarnaCheckoutOrderIdCartField = "KlarnaCheckoutOrderIdCart";
     }
 }

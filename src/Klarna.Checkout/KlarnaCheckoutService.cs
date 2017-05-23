@@ -102,7 +102,7 @@ namespace Klarna.Checkout
 
         public CheckoutOrderData CreateOrUpdateOrder(ICart cart)
         {
-            var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (string.IsNullOrWhiteSpace(orderId))
             {
                 return CreateOrder(cart);
@@ -214,7 +214,7 @@ namespace Klarna.Checkout
             }
 
             // Store checkout order id on cart
-            cart.Properties[Constants.KlarnaCheckoutOrderIdField] = orderData.OrderId;
+            cart.Properties[Constants.KlarnaCheckoutOrderIdCartField] = orderData.OrderId;
 
             _orderRepository.Save(cart);
 
@@ -378,19 +378,19 @@ namespace Klarna.Checkout
 
         public void CancelOrder(ICart cart)
         {
-            var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId))
             {
                 _klarnaOrderService.CancelOrder(orderId);
 
-                cart.Properties[Constants.KlarnaCheckoutOrderIdField] = null;
+                cart.Properties[Constants.KlarnaCheckoutOrderIdCartField] = null;
                 _orderRepository.Save(cart);
             }
         }
 
         public void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
         {
-            var orderId = purchaseOrder.Properties[Constants.KlarnaCheckoutOrderIdField]?.ToString();
+            var orderId = purchaseOrder.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId) && purchaseOrder is PurchaseOrder)
             {
                 _klarnaOrderService.UpdateMerchantReferences(orderId, ((PurchaseOrder)purchaseOrder).TrackingNumber, null);

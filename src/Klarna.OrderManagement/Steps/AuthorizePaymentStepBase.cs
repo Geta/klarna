@@ -38,7 +38,7 @@ namespace Klarna.OrderManagement.Steps
 
         private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
-            if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
+            if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
             {
                 payment.Status = PaymentStatus.Processed.ToString();
 
@@ -48,7 +48,7 @@ namespace Klarna.OrderManagement.Steps
 
                 return true;
             }
-            else if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
+            else if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
             {
                 payment.Status = PaymentStatus.Failed.ToString();
 
@@ -56,7 +56,7 @@ namespace Klarna.OrderManagement.Steps
 
                 return false;
             }
-            else if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
+            else if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
             {
                 //TODO Fraud status stopped
 
@@ -66,7 +66,7 @@ namespace Klarna.OrderManagement.Steps
 
                 return false;
             }
-            message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Common.Constants.FraudStatusPaymentMethodField]} or no fraud notifications received so far.";
+            message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Common.Constants.FraudStatusPaymentField]} or no fraud notifications received so far.";
             return false;
         }
 

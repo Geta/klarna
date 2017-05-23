@@ -6,15 +6,14 @@
         public const string PurchaseOrderClass = "PurchaseOrder";
         public const string OtherPaymentClass = "OtherPayment";
         public const string CartClass = "ShoppingCart";
-
+        
+        // Payment method property fields
+        public const string KlarnaSerializedMarketOptions = "KlarnaSerializedMarketOptions";
+        
+        // Purchase order meta fields
         public const string KlarnaOrderIdField = "KlarnaOrderId";
 
-        public const string KlarnaSerializedMarketOptions = "KlarnaSerializedMarketOptions";
-
-        public const string KlarnaUsernameField = "KlarnaUsername";
-        public const string KlarnaPasswordField = "KlarnaPassword";
-        public const string KlarnaApiUrlField = "KlarnaApiUrl";
-
-        public const string FraudStatusPaymentMethodField = "FraudStatusPaymentMethod";
+        // Other payment meta fields
+        public const string FraudStatusPaymentField = "FraudStatusPayment";
     }
 }

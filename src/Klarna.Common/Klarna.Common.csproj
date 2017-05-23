@@ -217,6 +217,7 @@
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
     <Compile Include="IKlarnaService.cs" />
     <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
+    <Compile Include="Initialization\MetadataInitializationBase.cs" />
     <Compile Include="KlarnaService.cs" />
     <Compile Include="Models\FraudStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />

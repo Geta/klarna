@@ -196,6 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IKlarnaOrderService.cs" />
+    <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="Initialization\OrderInitialization.cs" />
     <Compile Include="KlarnaAdditionalTransactionType.cs" />
     <Compile Include="KlarnaOrderService.cs" />

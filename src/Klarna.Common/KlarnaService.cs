@@ -35,7 +35,7 @@ namespace Klarna.Common
                 var payment = orderForm.Payments.FirstOrDefault();
                 if (payment != null && payment.Status == PaymentStatus.Pending.ToString())
                 {
-                    payment.Properties[Constants.FraudStatusPaymentMethodField] = notification.Status.ToString();
+                    payment.Properties[Constants.FraudStatusPaymentField] = notification.Status.ToString();
 
                     try
                     {

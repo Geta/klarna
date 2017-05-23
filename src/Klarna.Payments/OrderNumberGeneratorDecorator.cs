@@ -14,13 +14,13 @@ namespace Klarna.Payments
 
         public string GenerateOrderNumber(IOrderGroup orderGroup)
         {
-            var orderNumberField = orderGroup.Properties[Constants.CartOrderNumberTempField];
+            var orderNumberField = orderGroup.Properties[Constants.CartOrderNumberTempCartField];
             
             if (string.IsNullOrEmpty(orderNumberField?.ToString()))
             {
                 var orderNumber = _inner.GenerateOrderNumber(orderGroup);
 
-                orderGroup.Properties[Constants.CartOrderNumberTempField] = orderNumber;
+                orderGroup.Properties[Constants.CartOrderNumberTempCartField] = orderNumber;
 
                 return orderNumber;
             }

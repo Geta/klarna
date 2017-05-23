@@ -4,14 +4,14 @@
     {
         public const string KlarnaPaymentSystemKeyword = "KlarnaPayments";
 
-        // Cart meta fields
-        public const string KlarnaSessionIdField = "KlarnaSessionId";
-        public const string KlarnaClientTokenField = "KlarnaClientToken";
-        public const string KlarnaAllowSharingOfPersonalInformationField = "KlarnaAllowSharingOfPersonalInformationField";
-        public const string CartOrderNumberTempField = "CartOrderNumberTemp";
-        public const string KlarnaConfirmationUrlField = "KlarnaConfirmationUrl";
+        // Cart property fields
+        public const string KlarnaSessionIdCartField = "KlarnaSessionIdCart";
+        public const string KlarnaClientTokenCartField = "KlarnaClientTokenCart";
+        public const string KlarnaAllowSharingOfPersonalInformationCartField = "KlarnaAllowSharingOfPersonalInformationCart";
+        public const string CartOrderNumberTempCartField = "CartOrderNumberTempCart";
 
-        // Payment fields
-        public const string AuthorizationTokenPaymentMethodField = "AuthorizationTokenPaymentMethod";
+        // Other payment meta field
+        public const string AuthorizationTokenPaymentField = "AuthorizationTokenPayment";
+        public const string KlarnaConfirmationUrlPaymentField = "KlarnaConfirmationUrlPayment";
     }
 }

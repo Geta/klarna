@@ -124,7 +124,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             var payment = viewModel.Payment.PaymentMethod.CreatePayment(total.Amount, cart);
             if (payment.PaymentMethodName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
             {
-                payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentMethodField] = viewModel.AuthorizationToken;
+                payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentField] = viewModel.AuthorizationToken;
             }
 
             cart.AddPayment(payment, _orderGroupFactory);

@@ -8,7 +8,7 @@ namespace Klarna.Payments.Helpers
     {
         public static string GenerateOrderNumber(IOrderGroup orderGroup)
         {
-            var orderNumberField = orderGroup.Properties[Constants.CartOrderNumberTempField];
+            var orderNumberField = orderGroup.Properties[Constants.CartOrderNumberTempCartField];
             var orderNumber = string.Empty;
 
             if (string.IsNullOrEmpty(orderNumberField?.ToString()))
@@ -18,7 +18,7 @@ namespace Klarna.Payments.Helpers
                     var cart = (Cart) orderGroup;
                     orderNumber = cart.GenerateOrderNumber(cart);
                 }
-                orderGroup.Properties[Constants.CartOrderNumberTempField] = orderNumber;
+                orderGroup.Properties[Constants.CartOrderNumberTempCartField] = orderNumber;
                 return orderNumber;
             }
             return orderNumberField.ToString();
@@ -26,7 +26,7 @@ namespace Klarna.Payments.Helpers
 
         public static string GetOrderNumber(OrderGroup orderGroup)
         {
-            return orderGroup.GetString(Constants.CartOrderNumberTempField);
+            return orderGroup.GetString(Constants.CartOrderNumberTempCartField);
         }
     }
 }

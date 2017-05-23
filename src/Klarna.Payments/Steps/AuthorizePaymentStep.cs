@@ -24,7 +24,7 @@ namespace Klarna.Payments.Steps
         
         public override bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
-            var authorizationToken = payment.Properties[Constants.AuthorizationTokenPaymentMethodField]?.ToString();
+            var authorizationToken = payment.Properties[Constants.AuthorizationTokenPaymentField]?.ToString();
             if (!string.IsNullOrEmpty(authorizationToken))
             {
                 try
@@ -34,8 +34,8 @@ namespace Klarna.Payments.Steps
                         .Result;
 
                     orderGroup.Properties[Common.Constants.KlarnaOrderIdField] = result.OrderId;
-                    payment.Properties[Common.Constants.FraudStatusPaymentMethodField] = result.FraudStatus;
-                    payment.Properties[Constants.KlarnaConfirmationUrlField] = result.RedirectUrl;
+                    payment.Properties[Common.Constants.FraudStatusPaymentField] = result.FraudStatus;
+                    payment.Properties[Constants.KlarnaConfirmationUrlPaymentField] = result.RedirectUrl;
 
                     AddNoteAndSaveChanges(orderGroup, payment.TransactionType,
                         $"Order created at Klarna, order id: {result.OrderId}, fraud status: {result.FraudStatus}");

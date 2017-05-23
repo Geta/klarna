@@ -4,7 +4,7 @@ using Klarna.Common.Initialization;
 using Mediachase.Commerce.Catalog;
 using Mediachase.MetaDataPlus;
 
-namespace Klarna.Payments.Initialization
+namespace Klarna.OrderManagement.Initialization
 {
     [InitializableModule]
     [ModuleDependency(typeof(EPiServer.Commerce.Initialization.InitializationModule))]
@@ -14,9 +14,11 @@ namespace Klarna.Payments.Initialization
         {
             MetaDataContext mdContext = CatalogContext.MetaDataContext;
             
+            // Purchase order meta fields
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Common.Constants.PurchaseOrderClass);
+
             // Other payment meta fields
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaConfirmationUrlPaymentField), Common.Constants.OtherPaymentClass);
-            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.AuthorizationTokenPaymentField), Common.Constants.OtherPaymentClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.FraudStatusPaymentField), Common.Constants.OtherPaymentClass);
         }
 
         public void Uninitialize(InitializationEngine context)
@@ -24,6 +26,6 @@ namespace Klarna.Payments.Initialization
 
         }
 
-        protected override string IntegrationName => "Klarna Payments";
+        protected override string IntegrationName => "Order Management";
     }
 }

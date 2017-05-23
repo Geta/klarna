@@ -70,7 +70,7 @@ namespace Klarna.Payments
                     sessionRequest.Customer = null;
                 }
             }
-            var sessionId = cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
+            var sessionId = cart.Properties[Constants.KlarnaSessionIdCartField]?.ToString();
             if (!string.IsNullOrEmpty(sessionId))
             {
                 try
@@ -102,12 +102,12 @@ namespace Klarna.Payments
 
         public string GetSessionId(ICart cart)
         {
-            return cart.Properties[Constants.KlarnaSessionIdField]?.ToString();
+            return cart.Properties[Constants.KlarnaSessionIdCartField]?.ToString();
         }
 
         public string GetClientToken(ICart cart)
         {
-            return cart.Properties[Constants.KlarnaClientTokenField]?.ToString();
+            return cart.Properties[Constants.KlarnaClientTokenCartField]?.ToString();
         }
 
         public async Task<Session> GetSession(ICart cart)
@@ -158,7 +158,7 @@ namespace Klarna.Payments
                 {
                     SetOrderStatus(purchaseOrder, payment);
 
-                    var url = payment.Properties[Constants.KlarnaConfirmationUrlField]?.ToString();
+                    var url = payment.Properties[Constants.KlarnaConfirmationUrlPaymentField]?.ToString();
                     if (!string.IsNullOrEmpty(url))
                     {
                         HttpContext.Current.Response.Redirect(url);
@@ -177,7 +177,7 @@ namespace Klarna.Payments
         public bool AllowedToSharePersonalInformation(ICart cart)
         {
             if (bool.TryParse(
-                cart.Properties[Constants.KlarnaAllowSharingOfPersonalInformationField]?.ToString() ?? "false",
+                cart.Properties[Constants.KlarnaAllowSharingOfPersonalInformationCartField]?.ToString() ?? "false",
                 out var canSendPersonalInformation))
             {
                 return canSendPersonalInformation;
@@ -189,7 +189,7 @@ namespace Klarna.Payments
         {
             try
             {
-                cart.Properties[Constants.KlarnaAllowSharingOfPersonalInformationField] = true;
+                cart.Properties[Constants.KlarnaAllowSharingOfPersonalInformationCartField] = true;
                 _orderRepository.Save(cart);
                 return true;
             }
@@ -232,7 +232,7 @@ namespace Klarna.Payments
 
         private void SetOrderStatus(IPurchaseOrder purchaseOrder, IPayment payment)
         {
-            var fraudStatus = payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString();
+            var fraudStatus = payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString();
             if (fraudStatus == FraudStatus.PENDING.ToString())
             {
                 OrderStatusManager.HoldOrder((PurchaseOrder) purchaseOrder);
@@ -297,8 +297,8 @@ namespace Klarna.Payments
             {
                 var response = await _klarnaServiceApi.Service.CreatNewSession(sessionRequest).ConfigureAwait(false);
 
-                cart.Properties[Constants.KlarnaSessionIdField] = response.SessionId;
-                cart.Properties[Constants.KlarnaClientTokenField] = response.ClientToken;
+                cart.Properties[Constants.KlarnaSessionIdCartField] = response.SessionId;
+                cart.Properties[Constants.KlarnaClientTokenCartField] = response.ClientToken;
 
                 _orderRepository.Save(cart);
 

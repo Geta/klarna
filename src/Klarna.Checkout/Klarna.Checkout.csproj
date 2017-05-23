@@ -199,7 +199,6 @@
     <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />
-    <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="ICheckoutOrderDataBuilder.cs" />
     <Compile Include="KlarnaCheckoutGateway.cs" />
     <Compile Include="KlarnaCheckoutService.cs" />
