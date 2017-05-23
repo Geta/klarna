@@ -188,27 +188,31 @@ public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedChec
 In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
 
 ```
-[Route("fraud/")]
-[AcceptVerbs("Post")]
+[Route("cart/{orderGroupId}/fraud")]
+[AcceptVerbs("POST")]
 [HttpPost]
-public IHttpActionResult FraudNotification()
+public IHttpActionResult FraudNotification(int orderGroupId, string klarna_order_id)
 {
+    var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+    if (purchaseOrder == null)
+    {
+        return NotFound();
+    }
+
     var requestParams = Request.Content.ReadAsStringAsync().Result;
-
-    _log.Error("KlarnaPaymentController.FraudNotification called: " + requestParams);
-
     if (!string.IsNullOrEmpty(requestParams))
     {
         var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
-
-        _klarnaService.FraudUpdate(notification);
+        _klarnaCheckoutService.FraudUpdate(notification);
     }
     return Ok();
 }
 ```
 
 </details>
+<details>
+<summary>Callbacks</summary>
 
-### Order notes
 The KlarnaPaymentGateway save notes about payment updates at the order.
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
+</details>
