@@ -27,16 +27,16 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
 
                 if (markets != null)
                 {
-                    Configuration configuration = null;
+                    PaymentsConfiguration paymentsConfiguration = null;
                     try
                     {
-                        configuration = _paymentMethodDto.GetConfiguration(markets.FirstOrDefault().MarketId);
+                        paymentsConfiguration = _paymentMethodDto.GetKlarnaPaymentsConfiguration(markets.FirstOrDefault().MarketId);
                     }
                     catch
                     {
-                        configuration = new Configuration();
+                        paymentsConfiguration = new PaymentsConfiguration();
                     }
-                    BindData(configuration);
+                    BindData(paymentsConfiguration);
 
                     marketDropDownList.DataSource = markets.Select(m => m.MarketId);
                     marketDropDownList.DataBind();
@@ -55,31 +55,31 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             _paymentMethodDto = paymentMethod;
         }
 
-        private void BindData(Configuration configuration)
+        private void BindData(PaymentsConfiguration paymentsConfiguration)
         {
-            txtUsername.Text = configuration.Username;
-            txtPassword.Text = configuration.Password;
-            txtApiUrl.Text = configuration.ApiUrl;
+            txtUsername.Text = paymentsConfiguration.Username;
+            txtPassword.Text = paymentsConfiguration.Password;
+            txtApiUrl.Text = paymentsConfiguration.ApiUrl;
 
-            txtKlarnaLogoUrl.Text = configuration.LogoUrl;
-            txtColorDetails.Text = configuration.WidgetDetailsColor;
-            txtColorButton.Text = configuration.WidgetButtonColor;
-            txtColorButtonText.Text = configuration.WidgetButtonColor;
-            txtColorCheckbox.Text = configuration.WidgetCheckboxColor;
-            txtColorCheckboxCheckmark.Text = configuration.WidgetCheckboxCheckmarkColor;
-            txtColorHeader.Text = configuration.WidgetHeaderColor;
-            txtColorLink.Text = configuration.WidgetLinkColor;
-            txtColorBorder.Text = configuration.WidgetBorderColor;
-            txtColorBorderSelected.Text = configuration.WidgetSelectedBorderColor;
-            txtColorText.Text = configuration.WidgetTextColor;
-            txtColorTextSecondary.Text = configuration.WidgetTextSecondaryColor;
-            txtRadiusBorder.Text = configuration.WidgetBorderRadius;
+            txtKlarnaLogoUrl.Text = paymentsConfiguration.LogoUrl;
+            txtColorDetails.Text = paymentsConfiguration.WidgetDetailsColor;
+            txtColorButton.Text = paymentsConfiguration.WidgetButtonColor;
+            txtColorButtonText.Text = paymentsConfiguration.WidgetButtonColor;
+            txtColorCheckbox.Text = paymentsConfiguration.WidgetCheckboxColor;
+            txtColorCheckboxCheckmark.Text = paymentsConfiguration.WidgetCheckboxCheckmarkColor;
+            txtColorHeader.Text = paymentsConfiguration.WidgetHeaderColor;
+            txtColorLink.Text = paymentsConfiguration.WidgetLinkColor;
+            txtColorBorder.Text = paymentsConfiguration.WidgetBorderColor;
+            txtColorBorderSelected.Text = paymentsConfiguration.WidgetSelectedBorderColor;
+            txtColorText.Text = paymentsConfiguration.WidgetTextColor;
+            txtColorTextSecondary.Text = paymentsConfiguration.WidgetTextSecondaryColor;
+            txtRadiusBorder.Text = paymentsConfiguration.WidgetBorderRadius;
 
-            txtConfirmationUrl.Text = configuration.ConfirmationUrl;
-            txtNotificationUrl.Text = configuration.NotificationUrl;
-            SendProductAndImageUrlCheckBox.Checked = configuration.SendProductAndImageUrlField;
-            UseAttachmentsCheckBox.Checked = configuration.UseAttachments;
-            PreAssesmentCheckBox.Checked = configuration.CustomerPreAssessment;
+            txtConfirmationUrl.Text = paymentsConfiguration.ConfirmationUrl;
+            txtNotificationUrl.Text = paymentsConfiguration.NotificationUrl;
+            SendProductAndImageUrlCheckBox.Checked = paymentsConfiguration.SendProductAndImageUrlField;
+            UseAttachmentsCheckBox.Checked = paymentsConfiguration.UseAttachments;
+            PreAssesmentCheckBox.Checked = paymentsConfiguration.CustomerPreAssessment;
         }
 
         public void SaveChanges(object dto)
@@ -96,7 +96,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             }
             var currentMarket = marketDropDownList.SelectedValue;
 
-            var configuration = new Configuration();
+            var configuration = new PaymentsConfiguration();
             configuration.MarketId = currentMarket;
 
             configuration.Username = txtUsername.Text;
@@ -129,16 +129,16 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
         {
 
-            Configuration configuration = null;
+            PaymentsConfiguration paymentsConfiguration = null;
             try
             {
-                configuration = _paymentMethodDto.GetConfiguration(marketDropDownList.SelectedValue);
+                paymentsConfiguration = _paymentMethodDto.GetKlarnaPaymentsConfiguration(marketDropDownList.SelectedValue);
             }
             catch
             {
-                configuration = new Configuration();
+                paymentsConfiguration = new PaymentsConfiguration();
             }
-            BindData(configuration);
+            BindData(paymentsConfiguration);
 
             ConfigureUpdatePanelContentPanel.Update();
         }

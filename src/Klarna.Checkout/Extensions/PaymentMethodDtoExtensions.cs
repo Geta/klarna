@@ -10,14 +10,14 @@ namespace Klarna.Checkout.Extensions
 {
     public static class PaymentMethodDtoExtensions
     {
-        public static Configuration GetConfiguration(this PaymentMethodDto paymentMethodDto,
+        public static CheckoutConfiguration GetKlarnaCheckoutConfiguration(this PaymentMethodDto paymentMethodDto,
             MarketId marketId)
         {
-            var configuration = JsonConvert.DeserializeObject<Configuration>(paymentMethodDto.GetParameter($"{marketId.Value}_{Common.Constants.KlarnaSerializedMarketOptions}", string.Empty));
+            var configuration = JsonConvert.DeserializeObject<CheckoutConfiguration>(paymentMethodDto.GetParameter($"{marketId.Value}_{Common.Constants.KlarnaSerializedMarketOptions}", string.Empty));
 
             if (configuration == null)
             {
-                return new Configuration();
+                return new CheckoutConfiguration();
                 throw new Exception(
                     $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }

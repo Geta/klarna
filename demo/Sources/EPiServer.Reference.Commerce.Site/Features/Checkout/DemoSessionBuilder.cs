@@ -13,9 +13,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoSessionBuilder : ISessionBuilder
     {
-        public Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
+        public Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, bool includePersonalInformation = false)
         {
-            if (includePersonalInformation && configuration.CustomerPreAssessment)
+            if (includePersonalInformation && paymentsConfiguration.CustomerPreAssessment)
             {
                 session.Customer = new Customer
                 {
@@ -26,7 +26,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             }
             session.MerchantReference2 = "12345";
 
-            if (configuration.UseAttachments)
+            if (paymentsConfiguration.UseAttachments)
             {
                 var converter = new IsoDateTimeConverter
                 {

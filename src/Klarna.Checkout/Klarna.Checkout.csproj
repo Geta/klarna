@@ -194,7 +194,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration.cs" />
+    <Compile Include="CheckoutConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />

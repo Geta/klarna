@@ -7,9 +7,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
     {
-        public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, Klarna.Checkout.Configuration configuration)
+        public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
         {
-            if (configuration.PrefillAddress)
+            if (checkoutConfiguration.PrefillAddress)
             {
                 // Try to parse address into dutch address lines
                 if (checkoutOrderData.ShippingAddress.Country.Equals("NL"))

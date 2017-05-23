@@ -41,7 +41,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels
                 if (PaymentMethod != null)
                 {
                     var paymentMethodDto = PaymentManager.GetPaymentMethod(PaymentMethod.PaymentMethodId);
-                    var config = paymentMethodDto.GetConfiguration(CurrentMarket.GetCurrentMarket().MarketId);
+                    var config = paymentMethodDto.GetKlarnaPaymentsConfiguration(CurrentMarket.GetCurrentMarket().MarketId);
                     _klarnaLogoUrl = config.LogoUrl;
                 }
 

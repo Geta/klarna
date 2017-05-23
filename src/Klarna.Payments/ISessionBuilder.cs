@@ -5,6 +5,6 @@ namespace Klarna.Payments
 {
     public interface ISessionBuilder
     {
-        Session Build(Session session, ICart cart, Configuration configuration, bool includePersonalInformation = false);
+        Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, bool includePersonalInformation = false);
     }
 }

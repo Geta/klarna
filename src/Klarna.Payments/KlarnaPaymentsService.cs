@@ -29,7 +29,7 @@ namespace Klarna.Payments
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
 
-        private Configuration _configuration;
+        private PaymentsConfiguration _paymentsConfiguration;
 
         public KlarnaPaymentsService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
@@ -230,7 +230,7 @@ namespace Klarna.Payments
             };
         }
 
-        private Session GetSessionRequest(ICart cart, Configuration config, bool includePersonalInformation = false)
+        private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, bool includePersonalInformation = false)
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             var request = new Session
@@ -303,7 +303,7 @@ namespace Klarna.Payments
 
         private Options GetWidgetOptions(PaymentMethodDto paymentMethod, MarketId marketId)
         {
-            var configuration = paymentMethod.GetConfiguration(marketId);
+            var configuration = paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
             var options = new Options();
 
             options.ColorDetails = configuration.WidgetDetailsColor;
@@ -322,12 +322,12 @@ namespace Klarna.Payments
             return options;
         }
 
-        public Configuration GetConfiguration(IMarket market)
+        public PaymentsConfiguration GetConfiguration(IMarket market)
         {
             return GetConfiguration(market.MarketId);
         }
 
-        public Configuration GetConfiguration(MarketId marketId)
+        public PaymentsConfiguration GetConfiguration(MarketId marketId)
         {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod == null)
@@ -335,7 +335,7 @@ namespace Klarna.Payments
                 throw new Exception(
                     $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }
-            return paymentMethod.GetConfiguration(marketId);
+            return paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
         }
     }
 }

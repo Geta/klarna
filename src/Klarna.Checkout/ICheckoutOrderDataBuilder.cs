@@ -6,6 +6,6 @@ namespace Klarna.Checkout
 {
     public interface ICheckoutOrderDataBuilder
     {
-        CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, Configuration configuration);
+        CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration);
     }
 }

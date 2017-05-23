@@ -26,16 +26,16 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
                 if (markets != null)
                 {
-                    Configuration configuration = null;
+                    CheckoutConfiguration checkoutConfiguration = null;
                     try
                     {
-                        configuration = _klarnaCheckoutService.GetConfiguration(markets.FirstOrDefault().MarketId);
+                        checkoutConfiguration = _klarnaCheckoutService.GetConfiguration(markets.FirstOrDefault().MarketId);
                     }
                     catch
                     {
-                        configuration = new Configuration();
+                        checkoutConfiguration = new CheckoutConfiguration();
                     }
-                    BindData(configuration);
+                    BindData(checkoutConfiguration);
 
                     marketDropDownList.DataSource = markets.Select(m => m.MarketId);
                     marketDropDownList.DataBind();
@@ -54,45 +54,45 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             _paymentMethodDto = paymentMethod;
         }
 
-        public void BindData(Configuration configuration)
+        public void BindData(CheckoutConfiguration checkoutConfiguration)
         {
-            txtUsername.Text = configuration.Username;
-            txtPassword.Text = configuration.Password;
-            txtApiUrl.Text = configuration.ApiUrl;
+            txtUsername.Text = checkoutConfiguration.Username;
+            txtPassword.Text = checkoutConfiguration.Password;
+            txtApiUrl.Text = checkoutConfiguration.ApiUrl;
 
-            txtColorButton.Text = configuration.WidgetButtonColor;
-            txtColorButtonText.Text = configuration.WidgetButtonTextColor;
-            txtColorCheckbox.Text = configuration.WidgetCheckboxColor;
-            txtColorHeader.Text = configuration.WidgetHeaderColor;
-            txtColorLink.Text = configuration.WidgetLinkColor;
-            txtRadiusBorder.Text = configuration.WidgetBorderRadius;
-            txtColorCheckboxCheckmark.Text = configuration.WidgetCheckboxCheckmarkColor;
+            txtColorButton.Text = checkoutConfiguration.WidgetButtonColor;
+            txtColorButtonText.Text = checkoutConfiguration.WidgetButtonTextColor;
+            txtColorCheckbox.Text = checkoutConfiguration.WidgetCheckboxColor;
+            txtColorHeader.Text = checkoutConfiguration.WidgetHeaderColor;
+            txtColorLink.Text = checkoutConfiguration.WidgetLinkColor;
+            txtRadiusBorder.Text = checkoutConfiguration.WidgetBorderRadius;
+            txtColorCheckboxCheckmark.Text = checkoutConfiguration.WidgetCheckboxCheckmarkColor;
 
-            shippingOptionsInIFrameCheckBox.Checked = configuration.ShippingOptionsInIFrame;
-            allowSeparateShippingAddressCheckBox.Checked = configuration.AllowSeparateShippingAddress;
-            dateOfBirthMandatoryCheckBox.Checked = configuration.DateOfBirthMandatory;
-            txtShippingDetails.Text = configuration.ShippingDetailsText;
-            titleMandatoryCheckBox.Checked = configuration.TitleMandatory;
-            showSubtotalDetailCheckBox.Checked = configuration.ShowSubtotalDetail;
+            shippingOptionsInIFrameCheckBox.Checked = checkoutConfiguration.ShippingOptionsInIFrame;
+            allowSeparateShippingAddressCheckBox.Checked = checkoutConfiguration.AllowSeparateShippingAddress;
+            dateOfBirthMandatoryCheckBox.Checked = checkoutConfiguration.DateOfBirthMandatory;
+            txtShippingDetails.Text = checkoutConfiguration.ShippingDetailsText;
+            titleMandatoryCheckBox.Checked = checkoutConfiguration.TitleMandatory;
+            showSubtotalDetailCheckBox.Checked = checkoutConfiguration.ShowSubtotalDetail;
 
-            sendShippingCountriesCheckBox.Checked = configuration.SendShippingCountries;
-            prefillAddressCheckBox.Checked = configuration.PrefillAddress;
-            SendShippingOptionsPriorAddressesCheckBox.Checked = configuration.SendShippingOptionsPriorAddresses;
+            sendShippingCountriesCheckBox.Checked = checkoutConfiguration.SendShippingCountries;
+            prefillAddressCheckBox.Checked = checkoutConfiguration.PrefillAddress;
+            SendShippingOptionsPriorAddressesCheckBox.Checked = checkoutConfiguration.SendShippingOptionsPriorAddresses;
 
 
-            additionalCheckboxTextTextBox.Text = configuration.AdditionalCheckboxText;
-            additionalCheckboxDefaultCheckedCheckBox.Checked = configuration.AdditionalCheckboxDefaultChecked;
-            additionalCheckboxRequiredCheckBox.Checked = configuration.AdditionalCheckboxRequired;
+            additionalCheckboxTextTextBox.Text = checkoutConfiguration.AdditionalCheckboxText;
+            additionalCheckboxDefaultCheckedCheckBox.Checked = checkoutConfiguration.AdditionalCheckboxDefaultChecked;
+            additionalCheckboxRequiredCheckBox.Checked = checkoutConfiguration.AdditionalCheckboxRequired;
 
-            txtConfirmationUrl.Text = configuration.ConfirmationUrl;
-            txtTermsUrl.Text = configuration.TermsUrl;
-            txtCheckoutUrl.Text = configuration.CheckoutUrl;
-            txtPushUrl.Text = configuration.PushUrl;
-            txtNotificationUrl.Text = configuration.NotificationUrl;
-            txtShippingOptionUpdateUrl.Text = configuration.ShippingOptionUpdateUrl;
-            txtAddressUpdateUrl.Text = configuration.AddressUpdateUrl;
-            txtOrderValidationUrl.Text = configuration.OrderValidationUrl;
-            requireValidateCallbackSuccessCheckBox.Checked = configuration.RequireValidateCallbackSuccess;
+            txtConfirmationUrl.Text = checkoutConfiguration.ConfirmationUrl;
+            txtTermsUrl.Text = checkoutConfiguration.TermsUrl;
+            txtCheckoutUrl.Text = checkoutConfiguration.CheckoutUrl;
+            txtPushUrl.Text = checkoutConfiguration.PushUrl;
+            txtNotificationUrl.Text = checkoutConfiguration.NotificationUrl;
+            txtShippingOptionUpdateUrl.Text = checkoutConfiguration.ShippingOptionUpdateUrl;
+            txtAddressUpdateUrl.Text = checkoutConfiguration.AddressUpdateUrl;
+            txtOrderValidationUrl.Text = checkoutConfiguration.OrderValidationUrl;
+            requireValidateCallbackSuccessCheckBox.Checked = checkoutConfiguration.RequireValidateCallbackSuccess;
         }
         
         public void SaveChanges(object dto)
@@ -109,7 +109,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             }
             var currentMarket = marketDropDownList.SelectedValue;
 
-            var configuration = new Configuration();
+            var configuration = new CheckoutConfiguration();
             configuration.Username = txtUsername.Text;
             configuration.Password = txtPassword.Text;
             configuration.ApiUrl = txtApiUrl.Text;
@@ -153,16 +153,16 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
         {
 
-            Configuration configuration = null;
+            CheckoutConfiguration checkoutConfiguration = null;
             try
             {
-                configuration = _klarnaCheckoutService.GetConfiguration(new MarketId(marketDropDownList.SelectedValue));
+                checkoutConfiguration = _klarnaCheckoutService.GetConfiguration(new MarketId(marketDropDownList.SelectedValue));
             }
             catch
             {
-                configuration = new Configuration();
+                checkoutConfiguration = new CheckoutConfiguration();
             }
-            BindData(configuration);
+            BindData(checkoutConfiguration);
 
             ConfigureUpdatePanelContentPanel.Update();
         }

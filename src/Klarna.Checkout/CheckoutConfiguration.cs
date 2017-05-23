@@ -1,9 +1,8 @@
 using Klarna.Common;
-using Mediachase.Commerce;
 
 namespace Klarna.Checkout
 {
-    public class Configuration : ConnectionConfiguration
+    public class CheckoutConfiguration : ConnectionConfiguration
     {
         public bool ShippingOptionsInIFrame { get; set; }
         public bool AllowSeparateShippingAddress { get; set; }

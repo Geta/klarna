@@ -219,7 +219,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration.cs" />
+    <Compile Include="PaymentsConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="Helpers\CartOrderNumberHelper.cs" />

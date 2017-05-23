@@ -3,7 +3,7 @@ using Klarna.Common;
 
 namespace Klarna.Payments
 {
-    public class Configuration : ConnectionConfiguration
+    public class PaymentsConfiguration : ConnectionConfiguration
     {
         public bool CustomerPreAssessment { get; set; }
         public bool IsProduction { get; set; }
