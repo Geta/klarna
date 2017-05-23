@@ -103,6 +103,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.TextBox txtColorDetails;
         
         /// <summary>
+        /// regexColorDetails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorDetails;
+        
+        /// <summary>
         /// txtColorButton control.
         /// </summary>
         /// <remarks>
@@ -110,6 +119,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorButton;
+        
+        /// <summary>
+        /// regexColorButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorButton;
         
         /// <summary>
         /// txtColorButtonText control.
@@ -121,6 +139,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.TextBox txtColorButtonText;
         
         /// <summary>
+        /// regexColorButtonText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorButtonText;
+        
+        /// <summary>
         /// txtColorCheckbox control.
         /// </summary>
         /// <remarks>
@@ -128,6 +155,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorCheckbox;
+        
+        /// <summary>
+        /// regexColorCheckbox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorCheckbox;
         
         /// <summary>
         /// txtColorCheckboxCheckmark control.
@@ -139,6 +175,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.TextBox txtColorCheckboxCheckmark;
         
         /// <summary>
+        /// regexColorCheckboxCheckmark control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorCheckboxCheckmark;
+        
+        /// <summary>
         /// txtColorHeader control.
         /// </summary>
         /// <remarks>
@@ -146,6 +191,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorHeader;
+        
+        /// <summary>
+        /// regexColorHeader control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorHeader;
         
         /// <summary>
         /// txtColorLink control.
@@ -157,6 +211,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.TextBox txtColorLink;
         
         /// <summary>
+        /// regexColorLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorLink;
+        
+        /// <summary>
         /// txtColorBorder control.
         /// </summary>
         /// <remarks>
@@ -164,6 +227,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorBorder;
+        
+        /// <summary>
+        /// regexColorBorder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorBorder;
         
         /// <summary>
         /// txtColorBorderSelected control.
@@ -175,6 +247,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.TextBox txtColorBorderSelected;
         
         /// <summary>
+        /// regexColorBorderSelected control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorBorderSelected;
+        
+        /// <summary>
         /// txtColorText control.
         /// </summary>
         /// <remarks>
@@ -182,6 +263,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorText;
+        
+        /// <summary>
+        /// regexColorText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorText;
         
         /// <summary>
         /// txtColorTextSecondary control.
@@ -193,6 +283,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.TextBox txtColorTextSecondary;
         
         /// <summary>
+        /// regexColorTextSecondary control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorTextSecondary;
+        
+        /// <summary>
         /// txtRadiusBorder control.
         /// </summary>
         /// <remarks>
@@ -200,6 +299,15 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtRadiusBorder;
+        
+        /// <summary>
+        /// regexRadiusBorder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexRadiusBorder;
         
         /// <summary>
         /// txtConfirmationUrl control.

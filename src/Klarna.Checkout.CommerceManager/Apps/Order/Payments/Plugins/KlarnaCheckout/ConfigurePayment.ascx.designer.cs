@@ -94,6 +94,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.TextBox txtColorButton;
         
         /// <summary>
+        /// regexColorButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorButton;
+        
+        /// <summary>
         /// txtColorButtonText control.
         /// </summary>
         /// <remarks>
@@ -101,6 +110,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorButtonText;
+        
+        /// <summary>
+        /// regexColorButtonText control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorButtonText;
         
         /// <summary>
         /// txtColorCheckbox control.
@@ -112,6 +130,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.TextBox txtColorCheckbox;
         
         /// <summary>
+        /// regexColorCheckbox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorCheckbox;
+        
+        /// <summary>
         /// txtColorHeader control.
         /// </summary>
         /// <remarks>
@@ -119,6 +146,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorHeader;
+        
+        /// <summary>
+        /// regexColorHeader control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorHeader;
         
         /// <summary>
         /// txtColorLink control.
@@ -130,6 +166,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.TextBox txtColorLink;
         
         /// <summary>
+        /// regexColorLink control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorLink;
+        
+        /// <summary>
         /// txtRadiusBorder control.
         /// </summary>
         /// <remarks>
@@ -139,6 +184,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.TextBox txtRadiusBorder;
         
         /// <summary>
+        /// regexRadiusBorder control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexRadiusBorder;
+        
+        /// <summary>
         /// txtColorCheckboxCheckmark control.
         /// </summary>
         /// <remarks>
@@ -146,6 +200,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtColorCheckboxCheckmark;
+        
+        /// <summary>
+        /// regexColorCheckboxCheckmark control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexColorCheckboxCheckmark;
         
         /// <summary>
         /// txtShippingDetails control.

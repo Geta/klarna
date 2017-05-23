@@ -61,42 +61,49 @@
             <td class="FormLabelCell">Color button:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtColorButton" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtColorButton" ID="regexColorButton" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color button invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Color button text:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtColorButtonText" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtColorButtonText" ID="regexColorButtonText" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color button text invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Color checkbox:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtColorCheckbox" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtColorCheckbox" ID="regexColorCheckbox" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color checkbox invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Color header:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtColorHeader" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtColorHeader" ID="regexColorHeader" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color header invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Color link:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtColorLink" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtColorLink" ID="regexColorLink" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color link invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Radius border:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtRadiusBorder" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtRadiusBorder" ID="regexRadiusBorder" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Radius border invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Color checkbox checkmark:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtColorCheckboxCheckmark" />
+                <asp:RegularExpressionValidator  ControlToValidate="txtColorCheckboxCheckmark" ID="regexColorCheckboxCheckmark" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color checkbox checkmark invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
