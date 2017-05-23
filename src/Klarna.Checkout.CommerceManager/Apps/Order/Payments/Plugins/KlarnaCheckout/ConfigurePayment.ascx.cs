@@ -107,13 +107,12 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             {
                 return;
             }
-            var list = GetMarketConfigurations(paymentMethod);
             var currentMarket = marketDropDownList.SelectedValue;
 
             var configuration = new Configuration();
-            configuration.AddressUpdateUrl = txtUsername.Text;
-            configuration.AddressUpdateUrl = txtPassword.Text;
-            configuration.AddressUpdateUrl = txtApiUrl.Text;
+            configuration.Username = txtUsername.Text;
+            configuration.Password = txtPassword.Text;
+            configuration.ApiUrl = txtApiUrl.Text;
 
             configuration.WidgetButtonColor = txtColorButton.Text;
             configuration.WidgetButtonTextColor = txtColorButtonText.Text;
@@ -148,32 +147,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             configuration.RequireValidateCallbackSuccess = requireValidateCallbackSuccessCheckBox.Checked;
             configuration.MarketId = currentMarket;
 
-            var currentConfiguration = list.FirstOrDefault(x => x.MarketId == currentMarket);
-            if (currentConfiguration != null)
-            {
-                list.Remove(currentConfiguration);
-            }
-            list.Add(configuration);
-
-            paymentMethod.SetParameter(Common.Constants.KlarnaSerializedMarketOptions, Newtonsoft.Json.JsonConvert.SerializeObject(list));
-        }
-
-        private List<Configuration> GetMarketConfigurations(PaymentMethodDto paymentMethod)
-        {
-            var list = new List<Configuration>();
-            var markets = paymentMethod.PaymentMethod.FirstOrDefault()?.GetMarketPaymentMethodsRows();
-            if (markets != null)
-            {
-                foreach (var item in markets)
-                {
-                    try
-                    {
-                        list.Add(_klarnaCheckoutService.GetConfiguration(item.MarketId));
-                    }
-                    catch { }
-                }
-            }
-            return list;
+            paymentMethod.SetParameter($"{currentMarket}_{Common.Constants.KlarnaSerializedMarketOptions}", Newtonsoft.Json.JsonConvert.SerializeObject(configuration));
         }
 
         protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)

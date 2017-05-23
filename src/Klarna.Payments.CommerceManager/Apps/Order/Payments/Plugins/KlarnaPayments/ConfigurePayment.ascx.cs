@@ -75,8 +75,8 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             txtColorTextSecondary.Text = configuration.WidgetTextSecondaryColor;
             txtRadiusBorder.Text = configuration.WidgetBorderRadius;
 
-            //txtConfirmationUrl.Text = configuration.conf
-            //txtNotificationUrl.Text = confi paymentMethod.GetParameter(Constants.NotificationUrlField, string.Empty);
+            txtConfirmationUrl.Text = configuration.ConfirmationUrl;
+            txtNotificationUrl.Text = configuration.NotificationUrl;
             SendProductAndImageUrlCheckBox.Checked = configuration.SendProductAndImageUrlField;
             UseAttachmentsCheckBox.Checked = configuration.UseAttachments;
         }
@@ -161,7 +161,6 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             {
                 return;
             }
-            var list = GetMarketConfigurations(paymentMethod);
             var currentMarket = marketDropDownList.SelectedValue;
 
             var configuration = new Configuration();
@@ -185,8 +184,8 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             configuration.WidgetTextSecondaryColor = txtColorTextSecondary.Text;
             configuration.WidgetBorderRadius = txtRadiusBorder.Text;
 
-            //configuration.WidgetBorderRadius = txtConfirmationUrl.Text;
-            //configuration.WidgetBorderRadius = txtNotificationUrl.Text;
+            configuration.ConfirmationUrl = txtConfirmationUrl.Text;
+            configuration.NotificationUrl = txtNotificationUrl.Text;
             configuration.SendProductAndImageUrlField = SendProductAndImageUrlCheckBox.Checked;
             configuration.UseAttachments = UseAttachmentsCheckBox.Checked;
 
@@ -198,32 +197,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             }
             configuration.CustomerPreAssessmentCountries = selectedCountries;
 
-            var currentConfiguration = list.FirstOrDefault(x => x.MarketId == currentMarket);
-            if (currentConfiguration != null)
-            {
-                list.Remove(currentConfiguration);
-            }
-            list.Add(configuration);
-
-            paymentMethod.SetParameter(Common.Constants.KlarnaSerializedMarketOptions, Newtonsoft.Json.JsonConvert.SerializeObject(list));
-        }
-
-        private List<Configuration> GetMarketConfigurations(PaymentMethodDto paymentMethod)
-        {
-            var list = new List<Configuration>();
-            var markets = paymentMethod.PaymentMethod.FirstOrDefault()?.GetMarketPaymentMethodsRows();
-            if (markets != null)
-            {
-                foreach (var item in markets)
-                {
-                    try
-                    {
-                        list.Add(paymentMethod.GetConfiguration(item.MarketId));
-                    }
-                    catch { }
-                }
-            }
-            return list;
+            paymentMethod.SetParameter($"{currentMarket}_{Common.Constants.KlarnaSerializedMarketOptions}", Newtonsoft.Json.JsonConvert.SerializeObject(configuration));
         }
 
         protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
