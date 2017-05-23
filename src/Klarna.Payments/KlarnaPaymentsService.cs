@@ -14,6 +14,7 @@ using Klarna.Common.Helpers;
 using Klarna.Payments.Extensions;
 using Klarna.Rest.Models;
 using Mediachase.Commerce;
+using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using Refit;
@@ -142,8 +143,8 @@ namespace Klarna.Payments
                 _logger.Error(ex.Message, ex);
             }
         }
-
-        public void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder)
+        
+        public void CompleteAndRedirect(IPurchaseOrder purchaseOrder)
         {
             if (purchaseOrder == null)
             {
@@ -155,6 +156,8 @@ namespace Klarna.Payments
                 var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword));
                 if (payment != null)
                 {
+                    SetOrderStatus(purchaseOrder, payment);
+
                     var url = payment.Properties[Constants.KlarnaConfirmationUrlField]?.ToString();
                     if (!string.IsNullOrEmpty(url))
                     {
@@ -225,6 +228,16 @@ namespace Klarna.Payments
                 BillingAddress = request.BillingAddress,
                 ShippingAddress = request.ShippingAddress
             };
+        }
+
+        private void SetOrderStatus(IPurchaseOrder purchaseOrder, IPayment payment)
+        {
+            var fraudStatus = payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString();
+            if (fraudStatus == FraudStatus.PENDING.ToString())
+            {
+                OrderStatusManager.HoldOrder((PurchaseOrder) purchaseOrder);
+                _orderRepository.Save(purchaseOrder);
+            }
         }
 
         private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, bool includePersonalInformation = false)

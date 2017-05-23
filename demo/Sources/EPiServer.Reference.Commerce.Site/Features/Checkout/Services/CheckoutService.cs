@@ -145,7 +145,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
                 var payment = cart.GetFirstForm().Payments.First();
                 checkoutViewModel.Payment.PaymentMethod.PostProcess(payment);
-                
+
                 var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
                 var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
                 _orderRepository.Delete(cart.OrderLink);

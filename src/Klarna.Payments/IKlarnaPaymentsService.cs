@@ -11,8 +11,7 @@ namespace Klarna.Payments
         Task<bool> CreateOrUpdateSession(ICart cart);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(ICart cart);
-        void FraudUpdate(NotificationModel notification);
-        void RedirectToConfirmationUrl(IPurchaseOrder purchaseOrder);
+        void CompleteAndRedirect(IPurchaseOrder purchaseOrder);
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool CanSendPersonalInformation(string countryCode);

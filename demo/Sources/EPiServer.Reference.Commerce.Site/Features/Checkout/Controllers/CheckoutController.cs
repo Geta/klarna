@@ -249,7 +249,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return View(viewModel);
             }
 
-            _klarnaPaymentsService.RedirectToConfirmationUrl(purchaseOrder);
+            _klarnaPaymentsService.CompleteAndRedirect(purchaseOrder);
             
             var confirmationSentSuccessfully = _checkoutService.SendConfirmation(viewModel, purchaseOrder);
           

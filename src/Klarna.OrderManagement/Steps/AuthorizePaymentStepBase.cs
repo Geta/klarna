@@ -1,12 +1,9 @@
-﻿using System;
-using System.Net;
-using System.Threading.Tasks;
-using EPiServer.Commerce.Order;
+﻿using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.Common;
 using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.OrderManagement.Steps
 {
@@ -44,6 +41,8 @@ namespace Klarna.OrderManagement.Steps
             if (payment.Properties[Common.Constants.FraudStatusPaymentMethodField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
             {
                 payment.Status = PaymentStatus.Processed.ToString();
+
+                OrderStatusManager.ReleaseHoldOnOrder((PurchaseOrder)orderGroup);
 
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk accepted");
 
