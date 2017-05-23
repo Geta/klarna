@@ -445,8 +445,8 @@ namespace Klarna.Checkout
                 var configuration = GetConfiguration(cart.Market);
                 return new MerchantUrls
                 {
-                    Terms = new Uri(configuration.TermsUrl),
-                    Checkout = new Uri(configuration.CheckoutUrl),
+                    Terms = new Uri(configuration.TermsUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
+                    Checkout = new Uri(configuration.CheckoutUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Confirmation = new Uri(configuration.ConfirmationUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Push = new Uri(configuration.PushUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     AddressUpdate = new Uri(configuration.AddressUpdateUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
