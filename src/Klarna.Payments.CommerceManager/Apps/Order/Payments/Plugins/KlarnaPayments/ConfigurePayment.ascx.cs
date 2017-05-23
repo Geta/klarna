@@ -79,74 +79,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             txtNotificationUrl.Text = configuration.NotificationUrl;
             SendProductAndImageUrlCheckBox.Checked = configuration.SendProductAndImageUrlField;
             UseAttachmentsCheckBox.Checked = configuration.UseAttachments;
-        }
-
-        public override void DataBind()
-        {
-            base.DataBind();
-
-            var countries = CountryCodeHelper.GetCountryCodes().ToList();
-
-            Configuration configuration = null;
-            try
-            {
-                if (!IsPostBack)
-                {
-                    var markets = _paymentMethodDto.PaymentMethod.FirstOrDefault().GetMarketPaymentMethodsRows();
-                    configuration = _paymentMethodDto.GetConfiguration(markets.FirstOrDefault().MarketId);
-                }
-                else
-                {
-                    configuration = _paymentMethodDto.GetConfiguration(marketDropDownList.SelectedValue);
-                }
-            }
-            catch
-            {
-                configuration = new Configuration();
-            }
-
-            var preAssesmentCountries = configuration.CustomerPreAssessmentCountries;
-
-            var selectedCountries = countries.Where(x => preAssesmentCountries.Any(c => c == x.ThreeLetterCode)).OrderBy(x => x.Name).ToList();
-
-            this.BindSourceGrid(countries.Where(c => selectedCountries.All(x => x.ThreeLetterCode != c.ThreeLetterCode)));
-            this.BindTargetGrid(selectedCountries);
-        }
-
-        private void BindSourceGrid(IEnumerable<Country> countries)
-        {
-            this.ltlSelector.ClearSourceItems();
-            this.lbSource.Items.Clear();
-            this.lbSource.DataSource = countries;
-            this.lbSource.DataBind();
-
-            foreach (Country country in countries)
-            {
-                ListItem listItem = this.lbSource.Items.FindByValue(country.ThreeLetterCode);
-                if (listItem == null)
-                {
-                    continue;
-                }
-                this.ltlSelector.Items.Add(listItem);
-            }
-        }
-
-        private void BindTargetGrid(IEnumerable<Country> countries)
-        {
-            this.ltlSelector.ClearTargetItems();
-            this.lbTarget.Items.Clear();
-
-            if (countries.Any())
-            {
-                this.lbTarget.Items.Clear();
-                foreach (Country country in countries)
-                {
-                    ListItem listItem = new ListItem(country.Name, country.ThreeLetterCode, true);
-                    this.lbTarget.Items.Add(listItem);
-                    listItem.Selected = true;
-                    this.ltlSelector.Items.Add(listItem);
-                }
-            }
+            PreAssesmentCheckBox.Checked = configuration.CustomerPreAssessment;
         }
 
         public void SaveChanges(object dto)
@@ -188,14 +121,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             configuration.NotificationUrl = txtNotificationUrl.Text;
             configuration.SendProductAndImageUrlField = SendProductAndImageUrlCheckBox.Checked;
             configuration.UseAttachments = UseAttachmentsCheckBox.Checked;
-
-            var selectedCountries = new List<string>();
-            
-            foreach (var item in ltlSelector.GetSelectedItems())
-            {
-                selectedCountries.Add(item.Value);
-            }
-            configuration.CustomerPreAssessmentCountries = selectedCountries;
+            configuration.CustomerPreAssessment = PreAssesmentCheckBox.Checked;
 
             paymentMethod.SetParameter($"{currentMarket}_{Common.Constants.KlarnaSerializedMarketOptions}", Newtonsoft.Json.JsonConvert.SerializeObject(configuration));
         }

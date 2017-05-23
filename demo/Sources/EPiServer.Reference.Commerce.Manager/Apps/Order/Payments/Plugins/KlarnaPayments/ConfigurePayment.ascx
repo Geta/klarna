@@ -170,26 +170,7 @@
                 <tr>
                     <td class="FormLabelCell">Pre-assesment:</td>
                     <td class="FormFieldCell">
-                        <mc:ListToListSelector runat="server" ID="ltlSelector" OneItemToTargetButtonId="btnMoveSelectedToTarget" OneItemToSourceButtonId="btnMoveSelectedToSource" SourceListId="lbSource" TargetListId="lbTarget" SelectAllSourceItemsButtonId="btnSelectSourceAll" SelectAllTargetItemsButtonId="btnSelectTargetAll">
-				        </mc:ListToListSelector>
-				        <table border="0">
-					        <tr>
-						        <td style="padding:10px;">
-							        <asp:Literal ID="Literal1" runat="server" Text="Unselected countries"></asp:Literal>&nbsp;&nbsp;<asp:Button ID="btnSelectSourceAll" runat="server" Text="Select All" OnClientClick="return false;" /><br />
-							        <asp:ListBox runat="server" ID="lbSource" SelectionMode="Multiple" 
-								        DataTextField="Name" DataValueField="ThreeLetterCode" Height="205" Width="250px" >
-							        </asp:ListBox>
-						        </td>
-						        <td  style="vertical-align:middle; padding:10px; text-align:center;">
-							        <asp:Button runat="server" ID="btnMoveSelectedToTarget" Text=">" OnClientClick="return false;" /><br />
-							        <asp:Button runat="server" ID="btnMoveSelectedToSource" Text="<" OnClientClick="return false;"  />
-						        </td>
-						        <td style="padding:10px">
-							        <asp:Literal ID="Literal2"  runat="server" Text="Selected countries"></asp:Literal>&nbsp;&nbsp;<asp:Button ID="btnSelectTargetAll" runat="server" Text="Select All" OnClientClick="return false;" /><br />
-							        <asp:ListBox runat="server" ID="lbTarget" SelectionMode="Multiple" Width="250px" Height="205px"></asp:ListBox>
-						        </td>
-					        </tr>
-				        </table>
+                        <asp:CheckBox runat="server" ID="PreAssesmentCheckBox" />
                     </td>
                 </tr>
             </tbody>

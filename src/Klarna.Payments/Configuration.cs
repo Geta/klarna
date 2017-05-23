@@ -5,7 +5,7 @@ namespace Klarna.Payments
 {
     public class Configuration : ConnectionConfiguration
     {
-        public IEnumerable<string> CustomerPreAssessmentCountries { get; set; }
+        public bool CustomerPreAssessment { get; set; }
         public bool IsProduction { get; set; }
         public bool SendProductAndImageUrlField { get; set; }
         public bool UseAttachments { get; set; }

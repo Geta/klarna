@@ -256,84 +256,12 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         protected global::System.Web.UI.WebControls.CheckBox UseAttachmentsCheckBox;
         
         /// <summary>
-        /// ltlSelector control.
+        /// PreAssesmentCheckBox control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Mediachase.BusinessFoundation.ListToListSelector ltlSelector;
-        
-        /// <summary>
-        /// Literal1 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal Literal1;
-        
-        /// <summary>
-        /// btnSelectSourceAll control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSelectSourceAll;
-        
-        /// <summary>
-        /// lbSource control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ListBox lbSource;
-        
-        /// <summary>
-        /// btnMoveSelectedToTarget control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMoveSelectedToTarget;
-        
-        /// <summary>
-        /// btnMoveSelectedToSource control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMoveSelectedToSource;
-        
-        /// <summary>
-        /// Literal2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal Literal2;
-        
-        /// <summary>
-        /// btnSelectTargetAll control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSelectTargetAll;
-        
-        /// <summary>
-        /// lbTarget control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ListBox lbTarget;
+        protected global::System.Web.UI.WebControls.CheckBox PreAssesmentCheckBox;
     }
 }

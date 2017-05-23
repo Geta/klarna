@@ -65,7 +65,7 @@ namespace Klarna.Payments
                 sessionRequest.BillingAddress = null;
 
                 // If the pre assessment is not enabled then don't send the customer information to Klarna
-                if (!config.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
+                if (!config.CustomerPreAssessment)
                 {
                     sessionRequest.Customer = null;
                 }

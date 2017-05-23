@@ -13,7 +13,7 @@ namespace Klarna.Payments.Extensions
             MarketId marketId)
         {
             var configuration = JsonConvert.DeserializeObject<Configuration>(paymentMethodDto.GetParameter($"{marketId.Value}_{Common.Constants.KlarnaSerializedMarketOptions}", string.Empty));
-
+            
             if (configuration == null)
             {
                 return new Configuration();

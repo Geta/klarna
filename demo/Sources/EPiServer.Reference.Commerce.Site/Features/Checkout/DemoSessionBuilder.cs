@@ -15,7 +15,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
     {
         public Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
         {
-            if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
+            if (includePersonalInformation && configuration.CustomerPreAssessment)
             {
                 session.Customer = new Customer
                 {
