@@ -94,6 +94,46 @@ The Klarna.Checkout package will replace ``{orderGroupId}`` in any of the urls w
 </details>
 
 <details>
+<summary>Creating and updating checkout order data (click to expand)</summary>
+
+Every time the user visits the checkout page or changes his/her order, an api call to Klarna is executed. The api call ensures that Klarna has the most recent information needed to show the checkout iFrame. By default all properties should be set as required by Klarna. If you want to hook into the process and change some of the data that is being sent, you can provide an implementation of ``ICheckoutOrderDataBuilder`` to do so. The interface has a ``Build`` method, which is called after all default values are set. Below an example implementation of a DemoCheckoutOrderDataBuilder.
+
+```csharp
+public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
+{
+    public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
+    {
+        if (checkoutConfiguration.PrefillAddress)
+        {
+            // Try to parse address into dutch address lines
+            if (checkoutOrderData.ShippingAddress.Country.Equals("NL"))
+            {
+                var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingAddress);
+                checkoutOrderData.ShippingAddress = dutchAddress;
+            }
+        }
+        return checkoutOrderData;
+    }
+
+    private Address ConvertToDutchAddress(Address address)
+    {
+        // Just an example, do not use
+
+        var splitAddress = address.StreetAddress.Split(' ');
+        address.StreetName = splitAddress.FirstOrDefault();
+        address.StreetNumber = splitAddress.ElementAtOrDefault(1);
+
+        address.StreetAddress = string.Empty;
+        address.StreetAddress2 = string.Empty;
+
+        return address;
+    }
+}
+```
+</details>
+
+
+<details>
   <summary>Quicksilver demo site implementation (click to expand)</summary>
 
 The following properties are set by default (read from current cart and payment method configurations):
@@ -112,7 +152,7 @@ Read more about the different parameters: https://developers.klarna.com/api/#pay
 </details>
 
 <details>
-<summary>Callbacks (click to expand)</summary>
+<summary>Klarna callbacks (click to expand)</summary>
 During the checkout process Klarna trigger one of the following callbacks.
 
 #### [Shipping optionupdate](https://developers.klarna.com/en/us/kco-v3/checkout/additional-features/tax-shipping)
