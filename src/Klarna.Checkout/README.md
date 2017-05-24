@@ -26,7 +26,8 @@ This library consists of two assemblies. Both are mandatory for a creating an in
 
 More information about the Klarna Checkout flow: https://developers.klarna.com/en/gb/kco-v3/checkout
 
-## Setup
+<details>
+  <summary>Setup (click to expand)</summary>
 
 Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 
@@ -35,7 +36,7 @@ Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 For the Commerce Manager site run the following package:
 
     Install-Package Klarna.Checkout.CommerceManager
-
+</details>
 
 <details>
   <summary>Configure Commerce Manager (click to expand)</summary>
