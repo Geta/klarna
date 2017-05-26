@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -44,7 +45,7 @@ namespace Klarna.Payments
             _orderNumberGenerator = orderNumberGenerator;
         }
 
-        public async Task<bool> CreateOrUpdateSession(ICart cart)
+        public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic)
         {
             // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
@@ -53,7 +54,7 @@ namespace Klarna.Payments
             var sessionRequest = GetSessionRequest(cart, config, canSendPersonalInformation);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config);
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, dic);
             }
 
             var currentCountry = cart.Market.Countries.FirstOrDefault();
@@ -121,7 +122,7 @@ namespace Klarna.Payments
             var sessionRequest = GetSessionRequest(cart, config, true);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, true);
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, null);
             }
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
@@ -200,7 +201,7 @@ namespace Klarna.Payments
             return false;
         }
 
-        public PersonalInformationSession GetPersonalInformationSession(ICart cart)
+        public PersonalInformationSession GetPersonalInformationSession(ICart cart, IDictionary<string, object> dic)
         {
             var request = new Session();
 
@@ -219,7 +220,7 @@ namespace Klarna.Payments
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
                 var config = GetConfiguration(cart.Market.MarketId);
-                request = sessionBuilder.Build(request, cart, config, true);
+                request = sessionBuilder.Build(request, cart, config, dic, true);
             }
 
             return new PersonalInformationSession

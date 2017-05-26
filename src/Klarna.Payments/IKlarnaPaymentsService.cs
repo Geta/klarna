@@ -1,14 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
-using Klarna.Common.Models;
 using Klarna.Payments.Models;
 
 namespace Klarna.Payments
 {
     public interface IKlarnaPaymentsService : IKlarnaService
     {
-        Task<bool> CreateOrUpdateSession(ICart cart);
+        Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(ICart cart);
         void CompleteAndRedirect(IPurchaseOrder purchaseOrder);
@@ -17,6 +17,6 @@ namespace Klarna.Payments
         bool CanSendPersonalInformation(string countryCode);
         bool AllowedToSharePersonalInformation(ICart cart);
         bool AllowSharingOfPersonalInformation(ICart cart);
-        PersonalInformationSession GetPersonalInformationSession(ICart cart);
+        PersonalInformationSession GetPersonalInformationSession(ICart cart, IDictionary<string, object> dic = null);
     }
 }

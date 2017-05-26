@@ -13,7 +13,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoSessionBuilder : ISessionBuilder
     {
-        public Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, bool includePersonalInformation = false)
+        public Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic, bool includePersonalInformation = false)
         {
             if (includePersonalInformation && paymentsConfiguration.CustomerPreAssessment)
             {
