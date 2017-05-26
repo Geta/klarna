@@ -11,7 +11,11 @@ using Mediachase.Commerce;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using EPiServer.Commerce.Order;
+using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions;
+using EPiServer.ServiceLocation;
+using Mediachase.Commerce.Orders;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Start.Controllers
 {
@@ -40,7 +44,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Start.Controllers
                 Promotions = GetActivePromotions(),
                 Recommendations = this.GetHomeRecommendations()
             };
-            
             return View(viewModel);
         }
 

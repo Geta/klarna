@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Editor;
@@ -9,18 +8,26 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Web.Mvc.Html;
 using System.Web.Mvc;
+using EPiServer.Globalization;
+using Klarna.Checkout;
+using Mediachase.BusinessFoundation.Core;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
     public class OrderConfirmationController : OrderConfirmationControllerBase<OrderConfirmationPage>
     {
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+
         public OrderConfirmationController(
             ConfirmationService confirmationService,
             AddressBookService addressBookService,
             CustomerContextFacade customerContextFacade,
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator)
+            IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
+            IKlarnaCheckoutService klarnaCheckoutService)
             : base(confirmationService, addressBookService, customerContextFacade, orderGroupTotalsCalculator)
         {
+            _klarnaCheckoutService = klarnaCheckoutService;
         }
 
         [HttpGet]
@@ -40,10 +47,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 order = _confirmationService.GetByTrackingNumber(trackingNumber);
             }
 
-            if (order != null && order.CustomerId == _customerContext.CurrentContactId)
+            if (order != null/* && order.CustomerId == _customerContext.CurrentContactId*/)
             {
                 var viewModel = CreateViewModel(currentPage, order);
                 viewModel.NotificationMessage = notificationMessage;
+
+                var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
+
+                if (paymentMethod != null && order.GetFirstForm().Payments.Any(x => x.PaymentMethodId == paymentMethod.PaymentMethodId && !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
+                {
+                    var klarnaOrder = _klarnaCheckoutService.GetOrder(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString());
+                    viewModel.KlarnaCheckoutHtmlSnippet = klarnaOrder.HtmlSnippet;
+                    viewModel.IsKlarnaCheckout = true;
+                }
 
                 return View(viewModel);
             }

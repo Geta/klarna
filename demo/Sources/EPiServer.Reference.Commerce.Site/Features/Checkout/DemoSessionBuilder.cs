@@ -6,14 +6,16 @@ using Klarna.Payments.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Klarna.Payments;
+using Klarna.Rest.Models;
+using Customer = Klarna.Payments.Models.Customer;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoSessionBuilder : ISessionBuilder
     {
-        public Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
+        public Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic, bool includePersonalInformation = false)
         {
-            if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
+            if (includePersonalInformation && paymentsConfiguration.CustomerPreAssessment)
             {
                 session.Customer = new Customer
                 {
@@ -24,7 +26,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             }
             session.MerchantReference2 = "12345";
 
-            if (configuration.UseAttachments)
+            if (paymentsConfiguration.UseAttachments)
             {
                 var converter = new IsoDateTimeConverter
                 {

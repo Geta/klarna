@@ -290,7 +290,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
 
             // Clear the cache to ensure setup is running in a controlled environment, if perhaps we're developing and have just cleared the database.
-            CacheManager.Clear();
+            //CacheManager.Clear();
 
             var options = new ImportOptions {KeepIdentity = true};
 

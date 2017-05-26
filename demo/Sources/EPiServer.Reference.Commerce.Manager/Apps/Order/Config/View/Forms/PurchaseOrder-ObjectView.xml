@@ -62,8 +62,7 @@
 						</Control>
 					</Placeholder>
 					<Placeholder id="Placeholder_2">
-            <Control id="PaymentsGrid2" path="~/KlarnaSummary/KlarnaPaymentControl.ascx">
-            </Control>
+            <Control id="PaymentsGrid2" path="~/KlarnaSummary/KlarnaPaymentControl.ascx"></Control>
 					</Placeholder>
 					<Placeholder id="Placeholder_3" />
 					<Placeholder id="Placeholder_4" />

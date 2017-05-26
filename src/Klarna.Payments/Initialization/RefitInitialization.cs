@@ -7,6 +7,8 @@ using EPiServer.Framework.Initialization;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
+using Klarna.Common.Extensions;
+using Mediachase.Commerce;
 using Mediachase.Commerce.Initialization;
 using Mediachase.Commerce.Orders.Managers;
 using Refit;
@@ -19,7 +21,6 @@ namespace Klarna.Payments.Initialization
     internal class RefitInitialization : IConfigurableModule
     {
         private static bool _initialized;
-        private Injected<ConnectionFactory> _connectionFactory;
 
         public void Initialize(InitializationEngine context)
         {
@@ -47,7 +48,8 @@ namespace Klarna.Payments.Initialization
 
         public IKlarnaServiceApi GetInstance()
         {
-            var conn = GetConnectionConfiguration();
+            var market = ServiceLocator.Current.GetInstance<ICurrentMarket>();
+            var conn = GetConnectionConfiguration(market.GetCurrentMarket().MarketId);
 
             var byteArray = Encoding.ASCII.GetBytes($"{conn.Username}:{conn.Password}");
             var httpClient = new HttpClient
@@ -61,12 +63,12 @@ namespace Klarna.Payments.Initialization
             return RestService.For<IKlarnaServiceApi>(httpClient, refitSettings);
         }
 
-        private ConnectionConfiguration GetConnectionConfiguration()
+        private ConnectionConfiguration GetConnectionConfiguration(MarketId marketId)
         {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
-                return _connectionFactory.Service.GetConnectionConfiguration(paymentMethod);
+                return paymentMethod.GetConnectionConfiguration(marketId);
             }
             return null;
         }

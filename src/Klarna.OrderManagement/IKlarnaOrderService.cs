@@ -11,12 +11,7 @@ namespace Klarna.OrderManagement
         void CancelOrder(string orderId);
 
         void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2);
-        CaptureData CaptureOrder(string orderId,
-            int? amount,
-            string description,
-            IOrderGroup orderGroup,
-            IOrderForm orderForm,
-            IPayment payment);
+        CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment);
 
         void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
 
@@ -29,5 +24,6 @@ namespace Klarna.OrderManagement
         void ExtendAuthorizationTime(string orderId);
 
         void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails);
+        void AcknowledgeOrder(IPurchaseOrder purchaseOrder);
     }
 }

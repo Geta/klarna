@@ -1,15 +1,12 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Web.Http;
-using System.Web.Http.Description;
 using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
-using EPiServer.ServiceLocation;
 using Klarna.Payments;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
-using Klarna.Payments.Extensions;
+using Klarna.Common.Extensions;
+using Klarna.Common.Models;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
 
@@ -20,15 +17,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
     {
         private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
         private readonly CustomerContextFacade _customerContextFacade;
-        private readonly IKlarnaService _klarnaService;
+        private readonly IKlarnaPaymentsService _klarnaPaymentsService;
         private readonly ICartService _cartService;
 
         public KlarnaPaymentController(
             CustomerContextFacade customerContextFacade, 
-            IKlarnaService klarnaService, 
+            IKlarnaPaymentsService klarnaPaymentsService, 
             ICartService cartService)
         {
-            _klarnaService = klarnaService;
+            _klarnaPaymentsService = klarnaPaymentsService;
             _customerContextFacade = customerContextFacade;
             _cartService = cartService;
         }
@@ -55,7 +52,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         public IHttpActionResult AllowSharingOfPersonalInformation()
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
-            if (_klarnaService.AllowSharingOfPersonalInformation(cart))
+            if (_klarnaPaymentsService.AllowSharingOfPersonalInformation(cart))
             {
                 return Ok();
             }
@@ -76,14 +73,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
 
-                _klarnaService.FraudUpdate(notification);
+                _klarnaPaymentsService.FraudUpdate(notification);
             }
             return Ok();
         }
 
         private PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
         {
-            var request = _klarnaService.GetPersonalInformationSession(cart);
+            var request = _klarnaPaymentsService.GetPersonalInformationSession(cart);
             
             // Get billling address info
             var billingAddress =

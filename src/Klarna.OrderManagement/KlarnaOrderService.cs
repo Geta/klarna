@@ -17,24 +17,42 @@ namespace Klarna.OrderManagement
 {
     public class KlarnaOrderService : IKlarnaOrderService
     {
-        private readonly Client _client;
+        private Client _client;
+        private readonly ConnectionConfiguration _connectionConfiguration;
+
+        public Client Client
+        {
+            get
+            {
+                if (_client == null)
+                {
+                    var connector = ConnectorFactory.Create(_connectionConfiguration.Username, _connectionConfiguration.Password, new Uri(_connectionConfiguration.ApiUrl));
+
+                    _client = new Client(connector);
+                }
+                return _client;
+            }
+        }
 
         public KlarnaOrderService(ConnectionConfiguration connectionConfiguration)
         {
-            var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
+            _connectionConfiguration = connectionConfiguration;
+        }
 
-            _client = new Client(connector);
+        public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        {
+            Client.NewOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).Acknowledge();
         }
 
         public void CancelOrder(string orderId)
         {
-            var order = _client.NewOrder(orderId);
+            var order = Client.NewOrder(orderId);
             order.Cancel();
         }
 
         public void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
         {
-            var order = _client.NewOrder(orderId);
+            var order = Client.NewOrder(orderId);
 
             var updateMerchantReferences = new UpdateMerchantReferences
             {
@@ -44,21 +62,11 @@ namespace Klarna.OrderManagement
             order.UpdateMerchantReferences(updateMerchantReferences);
         }
 
-        public CaptureData CaptureOrder(
-            string orderId,
-            int? amount,
-            string description,
-            IOrderGroup orderGroup,
-            IOrderForm orderForm,
-            IPayment payment)
+        public CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
         {
-            var order = _client.NewOrder(orderId);
-            var capture = _client.NewCapture(order.Location);
+            var order = Client.NewOrder(orderId);
+            var capture = Client.NewCapture(order.Location);
 
-            var shipment =
-                orderForm.Shipments.FirstOrDefault(x => x.GetShippingItemsTotal(orderGroup.Currency).Amount +
-                                                        (x.GetShippingCost(orderGroup.Market, orderGroup.Currency).Amount - x.GetShipmentDiscountPrice(orderGroup.Currency).Amount) ==
-                                                        payment.Amount);
             if (shipment == null)
             {
                 throw new InvalidOperationException("Can't find correct shipment");
@@ -90,7 +98,7 @@ namespace Klarna.OrderManagement
 
         public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
-            IOrder order = _client.NewOrder(orderId);
+            IOrder order = Client.NewOrder(orderId);
 
             List<OrderLine> lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
@@ -111,36 +119,35 @@ namespace Klarna.OrderManagement
 
         public void ReleaseRemaininAuthorization(string orderId)
         {
-            IOrder order = _client.NewOrder(orderId);
+            IOrder order = Client.NewOrder(orderId);
 
             order.ReleaseRemainingAuthorization();
         }
 
         public void TriggerSendOut(string orderId, string captureId)
         {
-            IOrder order = _client.NewOrder(orderId);
-            ICapture capture = _client.NewCapture(order.Location, captureId);
+            IOrder order = Client.NewOrder(orderId);
+            ICapture capture = Client.NewCapture(order.Location, captureId);
 
             capture.TriggerSendOut();
         }
 
         public OrderData GetOrder(string orderId)
         {
-            var order = _client.NewOrder(orderId);
-
+            var order = Client.NewOrder(orderId);
             return order.Fetch();
         }
 
         public void ExtendAuthorizationTime(string orderId)
         {
-            IOrder order = _client.NewOrder(orderId);
+            IOrder order = Client.NewOrder(orderId);
 
             order.ExtendAuthorizationTime();
         }
 
         public void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails)
         {
-            IOrder order = _client.NewOrder(orderId);
+            IOrder order = Client.NewOrder(orderId);
 
             order.UpdateCustomerDetails(updateCustomerDetails);
         }

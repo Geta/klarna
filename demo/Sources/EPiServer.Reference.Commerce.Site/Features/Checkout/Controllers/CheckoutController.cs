@@ -17,9 +17,21 @@ using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using System.Web.Mvc;
+using EPiServer.Globalization;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
+using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
+using EPiServer.ServiceLocation;
+using Klarna.Checkout;
+using Klarna.Common;
+using Klarna.Common.Extensions;
+using Klarna.OrderManagement;
 using Klarna.Payments;
+using Klarna.Rest.Models;
+using Mediachase.Commerce.Orders.Managers;
+using Constants = Klarna.Checkout.Constants;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -34,7 +46,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly IRecommendationService _recommendationService;
         private ICart _cart;
         private readonly CheckoutService _checkoutService;
-        private readonly IKlarnaService _klarnaService;
+        private readonly IKlarnaPaymentsService _klarnaPaymentsService;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+        private readonly IContentLoader _contentLoader;
 
         public CheckoutController(
             ICurrencyService currencyService,
@@ -45,7 +59,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             OrderSummaryViewModelFactory orderSummaryViewModelFactory,
             IRecommendationService recommendationService,
             CheckoutService checkoutService,
-            IKlarnaService klarnaService)
+            IKlarnaPaymentsService klarnaPaymentsService,
+            IKlarnaCheckoutService klarnaCheckoutService,
+            IContentLoader contentLoader)
         {
             _currencyService = currencyService;
             _controllerExceptionHandler = controllerExceptionHandler;
@@ -55,7 +71,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderSummaryViewModelFactory = orderSummaryViewModelFactory;
             _recommendationService = recommendationService;
             _checkoutService = checkoutService;
-            _klarnaService = klarnaService;
+            _klarnaPaymentsService = klarnaPaymentsService;
+            _klarnaCheckoutService = klarnaCheckoutService;
+            _contentLoader = contentLoader;
         }
 
         [HttpGet]
@@ -68,7 +86,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return View("EmptyCart");
             }
 
-            var viewModel = CreateCheckoutViewModel(currentPage);
+            IPaymentMethodViewModel<PaymentMethodBase> paymentMethod = null;
+            var selectedPaymentMethod = Request["paymentMethod"];
+            if (!string.IsNullOrEmpty(selectedPaymentMethod))
+            {
+                paymentMethod = PaymentMethodViewModelResolver.Resolve(selectedPaymentMethod);
+                paymentMethod.SystemName = selectedPaymentMethod;
+            }
+
+            var viewModel = CreateCheckoutViewModel(currentPage, paymentMethod);
 
             Cart.Currency = _currencyService.GetCurrentCurrency();
             
@@ -81,11 +107,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            await _klarnaService.CreateOrUpdateSession(Cart);
-
-            // Make sure Klarna values are set
-            (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
-
+            if (viewModel.Payment.SystemName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
+            {
+                await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
+                (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
+            }
+            if (viewModel.Payment.SystemName.Equals(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword))
+            {
+                _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+                (viewModel.Payment as KlarnaCheckoutViewModel)?.InitializeValues();
+            }
             return View(viewModel.ViewName, viewModel);
         }
 
@@ -113,7 +144,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var viewModel = CreateCheckoutViewModel(currentPage, paymentViewModel);
             
-            await _klarnaService.CreateOrUpdateSession(Cart);
+            await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
 
             return PartialView("Partial", viewModel);
         }
@@ -135,7 +166,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var addressViewName = addressViewModel.ShippingAddressIndex > -1 ? "SingleShippingAddress" : "BillingAddress";
 
-            await _klarnaService.CreateOrUpdateSession(Cart);
+            await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
 
             return PartialView(addressViewName, viewModel);
         }
@@ -218,7 +249,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return View(viewModel);
             }
 
-            _klarnaService.RedirectToConfirmationUrl(purchaseOrder);
+            _klarnaPaymentsService.CompleteAndRedirect(purchaseOrder);
             
             var confirmationSentSuccessfully = _checkoutService.SendConfirmation(viewModel, purchaseOrder);
           
@@ -226,6 +257,34 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, confirmationSentSuccessfully));
         }
+
+        [HttpGet]
+        public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
+        {
+            var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
+            if (cart != null)
+            {
+                var order = _klarnaCheckoutService.GetOrder(klarna_order_id);
+                if (order.Status == "checkout_complete")
+                {
+                    var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
+                    if (purchaseOrder == null)
+                    {
+                        ModelState.AddModelError("", "Error occurred while creating a purchase order");
+
+                        return RedirectToAction("Index");
+                    }
+
+                    return Redirect(_checkoutService.BuildRedirectionUrl(purchaseOrder));
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+            return HttpNotFound();
+        }
+      
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)
         {

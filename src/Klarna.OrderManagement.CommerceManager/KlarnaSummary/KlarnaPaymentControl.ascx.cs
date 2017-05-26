@@ -3,6 +3,7 @@ using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
+using Klarna.Common.Extensions;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Web.Console.Common;
 using Newtonsoft.Json;
@@ -33,7 +34,6 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
         }
 
         private Injected<IOrderRepository> _orderRepository;
-        private Injected<ConnectionFactory> _connectionFactory;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -48,8 +48,8 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
                     if (paymentMethod != null && paymentMethod.PaymentMethod.FirstOrDefault() != null &&
                         paymentMethod.PaymentMethod.FirstOrDefault().SystemKeyword.Contains("Klarna"))
                     {
-
-                        var klarnaOrderService = new KlarnaOrderService(_connectionFactory.Service.GetConnectionConfiguration(paymentMethod));
+                        
+                        var klarnaOrderService = new KlarnaOrderService(paymentMethod.GetConnectionConfiguration(purchaseOrder.Market.MarketId));
 
                         var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
                         var orderData = klarnaOrderService.GetOrder(orderId);

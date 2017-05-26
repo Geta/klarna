@@ -17,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Klarna.Checkout;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
 {
@@ -93,6 +94,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
 
             _addressBookService.LoadAddress(viewModel.BillingAddress);
             PopulateCountryAndRegions(viewModel);
+
+            viewModel.KlarnaCheckoutPaymentMethodSelected = viewModel.Payment?.SystemName == Constants.KlarnaCheckoutSystemKeyword;
 
             return viewModel;
         }

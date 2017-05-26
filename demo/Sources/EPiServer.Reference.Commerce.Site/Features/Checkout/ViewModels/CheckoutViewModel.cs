@@ -71,5 +71,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels
         }
 
         public string AuthorizationToken { get; set; }
+
+        public bool KlarnaCheckoutPaymentMethodSelected { get; set; }
     }
 }
