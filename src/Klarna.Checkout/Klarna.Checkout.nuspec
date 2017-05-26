@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package>
   <metadata>
-    <id>EPiServer.Klarna.Checkout</id>
-    <version>0.0.0.1</version>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <description>$description$</description>
     <title>Klarna Checkout</title>
-    <authors>Geta</authors>
-    <owners>Geta</owners>
     <iconUrl>https://cdn.geta.no/opensource/icons/Geta-logo-3.png</iconUrl>
     <projectUrl>https://github.com/Geta/Klarna</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Klarna Checkout</description>
     <copyright>Copyright 2017 Geta</copyright>
     <tags>EPiServer Commerce 10</tags>
     <dependencies>

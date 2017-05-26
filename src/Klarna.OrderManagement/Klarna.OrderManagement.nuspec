@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>EPiServer.Klarna.OrderManagement</id>
-    <version>0.0.0.1</version>
+    <id>$id$</id>
+    <version>$version$</version>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <description>$description$</description>
     <title>Klarna Order Management</title>
-    <authors>Geta</authors>
-    <owners>Geta</owners>
     <projectUrl>https://github.com/Geta/Klarna</projectUrl>
     <iconUrl>https://cdn.geta.no/opensource/icons/Geta-logo-3.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Klarna Order Management</description>
     <copyright>Copyright 2017 Geta</copyright>
     <tags>EPiServer Commerce 10</tags>
     <dependencies>
