@@ -56,7 +56,6 @@ namespace Klarna.Payments
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, dic);
             }
-
             var currentCountry = cart.Market.Countries.FirstOrDefault();
             // Clear PI if we're not allowed to send it yet (can be set by custom session builder)
             if (!canSendPersonalInformation && !CanSendPersonalInformation(currentCountry))

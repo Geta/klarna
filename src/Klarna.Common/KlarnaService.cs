@@ -53,7 +53,9 @@ namespace Klarna.Common
         public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField)
         {
             var shipment = cart.GetFirstShipment();
-            var includedTaxesOnLineItems = !CountryCodeHelper.GetContinentByCountry(shipment.ShippingAddress?.CountryCode).Equals("NA", StringComparison.InvariantCultureIgnoreCase);
+            var currentCountry = shipment.ShippingAddress?.CountryCode ?? cart.Market.Countries.FirstOrDefault();
+
+            var includedTaxesOnLineItems = !CountryCodeHelper.GetContinentByCountry(currentCountry).Equals("NA", StringComparison.InvariantCultureIgnoreCase);
             return GetOrderLines(cart, orderGroupTotals, includedTaxesOnLineItems, sendProductAndImageUrlField);
         }
 

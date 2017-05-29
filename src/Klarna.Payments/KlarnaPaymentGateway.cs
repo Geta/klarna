@@ -66,6 +66,10 @@ namespace Klarna.Payments
             {
                 _orderForm = (payment as Payment)?.Parent ?? OrderGroup?.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
             }
+            if (OrderGroup == null)
+            {
+                OrderGroup = (_orderForm as OrderForm)?.Parent;
+            }
 
             try
             {
