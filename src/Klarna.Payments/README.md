@@ -60,7 +60,7 @@ Set the colors and border size for the Klarna widget. The Klarna logo should be 
 
 After payment is completed the confirmation url must be called. This can be done with this method:
 ```
-_klarnaPaymentsService.RedirectToConfirmationUrl(purchaseOrder);
+_klarnaPaymentsService.CompleteAndRedirect(purchaseOrder);
 ```
 Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
@@ -211,7 +211,7 @@ Checkout flow:
  In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
 
 ### Create order
-The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
+The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation. 
 
 ### Fraud status notifications
 In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaPaymentsService includes a method for handling fraud notifications. Below an example implementation.
