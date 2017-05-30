@@ -100,9 +100,17 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
 - [Define Authorization token property](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/ViewModels/CheckoutViewModel.cs#L73) on view model, add hiddenfield on [Single-](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/SingleShipmentCheckout.cshtml#L87) and [MultiShipmentCheckout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/MultiShipmentCheckout.cshtml#L67)
 - [Set authorization token](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs#L109) on payment object. This should be done before calling the payment gateway - cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
 - Call CreateOrUpdateSession method in the [Index](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L84), [Update](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L116) and [ChangeAddress](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L123) action of the CheckoutController
-- Call the RedirectToConfirmationUrl to [redirect](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L221) the visitor to the confirmation page after creating a PurchaseOrder
+- Call the CompleteAndRedirect to [redirect](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs#L221) the visitor to the confirmation page after creating a PurchaseOrder
 
+Note: if you're not using serialized carts you need to set the OrderNumberMethod property on the cart like below code snippet. This package contains an implementation of the IOrderNumberGenerator. During payment authorization (so before a purchase order is created) it's mandatory to send the order number to Klarna. The custom implementation in the package generates an order number and save it on the cart. When the SaveAsPurchaseOrder method is called the implementation will return the generated order number from the cart. 
 
+```
+if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't use the IOrderNumberGenerator
+{
+    var orderNumberGenerator = ServiceLocator.Current.GetInstance<IOrderNumberGenerator>();
+    ((Mediachase.Commerce.Orders.Cart)cart).OrderNumberMethod = orderNumberGenerator.GenerateOrderNumber;
+}
+```
 
 
 ### Creating session
