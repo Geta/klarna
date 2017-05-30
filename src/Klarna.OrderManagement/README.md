@@ -21,8 +21,8 @@ More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/or
 
 (*) Not integrated in the EPiServer Commerce order process
 
-## How to get started?
-
+<details>
+  <summary>Setup (click to expand)</summary>
 Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 
     Install-Package Klarna.OrderManagement
@@ -32,8 +32,11 @@ For the Commerce Manager site run the following package:
     Install-Package Klarna.OrderManagement.CommerceManager
 
 Both Klarna.Payments and Klarna.Checkout have reference to the Klarna.OrderManagement. It's more likely that one of those packages are installed.    
+</details>
 
-## Setup
+<details>
+  <summary>Configure user control (click to expand)</summary>
+  
 Unfortunately a manual configuration needs to be done in the XML file to make sure that the KlarnaPaymentControl.ascx user control is loaded in Commerce Manager. See section Klarna order information to learn what kind of information this user control displays. Follow these steps to configure the user control:
 - **Open file: /Apps/Order/Config/Views/Forms/PurchaseOrder-ObjectView.xml**
 - **Add the KlarnaPaymentControl.ascx to the Placeholder_2 like this**
@@ -54,8 +57,10 @@ Unfortunately a manual configuration needs to be done in the XML file to make su
 ```
 
 Note: these steps need to be done each time Commerce Manager is updated. 
+</details>
 
-### Capture
+<details>
+  <summary>Capture (click to expand)</summary>
 Capturing payments is done by completing a shipment in Commerce Manager. Follow these steps to complete a shipment:
 - Open the order in CM
 - Go to Order details - 'Release shipment'
@@ -69,10 +74,12 @@ Capturing payments is done by completing a shipment in Commerce Manager. Follow 
 
 Look at the [order notes section](#order-notes) for example order notes regarding captures.
 
-#### Partial capture
+
+####  Partial capture (click to expand)
 Upon completing a shipment in a multi-shipment scenario, a partial capture will be done towards Klarna. The partial capture will capture the amount that has to be captured for that specific shipment. If all shipments are completed, the full order amount will have been captured.
 
 ![Partial capture](/docs/screenshots/capture-partial.PNG?raw=true)
+
 
 #### Change Capture data
 By default all capture data should be set automatically. However, similar to Klarna Payment sessions, it is possible to change capture data before it is sent to Klarna. In order to do so you can create an implementation of ``ICaptureBuilder`` and register it with StructureMap.
@@ -86,8 +93,9 @@ public class DemoCaptureBuilder : ICaptureBuilder
     }
 }
 ```
-
-### Release remaining authorization
+</details>
+<details>
+  <summary>Release remaining authorization (click to expand)</summary>
 In a multi-shipment scenario, each individual shipment can be completed or cancelled. For instance, an order with two shipments, one shipments was fullfilled and the other one was cancelled (partially completed). This means the remaining authorized amount at Klarna needs to be released.
 
 ![Order multi shipment](/docs/screenshots/order-multi-shipment.PNG?raw=true "Order multi shipment")
@@ -95,8 +103,9 @@ In a multi-shipment scenario, each individual shipment can be completed or cance
 When the last shipment is handled, the payment gateway is called to release the remaining authorized amount at Klarna. The payments overview in the Payment tab contains an extra row for the release remaining authorization step. Also, a note is saved at the order to inform the user.
 
 ![Order release remaining authorization](/docs/screenshots/order-payment-releaseremainingauthorization.PNG?raw=true "Order release remaining authorization")
-
-### Refund
+</details>
+<details>
+  <summary>Refund (click to expand)</summary>
 To create a return in Commerce Manager the order must have the completed status. Follow these steps to create a return:
 - Open the order in Commerce Manager
 - Go to the Details tab
@@ -123,16 +132,18 @@ public class DemoRefundBuilder : IRefundBuilder
     }
 }
 ```
-
-### Cancel
+</details>
+<details>
+  <summary>Cancel (click to expand)</summary>
 Whenever an order is cancelled in Commerce Manager the payment gateway is called to also cancel the payment at Klarna.
 An order in Commerce Manager can only be can cancelled when the items haven't been shipped yet. 
 ![Cancel order](/docs/screenshots/order-cancel.png?raw=true "Cancel order")
 
 After the cancel button is pressed the payment gateway is called. The passed payment object contains the transaction type 'Void' which means the payment should be cancelled. This is also what happens at Klarna.
 ![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
-
-### Use KlarnaOrderService
+</details>
+<details>
+  <summary>Use KlarnaOrderService (click to expand)</summary>
 The IKlarnaOrderService interface contains some methods to work with Klarna payments. The following methods are used for integration in Commerce Manager: CancelOrder, CaptureOrder, Refund and ReleaseRemainingAuthorization.
 
 ```
@@ -157,15 +168,18 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
         void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails);
     }
 ```
-
-### Order notes
+</details>
+<details>
+  <summary>Order notes (click to expand)</summary>
 EPiServer uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform users about the Klarna payment process. 
 
 ![Order notes](/docs/screenshots/order-notes-complete.PNG?raw=true "Order notes")
-
-### Klarna order information
+</details>
+<details>
+  <summary>Klarna order information (click to expand)</summary>
 Order notes and the payment overview can be used to gather information about the Klarna payment process. The Payments tab contains more information about the order (payment) at Klarna. By clicking on the 'Show all order information' link a complete JSON of the order object from Klarna is displayed. 
 
 Note: this information is only displayed  when a Klarna payment is added to the order in Commerce Manager.
 
 ![Klarna order information](/docs/screenshots/order-klarna-information.PNG?raw=true "Klarna order information")
+</details>
