@@ -221,7 +221,7 @@ The KlarnaPaymentGateway save notes about payment updates at the order.
 
 <details>
   <summary>Quicksilver demo site implementation (click to expand)</summary>
-### Quicksilver demo site implementation
+  
 This repository includes the Quicksilver demo site (https://github.com/Geta/Klarna/tree/master/demo) which contains an example implementation of this package. The following steps are done for implementing this package.
 - Load Klarna api.js on [Layout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_Layout.cshtml#L87)
 - Implement [Checkout.Klarna.js](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.Klarna.js) 
