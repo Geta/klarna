@@ -46,7 +46,7 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
 
-- navigate to parameters tab and fill in settings (see screenshot below)
+- navigate to parameters tab and fill out the Klarna configurations. Configurations are market specific so first select a market. (see screenshot below)
 
 **Connection string**
 
@@ -64,7 +64,7 @@ _klarnaPaymentsService.RedirectToConfirmationUrl(purchaseOrder);
 ```
 Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
-The 'PreAssement' field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This setting can be enabled per country. This option is only available in the U.S. market and will be ignored for all other markets. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
+The 'PreAssement' field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This option is only available in the U.S. market and will be ignored for all other markets. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
 
 ```
 sessionRequest.Customer = new Customer
@@ -106,7 +106,7 @@ This repository includes the Quicksilver demo site (https://github.com/Geta/Klar
 
 
 ### Creating session
-A session at Klarna should be created when the visitor is on the checkout page. The CreateOrUpdateSession method will create a new session when it does not exists or update the current one.
+A session at Klarna should be created when the visitor is on the checkout page. The CreateOrUpdateSession method will create a new session when it does not exists or update the current one. This method also accepts an optional parameter of the type IDictionary<string, object>. This parameter can be used to pass extra information that can be used in the session builder.
 
 ```
 await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
@@ -117,9 +117,9 @@ It's possible to create an implementation of the ISessionBuilder. The Build meth
 ```
 public class DemoSessionBuilder : ISessionBuilder
 {
-        public Session Build(Session session, ICart cart, Klarna.Payments.Configuration configuration, bool includePersonalInformation = false)
+        public Session Build(Session session, ICart cart, PaymentsConfiguration configuration, IDictionary<string, object> dic = null, bool includePersonalInformation = false)
     {
-        if (includePersonalInformation && configuration.CustomerPreAssessmentCountries.Any(c => cart.Market.Countries.Contains(c)))
+        if (includePersonalInformation && paymentsConfiguration.CustomerPreAssessment)
         {
             session.Customer = new Customer
             {
