@@ -121,6 +121,8 @@ namespace Klarna.Payments
             var sessionRequest = GetSessionRequest(cart, config, true);
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
+            _orderRepository.Save(cart);
+
             sessionRequest.MerchantUrl = new MerchantUrl
             {
                 Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?orderNumber={sessionRequest.MerchantReference1}&contactId={cart.CustomerId}",
