@@ -45,7 +45,7 @@ namespace Klarna.Payments
             _orderNumberGenerator = orderNumberGenerator;
         }
 
-        public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic)
+        public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null)
         {
             // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
@@ -203,7 +203,7 @@ namespace Klarna.Payments
             return false;
         }
 
-        public PersonalInformationSession GetPersonalInformationSession(ICart cart, IDictionary<string, object> dic)
+        public PersonalInformationSession GetPersonalInformationSession(ICart cart, IDictionary<string, object> dic = null)
         {
             var request = new Session();
 

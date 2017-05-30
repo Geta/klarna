@@ -6,6 +6,6 @@ namespace Klarna.Payments
 {
     public interface ISessionBuilder
     {
-        Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic, bool includePersonalInformation = false);
+        Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic = null, bool includePersonalInformation = false);
     }
 }
