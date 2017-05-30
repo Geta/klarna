@@ -119,16 +119,17 @@ namespace Klarna.Payments
         {
             var config = GetConfiguration(cart.Market.MarketId);
             var sessionRequest = GetSessionRequest(cart, config, true);
-            if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
-            {
-                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, null);
-            }
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
             sessionRequest.MerchantUrl = new MerchantUrl
             {
-                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?trackingNumber={sessionRequest.MerchantReference1}",
+                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?orderNumber={sessionRequest.MerchantReference1}&contactId={cart.CustomerId}",
             };
+
+            if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
+            {
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, null);
+            }
             return await _klarnaServiceApi.Service.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
         }
 
