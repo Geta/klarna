@@ -62,6 +62,28 @@ namespace Klarna.OrderManagement
             order.UpdateMerchantReferences(updateMerchantReferences);
         }
 
+        public CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
+        {
+            var order = Client.NewOrder(orderId);
+            var capture = Client.NewCapture(order.Location);
+
+            var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
+
+            var captureData = new CaptureData
+            {
+                CapturedAmount = amount,
+                Description = description,
+                OrderLines = lines
+            };
+
+            if (ServiceLocator.Current.TryGetExistingInstance(out ICaptureBuilder captureBuilder))
+            {
+                captureData = captureBuilder.Build(captureData, orderGroup, orderForm, payment);
+            }
+            capture.Create(captureData);
+            return capture.Fetch();
+        }
+
         public CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
         {
             var order = Client.NewOrder(orderId);
