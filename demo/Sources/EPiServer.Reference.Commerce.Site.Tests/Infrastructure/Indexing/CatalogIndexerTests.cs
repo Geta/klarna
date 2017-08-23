@@ -312,7 +312,6 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Infrastructure.Indexing
         {
             var dataTable = new CatalogEntryDto.CatalogEntryDataTable();
             var newEntryRow = dataTable.NewCatalogEntryRow();
-            newEntryRow.ApplicationId = Guid.NewGuid();
             newEntryRow.CatalogId = 1;
             newEntryRow.ClassTypeId = classTypeId;
             newEntryRow.Code = code;

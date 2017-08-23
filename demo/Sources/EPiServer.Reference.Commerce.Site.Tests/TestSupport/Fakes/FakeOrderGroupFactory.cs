@@ -1,15 +1,16 @@
 ﻿using EPiServer.Commerce.Order;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes
 {
     public class FakeOrderGroupFactory : IOrderGroupFactory
     {
         public IOrderGroupBuilder BuilderFor(IOrderGroup orderGroup)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPayment CreatePayment(IOrderGroup orderGroup, Type paymentType)
         {
             throw new NotImplementedException();
         }

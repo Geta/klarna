@@ -51,7 +51,7 @@ namespace Klarna.OrderManagement.Initialization
 
                                 orderAfterSave.AddPayment(payment);
 
-                                _paymentProcessor.Service.ProcessPayment(payment, orderAfterSave.GetFirstShipment(), orderAfterSave);
+                                _paymentProcessor.Service.ProcessPayment(orderAfterSave, payment, orderAfterSave.GetFirstShipment());
                             }
                         }
                     }
@@ -72,7 +72,7 @@ namespace Klarna.OrderManagement.Initialization
 
                                 orderAfterSave.AddPayment(payment);
 
-                                _paymentProcessor.Service.ProcessPayment(payment, orderAfterSave.GetFirstShipment(), orderAfterSave);
+                                _paymentProcessor.Service.ProcessPayment(orderAfterSave, payment, orderAfterSave.GetFirstShipment());
                             }
                         }
                     }

@@ -14,7 +14,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Business
         private readonly ITaxCalculator _taxCalculator;
 
         public SiteOrderGroupCalculator(IOrderFormCalculator orderFormCalculator, IShippingCalculator shippingCalculator, ITaxCalculator taxCalculator) 
-            : base(orderFormCalculator, shippingCalculator, taxCalculator)
+            : base(orderFormCalculator)
         {
             _shippingCalculator = shippingCalculator;
             _taxCalculator = taxCalculator;
