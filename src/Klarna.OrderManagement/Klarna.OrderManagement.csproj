@@ -195,6 +195,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Events\OrderCancelledEvent.cs" />
+    <Compile Include="Events\ReleaseRemainingEvent.cs" />
     <Compile Include="IKlarnaOrderService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="Initialization\OrderInitialization.cs" />
