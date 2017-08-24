@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
+using Klarna.Common;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement.Events
@@ -37,7 +38,7 @@ namespace Klarna.OrderManagement.Events
 
             if (AlreadyVoided()) return;
 
-            var previousPayment = _orderForm.Payments.FirstOrDefault();
+            var previousPayment = _orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword));
             if (previousPayment == null) return;
 
             var voidPayment = _order.CreatePayment(_orderGroupFactory);

@@ -2,8 +2,6 @@
 {
     public static class Constants
     {
-        public const string KlarnaPaymentSystemKeyword = "KlarnaPayments";
-
         // Cart property fields
         public const string KlarnaSessionIdCartField = "KlarnaSessionIdCart";
         public const string KlarnaClientTokenCartField = "KlarnaClientTokenCart";

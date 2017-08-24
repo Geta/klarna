@@ -156,7 +156,7 @@ namespace Klarna.Payments
             var orderForm = purchaseOrder.GetFirstForm();
             if (orderForm != null)
             {
-                var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaPaymentSystemKeyword));
+                var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Common.Constants.KlarnaPaymentSystemKeyword));
                 if (payment != null)
                 {
                     SetOrderStatus(purchaseOrder, payment);
@@ -257,7 +257,7 @@ namespace Klarna.Payments
                 OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrlField).ToArray()
             };
 
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Common.Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
                 request.MerchantUrl = new MerchantUrl
@@ -342,11 +342,11 @@ namespace Klarna.Payments
 
         public PaymentsConfiguration GetConfiguration(MarketId marketId)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Common.Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod == null)
             {
                 throw new Exception(
-                    $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
+                    $"PaymentMethod {Common.Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }
             return paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
         }

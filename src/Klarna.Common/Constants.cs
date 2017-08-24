@@ -2,6 +2,8 @@
 {
     public static class Constants
     {
+        public const string KlarnaPaymentSystemKeyword = "KlarnaPayments";
+
         public const string OrderNamespace = "Mediachase.Commerce.Orders";
         public const string PurchaseOrderClass = "PurchaseOrder";
         public const string OtherPaymentClass = "OtherPayment";
