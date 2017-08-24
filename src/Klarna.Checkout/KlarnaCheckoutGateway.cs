@@ -16,11 +16,20 @@ namespace Klarna.Checkout
 
         public IOrderGroup OrderGroup { get; set; }
 
+        public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
+        {
+            OrderGroup = orderGroup;
+            _orderForm = orderGroup.GetFirstForm();
+            var message = string.Empty;
+            ProcessPayment(payment, ref message);
+            return PaymentProcessingResult.CreateSuccessfulResult(message);
+        }
+
         public override bool ProcessPayment(Payment payment, ref string message)
         {
             OrderGroup = payment.Parent.Parent;
             _orderForm = payment.Parent;
-            return ProcessPayment(payment as IPayment, ref message);
+            return ProcessPayment(payment, ref message);
         }
 
         public bool ProcessPayment(IPayment payment, ref string message)

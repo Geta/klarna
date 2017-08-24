@@ -170,7 +170,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
         {
             var row = paymentMethodDto.PaymentMethod.AddPaymentMethodRow(id, name, description, language.TwoLetterISOLanguageName,
                             systemKeyword, true, isDefault, gatewayClass,
-                            implementationClass, false, orderIndex, DateTime.Now, DateTime.Now, AppContext.Current.ApplicationId);
+                            implementationClass, false, orderIndex, DateTime.Now, DateTime.Now);
 
             var paymentMethod = new PaymentMethod(row);
             paymentMethod.MarketId.AddRange(markets.Where(x => x.IsEnabled && x.Languages.Contains(language)).Select(x => x.MarketId));
@@ -249,7 +249,6 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             return dto.ShippingMethod.AddShippingMethodRow(
                 Guid.NewGuid(),
                 shippingOption,
-                AppContext.Current.ApplicationId,
                 languageId,
                 true,
                 name,

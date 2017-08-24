@@ -36,6 +36,25 @@ namespace Klarna.Payments
             }
         }
 
+
+        public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment, IShipment shipment)
+        {
+            OrderGroup = orderGroup;
+            _orderForm = orderGroup.GetFirstForm();
+            var message = string.Empty;
+            ProcessPayment(payment, shipment, ref message);
+            return PaymentProcessingResult.CreateSuccessfulResult(message);
+        }
+
+        public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
+        {
+            OrderGroup = orderGroup;
+            _orderForm = orderGroup.GetFirstForm();
+            var message = string.Empty;
+            ProcessPayment(payment, ref message);
+            return PaymentProcessingResult.CreateSuccessfulResult(message);
+        }
+
         public bool ProcessPayment(Payment payment, ref string message)
         {
             return ProcessPayment(payment as IPayment, ref message);
