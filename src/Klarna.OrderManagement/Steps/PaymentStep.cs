@@ -28,7 +28,7 @@ namespace Klarna.OrderManagement.Steps
             PaymentMethod = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
             if (PaymentMethod != null)
             {
-                KlarnaOrderService = new KlarnaOrderService(PaymentMethod.GetConnectionConfiguration(marketId));
+                KlarnaOrderService = KlarnaOrderServiceFactory.Create(PaymentMethod.GetConnectionConfiguration(marketId));
             }
         }
 

@@ -202,6 +202,7 @@
     <Compile Include="Initialization\OrderInitialization.cs" />
     <Compile Include="KlarnaAdditionalTransactionType.cs" />
     <Compile Include="KlarnaOrderService.cs" />
+    <Compile Include="KlarnaOrderServiceFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ICaptureBuilder.cs" />
     <Compile Include="Refunds\IRefundBuilder.cs" />

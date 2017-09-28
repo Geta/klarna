@@ -317,9 +317,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
               _mailServiceMock.Object,
               null,
               Mock.Of<IContentLoader>(),
-              Mock.Of<IKlarnaCheckoutService>(),
-              null
-              );
+              Mock.Of<IKlarnaCheckoutService>());
         }
     }
 }

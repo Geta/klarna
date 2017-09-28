@@ -264,7 +264,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {
-                var order = _klarnaCheckoutService.GetOrder(klarna_order_id);
+                var order = _klarnaCheckoutService.GetOrder(klarna_order_id, cart.Market);
                 if (order.Status == "checkout_complete")
                 {
                     var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);

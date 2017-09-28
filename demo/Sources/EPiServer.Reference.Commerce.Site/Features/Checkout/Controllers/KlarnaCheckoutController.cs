@@ -172,7 +172,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return null;
             }
 
-            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId);
+            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId, cart.Market);
             if (!order.Status.Equals("checkout_complete"))
             {
                 // Won't create order, Klarna checkout not complete

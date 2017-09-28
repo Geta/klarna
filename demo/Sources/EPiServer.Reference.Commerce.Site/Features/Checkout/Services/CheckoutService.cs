@@ -16,14 +16,11 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
-using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
-using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Checkout;
-using Klarna.Payments.Helpers;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
@@ -46,9 +43,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         private readonly ILogger _log = LogManager.GetLogger(typeof(CheckoutService));
         private readonly IContentLoader _contentLoader; 
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
-        private readonly CheckoutViewModelFactory _checkoutViewModelFactory;
-
-      
 
         public AuthenticatedPurchaseValidation AuthenticatedPurchaseValidation { get; private set; }
         public AnonymousPurchaseValidation AnonymousPurchaseValidation { get; private set; }
@@ -66,8 +60,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             IMailService mailService, 
             IPromotionEngine promotionEngine, 
             IContentLoader contentLoader, 
-            IKlarnaCheckoutService klarnaCheckoutService, 
-            CheckoutViewModelFactory checkoutViewModelFactory)
+            IKlarnaCheckoutService klarnaCheckoutService)
         {
             _addressBookService = addressBookService;
             _orderGroupFactory = orderGroupFactory;
@@ -81,7 +74,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             _promotionEngine = promotionEngine;
             _contentLoader = contentLoader;
             _klarnaCheckoutService = klarnaCheckoutService;
-            _checkoutViewModelFactory = checkoutViewModelFactory;
 
             AuthenticatedPurchaseValidation = new AuthenticatedPurchaseValidation(_localizationService);
             AnonymousPurchaseValidation = new AnonymousPurchaseValidation(_localizationService);
@@ -197,7 +189,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
             var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(checkoutViewModel.CurrentPage.ContentLink);
 
-            return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
+            return new UrlBuilder(confirmationPage.LinkURL) {QueryCollection = queryCollection}.ToString();
         }
 
         public virtual string BuildRedirectionUrl(IPurchaseOrder purchaseOrder)
@@ -210,7 +202,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             
             var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(_contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage);
 
-            return new UrlBuilder("http://klarna.localtest.me/" + confirmationPage.LinkURL) { QueryCollection = queryCollection }.ToString();
+            return new UrlBuilder(confirmationPage.LinkURL) { QueryCollection = queryCollection }.ToString();
         }
 
         public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrderData order, ICart cart)

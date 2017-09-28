@@ -49,7 +49,7 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
                         paymentMethod.PaymentMethod.FirstOrDefault().SystemKeyword.Contains("Klarna"))
                     {
                         
-                        var klarnaOrderService = new KlarnaOrderService(paymentMethod.GetConnectionConfiguration(purchaseOrder.Market.MarketId));
+                        var klarnaOrderService = KlarnaOrderServiceFactory.Create(paymentMethod, purchaseOrder.Market.MarketId);
 
                         var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
                         var orderData = klarnaOrderService.GetOrder(orderId);

@@ -13,7 +13,7 @@ namespace Klarna.Checkout
         CheckoutOrderData CreateOrder(ICart cart);
         CheckoutOrderData UpdateOrder(string orderId, ICart cart);
 
-        CheckoutOrderData GetOrder(string orderId);
+        CheckoutOrderData GetOrder(string klarnaOrderId, IMarket market);
 
         ICart GetCartByKlarnaOrderId(int orderGroupId, string orderId);
 

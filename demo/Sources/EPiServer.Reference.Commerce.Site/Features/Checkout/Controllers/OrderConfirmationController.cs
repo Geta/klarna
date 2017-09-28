@@ -10,7 +10,6 @@ using EPiServer.Web.Mvc.Html;
 using System.Web.Mvc;
 using EPiServer.Globalization;
 using Klarna.Checkout;
-using Mediachase.BusinessFoundation.Core;
 using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -52,11 +51,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 var viewModel = CreateViewModel(currentPage, order);
                 viewModel.NotificationMessage = notificationMessage;
 
-                var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
+                var paymentMethod = PaymentManager
+                    .GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword,
+                        ContentLanguage.PreferredCulture.Name)
+                    .PaymentMethod.FirstOrDefault();
 
-                if (paymentMethod != null && order.GetFirstForm().Payments.Any(x => x.PaymentMethodId == paymentMethod.PaymentMethodId && !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
+                if (paymentMethod != null &&
+                    order.GetFirstForm().Payments.Any(x => x.PaymentMethodId == paymentMethod.PaymentMethodId &&
+                    !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
                 {
-                    var klarnaOrder = _klarnaCheckoutService.GetOrder(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString());
+                    var klarnaOrder =
+                        _klarnaCheckoutService.GetOrder(
+                            order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString(), order.Market);
                     viewModel.KlarnaCheckoutHtmlSnippet = klarnaOrder.HtmlSnippet;
                     viewModel.IsKlarnaCheckout = true;
                 }
