@@ -26,7 +26,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             var payment = orderGroup.CreatePayment(_orderGroupFactory);
             payment.PaymentType = PaymentType.Other;
             payment.PaymentMethodId = PaymentMethodId;
-            payment.PaymentMethodName = Constants.KlarnaPaymentSystemKeyword;
+            payment.PaymentMethodName = Klarna.Common.Constants.KlarnaPaymentSystemKeyword;
             payment.Amount = amount;
             payment.Status = PaymentStatus.Pending.ToString();
             payment.TransactionType = TransactionType.Authorization.ToString();

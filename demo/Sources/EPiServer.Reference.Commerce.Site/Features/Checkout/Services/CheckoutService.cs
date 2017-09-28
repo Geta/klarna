@@ -122,7 +122,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         {
             var total = cart.GetTotal(_orderGroupCalculator);
             var payment = viewModel.Payment.PaymentMethod.CreatePayment(total.Amount, cart);
-            if (payment.PaymentMethodName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
+            if (payment.PaymentMethodName.Equals(Klarna.Common.Constants.KlarnaPaymentSystemKeyword))
             {
                 payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentField] = viewModel.AuthorizationToken;
             }
