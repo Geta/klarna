@@ -225,10 +225,15 @@ namespace Klarna.Checkout
         {
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
             var shipment = cart.GetFirstShipment();
+            var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
+            if (string.IsNullOrWhiteSpace(marketCountry))
+            {
+                throw new ConfigurationException($"Please select a country in CM for market {cart.Market.MarketId}");
+            }
 
             var orderData = new PatchedCheckoutOrderData
             {
-                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
+                PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = ContentLanguage.PreferredCulture.Name,
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.

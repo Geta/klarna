@@ -12,19 +12,21 @@ namespace Klarna.Common.Helpers
         private static Injected<GeolocationProvider> GeoLocationProvider { get; set; }
         private static Injected<ICountryRegionProvider> CountryRegionProvider { get; set; }
 
-        public static string GetTwoLetterCountryCode(string threeLetterCode)
+        public static string GetTwoLetterCountryCode(string countryCode)
         {
-            return ISO3166.Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(threeLetterCode, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode;
+            return Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode
+                ?? Country.List.FirstOrDefault(x => x.TwoLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode;
         }
 
-        public static string GetThreeLetterCountryCode(string twoLetterCode)
+        public static string GetThreeLetterCountryCode(string countryCode)
         {
-            return ISO3166.Country.List.FirstOrDefault(x => x.TwoLetterCode.Equals(twoLetterCode, StringComparison.InvariantCultureIgnoreCase))?.ThreeLetterCode;
+            return Country.List.FirstOrDefault(x => x.TwoLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.ThreeLetterCode
+                ?? Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.ThreeLetterCode;
         }
 
         public static IEnumerable<Country> GetCountryCodes()
         {
-            return ISO3166.Country.List;
+            return Country.List;
         }
 
         public static IEnumerable<string> GetTwoLetterCountryCodes(IEnumerable<string> threeLetterCodes)
