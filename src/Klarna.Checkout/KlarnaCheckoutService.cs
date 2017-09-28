@@ -276,12 +276,12 @@ namespace Klarna.Checkout
             {
                 RequireValidateCallbackSuccess = configuration.RequireValidateCallbackSuccess,
                 AllowSeparateShippingAddress = configuration.AllowSeparateShippingAddress,
-                ColorButton = configuration.WidgetButtonColor,
-                ColorButtonText = configuration.WidgetButtonTextColor,
-                ColorCheckbox = configuration.WidgetCheckboxColor,
-                ColorCheckboxCheckmark = configuration.WidgetCheckboxCheckmarkColor,
-                ColorHeader = configuration.WidgetHeaderColor,
-                ColorLink = configuration.WidgetLinkColor,
+                ColorButton = GetColor(configuration.WidgetButtonColor),
+                ColorButtonText = GetColor(configuration.WidgetButtonTextColor),
+                ColorCheckbox = GetColor(configuration.WidgetCheckboxColor),
+                ColorCheckboxCheckmark = GetColor(configuration.WidgetCheckboxCheckmarkColor),
+                ColorHeader = GetColor(configuration.WidgetHeaderColor),
+                ColorLink = GetColor(configuration.WidgetLinkColor),
                 RadiusBorder = configuration.WidgetBorderRadius,
                 DateOfBirthMandatory = configuration.DateOfBirthMandatory,
                 ShowSubtotalDetail = configuration.ShowSubtotalDetail,
@@ -300,6 +300,11 @@ namespace Klarna.Checkout
                 };
             }
             return options;
+        }
+
+        private string GetColor(string colorString)
+        {
+            return string.IsNullOrWhiteSpace(colorString) ? null : colorString;
         }
 
         public CheckoutOrderData GetOrder(string orderId)
