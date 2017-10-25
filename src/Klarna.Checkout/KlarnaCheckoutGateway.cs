@@ -26,8 +26,9 @@ namespace Klarna.Checkout
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
             var message = string.Empty;
-            ProcessPayment(payment, ref message);
-            return PaymentProcessingResult.CreateSuccessfulResult(message);
+            return ProcessPayment(payment, ref message)
+                ? PaymentProcessingResult.CreateSuccessfulResult(message)
+                : PaymentProcessingResult.CreateUnsuccessfulResult(message);
         }
 
         public override bool ProcessPayment(Payment payment, ref string message)
