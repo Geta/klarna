@@ -58,8 +58,12 @@ Set the colors and border size for the Klarna widget. The Klarna logo should be 
 **Other settings**
 
 After payment is completed the confirmation url must be called. This can be done with this method:
-```
-_klarnaPaymentsService.CompleteAndRedirect(purchaseOrder);
+```csharp
+var result = _klarnaPaymentsService.Complete(purchaseOrder);
+if (result.IsRedirect)
+{
+    return Redirect(result.RedirectUrl);
+}
 ```
 Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
