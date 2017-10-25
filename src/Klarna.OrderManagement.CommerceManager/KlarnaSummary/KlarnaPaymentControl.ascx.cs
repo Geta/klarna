@@ -3,7 +3,6 @@ using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
-using Klarna.Common.Extensions;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Web.Console.Common;
 using Newtonsoft.Json;
@@ -16,10 +15,10 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
         {
             get
             {
-                Guid empty = Guid.Empty;
+                var empty = Guid.Empty;
                 if (base.Request["ObjectId"] != null)
                 {
-                    empty = new Guid(base.Request["ObjectId"]);
+                    empty = new Guid(Request["ObjectId"]);
                 }
                 return empty;
             }
@@ -34,43 +33,39 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
         }
 
         private Injected<IOrderRepository> _orderRepository;
+        private Injected<KlarnaOrderServiceFactory> _klarnaOrderServiceFactory;
 
         protected void Page_Load(object sender, EventArgs e)
         {
             var purchaseOrder = _orderRepository.Service.Load<IPurchaseOrder>(OrderGroupId);
-            if (purchaseOrder != null)
+            var firstPayment = purchaseOrder?.GetFirstForm().Payments.FirstOrDefault();
+            if (firstPayment == null) return;
+
+            var paymentMethod = PaymentManager.GetPaymentMethod(firstPayment.PaymentMethodId);
+
+            if (paymentMethod?.PaymentMethod.FirstOrDefault() != null
+                && paymentMethod.PaymentMethod.First().SystemKeyword.Contains("Klarna"))
             {
-                var firstPayment = purchaseOrder.GetFirstForm().Payments.FirstOrDefault();
-                if (firstPayment != null)
-                {
-                    var paymentMethod = PaymentManager.GetPaymentMethod(firstPayment.PaymentMethodId);
+                var klarnaOrderService = _klarnaOrderServiceFactory.Service.Create(paymentMethod, purchaseOrder.Market.MarketId);
 
-                    if (paymentMethod != null && paymentMethod.PaymentMethod.FirstOrDefault() != null &&
-                        paymentMethod.PaymentMethod.FirstOrDefault().SystemKeyword.Contains("Klarna"))
-                    {
-                        
-                        var klarnaOrderService = KlarnaOrderServiceFactory.Create(paymentMethod, purchaseOrder.Market.MarketId);
+                var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
+                var orderData = klarnaOrderService.GetOrder(orderId);
 
-                        var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
-                        var orderData = klarnaOrderService.GetOrder(orderId);
+                OrderIdLabel.Text = orderData.OrderId;
+                KlarnaReferenceLabel.Text = orderData.KlarnaReference;
+                MerchantReference1Label.Text = orderData.MerchantReference1;
+                MerchantReference2Label.Text = orderData.MerchantReference2;
+                ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
+                StatusLabel.Text = orderData.Status;
+                OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
+                CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
+                RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
 
-                        OrderIdLabel.Text = orderData.OrderId;
-                        KlarnaReferenceLabel.Text = orderData.KlarnaReference;
-                        MerchantReference1Label.Text = orderData.MerchantReference1;
-                        MerchantReference2Label.Text = orderData.MerchantReference2;
-                        ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
-                        StatusLabel.Text = orderData.Status;
-                        OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
-                        CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
-                        RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
-
-                        preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
-                    }
-                    else
-                    {
-                        Visible = false;
-                    }
-                }
+                preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
+            }
+            else
+            {
+                Visible = false;
             }
         }
 

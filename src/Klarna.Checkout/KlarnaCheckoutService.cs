@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Net;
-using EPiServer.Business.Commerce.Exception;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
@@ -22,7 +20,6 @@ using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
-using Newtonsoft.Json;
 using ConfigurationException = EPiServer.Business.Commerce.Exception.ConfigurationException;
 
 namespace Klarna.Checkout
@@ -33,6 +30,7 @@ namespace Klarna.Checkout
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));
         private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
+        private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
 
         private Client _client;
@@ -44,11 +42,14 @@ namespace Klarna.Checkout
             IOrderRepository orderRepository,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
-            IKlarnaOrderValidator klarnaOrderValidator) : base(orderRepository, paymentProcessor, orderGroupCalculator)
+            IKlarnaOrderValidator klarnaOrderValidator,
+            KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+            : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
             _klarnaOrderValidator = klarnaOrderValidator;
+            _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
         public PaymentMethodDto PaymentMethodDto
@@ -126,7 +127,7 @@ namespace Klarna.Checkout
                 checkout.Create(orderData);
                 orderData = checkout.Fetch();
 
-                cart = UpdateCartWithOrderData(cart, orderData);
+                UpdateCartWithOrderData(cart, orderData);
 
                 return orderData;
             }
@@ -352,7 +353,7 @@ namespace Klarna.Checkout
         public bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
-            var localCheckoutOrderData = GetCheckoutOrderData(cart, PaymentMethodDto) as PatchedCheckoutOrderData;
+            var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, PaymentMethodDto);
             localCheckoutOrderData.ShippingAddress = cart.GetFirstShipment().ShippingAddress.ToAddress();
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
             {
@@ -372,7 +373,7 @@ namespace Klarna.Checkout
 
         public void CancelOrder(ICart cart)
         {
-            var klarnaOrderService = KlarnaOrderServiceFactory.Create(GetConfiguration(cart.Market));
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(cart.Market));
 
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId))
@@ -386,7 +387,7 @@ namespace Klarna.Checkout
 
         public void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
         {
-            var klarnaOrderService = KlarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.Market));
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.Market));
 
             var orderId = purchaseOrder.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId) && purchaseOrder is PurchaseOrder)
@@ -397,7 +398,7 @@ namespace Klarna.Checkout
 
         public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
-            var klarnaOrderService = KlarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.Market));
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.Market));
             klarnaOrderService.AcknowledgeOrder(purchaseOrder);
         }
 

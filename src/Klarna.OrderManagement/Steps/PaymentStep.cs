@@ -21,14 +21,14 @@ namespace Klarna.OrderManagement.Steps
 
         protected IKlarnaOrderService KlarnaOrderService;
 
-        protected PaymentStep(IPayment payment, MarketId marketId)
+        protected PaymentStep(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
         {
             MarketId = marketId;
 
             PaymentMethod = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
             if (PaymentMethod != null)
             {
-                KlarnaOrderService = KlarnaOrderServiceFactory.Create(PaymentMethod.GetConnectionConfiguration(marketId));
+                KlarnaOrderService = klarnaOrderServiceFactory.Create(PaymentMethod.GetConnectionConfiguration(marketId));
             }
         }
 
