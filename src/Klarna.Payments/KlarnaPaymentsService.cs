@@ -147,28 +147,38 @@ namespace Klarna.Payments
                 _logger.Error(ex.Message, ex);
             }
         }
-        
+
         public void CompleteAndRedirect(IPurchaseOrder purchaseOrder)
+        {
+            var result = Complete(purchaseOrder);
+            if (result.IsRedirect)
+            {
+                HttpContext.Current.Response.Redirect(result.RedirectUrl);
+            }
+        }
+
+        public CompletionResult Complete(IPurchaseOrder purchaseOrder)
         {
             if (purchaseOrder == null)
             {
                 throw new ArgumentNullException(nameof(purchaseOrder));
             }
             var orderForm = purchaseOrder.GetFirstForm();
-            if (orderForm != null)
+            var payment = orderForm?.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Common.Constants.KlarnaPaymentSystemKeyword));
+            if (payment == null)
             {
-                var payment = orderForm.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Common.Constants.KlarnaPaymentSystemKeyword));
-                if (payment != null)
-                {
-                    SetOrderStatus(purchaseOrder, payment);
-
-                    var url = payment.Properties[Constants.KlarnaConfirmationUrlPaymentField]?.ToString();
-                    if (!string.IsNullOrEmpty(url))
-                    {
-                        HttpContext.Current.Response.Redirect(url);
-                    }
-                }
+                return CompletionResult.Empty;
             }
+            
+            SetOrderStatus(purchaseOrder, payment);
+
+            var url = payment.Properties[Constants.KlarnaConfirmationUrlPaymentField]?.ToString();
+            if (string.IsNullOrEmpty(url))
+            {
+                return CompletionResult.Empty;
+            }
+            
+            return CompletionResult.WithRedirectUrl(url);
         }
 
         public bool CanSendPersonalInformation(string countryCode)

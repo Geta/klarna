@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
@@ -11,7 +12,9 @@ namespace Klarna.Payments
         Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null);
         string GetClientToken(ICart cart);
         Task<Session> GetSession(ICart cart);
+        [Obsolete("Use Complete method instead.")]
         void CompleteAndRedirect(IPurchaseOrder purchaseOrder);
+        CompletionResult Complete(IPurchaseOrder purchaseOrder);
         Task CancelAuthorization(string authorizationToken);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool CanSendPersonalInformation(string countryCode);
