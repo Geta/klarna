@@ -16,17 +16,17 @@ namespace Klarna.OrderManagement
     /// </summary>
     public class KlarnaOrderServiceFactory
     {
-        public static IKlarnaOrderService Create(IPayment payment, IMarket market)
+        public virtual IKlarnaOrderService Create(IPayment payment, IMarket market)
         {
             return Create(PaymentManager.GetPaymentMethod(payment.PaymentMethodId), market.MarketId);
         }
 
-        public static IKlarnaOrderService Create(PaymentMethodDto paymentMethodDto, MarketId marketMarketId)
+        public virtual IKlarnaOrderService Create(PaymentMethodDto paymentMethodDto, MarketId marketMarketId)
         {
             return Create(paymentMethodDto.GetConnectionConfiguration(marketMarketId));
         }
 
-        public static IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
+        public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
             var client = new Client(ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl)));
             return new KlarnaOrderService(client);
