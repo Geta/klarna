@@ -26,24 +26,18 @@ namespace Klarna.Payments
         /// <value>The settings.</value>
         public virtual IDictionary<string, string> Settings
         {
-            get
-            {
-                return this._configData;
-            }
-            set
-            {
-                this._configData = value;
-            }
+            get => _configData;
+            set => _configData = value;
         }
-
 
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment, IShipment shipment)
         {
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
             var message = string.Empty;
-            ProcessPayment(payment, shipment, ref message);
-            return PaymentProcessingResult.CreateSuccessfulResult(message);
+            return ProcessPayment(payment, shipment, ref message)
+                ? PaymentProcessingResult.CreateSuccessfulResult(message)
+                : PaymentProcessingResult.CreateUnsuccessfulResult(message);
         }
 
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
@@ -51,8 +45,9 @@ namespace Klarna.Payments
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
             var message = string.Empty;
-            ProcessPayment(payment, ref message);
-            return PaymentProcessingResult.CreateSuccessfulResult(message);
+            return ProcessPayment(payment, ref message)
+                ? PaymentProcessingResult.CreateSuccessfulResult(message)
+                : PaymentProcessingResult.CreateUnsuccessfulResult(message);
         }
 
         public bool ProcessPayment(Payment payment, ref string message)
