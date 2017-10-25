@@ -11,7 +11,8 @@ namespace Klarna.OrderManagement.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStepBase));
 
-        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId) : base(payment, marketId)
+        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+            : base(payment, marketId, klarnaOrderServiceFactory)
         {
         }
         

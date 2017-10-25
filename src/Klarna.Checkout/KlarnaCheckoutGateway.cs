@@ -4,7 +4,9 @@ using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
+using EPiServer.ServiceLocation;
 using Klarna.Checkout.Steps;
+using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
 
 namespace Klarna.Checkout
@@ -15,6 +17,9 @@ namespace Klarna.Checkout
         private IOrderForm _orderForm;
 
         public IOrderGroup OrderGroup { get; set; }
+
+        internal Injected<KlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
+        private KlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
 
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
         {
@@ -43,10 +48,10 @@ namespace Klarna.Checkout
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
                 
-                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.Market.MarketId);
-                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.Market.MarketId);
-                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.Market.MarketId);
-                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.Market.MarketId);
+                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
+                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
+                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
+                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
 
                 authorizePaymentStep.SetSuccessor(capturePaymentStep);
                 capturePaymentStep.SetSuccessor(creditPaymentStep);
