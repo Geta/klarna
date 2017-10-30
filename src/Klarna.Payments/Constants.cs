@@ -2,6 +2,8 @@
 {
     public static class Constants
     {
+        public const string KlarnaPaymentSystemKeyword = Common.Constants.KlarnaSystemKeyword + "Payments";
+
         // Cart property fields
         public const string KlarnaSessionIdCartField = "KlarnaSessionIdCart";
         public const string KlarnaClientTokenCartField = "KlarnaClientTokenCart";

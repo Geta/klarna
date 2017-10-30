@@ -65,7 +65,7 @@ namespace Klarna.Payments.Initialization
 
         private ConnectionConfiguration GetConnectionConfiguration(MarketId marketId)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Common.Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
             if (paymentMethod != null)
             {
                 return paymentMethod.GetConnectionConfiguration(marketId);

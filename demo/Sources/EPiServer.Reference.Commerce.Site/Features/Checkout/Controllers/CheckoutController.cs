@@ -107,7 +107,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _checkoutService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            if (viewModel.Payment.SystemName.Equals(Klarna.Common.Constants.KlarnaPaymentSystemKeyword))
+            if (viewModel.Payment.SystemName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
             {
                 await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
                 (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
