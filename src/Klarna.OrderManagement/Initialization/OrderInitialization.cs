@@ -35,7 +35,8 @@ namespace Klarna.OrderManagement.Initialization
                 var reseaseRemainingEventHandler = _locator.GetInstance<ReleaseRemainingEventHandler>();
                 reseaseRemainingEventHandler.Handle(new ReleaseRemainingEvent(orderAfterSave));
             }
-            else if (IsCancelled(orderBeforeSave, orderAfterSave))
+
+            if (orderAfterSave.OrderStatus == OrderStatus.Cancelled)
             {
                 var orderCancelledEventHandler = _locator.GetInstance<OrderCancelledEventHandler>();
                 orderCancelledEventHandler.Handle(new OrderCancelledEvent(orderAfterSave));
@@ -51,10 +52,6 @@ namespace Klarna.OrderManagement.Initialization
                    && form.Payments.All(p => p.TransactionType != KlarnaAdditionalTransactionType.ReleaseRemainingAuthorization.ToString());
         }
 
-        private static bool IsCancelled(IPurchaseOrder orderBeforeSave, IPurchaseOrder orderAfterSave)
-        {
-            return orderBeforeSave.OrderStatus != OrderStatus.Cancelled && orderAfterSave.OrderStatus == OrderStatus.Cancelled;
-        }
 
         public void Uninitialize(InitializationEngine context)
         {
