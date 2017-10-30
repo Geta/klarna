@@ -71,6 +71,16 @@
                 @Html.ValidationMessageFor(x => x.Address.City)
             </div>
         </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.Address.DaytimePhoneNumber)
+            @Html.TextBoxFor(x => x.Address.DaytimePhoneNumber, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Address.DaytimePhoneNumber)
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(x => x.Address.Email)
+            @Html.TextBoxFor(x => x.Address.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(x => x.Address.Email)
+        </div>
         @Html.EditorFor(model => model.Address.CountryRegion, Model.Address.CountryRegion)
 
         <div class="form-group">
