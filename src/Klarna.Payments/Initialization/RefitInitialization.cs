@@ -33,8 +33,6 @@ namespace Klarna.Payments.Initialization
 
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
-            context.Container.Configure(x => x.For<IKlarnaServiceApi>().Use(() => GetInstance()));
-            
             context.Services.Intercept<IOrderNumberGenerator>((locator, defaultService) =>
             {
                 return new OrderNumberGeneratorDecorator(defaultService);
@@ -44,33 +42,6 @@ namespace Klarna.Payments.Initialization
         public void Uninitialize(InitializationEngine context)
         {
 
-        }
-
-        public IKlarnaServiceApi GetInstance()
-        {
-            var market = ServiceLocator.Current.GetInstance<ICurrentMarket>();
-            var conn = GetConnectionConfiguration(market.GetCurrentMarket().MarketId);
-
-            var byteArray = Encoding.ASCII.GetBytes($"{conn.Username}:{conn.Password}");
-            var httpClient = new HttpClient
-            {
-                BaseAddress = new Uri(conn.ApiUrl)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-            var refitSettings = new RefitSettings();
-
-            return RestService.For<IKlarnaServiceApi>(httpClient, refitSettings);
-        }
-
-        private ConnectionConfiguration GetConnectionConfiguration(MarketId marketId)
-        {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
-            if (paymentMethod != null)
-            {
-                return paymentMethod.GetConnectionConfiguration(marketId);
-            }
-            return null;
         }
     }
 }

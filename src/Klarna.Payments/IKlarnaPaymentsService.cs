@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Payments.Models;
+using Mediachase.Commerce;
 
 namespace Klarna.Payments
 {
@@ -15,7 +16,7 @@ namespace Klarna.Payments
         [Obsolete("Use Complete method instead.")]
         void CompleteAndRedirect(IPurchaseOrder purchaseOrder);
         CompletionResult Complete(IPurchaseOrder purchaseOrder);
-        Task CancelAuthorization(string authorizationToken);
+        Task CancelAuthorization(string authorizationToken, IMarket market);
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool CanSendPersonalInformation(string countryCode);
         bool AllowedToSharePersonalInformation(ICart cart);

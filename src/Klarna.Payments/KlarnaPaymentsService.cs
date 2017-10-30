@@ -29,7 +29,7 @@ namespace Klarna.Payments
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
-        private readonly IKlarnaServiceApi _klarnaServiceApi;
+        private readonly KlarnaServiceApiFactory _klarnaServiceApiFactory;
 
         public KlarnaPaymentsService(
             IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
@@ -37,13 +37,13 @@ namespace Klarna.Payments
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
-            IKlarnaServiceApi klarnaServiceApi)
+            KlarnaServiceApiFactory klarnaServiceApiFactory)
             : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
             _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
             _orderRepository = orderRepository;
             _orderNumberGenerator = orderNumberGenerator;
-            _klarnaServiceApi = klarnaServiceApi;
+            _klarnaServiceApiFactory = klarnaServiceApiFactory;
         }
 
         public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null)
@@ -76,7 +76,9 @@ namespace Klarna.Payments
             {
                 try
                 {
-                    await _klarnaServiceApi.UpdateSession(sessionId, sessionRequest).ConfigureAwait(false);
+                    await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+                        .UpdateSession(sessionId, sessionRequest)
+                        .ConfigureAwait(false);
 
                     return true;
                 }
@@ -113,7 +115,9 @@ namespace Klarna.Payments
 
         public async Task<Session> GetSession(ICart cart)
         {
-            return await _klarnaServiceApi.GetSession(GetSessionId(cart)).ConfigureAwait(false);
+            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+                .GetSession(GetSessionId(cart))
+                .ConfigureAwait(false);
         }
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
@@ -133,14 +137,18 @@ namespace Klarna.Payments
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config);
             }
-            return await _klarnaServiceApi.CreateOrder(authorizationToken, sessionRequest).ConfigureAwait(false);
+            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+                .CreateOrder(authorizationToken, sessionRequest)
+                .ConfigureAwait(false);
         }
 
-        public async Task CancelAuthorization(string authorizationToken)
+        public async Task CancelAuthorization(string authorizationToken, IMarket market)
         {
             try
             {
-                await _klarnaServiceApi.CancelAuthorization(authorizationToken).ConfigureAwait(false);
+                await _klarnaServiceApiFactory.Create(GetConfiguration(market))
+                    .CancelAuthorization(authorizationToken)
+                    .ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -309,7 +317,9 @@ namespace Klarna.Payments
         {
             try
             {
-                var response = await _klarnaServiceApi.CreatNewSession(sessionRequest).ConfigureAwait(false);
+                var response = await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+                    .CreatNewSession(sessionRequest)
+                    .ConfigureAwait(false);
 
                 cart.Properties[Constants.KlarnaSessionIdCartField] = response.SessionId;
                 cart.Properties[Constants.KlarnaClientTokenCartField] = response.ClientToken;
