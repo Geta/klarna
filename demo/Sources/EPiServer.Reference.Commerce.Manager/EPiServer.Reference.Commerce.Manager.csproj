@@ -2248,12 +2248,22 @@
     <Content Include="Apps\Order\Modules\SplitterControl.ascx" />
     <Content Include="Apps\Order\OrderList.ascx" />
     <Content Include="Apps\Order\OrderSearch.ascx" />
+    <Content Include="Apps\Order\Payments\MetaData\Authorize\EditTab.ascx" />
+    <Content Include="Apps\Order\Payments\MetaData\Authorize\images\amex.gif" />
+    <Content Include="Apps\Order\Payments\MetaData\Authorize\images\discover.gif" />
+    <Content Include="Apps\Order\Payments\MetaData\Authorize\images\mastercard.gif" />
+    <Content Include="Apps\Order\Payments\MetaData\Authorize\images\visa.gif" />
+    <Content Include="Apps\Order\Payments\PaymentMethodEdit.ascx" />
+    <Content Include="Apps\Order\Payments\PaymentMethods.ascx" />
     <Content Include="Apps\Order\Payments\Plugins\KlarnaCheckout\ConfigurePayment.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
     <Content Include="Apps\Order\Payments\Plugins\KlarnaPayments\ConfigurePayment.ascx">
       <SubType>ASPXCodeBehind</SubType>
     </Content>
+    <Content Include="Apps\Order\Payments\Tabs\PaymentMethodEditBaseTab.ascx" />
+    <Content Include="Apps\Order\Payments\Tabs\PaymentMethodEditMarkets.ascx" />
+    <Content Include="Apps\Order\Payments\Tabs\PaymentMethodEditParameters.ascx" />
     <Content Include="Apps\Order\PickupList.ascx" />
     <Content Include="Apps\Order\ReturnList.ascx" />
     <Content Include="Apps\Order\ReturnReasonEdit.ascx" />
