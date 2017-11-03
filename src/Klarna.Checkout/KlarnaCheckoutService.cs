@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using EPiServer.Commerce.Order;
@@ -238,7 +239,7 @@ namespace Klarna.Checkout
             {
                 if (checkoutConfiguration.ShippingOptionsInIFrame)
                 {
-                    orderData.ShippingOptions = GetShippingOptions(cart);
+                    orderData.ShippingOptions = GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture);
                 }
                 else
                 {
@@ -346,7 +347,7 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals, false),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart) : Enumerable.Empty<ShippingOption>()
+                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>()
             };
         }
 
@@ -418,10 +419,19 @@ namespace Klarna.Checkout
             return paymentMethod.GetKlarnaCheckoutConfiguration(marketId);
         }
 
-        private IEnumerable<ShippingOption> GetShippingOptions(ICart cart)
+        private IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
-            var shippingOptions = methods.ShippingMethod.Select(method => method.ToShippingOption()).ToList();
+            var currentLanguage = preferredCulture.TwoLetterISOLanguageName;
+
+            var shippingOptions = methods.ShippingMethod
+                .Where(shippingMethodRow => currentLanguage.Equals(shippingMethodRow.LanguageId,
+                                                StringComparison.OrdinalIgnoreCase)
+                                            &&
+                                            string.Equals(currency, shippingMethodRow.Currency,
+                                                StringComparison.OrdinalIgnoreCase))
+                .Select(method => method.ToShippingOption())
+                .ToList();
             var shipment = cart.GetFirstShipment();
             if (shipment == null)
             {
