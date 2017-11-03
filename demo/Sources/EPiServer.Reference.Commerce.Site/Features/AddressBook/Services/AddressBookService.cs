@@ -323,7 +323,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
                     ShippingDefault = _customerContext.CurrentContact.PreferredShippingAddress != null 
                                             && customerAddress.AddressId == _customerContext.CurrentContact.PreferredShippingAddressId,
                     BillingDefault = _customerContext.CurrentContact.PreferredBillingAddress != null 
-                                            && customerAddress.AddressId == _customerContext.CurrentContact.PreferredBillingAddressId
+                                            && customerAddress.AddressId == _customerContext.CurrentContact.PreferredBillingAddressId,
+                    DaytimePhoneNumber = customerAddress.DaytimePhoneNumber
                 }));
             }
 
