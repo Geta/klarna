@@ -177,7 +177,7 @@ namespace Klarna.Payments
             {
                 return CompletionResult.Empty;
             }
-            
+
             SetOrderStatus(purchaseOrder, payment);
 
             var url = payment.Properties[Constants.KlarnaConfirmationUrlPaymentField]?.ToString();
@@ -185,7 +185,7 @@ namespace Klarna.Payments
             {
                 return CompletionResult.Empty;
             }
-            
+
             return CompletionResult.WithRedirectUrl(url);
         }
 
@@ -257,7 +257,7 @@ namespace Klarna.Payments
             var fraudStatus = payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString();
             if (fraudStatus == FraudStatus.PENDING.ToString())
             {
-                OrderStatusManager.HoldOrder((PurchaseOrder) purchaseOrder);
+                OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
                 _orderRepository.Save(purchaseOrder);
             }
         }
@@ -286,7 +286,7 @@ namespace Klarna.Payments
                 };
                 request.Options = GetWidgetOptions(paymentMethod, cart.Market.MarketId);
             }
-            
+
             if (includePersonalInformation)
             {
                 var shipment = cart.GetFirstShipment();
@@ -340,20 +340,24 @@ namespace Klarna.Payments
             var configuration = paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
             var options = new Options();
 
-            options.ColorDetails = configuration.WidgetDetailsColor;
-            options.ColorButton = configuration.WidgetButtonColor;
-            options.ColorButtonText = configuration.WidgetButtonTextColor;
-            options.ColorCheckbox = configuration.WidgetCheckboxColor;
-            options.ColorCheckboxCheckmark = configuration.WidgetCheckboxCheckmarkColor;
-            options.ColorHeader = configuration.WidgetHeaderColor;
-            options.ColorLink = configuration.WidgetLinkColor;
-            options.ColorBorder = configuration.WidgetBorderColor;
-            options.ColorBorderSelected = configuration.WidgetSelectedBorderColor;
-            options.ColorText = configuration.WidgetTextColor;
-            options.ColorTextSecondary = configuration.WidgetTextSecondaryColor;
-            options.RadiusBorder = configuration.WidgetBorderRadius;
+            options.ColorDetails = GetString(configuration.WidgetDetailsColor);
+            options.ColorButton = GetString(configuration.WidgetButtonColor);
+            options.ColorButtonText = GetString(configuration.WidgetButtonTextColor);
+            options.ColorCheckbox = GetString(configuration.WidgetCheckboxColor);
+            options.ColorCheckboxCheckmark = GetString(configuration.WidgetCheckboxCheckmarkColor);
+            options.ColorHeader = GetString(configuration.WidgetHeaderColor);
+            options.ColorLink = GetString(configuration.WidgetLinkColor);
+            options.ColorBorder = GetString(configuration.WidgetBorderColor);
+            options.ColorBorderSelected = GetString(configuration.WidgetSelectedBorderColor);
+            options.ColorText = GetString(configuration.WidgetTextColor);
+            options.ColorTextSecondary = GetString(configuration.WidgetTextSecondaryColor);
+            options.RadiusBorder = GetString(configuration.WidgetBorderRadius);
 
             return options;
+        }
+        private string GetString(string input)
+        {
+            return string.IsNullOrWhiteSpace(input) ? null : input;
         }
 
         public PaymentsConfiguration GetConfiguration(IMarket market)
