@@ -275,6 +275,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                         return RedirectToAction("Index");
                     }
 
+                    _checkoutService.SendConfirmation(new CheckoutViewModel
+                    {
+                        CurrentPage = _contentLoader.Get<CheckoutPage>(_contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage),
+                        BillingAddress = new AddressModel { Email = purchaseOrder.GetFirstForm().Payments.FirstOrDefault()?.BillingAddress.Email}
+                    }, purchaseOrder);
+
                     return Redirect(_checkoutService.BuildRedirectionUrl(purchaseOrder));
                 }
                 else
