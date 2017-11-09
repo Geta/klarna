@@ -150,6 +150,8 @@ The following properties are set by default (read from current cart and payment 
 - **BillingAddress**
 
 Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-session.
+**Remark:**
+The demo site implementation only supports selecting the shipping address in the Klarna Checkout iFrame. By default the first available shipping option will be selected. If you want to support switching shipping options you can look at what happens upon updating the cart (and check out [Suspend and Resume here](https://developers.klarna.com/en/us/kco-v3/checkout/javascript-api)).
 </details>
 
 <details>
