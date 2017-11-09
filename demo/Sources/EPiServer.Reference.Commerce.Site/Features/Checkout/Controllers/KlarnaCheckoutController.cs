@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -9,11 +8,9 @@ using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
-using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
-using Mediachase.Commerce.Orders;
 using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -75,16 +72,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 
             // Validate cart lineitems
-            var validationIssues = new Dictionary<ILineItem, ValidationIssue>();
-            cart.ValidateOrRemoveLineItems((lineItem, validationIssue) =>
-            {
-                validationIssues.Add(lineItem, validationIssue);
-            }, _lineItemValidator);
-
+            var validationIssues = _cartService.ValidateCart(cart);
             if (validationIssues.Any())
             {
+                // check validation issues and redirect to a page to display the error
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+                httpResponseMessage.Headers.Location = new Uri("http://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
                 return ResponseMessage(httpResponseMessage);
             }
 
@@ -104,7 +97,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
             {
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+                httpResponseMessage.Headers.Location = new Uri("http://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
                 return ResponseMessage(httpResponseMessage);
             }
 
