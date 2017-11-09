@@ -17,7 +17,7 @@ namespace Klarna.Checkout.Models
         public string Promo { get; set; }
 
         [JsonProperty("price")]
-        public long Price { get; set; }
+        public long? Price { get; set; }
 
         [JsonProperty("tax_amount")]
         public int? TaxAmount { get; set; }
