@@ -1,18 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using EPiServer.Commerce.Catalog.ContentTypes;
+using EPiServer.Commerce.Catalog.Linking;
 using EPiServer.Commerce.Order;
+using EPiServer.Core;
+using EPiServer.Reference.Commerce.Site.Features.Product.Models;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
+using EPiServer.ServiceLocation;
+using EPiServer.Web.Routing;
+using Klarna.Common.Models;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Klarna.Payments;
 using Klarna.Rest.Models;
+using Mediachase.Commerce.Catalog;
 using Customer = Klarna.Payments.Models.Customer;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoSessionBuilder : ISessionBuilder
     {
+        private Injected<ILinksRepository> _linksRepository = default(Injected<ILinksRepository>);
+        private Injected<UrlResolver> _urlResolver = default(Injected<UrlResolver>);
+        private Injected<IContentRepository> _contentRepository = default(Injected<IContentRepository>);
+        private Injected<ReferenceConverter> _referenceConverter = default(Injected<ReferenceConverter>);
+        private Injected<IRelationRepository> _relationRepository = default(Injected<IRelationRepository>);
+
+
         public Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic = null, bool includePersonalInformation = false)
         {
             if (includePersonalInformation && paymentsConfiguration.CustomerPreAssessment)
@@ -54,6 +71,40 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                     ContentType = "application/vnd.klarna.internal.emd-v2+json",
                     Body = JsonConvert.SerializeObject(emd, converter)
                 };
+            }
+
+            foreach (var lineItem in session.OrderLines)
+            {
+                EntryContentBase entryContent = null;
+                FashionProduct product = null;
+                if (!string.IsNullOrEmpty(lineItem.Reference))
+                {
+                    var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Reference);
+                    if (!ContentReference.IsNullOrEmpty(contentLink))
+                    {
+                        entryContent = _contentRepository.Service.Get<EntryContentBase>(contentLink);
+
+                        var parentLink = entryContent.GetParentProducts(_relationRepository.Service).SingleOrDefault();
+                        product = _contentRepository.Service.Get<FashionProduct>(parentLink);
+                    }
+                }
+
+                var patchedOrderLine = (PatchedOrderLine)lineItem;
+                if (patchedOrderLine.ProductIdentifiers == null)
+                {
+                    patchedOrderLine.ProductIdentifiers = new PatchedProductIdentifiers();
+                }
+
+                patchedOrderLine.ProductIdentifiers.Brand = product?.Brand;
+                patchedOrderLine.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
+                patchedOrderLine.ProductIdentifiers.ManuFacturerPartNumber = "ManuFacturerPartNumber test";
+                patchedOrderLine.ProductIdentifiers.CategoryPath = "test / test";
+
+                if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)
+                {
+                    ((PatchedOrderLine)lineItem).ProductUrl = entryContent.GetUrl(_linksRepository.Service, _urlResolver.Service);
+
+                }
             }
             return session;
         }

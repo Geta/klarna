@@ -160,6 +160,12 @@
                 <asp:CheckBox runat="server" ID="SendShippingOptionsPriorAddressesCheckBox" />
             </td>
         </tr>
+         <tr>
+            <td class="FormLabelCell">Send product and image URL:</td>
+            <td class="FormFieldCell">
+                <asp:CheckBox runat="server" ID="SendProductAndImageUrlCheckBox" />
+            </td>
+        </tr>
     </tbody>
 </table>
     

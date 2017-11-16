@@ -64,7 +64,7 @@ namespace Klarna.Common.Extensions
             {
                 Quantity = (int)lineItem.Quantity,
                 Name = lineItem.DisplayName,
-                Reference = lineItem.Code?.Substring(0, (_maxOrderlineReference - 1)), // can't use more then 64 characters for the order reference
+                Reference = lineItem.Code.Length > 64 ? lineItem.Code.Substring(0, (_maxOrderlineReference - 1)) : lineItem.Code, // can't use more then 64 characters for the order reference
                 Type = "physical"
             };
 

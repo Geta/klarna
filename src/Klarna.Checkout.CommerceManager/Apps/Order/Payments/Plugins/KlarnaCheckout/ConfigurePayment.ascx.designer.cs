@@ -292,6 +292,15 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.CheckBox SendShippingOptionsPriorAddressesCheckBox;
         
         /// <summary>
+        /// SendProductAndImageUrlCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox SendProductAndImageUrlCheckBox;
+        
+        /// <summary>
         /// additionalCheckboxTextTextBox control.
         /// </summary>
         /// <remarks>

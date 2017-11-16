@@ -223,6 +223,7 @@
     <Compile Include="Models\NotificationModel.cs" />
     <Compile Include="Models\PatchedOrderLine.cs" />
     <Compile Include="Extensions\PaymentExtensions.cs" />
+    <Compile Include="Models\PatchedProductIdentifiers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -78,7 +78,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             sendShippingCountriesCheckBox.Checked = checkoutConfiguration.SendShippingCountries;
             prefillAddressCheckBox.Checked = checkoutConfiguration.PrefillAddress;
             SendShippingOptionsPriorAddressesCheckBox.Checked = checkoutConfiguration.SendShippingOptionsPriorAddresses;
-
+            SendProductAndImageUrlCheckBox.Checked = checkoutConfiguration.SendProductAndImageUrl;
 
             additionalCheckboxTextTextBox.Text = checkoutConfiguration.AdditionalCheckboxText;
             additionalCheckboxDefaultCheckedCheckBox.Checked = checkoutConfiguration.AdditionalCheckboxDefaultChecked;
@@ -131,6 +131,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             configuration.SendShippingCountries = sendShippingCountriesCheckBox.Checked;
             configuration.PrefillAddress = prefillAddressCheckBox.Checked;
             configuration.SendShippingOptionsPriorAddresses = SendShippingOptionsPriorAddressesCheckBox.Checked;
+            configuration.SendProductAndImageUrl = SendProductAndImageUrlCheckBox.Checked;
 
             configuration.AdditionalCheckboxText = additionalCheckboxTextTextBox.Text;
             configuration.AdditionalCheckboxDefaultChecked = additionalCheckboxDefaultCheckedCheckBox.Checked;

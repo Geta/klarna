@@ -8,5 +8,8 @@ namespace Klarna.Common.Models
         public string ProductUrl { get; set; }
         [JsonProperty("image_url")]
         public string ProductImageUrl { get; set; }
+
+        [JsonProperty("product_identifiers")]
+        public PatchedProductIdentifiers ProductIdentifiers { get; set; }
     }
 }
