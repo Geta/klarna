@@ -21,6 +21,7 @@ namespace Klarna.Common.Extensions
         private static Injected<UrlResolver> _urlResolver;
         private static Injected<IContentRepository> _contentRepository;
         private static Injected<ILineItemTaxCalculator> _lineItemTaxCalculator;
+        private static readonly int _maxOrderlineReference = 64;
 #pragma warning restore 649
 
         private static string GetVariantImage(ContentReference contentReference)
@@ -63,7 +64,7 @@ namespace Klarna.Common.Extensions
             {
                 Quantity = (int)lineItem.Quantity,
                 Name = lineItem.DisplayName,
-                Reference = lineItem.Code,
+                Reference = lineItem.Code?.Substring(0, (_maxOrderlineReference - 1)), // can't use more then 64 characters for the order reference
                 Type = "physical"
             };
 
