@@ -1,9 +1,11 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Common.Extensions;
+using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
@@ -35,6 +37,10 @@ namespace Klarna.Payments
                 BaseAddress = new Uri(connectionConfiguration.ApiUrl)
             };
             httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+            
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Platform", $"EPiServer_{typeof(EPiServer.Core.IContent).Assembly.GetName().Version.ToString()}"));
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Module", $"Klarna.Payments_{typeof(Klarna.Payments.KlarnaPaymentsService).Assembly.GetName().Version.ToString()}"));
+
             return RestService.For<IKlarnaServiceApi>(httpClient);
         }
     }
