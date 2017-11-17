@@ -24,6 +24,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
         public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
         {
+            if (checkoutConfiguration == null)
+                return checkoutOrderData;
+
             if (checkoutConfiguration.PrefillAddress)
             {
                 // Try to parse address into dutch address lines
