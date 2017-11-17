@@ -143,6 +143,10 @@ After the cancel button is pressed the payment gateway is called. The passed pay
 ![Order payments void](/docs/screenshots/order-payments-void.PNG?raw=true "Order payments void")
 </details>
 <details>
+  <summary>Fraud</summary>
+Whenever an order is placed with Klarna, the billing and shipping address should not modified in Commerce Manager. If a merchant decides to change a customer's address after the order is placed, they are taking the fraud risk for the order, so it is best to avoid this scenario if possible.
+</details>
+<details>
   <summary>Use KlarnaOrderService (click to expand)</summary>
 The IKlarnaOrderService interface contains some methods to work with Klarna payments. The following methods are used for integration in Commerce Manager: CancelOrder, CaptureOrder, Refund and ReleaseRemainingAuthorization.
 
