@@ -228,7 +228,7 @@ namespace Klarna.Checkout
                 // Non-negative, minor units. The total tax amount of the order.
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 MerchantUrls = GetMerchantUrls(cart),
-                OrderLines = GetOrderLines(cart, totals, false)
+                OrderLines = GetOrderLines(cart, totals, checkoutConfiguration.SendProductAndImageUrl)
             };
 
             if (checkoutConfiguration.SendShippingCountries)
