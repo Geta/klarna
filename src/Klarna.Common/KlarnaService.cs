@@ -99,17 +99,19 @@ namespace Klarna.Common
             var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
             var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
             var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
-            orderLines.Add(new PatchedOrderLine()
+            if (totalDiscount > 0)
             {
-                Type = "discount",
-                Name = "Discount",
-                Quantity = 1,
-                TotalAmount = -AmountHelper.GetAmount(totalDiscount),
-                UnitPrice = -AmountHelper.GetAmount(totalDiscount),
-                TotalTaxAmount = 0,
-                TaxRate = 0
-            });
-
+                orderLines.Add(new PatchedOrderLine()
+                {
+                    Type = "discount",
+                    Name = "Discount",
+                    Quantity = 1,
+                    TotalAmount = -AmountHelper.GetAmount(totalDiscount),
+                    UnitPrice = -AmountHelper.GetAmount(totalDiscount),
+                    TotalTaxAmount = 0,
+                    TaxRate = 0
+                });
+            }
             return orderLines;
         }
 
