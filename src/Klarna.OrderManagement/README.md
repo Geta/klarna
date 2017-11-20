@@ -144,7 +144,7 @@ After the cancel button is pressed the payment gateway is called. The passed pay
 </details>
 <details>
   <summary>Fraud</summary>
-Whenever an order is placed with Klarna, the billing and shipping address should not modified in Commerce Manager. If a merchant decides to change a customer's address after the order is placed, they are taking the fraud risk for the order, so it is best to avoid this scenario if possible.
+Once a Klarna order has been approved and successfully placed by a customer, the order data (customer billing address, customer shipping address, and order line items) should not be changed by a merchant admin. Updating order data after an order has been placed transfers the risk of capturing funds from Klarna to the merchant. While an order system may allow updates to an order, be aware that those updates are not updated in the Klarna system. If a change to this kind of order data is necessary, Klarna recommends cancelling the existing order and having the customer place a new Klarna order.
 </details>
 <details>
   <summary>Use KlarnaOrderService (click to expand)</summary>
