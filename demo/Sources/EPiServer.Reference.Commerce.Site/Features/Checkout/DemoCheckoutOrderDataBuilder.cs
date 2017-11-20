@@ -30,7 +30,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             if (checkoutConfiguration.PrefillAddress)
             {
                 // Try to parse address into dutch address lines
-                if (checkoutOrderData.ShippingAddress.Country.Equals("NL"))
+                if (checkoutOrderData.ShippingAddress != null && !string.IsNullOrEmpty(checkoutOrderData.ShippingAddress.Country) && checkoutOrderData.ShippingAddress.Country.Equals("NL"))
                 {
                     var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingAddress);
                     checkoutOrderData.ShippingAddress = dutchAddress;
@@ -40,7 +40,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
             foreach (var lineItem in checkoutOrderData.OrderLines)
             {
-                if (lineItem.Type.Equals("physical"))
+                if (lineItem != null && lineItem.Type.Equals("physical"))
                 {
                     EntryContentBase entryContent = null;
                     FashionProduct product = null;
