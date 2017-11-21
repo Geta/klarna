@@ -7,7 +7,9 @@ using EPiServer.Logging;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
+using Klarna.Payments.Models;
 using Klarna.Rest.Models;
+using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
 
 namespace Klarna.Common
@@ -39,7 +41,11 @@ namespace Klarna.Common
 
                     try
                     {
-                        order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+                        var result = order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+                        if (result.FirstOrDefault()?.IsSuccessful == false)
+                        {
+                            PaymentStatusManager.FailPayment((Payment)payment);
+                        }
                     }
                     catch (Exception ex)
                     {

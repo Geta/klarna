@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
+using Klarna.OrderManagement.Models;
 using Klarna.OrderManagement.Refunds;
 using Klarna.Rest;
 using Klarna.Rest.Models;
@@ -17,10 +19,12 @@ namespace Klarna.OrderManagement
     public class KlarnaOrderService : IKlarnaOrderService
     {
         private readonly Client _client;
+        private readonly IKlarnaOrderServiceApi _klarnaOrderServiceApi;
 
-        internal KlarnaOrderService(Client client)
+        internal KlarnaOrderService(Client client, IKlarnaOrderServiceApi klarnaOrderServiceApi)
         {
-            this._client = client;
+            _client = client;
+            _klarnaOrderServiceApi = klarnaOrderServiceApi;
         }
 
         public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
@@ -138,10 +142,9 @@ namespace Klarna.OrderManagement
             capture.TriggerSendOut();
         }
 
-        public OrderData GetOrder(string orderId)
+        public Task<PatchedOrderData> GetOrder(string orderId)
         {
-            var order = _client.NewOrder(orderId);
-            return order.Fetch();
+            return _klarnaOrderServiceApi.GetOrder(orderId);
         }
 
         public void ExtendAuthorizationTime(string orderId)

@@ -1,4 +1,7 @@
 using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Common.Extensions;
@@ -7,6 +10,7 @@ using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
+using Refit;
 
 namespace Klarna.OrderManagement
 {
@@ -29,7 +33,18 @@ namespace Klarna.OrderManagement
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
             var client = new Client(ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl)));
-            return new KlarnaOrderService(client);
+
+            var byteArray = Encoding.ASCII.GetBytes($"{connectionConfiguration.Username}:{connectionConfiguration.Password}");
+            var httpClient = new HttpClient
+            {
+                BaseAddress = new Uri(connectionConfiguration.ApiUrl)
+            };
+            httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Platform", $"EPiServer_{typeof(EPiServer.Core.IContent).Assembly.GetName().Version.ToString()}"));
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Module", $"Klarna.OrderManagement_{typeof(Klarna.OrderManagement.KlarnaOrderService).Assembly.GetName().Version.ToString()}"));
+
+            return new KlarnaOrderService(client, RestService.For<IKlarnaOrderServiceApi>(httpClient));
         }
     }
 }

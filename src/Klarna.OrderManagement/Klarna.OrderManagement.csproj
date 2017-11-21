@@ -153,6 +153,9 @@
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="Refit, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\refit.3.0.1\lib\Net45\Refit.dll</HintPath>
+    </Reference>
     <Reference Include="StructureMap, Version=3.1.9.463, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
       <HintPath>..\..\packages\structuremap-signed.3.1.9.463\lib\net40\StructureMap.dll</HintPath>
     </Reference>
@@ -163,7 +166,13 @@
       <HintPath>..\..\packages\structuremap.web-signed.3.1.6.186\lib\net40\StructureMap.Web.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.24.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
@@ -198,11 +207,13 @@
     <Compile Include="Events\OrderCancelledEvent.cs" />
     <Compile Include="Events\ReleaseRemainingEvent.cs" />
     <Compile Include="IKlarnaOrderService.cs" />
+    <Compile Include="IKlarnaOrderServiceApi.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
     <Compile Include="Initialization\OrderInitialization.cs" />
     <Compile Include="KlarnaAdditionalTransactionType.cs" />
     <Compile Include="KlarnaOrderService.cs" />
     <Compile Include="KlarnaOrderServiceFactory.cs" />
+    <Compile Include="Models\PatchedOrderData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ICaptureBuilder.cs" />
     <Compile Include="Refunds\IRefundBuilder.cs" />
@@ -230,5 +241,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Microsoft.Net.Compilers.2.1.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets'))" />
   </Target>
+  <Import Project="..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets" Condition="Exists('..\..\packages\refit.3.0.1\build\netstandard1.1\refit.targets')" />
 </Project>

@@ -29,5 +29,7 @@ namespace Klarna.Checkout
         void AcknowledgeOrder(IPurchaseOrder purchaseOrder);
         CheckoutConfiguration GetConfiguration(IMarket market);
         CheckoutConfiguration GetConfiguration(MarketId marketId);
+
+        void Complete(IPurchaseOrder purchaseOrder);
     }
 }

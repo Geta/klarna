@@ -49,7 +49,7 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
                 var klarnaOrderService = _klarnaOrderServiceFactory.Service.Create(paymentMethod, purchaseOrder.Market.MarketId);
 
                 var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
-                var orderData = klarnaOrderService.GetOrder(orderId);
+                var orderData = klarnaOrderService.GetOrder(orderId).Result;
 
                 OrderIdLabel.Text = orderData.OrderId;
                 KlarnaReferenceLabel.Text = orderData.KlarnaReference;

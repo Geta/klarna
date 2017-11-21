@@ -21,6 +21,7 @@ using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Checkout;
+using Klarna.Payments.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
@@ -243,6 +244,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 throw new InvalidOperationException("Wrong amount");
             }
 
+            if (payment.Properties[Klarna.Common.Constants.FraudStatusPaymentField]?.ToString() == FraudStatus.PENDING.ToString())
+            {
+                payment.Status = PaymentStatus.Pending.ToString();
+            }
+
             var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
             var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
             _orderRepository.Delete(cart.OrderLink);
@@ -255,6 +261,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             }
             else
             {
+                _klarnaCheckoutService.Complete(purchaseOrder);
                 purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarnaOrderId;
 
                 _orderRepository.Save(purchaseOrder);

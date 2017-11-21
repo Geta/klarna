@@ -14,6 +14,7 @@ using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.OrderManagement;
+using Klarna.Payments.Models;
 using Klarna.Rest;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
@@ -432,6 +433,27 @@ namespace Klarna.Checkout
                     $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }
             return paymentMethod.GetKlarnaCheckoutConfiguration(marketId);
+        }
+
+        public void Complete(IPurchaseOrder purchaseOrder)
+        {
+            if (purchaseOrder == null)
+            {
+                throw new ArgumentNullException(nameof(purchaseOrder));
+            }
+            var orderForm = purchaseOrder.GetFirstForm();
+            var payment = orderForm?.Payments.FirstOrDefault(x => x.PaymentMethodName.Equals(Constants.KlarnaCheckoutSystemKeyword));
+            if (payment == null)
+            {
+                return;
+            }
+
+            var fraudStatus = payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString();
+            if (fraudStatus == FraudStatus.PENDING.ToString())
+            {
+                OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
+                _orderRepository.Save(purchaseOrder);
+            }
         }
 
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)

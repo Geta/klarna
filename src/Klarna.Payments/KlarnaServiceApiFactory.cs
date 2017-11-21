@@ -5,7 +5,6 @@ using System.Text;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Common.Extensions;
-using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;

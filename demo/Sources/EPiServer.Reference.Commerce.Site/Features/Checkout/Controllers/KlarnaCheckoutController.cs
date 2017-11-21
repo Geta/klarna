@@ -104,21 +104,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
-        [Route("cart/{orderGroupId}/fraud")]
+        [Route("fraud")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult FraudNotification(int orderGroupId, string klarna_order_id)
+        public IHttpActionResult FraudNotification()
         {
-            var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
-            if (purchaseOrder == null)
-            {
-                return NotFound();
-            }
-
             var requestParams = Request.Content.ReadAsStringAsync().Result;
             if (!string.IsNullOrEmpty(requestParams))
             {
                 var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
+
                 _klarnaCheckoutService.FraudUpdate(notification);
             }
             return Ok();
