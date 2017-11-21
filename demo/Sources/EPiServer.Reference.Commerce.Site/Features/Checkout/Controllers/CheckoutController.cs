@@ -261,6 +261,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [HttpGet]
         public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
         {
+            //var klarnaOrderService = ServiceLocator.Current.GetInstance<IKlarnaOrderService>();
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {
@@ -270,6 +271,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
                     if (purchaseOrder == null)
                     {
+                        //var asdfadsfds = klarnaOrderService.GetOrder(klarna_order_id);
                         ModelState.AddModelError("", "Error occurred while creating a purchase order");
 
                         return RedirectToAction("Index");

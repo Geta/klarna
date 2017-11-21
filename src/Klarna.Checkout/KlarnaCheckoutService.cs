@@ -314,6 +314,7 @@ namespace Klarna.Checkout
 
         public ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
+            var configuration = GetConfiguration(cart.Market);
             var shipment = cart.GetFirstShipment();
             if (shipment != null && Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out Guid guid))
             {
@@ -323,13 +324,19 @@ namespace Klarna.Checkout
             }
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            return new ShippingOptionUpdateResponse
+            var result =  new ShippingOptionUpdateResponse
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals, false),
                 PurchaseCurrency = cart.Currency.CurrencyCode
             };
+
+            if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
+            {
+                checkoutOrderDataBuilder.Build(result, cart, configuration);
+            }
+            return result;
         }
 
         public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
@@ -343,7 +350,7 @@ namespace Klarna.Checkout
             }
 
             var totals = _orderGroupTotalsCalculator.GetTotals(cart);
-            return new AddressUpdateResponse
+            var result = new AddressUpdateResponse
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
@@ -351,6 +358,12 @@ namespace Klarna.Checkout
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>()
             };
+
+            if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
+            {
+                checkoutOrderDataBuilder.Build(result, cart, configuration);
+            }
+            return result;
         }
 
         public bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
