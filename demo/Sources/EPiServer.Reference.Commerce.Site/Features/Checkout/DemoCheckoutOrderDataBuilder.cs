@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Catalog.Linking;
@@ -28,6 +29,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
         {
             if (checkoutConfiguration == null)
                 return checkoutOrderData;
+
+            checkoutOrderData.ExternalPaymentMethods = new[]
+            {
+                new ExternalPaymentMethod { Fee = 10, ImageUri = new Uri("https://klarna.geta.no/Styles/Images/paypalpng"), Name  = "PayPal", RedirectUri = new Uri("https://klarna.geta.no")}
+            };
 
             if (checkoutConfiguration.PrefillAddress)
             {
