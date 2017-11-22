@@ -329,7 +329,7 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = GetOrderLines(cart, totals, false),
+                OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode
             };
 
@@ -355,7 +355,7 @@ namespace Klarna.Checkout
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
-                OrderLines = GetOrderLines(cart, totals, false),
+                OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>()
             };
