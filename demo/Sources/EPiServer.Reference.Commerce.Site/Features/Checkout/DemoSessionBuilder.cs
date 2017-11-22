@@ -73,41 +73,44 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                 };
             }
 
-            foreach (var lineItem in session.OrderLines)
+            if (session.OrderLines != null)
             {
-                if (lineItem.Type.Equals("physical"))
+                foreach (var lineItem in session.OrderLines)
                 {
-                    EntryContentBase entryContent = null;
-                    FashionProduct product = null;
-                    if (!string.IsNullOrEmpty(lineItem.Reference))
+                    if (lineItem.Type.Equals("physical"))
                     {
-                        var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Reference);
-                        if (!ContentReference.IsNullOrEmpty(contentLink))
+                        EntryContentBase entryContent = null;
+                        FashionProduct product = null;
+                        if (!string.IsNullOrEmpty(lineItem.Reference))
                         {
-                            entryContent = _contentRepository.Service.Get<EntryContentBase>(contentLink);
+                            var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Reference);
+                            if (!ContentReference.IsNullOrEmpty(contentLink))
+                            {
+                                entryContent = _contentRepository.Service.Get<EntryContentBase>(contentLink);
 
-                            var parentLink =
-                                entryContent.GetParentProducts(_relationRepository.Service).SingleOrDefault();
-                            product = _contentRepository.Service.Get<FashionProduct>(parentLink);
+                                var parentLink =
+                                    entryContent.GetParentProducts(_relationRepository.Service).SingleOrDefault();
+                                product = _contentRepository.Service.Get<FashionProduct>(parentLink);
+                            }
                         }
-                    }
 
-                    var patchedOrderLine = (PatchedOrderLine) lineItem;
-                    if (patchedOrderLine.ProductIdentifiers == null)
-                    {
-                        patchedOrderLine.ProductIdentifiers = new PatchedProductIdentifiers();
-                    }
+                        var patchedOrderLine = (PatchedOrderLine) lineItem;
+                        if (patchedOrderLine.ProductIdentifiers == null)
+                        {
+                            patchedOrderLine.ProductIdentifiers = new PatchedProductIdentifiers();
+                        }
 
-                    patchedOrderLine.ProductIdentifiers.Brand = product?.Brand;
-                    patchedOrderLine.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
-                    patchedOrderLine.ProductIdentifiers.ManuFacturerPartNumber = "ManuFacturerPartNumber test";
-                    patchedOrderLine.ProductIdentifiers.CategoryPath = "test / test";
+                        patchedOrderLine.ProductIdentifiers.Brand = product?.Brand;
+                        patchedOrderLine.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
+                        patchedOrderLine.ProductIdentifiers.ManuFacturerPartNumber = "ManuFacturerPartNumber test";
+                        patchedOrderLine.ProductIdentifiers.CategoryPath = "test / test";
 
-                    if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)
-                    {
-                        ((PatchedOrderLine) lineItem).ProductUrl = entryContent.GetUrl(_linksRepository.Service,
-                            _urlResolver.Service);
+                        if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)
+                        {
+                            ((PatchedOrderLine) lineItem).ProductUrl = entryContent.GetUrl(_linksRepository.Service,
+                                _urlResolver.Service);
 
+                        }
                     }
                 }
             }
