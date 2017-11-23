@@ -45,6 +45,8 @@ namespace Klarna.Common
                         if (result.FirstOrDefault()?.IsSuccessful == false)
                         {
                             PaymentStatusManager.FailPayment((Payment)payment);
+
+                            _orderRepository.Save(order);
                         }
                     }
                     catch (Exception ex)
