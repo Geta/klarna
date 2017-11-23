@@ -4,6 +4,7 @@ using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.ServiceLocation;
+using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
@@ -88,8 +89,8 @@ namespace Klarna.Common.Extensions
                 var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Code);
                 if (!ContentReference.IsNullOrEmpty(contentLink))
                 {
-                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink);
-                    orderLine.ProductImageUrl = GetVariantImage(contentLink);
+                    orderLine.ProductUrl = SiteUrlHelper.GetAbsoluteUrl() + _urlResolver.Service.GetUrl(contentLink);
+                    orderLine.ProductImageUrl = SiteUrlHelper.GetAbsoluteUrl() + GetVariantImage(contentLink);
                 }
             }
             return orderLine;

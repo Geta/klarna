@@ -9,7 +9,9 @@ using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Product.Models;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.ServiceLocation;
+using EPiServer.Web;
 using EPiServer.Web.Routing;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
@@ -107,7 +109,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
                         if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)
                         {
-                            ((PatchedOrderLine) lineItem).ProductUrl = entryContent.GetUrl(_linksRepository.Service,
+                            ((PatchedOrderLine) lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl() + entryContent.GetUrl(_linksRepository.Service,
                                 _urlResolver.Service);
 
                         }

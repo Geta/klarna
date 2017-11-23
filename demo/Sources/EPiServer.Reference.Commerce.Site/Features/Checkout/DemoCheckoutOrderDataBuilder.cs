@@ -8,9 +8,11 @@ using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Product.Models;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.ServiceLocation;
+using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Catalog;
@@ -98,7 +100,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
                     if (checkoutConfiguration.SendProductAndImageUrl && entryContent != null)
                     {
-                        ((PatchedOrderLine)lineItem).ProductUrl = entryContent.GetUrl(_linksRepository.Service,
+                        ((PatchedOrderLine)lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl() + entryContent.GetUrl(_linksRepository.Service,
                             _urlResolver.Service);
 
                     }

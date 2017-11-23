@@ -215,6 +215,7 @@
     <Compile Include="Helpers\ICountryRegionProvider.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodExtensions.cs" />
+    <Compile Include="Helpers\SiteUrlHelper.cs" />
     <Compile Include="IKlarnaService.cs" />
     <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
     <Compile Include="Initialization\MetadataInitializationBase.cs" />
