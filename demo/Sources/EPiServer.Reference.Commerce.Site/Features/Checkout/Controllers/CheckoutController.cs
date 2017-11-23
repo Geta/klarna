@@ -248,9 +248,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 return View(viewModel);
             }
-
-            _klarnaPaymentsService.CompleteAndRedirect(purchaseOrder);
             
+            var result = _klarnaPaymentsService.Complete(purchaseOrder);
+            if (result.IsRedirect)
+            {
+                Redirect(result.RedirectUrl);
+            }
+
             var confirmationSentSuccessfully = _checkoutService.SendConfirmation(viewModel, purchaseOrder);
           
             _recommendationService.SendOrderTracking(HttpContext, purchaseOrder);
