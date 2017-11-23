@@ -214,6 +214,8 @@ public IHttpActionResult FraudNotification()
     }
     return Ok();
 }
+
+When a payment needs an additional review, the payment in EPiServer is set to the status PENDING and the order to ONHOLD. When the fraud status callback URL is called and the payment is accepted the payment status will be set to PROCESSED and the order to ONHOLD. If the payment is rejected by Klarna the payment status is set to FAILED.
 ```
 </details>
 

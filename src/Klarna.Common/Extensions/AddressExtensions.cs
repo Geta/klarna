@@ -1,3 +1,4 @@
+using System;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
@@ -19,12 +20,18 @@ namespace Klarna.Common.Extensions
             address.StreetAddress2 = orderAddress.Line2;
             address.PostalCode = orderAddress.PostalCode;
             address.City = orderAddress.City;
-            if (orderAddress.CountryCode != null && orderAddress.RegionName != null)
-            {
-                address.Region = CountryCodeHelper.GetStateCode(CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode), orderAddress.RegionName);
-            }
-            
             address.Country = CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode);
+            if (orderAddress.CountryCode != null && address.Country.Equals("us", StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(orderAddress.RegionName))
+            {
+                address.Region =
+                    CountryCodeHelper.GetStateCode(CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode),
+                        orderAddress.RegionName);
+            }
+            else
+            {
+                address.Region = orderAddress.RegionName;
+            }
+           
             address.Email = orderAddress.Email;
             address.Phone = orderAddress.DaytimePhoneNumber ?? orderAddress.EveningPhoneNumber;
 
@@ -42,10 +49,14 @@ namespace Klarna.Common.Extensions
             orderAddress.Line2 = address.StreetAddress2;
             orderAddress.PostalCode = address.PostalCode;
             orderAddress.City = address.City;
-            if (!string.IsNullOrEmpty(address.Country) && !string.IsNullOrEmpty(address.Region))
+            if (!string.IsNullOrEmpty(address.Country) && address.Country.Equals("us", StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(address.Region))
             {
-                orderAddress.RegionName = orderAddress.RegionCode =
-                    CountryCodeHelper.GetStateName(address.Country, address.Region);
+                orderAddress.RegionName = CountryCodeHelper.GetStateName(address.Country, address.Region);
+                orderAddress.RegionCode = address.Region;
+            }
+            else
+            {
+                orderAddress.RegionName = orderAddress.RegionCode = address.Region;
             }
             orderAddress.CountryCode = CountryCodeHelper.GetThreeLetterCountryCode(address.Country);
             orderAddress.Email = address.Email;
