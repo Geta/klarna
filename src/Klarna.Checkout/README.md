@@ -1,12 +1,19 @@
-EPiServer Klarna checkout integration
+EPiServer Klarna Checkout integration
 =============
 
-## What is Klarna.Checkout?
+## Description
 
-Klarna.Checkout is a library which helps to integrate Klarna Checkout as one of the payment options in your EPiServer Commerce sites.
-This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna: 
+Klarna.Checkout is a library which helps to integrate Klarna Checkout (KCO) as one of the payment options in your EPiServer Commerce sites.
+This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna.
+
+## Features
 * Klarna.Checkout is the integration between EPiServer and the Klarna Checkout API (https://developers.klarna.com/api/#checkout-api-order)
 * Klarna.Checkout.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
+* Handle pending orders / fraud check results
+* Add order notes to track update flow
+* Pick shipping option in KCO widget
+* Style KCO widget to your liking
+* Add an additional checkbox 
 
 ## Payment process / checkout flow
   
@@ -273,3 +280,9 @@ When a payment needs an additional review, the payment in EPiServer is set to th
 The KlarnaPaymentGateway save notes about payment updates at the order.
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
 </details>
+
+## Demo
+https://klarna.geta.no
+
+## Package maintainer
+[Brian Weeteling](https://github.com/brianweet)
