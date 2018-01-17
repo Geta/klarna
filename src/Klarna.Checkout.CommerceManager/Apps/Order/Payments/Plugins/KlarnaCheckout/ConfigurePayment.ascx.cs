@@ -86,6 +86,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
             txtConfirmationUrl.Text = checkoutConfiguration.ConfirmationUrl;
             txtTermsUrl.Text = checkoutConfiguration.TermsUrl;
+            txtCancellationTermsUrl.Text = checkoutConfiguration.CancellationTermsUrl;
             txtCheckoutUrl.Text = checkoutConfiguration.CheckoutUrl;
             txtPushUrl.Text = checkoutConfiguration.PushUrl;
             txtNotificationUrl.Text = checkoutConfiguration.NotificationUrl;
@@ -139,6 +140,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
             configuration.ConfirmationUrl = txtConfirmationUrl.Text;
             configuration.TermsUrl = txtTermsUrl.Text;
+            configuration.CancellationTermsUrl = txtCancellationTermsUrl.Text;
             configuration.CheckoutUrl = txtCheckoutUrl.Text;
             configuration.PushUrl = txtPushUrl.Text;
             configuration.NotificationUrl = txtNotificationUrl.Text;

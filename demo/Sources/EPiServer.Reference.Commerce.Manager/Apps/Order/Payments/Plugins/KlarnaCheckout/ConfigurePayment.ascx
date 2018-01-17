@@ -213,6 +213,12 @@
             </td>
         </tr>
          <tr>
+            <td class="FormLabelCell">Cancellation terms URL:</td>
+            <td class="FormFieldCell">
+                <asp:TextBox runat="server" ID="txtCancellationTermsUrl" />
+            </td>
+        </tr>
+         <tr>
             <td class="FormLabelCell">Push URL:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtPushUrl" />

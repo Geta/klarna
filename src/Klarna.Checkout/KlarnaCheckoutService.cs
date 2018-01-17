@@ -485,14 +485,15 @@ namespace Klarna.Checkout
             return shippingOptions;
         }
 
-        private MerchantUrls GetMerchantUrls(ICart cart)
+        private PatchedMerchantUrls GetMerchantUrls(ICart cart)
         {
             if (PaymentMethodDto != null)
             {
                 var configuration = GetConfiguration(cart.Market);
-                return new MerchantUrls
+                return new PatchedMerchantUrls
                 {
                     Terms = new Uri(configuration.TermsUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
+                    CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? new Uri(configuration.CancellationTermsUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())) : null,
                     Checkout = new Uri(configuration.CheckoutUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Confirmation = new Uri(configuration.ConfirmationUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
                     Push = new Uri(configuration.PushUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),

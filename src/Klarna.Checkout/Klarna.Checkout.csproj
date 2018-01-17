@@ -247,6 +247,7 @@
     <Compile Include="Models\AdditionalCheckbox.cs" />
     <Compile Include="Models\PatchedCheckoutOptions.cs" />
     <Compile Include="Models\PatchedCheckoutOrderData.cs" />
+    <Compile Include="Models\PatchedMerchantUrls.cs" />
     <Compile Include="Models\ShippingOption.cs" />
     <Compile Include="Models\ShippingOptionUpdateRequest.cs" />
     <Compile Include="Models\ShippingOptionUpdateResponse.cs" />
