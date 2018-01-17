@@ -11,10 +11,10 @@
     <projectUrl>https://github.com/Geta/Klarna</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright 2017 Geta</copyright>
-    <tags>EPiServer Commerce 10</tags>
+    <tags>EPiServer Commerce 11</tags>
     <dependencies>
-      <dependency id="EPiServer.CMS.Core" version="10.0.0" />
-      <dependency id="EPiServer.Commerce.Core" version="10.0.0" />
+      <dependency id="EPiServer.CMS.Core" version="[11.2.1, 12)" />
+      <dependency id="EPiServer.Commerce.Core" version="[11.5, 12)" />
     </dependencies>
   </metadata>
   <files>
