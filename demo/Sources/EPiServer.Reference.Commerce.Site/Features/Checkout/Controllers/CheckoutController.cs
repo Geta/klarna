@@ -1,7 +1,5 @@
 ﻿using EPiServer.Commerce.Order;
 using EPiServer.Core;
-using EPiServer.Recommendations.Commerce.Tracking;
-using EPiServer.Recommendations.Tracking;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories;
@@ -78,7 +76,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [HttpGet]
         [OutputCache(Duration = 0, NoStore = true)]
-        [Tracking(TrackingType.Checkout)]
         public async Task<ActionResult> Index(CheckoutPage currentPage)
         {
             if (CartIsNullOrEmpty())
@@ -257,8 +254,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var confirmationSentSuccessfully = _checkoutService.SendConfirmation(viewModel, purchaseOrder);
           
-            _recommendationService.SendOrderTracking(HttpContext, purchaseOrder);
-
             return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, confirmationSentSuccessfully));
         }
 

@@ -9,6 +9,7 @@ using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
 using EPiServer.Web.Mvc;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
@@ -55,7 +56,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult AddToCart(string code)
+        public async Task<ActionResult> AddToCart(string code)
         {
             ModelState.Clear();
 
@@ -73,7 +74,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
             if (result.EntriesAddedToCart)
             {
                 _orderRepository.Save(WishList);
-                _recommendationService.SendWishListTrackingData(HttpContext);
+                await _recommendationService.TrackWishlist(HttpContext);
                 return WishListMiniCartDetails();
             }
 
@@ -82,13 +83,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult ChangeCartItem(string code, decimal quantity, string size, string newSize)
+        public async Task<ActionResult> ChangeCartItem(string code, decimal quantity, string size, string newSize)
         {
             ModelState.Clear();
 
             _cartService.ChangeCartItem(WishList, 0, code, quantity, size, newSize);
             _orderRepository.Save(WishList);
-            _recommendationService.SendWishListTrackingData(HttpContext);
+            await _recommendationService.TrackWishlist(HttpContext);
             return WishListMiniCartDetails();
         }
 

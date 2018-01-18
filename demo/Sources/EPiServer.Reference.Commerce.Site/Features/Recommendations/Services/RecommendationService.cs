@@ -1,88 +1,135 @@
 ﻿using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
-using EPiServer.Recommendations.Commerce.Tracking;
-using EPiServer.Recommendations.Tracking;
-using EPiServer.Recommendations.Tracking.Data;
-using EPiServer.Reference.Commerce.Site.Features.Product.Models;
+using EPiServer.Personalization.Commerce.Tracking;
+using EPiServer.Reference.Commerce.Site.Features.Product.Services;
 using EPiServer.ServiceLocation;
-using Mediachase.Commerce.Catalog;
+using EPiServer.Tracking.Commerce;
+using EPiServer.Tracking.Commerce.Data;
+using EPiServer.Tracking.Core;
+using EPiServer.Web;
+using EPiServer.Web.Routing;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using EPiServer.Reference.Commerce.Site.Features.Recommendations.ViewModels;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
 {
     [ServiceConfiguration(typeof(IRecommendationService), Lifecycle = ServiceInstanceScope.Singleton)]
     public class RecommendationService : IRecommendationService
     {
-        private readonly ITrackingService _trackingService;
+        private readonly ServiceAccessor<IContentRouteHelper> _contentRouteHelperAccessor;
+        private readonly IContextModeResolver _contextModeResolver;
+        private readonly IProductService _productService;
         private readonly TrackingDataFactory _trackingDataFactory;
-        private readonly ReferenceConverter _referenceConverter;
-        private readonly IContentLoader _contentLoader;
+        private readonly ITrackingService _trackingService;
 
         public RecommendationService(
-            ITrackingService trackingService, 
+            ServiceAccessor<IContentRouteHelper> contentRouteHelperAccessor,
+            IContextModeResolver contextModeResolver,
+            IProductService productService,
             TrackingDataFactory trackingDataFactory,
-            ReferenceConverter referenceConverter,
-            IContentLoader contentLoader)
+            ITrackingService trackingService)
         {
-            _trackingService = trackingService;
+            _contentRouteHelperAccessor = contentRouteHelperAccessor;
+            _contextModeResolver = contextModeResolver;
+            _productService = productService;
             _trackingDataFactory = trackingDataFactory;
-            _referenceConverter = referenceConverter;
-            _contentLoader = contentLoader;
+            _trackingService = trackingService;
         }
 
-        public TrackingResponseData SendSearchTracking(HttpContextBase httpContext, string searchTerm, IEnumerable<string> productCodes)
+        public async Task<TrackingResponseData> TrackProduct(HttpContextBase httpContext, string productCode, bool skipRecommendations)
         {
-            if (string.IsNullOrWhiteSpace(searchTerm))
+            if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
-                return new TrackingResponseData();
+                return null;
+            }
+
+            var trackingData = _trackingDataFactory.CreateProductTrackingData(productCode, httpContext);
+
+            if (skipRecommendations)
+            {
+                trackingData.SkipRecommendations();
+            }
+
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
+        }
+
+        public async Task<TrackingResponseData> TrackSearch(HttpContextBase httpContext, string searchTerm, IEnumerable<string> productCodes)
+        {
+            if (_contextModeResolver.CurrentMode != ContextMode.Default || string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return null;
             }
 
             var trackingData = _trackingDataFactory.CreateSearchTrackingData(searchTerm, productCodes, httpContext);
-            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public TrackingResponseData SendOrderTracking(HttpContextBase httpContext, IPurchaseOrder order)
+        public async Task<TrackingResponseData> TrackOrder(HttpContextBase httpContext, IPurchaseOrder order)
         {
+            if (_contextModeResolver.CurrentMode != ContextMode.Default)
+            {
+                return null;
+            }
+
             var trackingData = _trackingDataFactory.CreateOrderTrackingData(order, httpContext);
-            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public TrackingResponseData SendCategoryTracking(HttpContextBase httpContext, NodeContent category)
+        public async Task<TrackingResponseData> TrackCategory(HttpContextBase httpContext, NodeContent category)
         {
+            if (_contextModeResolver.CurrentMode != ContextMode.Default)
+            {
+                return null;
+            }
+
             var trackingData = _trackingDataFactory.CreateCategoryTrackingData(category, httpContext);
-            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public TrackingResponseData SendFacetTrackingData(HttpContextBase httpContext, string facet)
+        public async Task<TrackingResponseData> TrackCart(HttpContextBase httpContext)
         {
-            var parts = facet.Split(':');
-            TrackingDataBase trackingData;
-
-            if (parts[0] == "_node")
+            if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
-                var link = _referenceConverter.GetContentLink(parts[1]);
-                var content = _contentLoader.Get<FashionNode>(link);
-                trackingData = _trackingDataFactory.CreateCategoryTrackingData(content, httpContext);
-            }
-            else
-            {
-                trackingData = _trackingDataFactory.CreateAttributeTrackingData(parts[0], parts[1], httpContext);
+                return null;
             }
 
-            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
-        }
-
-        public TrackingResponseData SendCartTrackingData(HttpContextBase httpContext)
-        {
             var trackingData = _trackingDataFactory.CreateCartTrackingData(httpContext);
-            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
+            trackingData.SkipRecommendations();
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public TrackingResponseData SendWishListTrackingData(HttpContextBase httpContext)
+        public async Task<TrackingResponseData> TrackWishlist(HttpContextBase httpContext)
         {
+            if (_contextModeResolver.CurrentMode != ContextMode.Default)
+            {
+                return null;
+            }
+
             var trackingData = _trackingDataFactory.CreateWishListTrackingData(httpContext);
-            return _trackingService.Send(trackingData, httpContext, RetrieveRecommendationMode.Enabled);
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
+        }
+
+        public async Task<TrackingResponseData> TrackCheckout(HttpContextBase httpContext)
+        {
+            if (_contextModeResolver.CurrentMode != ContextMode.Default)
+            {
+                return null;
+            }
+
+            var trackingData = _trackingDataFactory.CreateCheckoutTrackingData(httpContext);
+            return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
+        }
+
+        public IEnumerable<RecommendedProductTileViewModel> GetRecommendedProductTileViewModels(IEnumerable<Recommendation> recommendations)
+        {
+            return recommendations.Select(x =>
+                new RecommendedProductTileViewModel(
+                    x.RecommendationId,
+                    _productService.GetProductTileViewModel(x.ContentLink))
+            );
         }
     }
 }

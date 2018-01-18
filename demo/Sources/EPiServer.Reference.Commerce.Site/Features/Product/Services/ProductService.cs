@@ -34,6 +34,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
         private readonly AppContextFacade _appContext;
         private readonly ReferenceConverter _referenceConverter;
         private readonly LanguageService _languageService;
+        private readonly CatalogContentService _catalogContentService;
 
 
         public ProductService(IContentLoader contentLoader,
@@ -46,7 +47,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
             ICurrencyService currencyService,
             AppContextFacade appContext,
             ReferenceConverter referenceConverter, 
-            LanguageService languageService)
+            LanguageService languageService,
+            CatalogContentService catalogContentService)
         {
             _contentLoader = contentLoader;
             _promotionService = promotionService;
@@ -60,6 +62,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
             _appContext = appContext;
             _referenceConverter = referenceConverter;
             _languageService = languageService;
+            _catalogContentService = catalogContentService;
         }
 
         public IEnumerable<FashionVariant> GetVariants(FashionProduct currentContent)
@@ -97,6 +100,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
             var language = _languageService.GetCurrentLanguage();
             var contentItems = _contentLoader.GetItems(entryLinks, language);
             return contentItems.OfType<EntryContentBase>().Select(GetProductTileViewModel);
+        }
+
+        public virtual ProductTileViewModel GetProductTileViewModel(ContentReference contentLink)
+        {
+            return GetProductTileViewModel(_catalogContentService.Get<EntryContentBase>(contentLink));
         }
 
         public virtual ProductTileViewModel GetProductTileViewModel(EntryContentBase entry)

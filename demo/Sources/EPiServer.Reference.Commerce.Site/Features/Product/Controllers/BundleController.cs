@@ -1,6 +1,4 @@
 ﻿using EPiServer.Commerce.Catalog.ContentTypes;
-using EPiServer.Recommendations.Commerce.Tracking;
-using EPiServer.Recommendations.Tracking;
 using EPiServer.Reference.Commerce.Site.Features.Product.Models;
 using EPiServer.Reference.Commerce.Site.Features.Product.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions;
@@ -23,7 +21,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Controllers
         }
 
         [HttpGet]
-        [Tracking(TrackingType.Product)]
         public ActionResult Index(FashionBundle currentContent, bool useQuickview = false)
         {
             var viewModel = _viewModelFactory.Create(currentContent);

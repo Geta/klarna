@@ -7,6 +7,7 @@ using EPiServer.Reference.Commerce.Site.Features.Search.ViewModels;
 using EPiServer.Web.Mvc;
 using Mediachase.Commerce.Catalog;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Search.Controllers
@@ -32,14 +33,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Search.Controllers
 
         [ValidateInput(false)]
         [AcceptVerbs(HttpVerbs.Get | HttpVerbs.Post)]
-        public ActionResult Index(SearchPage currentPage, FilterOptionViewModel filterOptions)
+        public async Task<ActionResult> Index(SearchPage currentPage, FilterOptionViewModel filterOptions)
         {
             var viewModel = _viewModelFactory.Create(currentPage, filterOptions);
             if (filterOptions.Page <= 1)
             {
-                viewModel.Recommendations = _recommendationService
-                .SendSearchTracking(HttpContext, filterOptions.Q, viewModel.ProductViewModels.Select(x => x.Code))
-                .GetSearchResultRecommendations(_referenceConverter);
+                var trackingResult =
+                    await _recommendationService.TrackSearch(HttpContext, filterOptions.Q,
+                        viewModel.ProductViewModels.Select(x => x.Code));
+                viewModel.Recommendations = trackingResult.GetSearchResultRecommendations(_referenceConverter);
             }
 
             return View(viewModel);

@@ -9,7 +9,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Facades
     {
         public virtual Guid ApplicationId
         {
-            get { return AppContext.Current.ApplicationId; }
+            get { return Mediachase.Commerce.Core.AppContext.Current.ApplicationId; }
         }
     }
 }

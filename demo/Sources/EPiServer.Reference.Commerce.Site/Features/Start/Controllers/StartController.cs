@@ -1,8 +1,6 @@
 ﻿using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Core;
-using EPiServer.Recommendations.Commerce.Tracking;
-using EPiServer.Recommendations.Tracking;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Start.ViewModels;
@@ -34,8 +32,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Start.Controllers
             _currentMarket = currentMarket;
             _marketContentFilter = marketContentFilter;
         }
-
-        [Tracking(TrackingType.Home)]
+        
         public ViewResult Index(StartPage currentPage)
         {
             var viewModel = new StartPageViewModel()

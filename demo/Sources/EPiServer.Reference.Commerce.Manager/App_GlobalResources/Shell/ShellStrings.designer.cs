@@ -106,15 +106,6 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign In As Different User.
-        /// </summary>
-        internal static string Sign_In_As_Different_User {
-            get {
-                return ResourceManager.GetString("Sign_In_As_Different_User", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Sign Out.
         /// </summary>
         internal static string Sign_Out {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using EPiServer.Core;
 using EPiServer.Framework.Localization;
-using EPiServer.Recommendations.Commerce.Tracking;
+using EPiServer.Personalization.Commerce.Tracking;
 using Mediachase.Search;
 using EPiServer.Reference.Commerce.Site.Features.Search.Services;
 using EPiServer.Reference.Commerce.Site.Features.Search.ViewModels;

@@ -1465,6 +1465,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The product {0} does not have a valid max quantity setting and was removed from your cart..
+        /// </summary>
+        internal static string LineItem_RemovedDueToInvalidMaxQuantitySetting {
+            get {
+                return ResourceManager.GetString("LineItem_RemovedDueToInvalidMaxQuantitySetting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The product {0} does not have a valid price and was removed from your cart..
         /// </summary>
         internal static string LineItem_RemovedDueToInvalidPrice {

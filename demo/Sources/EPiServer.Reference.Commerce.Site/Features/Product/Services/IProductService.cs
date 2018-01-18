@@ -8,6 +8,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
 {
     public interface IProductService
     {
+        ProductTileViewModel GetProductTileViewModel(ContentReference contentLink);
         ProductTileViewModel GetProductTileViewModel(EntryContentBase entry);
         IEnumerable<ProductTileViewModel> GetProductTileViewModels(IEnumerable<ContentReference> entryLinks);
         string GetSiblingVariantCodeBySize(string siblingCode, string size);

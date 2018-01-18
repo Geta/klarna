@@ -5,7 +5,6 @@ using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Framework.Web;
 using EPiServer.Globalization;
-using EPiServer.Recommendations.Widgets;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Business;
@@ -24,7 +23,10 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.WebPages;
+using EPiServer.Personalization.Commerce;
+using EPiServer.Personalization.Commerce.Widgets;
 using EPiServer.Reference.Commerce.Site.Features.Checkout;
+using EPiServer.Web.Routing;
 using Klarna.Checkout;
 using Klarna.Payments;
 
@@ -86,6 +88,8 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             services.AddTransient<ISessionBuilder, DemoSessionBuilder>();
             services.AddTransient<ICheckoutOrderDataBuilder, DemoCheckoutOrderDataBuilder>();
 
+            services.AddSingleton<ServiceAccessor<IContentRouteHelper>>(locator => locator.GetInstance<IContentRouteHelper>);
+
             DependencyResolver.SetResolver(new StructureMapDependencyResolver(context.StructureMap()));
             GlobalConfiguration.Configure(config =>
             {
@@ -134,9 +138,9 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
 
         private void SetupRecommendationsWidgets(InitializationEngine context)
         {
-            var configuration = context.Locate.Advanced.GetInstance<Recommendations.Configuration>();
+            var configuration = context.Locate.Advanced.GetInstance<PersonalizationClientConfiguration>();
 
-            if (configuration.SilentMode)
+            if (!configuration.TrackingEnabled)
             {
                 return;
             }
@@ -148,7 +152,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             {
                 var error = response.Errors.First();
                 var message = new StringBuilder($"Code: {error.Code}, Message: {error.Error}");
-                
+
                 if (error.Field != null)
                 {
                     message.Append($", Field: {error.Field}");

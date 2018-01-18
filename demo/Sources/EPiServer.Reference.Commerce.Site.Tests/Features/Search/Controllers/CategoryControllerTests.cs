@@ -16,10 +16,10 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Search.Controllers
     public class CategoryControllerTests
     {
         [Fact]
-        public void Index_ShouldReturnViewResult()
+        public async void Index_ShouldReturnViewResult()
         {
             // Act
-            var result = _subject.Index(null, null);
+            var result = await _subject.Index(null, null);
 
             // Assert
             Assert.IsType(typeof(ViewResult), result);
@@ -36,53 +36,29 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Search.Controllers
         }
 
         [Fact]
-        public void Index_WhenPassingFashionNode_ShouldPassItOnToFactory()
+        public async void Index_WhenPassingFashionNode_ShouldPassItOnToFactory()
         {
             // Arrange
             var fashionNode = new FashionNode();
 
             // Act
-            _subject.Index(fashionNode, null);
+            await _subject.Index(fashionNode, null);
 
             // Assert
             _viewModelFactoryMock.Verify(v => v.Create(fashionNode, It.IsAny<FilterOptionViewModel>()));
         }
 
         [Fact]
-        public void Index_WhenPassingFormModel_ShouldPassItOnToFactory()
+        public async void Index_WhenPassingFormModel_ShouldPassItOnToFactory()
         {
             // Arrange
             var formModel = new FilterOptionViewModel();
 
             // Act
-            _subject.Index(null, formModel);
+            await _subject.Index(null, formModel);
 
             // Assert
             _viewModelFactoryMock.Verify(v => v.Create(It.IsAny<FashionNode>(), formModel));
-        }
-
-        [Fact]
-        public void Facet_WhenBrowsingFirstResultPage_ShouldSendFacetTracking()
-        {
-            _subject.Facet(null, new FilterOptionViewModel() {SelectedFacet = "key:value",  Page = 1 });
-            _recommendationServiceMock.Verify(
-               x => x.SendFacetTrackingData(
-                       It.IsAny<HttpContextBase>(),
-                       It.IsAny<string>()
-                       ),
-               Times.Once);
-        }
-
-        [Fact]
-        public void Facet_WhenBrowsingNextResultPage_ShouldNotSendFacetTracking()
-        {
-            _subject.Facet(null, new FilterOptionViewModel() {SelectedFacet = "key:value",  Page = 2 });
-            _recommendationServiceMock.Verify(
-               x => x.SendFacetTrackingData(
-                       It.IsAny<HttpContextBase>(),
-                       It.IsAny<string>()
-                       ),
-               Times.Never);
         }
 
         private readonly CategoryController _subject;
@@ -101,7 +77,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Search.Controllers
 
             var context = new Mock<HttpContextBase>();
             context.SetupGet(x => x.Request).Returns(_httpRequestMock.Object);
-            
+
             _subject = new CategoryController(
                 _viewModelFactoryMock.Object,
                 _recommendationServiceMock.Object,

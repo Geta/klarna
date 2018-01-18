@@ -1,10 +1,11 @@
 ﻿using EPiServer.Core;
-using EPiServer.Recommendations.Commerce.Tracking;
-using EPiServer.Recommendations.Tracking.Data;
 using Mediachase.Commerce.Catalog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using EPiServer.Personalization.Commerce.Extensions;
+using EPiServer.Personalization.Commerce.Tracking;
+using EPiServer.Tracking.Commerce.Data;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions
 {

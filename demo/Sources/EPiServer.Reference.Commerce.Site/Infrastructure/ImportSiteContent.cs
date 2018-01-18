@@ -84,7 +84,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
                 ConfigureMarketing();
 
                 _progressMessenger.AddProgressMessageText("Rebuilding index...", false, 0);
-                BuildIndex(_progressMessenger, AppContext.Current.ApplicationId, AppContext.Current.ApplicationName, true);
+                BuildIndex(_progressMessenger, Mediachase.Commerce.Core.AppContext.Current.ApplicationId, Mediachase.Commerce.Core.AppContext.Current.ApplicationName, true);
                 _progressMessenger.AddProgressMessageText("Done rebuilding index", false, 0);
 
                 return true;
@@ -216,7 +216,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
 
         private void ImportTaxes()
         {
-            TaxImportExport.Service.Import(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\Taxes.csv"), AppContext.Current.ApplicationId, null, ',');
+            TaxImportExport.Service.Import(Path.Combine(HostingEnvironment.ApplicationPhysicalPath, @"App_Data\Taxes.csv"), Mediachase.Commerce.Core.AppContext.Current.ApplicationId, null, ',');
         }
 
         private IEnumerable<ShippingMethodDto.ShippingMethodRow> CreateShippingMethodsForLanguageAndCurrencies(ShippingMethodDto dto, IEnumerable<IMarket> markets, string languageId)
@@ -303,7 +303,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
 
         private void ImportCatalog(string path)
         {
-            var importJob = new ImportJob(AppContext.Current.ApplicationId, path, "Catalog.xml", true);
+            var importJob = new ImportJob(Mediachase.Commerce.Core.AppContext.Current.ApplicationId, path, "Catalog.xml", true);
 
             Action importCatalog = () =>
             {
