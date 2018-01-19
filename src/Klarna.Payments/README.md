@@ -1,12 +1,20 @@
 EPiServer Klarna payments integration
 =============
 
-## What is Klarna.Payments?
-
+## Description
 Klarna.Payments is a library which helps to integrate Klarna Payments as one of the payment options in your EPiServer Commerce sites.
-This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna: 
-* Klarna.Payments is the integration between EPiServer and the Klarna Payments API (https://developers.klarna.com/api/#payments-api)
-* Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
+This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna. 
+Klarna.Payments is the integration between EPiServer and the Klarna Payments API (https://developers.klarna.com/api/#payments-api).
+Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager.
+
+## Features
+* Loading Klarna Payment widget
+* Cancel payments
+* Returns
+* Multi shipments
+* Fraud checks + notifications
+* Payment step history saved on order notes
+* Configurations in Commerce Manager
 
 ### Payment process
 - **Visitor visit's checkout page** - Klarna session is created or updated 
@@ -258,3 +266,6 @@ if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't
 }
 ```
 </details>
+
+## Package maintainer
+https://github.com/patkleef
