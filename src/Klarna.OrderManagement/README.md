@@ -1,10 +1,18 @@
 EPiServer Klarna order management
 =============
 
-## What is Klarna.OrderManagement?
+## Description
 
 Klarna.OrderManagement is a library for processing a Klarna payment in EPiServer Commerce. This package supports both payments of Klarna.Payments and Klarna.Checkout. 
+
 More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/order-management
+
+## Features
+* Capture
+* Refunds
+* Release remaining authorization
+* Cancel
+* Support multi shipment payments
 
 ### Steps integrated with EPiServer Commerce
 - **Capture** - either partially (multi-shipment) or full capture the payment amount
@@ -187,3 +195,6 @@ Note: this information is only displayed  when a Klarna payment is added to the 
 
 ![Klarna order information](/docs/screenshots/order-klarna-information.PNG?raw=true "Klarna order information")
 </details>
+
+## Package maintainer
+https://github.com/patkleef
