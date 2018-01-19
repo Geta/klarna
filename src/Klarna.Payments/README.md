@@ -229,7 +229,9 @@ When a payment needs an additional review, the payment in EPiServer is set to th
 
 <details>
   <summary>Order notes (click to expand)</summary>
+  
 The KlarnaPaymentGateway save notes about payment updates at the order.
+
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
 </details>
 
