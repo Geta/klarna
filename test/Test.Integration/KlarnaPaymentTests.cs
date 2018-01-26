@@ -11,14 +11,13 @@ namespace Test.Integration
 {
     public class KlarnaPaymentTests
     {
-        private string _apiUrl = "https://api-na.playground.klarna.com/";
-        private string _username = "N100198";
-        private string _password = "Gee4mawush+u<el8";
+        private string _apiUrl = "";
+        private string _username = "";
+        private string _password = "+u<el8";
 
-        private string _tempClientToken =
-            "eyJhbGciOiJub25lIn0.ewogICJzZXNzaW9uX2lkIiA6ICJmOWMxOTBiNi04ZDM4LTUzZmUtODBiZS0wODI5M2MyNWVjNzEiLAogICJiYXNlX3VybCIgOiAiaHR0cHM6Ly9jcmVkaXQtbmEucGxheWdyb3VuZC5rbGFybmEuY29tIiwKICAiZGVzaWduIiA6ICJrbGFybmEiLAogICJsYW5ndWFnZSIgOiAiZW4iLAogICJwdXJjaGFzZV9jb3VudHJ5IiA6ICJVUyIsCiAgInRyYWNlX2Zsb3ciIDogZmFsc2UKfQ.";
+        private string _tempClientToken = "";
 
-        private string _tempSessionId = "f9c190b6-8d38-53fe-80be-08293c25ec71";
+        private string _tempSessionId = "";
 
         private IKlarnaServiceApi _klarnaServiceApi;
 
