@@ -13,7 +13,7 @@ namespace Test.Integration
     {
         private string _apiUrl = "";
         private string _username = "";
-        private string _password = "+u<el8";
+        private string _password = "";
 
         private string _tempClientToken = "";
 
