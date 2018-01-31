@@ -154,10 +154,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var viewModel = CreateCheckoutViewModel(addressViewModel.CurrentPage);
             _checkoutService.CheckoutAddressHandling.ChangeAddress(viewModel, addressViewModel);
 
-            if (User.Identity.IsAuthenticated)
-            {
-                _checkoutService.UpdateShippingAddresses(Cart, viewModel);
-            }
+            //if (User.Identity.IsAuthenticated)
+            //{
+            _checkoutService.UpdateShippingAddresses(Cart, viewModel);
+            //}
             
             _orderRepository.Save(Cart);
 
