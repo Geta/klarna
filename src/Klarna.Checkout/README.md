@@ -3,7 +3,7 @@ EPiServer Klarna Checkout integration
 
 ## Description
 
-Klarna.Checkout is a library which helps to integrate Klarna Checkout (KCO) as one of the payment options in your EPiServer Commerce sites.
+Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](https://developers.klarna.com/en/gb/kco-v3/checkout) as the checkout solution for your EPiServer Commerce sites.
 This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna.
 
 ## Features
@@ -16,7 +16,7 @@ This library consists of two assemblies. Both are mandatory for a creating an in
 * Add an additional checkbox 
 
 ## Payment process / checkout flow
-  
+
 - **Visitor visits checkout page** - Klarna order is created or updated 
 - **Klarna checkout widget is loaded (payment option)**  
     - Visitor can enter shipping and payment information
@@ -28,7 +28,7 @@ This library consists of two assemblies. Both are mandatory for a creating an in
 - **Visitor is redirected to confirmation callback url**
     - Purchase order is created in EPiServer
 - **Visitor is redirected to confirmation page**
-- **optional - Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are send to the configured notification URL (configured in Commerce Manager)
+- **optional - Klarna - fraud status notification** - When the Klarna order is pending, then a fraud status notification is sent to the configured notification URL (configured in Commerce Manager)
 - **delayed - Receive a [push callback](https://developers.klarna.com/en/us/kco-v3/checkout/4-confirm-purchase) from Klarna** - This notifies Epi that the order has been created in Klarna Order Management (usually within a few seconds). We check if a PurchaseOrder has been made in Epi, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
 
 More information about the Klarna Checkout flow: https://developers.klarna.com/en/gb/kco-v3/checkout
@@ -77,7 +77,7 @@ Click OK in order to save the Payment for the first time. After saving, return t
   - Allow separate shipping address - If true, the consumer can enter different billing and shipping addresses. Default: false
   - Date of birth mandatory - If true, the consumer cannot skip date of birth. Default: false
   - Title mandatory - If specified to false, title becomes optional. Only available for orders for country GB.
-  - Show subtotal detail - If true, the Order Detail subtodals view is expanded. Default: false
+  - Show subtotal detail - If true, the Order Detail subtotals view is expanded. Default: false
   - Send shipping countries - sends available countries from the Epi country dictionary
   - Prefill addresses - send address information on order creation in Klarna (preferred shipping/billing address)
   - Send shipping options prior to filling addresses - send in available shipping options even if address is unknown
@@ -163,6 +163,7 @@ The demo site implementation only supports selecting the shipping address in the
 
 <details>
 <summary>Klarna callbacks (click to expand)</summary>
+
 During the checkout process Klarna trigger one of the following callbacks.
 
 #### [Shipping optionupdate](https://developers.klarna.com/en/us/kco-v3/checkout/additional-features/tax-shipping)
