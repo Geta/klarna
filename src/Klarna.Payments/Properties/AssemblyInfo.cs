@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Klarna.Payments")]
-[assembly: AssemblyDescription("Klarna Payments")]
+[assembly: AssemblyTitle("Klarna.Payments.v3")]
+[assembly: AssemblyDescription("Klarna Payments (kco-v3) integration for Episerver")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Geta")]
-[assembly: AssemblyProduct("Klarna.Payments")]
+[assembly: AssemblyProduct("Klarna.Payments.v3")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

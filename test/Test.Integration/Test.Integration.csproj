@@ -174,13 +174,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Klarna.Common\Klarna.Common.csproj">
+    <ProjectReference Include="..\..\src\Klarna.Common\Klarna.Common.v3.csproj">
       <Project>{C5B383DF-10B4-4330-A000-F981DB51DA89}</Project>
-      <Name>Klarna.Common</Name>
+      <Name>Klarna.Common.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Klarna.Payments\Klarna.Payments.csproj">
+    <ProjectReference Include="..\..\src\Klarna.Payments\Klarna.Payments.v3.csproj">
       <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
-      <Name>Klarna.Payments</Name>
+      <Name>Klarna.Payments.v3</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

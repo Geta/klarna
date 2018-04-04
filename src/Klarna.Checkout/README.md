@@ -38,11 +38,11 @@ More information about the Klarna Checkout flow: https://developers.klarna.com/e
 
 Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 
-    Install-Package Klarna.Checkout
+    Install-Package Klarna.Checkout.v3
 
 For the Commerce Manager site run the following package:
 
-    Install-Package Klarna.Checkout.CommerceManager
+    Install-Package Klarna.Checkout.CommerceManager.v3
 </details>
 
 <details>

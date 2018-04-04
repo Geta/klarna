@@ -1,25 +1,25 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26228.9
+VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments", "src\Klarna.Payments\Klarna.Payments.csproj", "{D32786DF-E314-4E0D-A0DD-0047FA2316F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments.v3", "src\Klarna.Payments\Klarna.Payments.v3.csproj", "{D32786DF-E314-4E0D-A0DD-0047FA2316F9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{0EACE22F-D6BA-4969-AEBF-6BB95083452E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.Integration", "test\Test.Integration\Test.Integration.csproj", "{A8B66E60-E974-40AE-8E00-4743F1FE8659}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments.CommerceManager", "src\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj", "{6E816423-8646-43CE-9192-FB6E2A2F13B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Payments.CommerceManager.v3", "src\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.v3.csproj", "{6E816423-8646-43CE-9192-FB6E2A2F13B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.OrderManagement", "src\Klarna.OrderManagement\Klarna.OrderManagement.csproj", "{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.OrderManagement.v3", "src\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj", "{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Common", "src\Klarna.Common\Klarna.Common.csproj", "{C5B383DF-10B4-4330-A000-F981DB51DA89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Common.v3", "src\Klarna.Common\Klarna.Common.v3.csproj", "{C5B383DF-10B4-4330-A000-F981DB51DA89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.OrderManagement.CommerceManager", "src\Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.csproj", "{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.OrderManagement.CommerceManager.v3", "src\Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.v3.csproj", "{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout", "src\Klarna.Checkout\Klarna.Checkout.csproj", "{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout.v3", "src\Klarna.Checkout\Klarna.Checkout.v3.csproj", "{DFE6AB6E-4A39-4EC6-AFA7-D5364A5FDEEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout.CommerceManager", "src\Klarna.Checkout.CommerceManager\Klarna.Checkout.CommerceManager.csproj", "{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Klarna.Checkout.CommerceManager.v3", "src\Klarna.Checkout.CommerceManager\Klarna.Checkout.CommerceManager.v3.csproj", "{3E70FAD9-6C8B-4C6F-A9CA-52FA1537663E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,5 +65,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A8B66E60-E974-40AE-8E00-4743F1FE8659} = {0EACE22F-D6BA-4969-AEBF-6BB95083452E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {62D6428D-5C4D-46A0-8FD6-8954DC9F82A9}
 	EndGlobalSection
 EndGlobal

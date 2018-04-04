@@ -4256,33 +4256,33 @@
     <Folder Include="modulesbin\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Klarna.Checkout.CommerceManager\Klarna.Checkout.CommerceManager.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.Checkout.CommerceManager\Klarna.Checkout.CommerceManager.v3.csproj">
       <Project>{3e70fad9-6c8b-4c6f-a9ca-52fa1537663e}</Project>
-      <Name>Klarna.Checkout.CommerceManager</Name>
+      <Name>Klarna.Checkout.CommerceManager.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.Checkout\Klarna.Checkout.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.Checkout\Klarna.Checkout.v3.csproj">
       <Project>{dfe6ab6e-4a39-4ec6-afa7-d5364a5fdeeb}</Project>
-      <Name>Klarna.Checkout</Name>
+      <Name>Klarna.Checkout.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.Common\Klarna.Common.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.Common\Klarna.Common.v3.csproj">
       <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
-      <Name>Klarna.Common</Name>
+      <Name>Klarna.Common.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement.CommerceManager\Klarna.OrderManagement.CommerceManager.v3.csproj">
       <Project>{30eb451c-21ee-4f1c-a5e1-ec1e4cece607}</Project>
-      <Name>Klarna.OrderManagement.CommerceManager</Name>
+      <Name>Klarna.OrderManagement.CommerceManager.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj">
       <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
-      <Name>Klarna.OrderManagement</Name>
+      <Name>Klarna.OrderManagement.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.Payments.CommerceManager\Klarna.Payments.CommerceManager.v3.csproj">
       <Project>{6e816423-8646-43ce-9192-fb6e2a2f13b8}</Project>
-      <Name>Klarna.Payments.CommerceManager</Name>
+      <Name>Klarna.Payments.CommerceManager.v3</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.Payments\Klarna.Payments.csproj">
+    <ProjectReference Include="..\..\..\src\Klarna.Payments\Klarna.Payments.v3.csproj">
       <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
-      <Name>Klarna.Payments</Name>
+      <Name>Klarna.Payments.v3</Name>
     </ProjectReference>
     <ProjectReference Include="..\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj">
       <Project>{341c8e14-4eae-4946-9841-45f9818265a8}</Project>

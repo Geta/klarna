@@ -5,15 +5,16 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B6A17719-4F3C-42C5-8953-E6B64A6F13A3}</ProjectGuid>
+    <ProjectGuid>{D32786DF-E314-4E0D-A0DD-0047FA2316F9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Klarna.OrderManagement</RootNamespace>
-    <AssemblyName>Klarna.OrderManagement</AssemblyName>
+    <RootNamespace>Klarna.Payments</RootNamespace>
+    <AssemblyName>Klarna.Payments.v3</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <RestorePackages>true</RestorePackages>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -97,8 +98,14 @@
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
+    </Reference>
     <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
@@ -166,7 +173,7 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Data.SqlClient, Version=4.2.0.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -205,21 +212,27 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -228,35 +241,47 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Events\OrderCancelledEvent.cs" />
-    <Compile Include="Events\ReleaseRemainingEvent.cs" />
-    <Compile Include="IKlarnaOrderService.cs" />
-    <Compile Include="IKlarnaOrderServiceApi.cs" />
+    <Compile Include="KlarnaServiceApiFactory.cs" />
+    <Compile Include="Models\CompletionResult.cs" />
+    <Compile Include="PaymentsConfiguration.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
+    <Compile Include="Helpers\CartOrderNumberHelper.cs" />
+    <Compile Include="IKlarnaPaymentsService.cs" />
     <Compile Include="Initialization\MetadataInitialization.cs" />
-    <Compile Include="Initialization\OrderInitialization.cs" />
-    <Compile Include="KlarnaAdditionalTransactionType.cs" />
-    <Compile Include="KlarnaOrderService.cs" />
-    <Compile Include="KlarnaOrderServiceFactory.cs" />
-    <Compile Include="Models\PatchedOrderData.cs" />
+    <Compile Include="Initialization\RefitInitialization.cs" />
+    <Compile Include="ISessionBuilder.cs" />
+    <Compile Include="KlarnaPaymentGateway.cs" />
+    <Compile Include="KlarnaPaymentsService.cs" />
+    <Compile Include="IKlarnaServiceApi.cs" />
+    <Compile Include="Models\CreateOrderResponse.cs" />
+    <Compile Include="Models\Authorization.cs" />
+    <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\MerchantUrl.cs" />
+    <Compile Include="Models\Options.cs" />
+    <Compile Include="Models\PersonalInformationSession.cs" />
+    <Compile Include="Models\Session.cs" />
+    <Compile Include="Models\CreateSessionResponse.cs" />
+    <Compile Include="Models\IKlarnaCheckout.cs" />
+    <Compile Include="Models\IKlarnaClientSession.cs" />
+    <Compile Include="Models\OrderStatus.cs" />
+    <Compile Include="OrderNumberGeneratorDecorator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ICaptureBuilder.cs" />
-    <Compile Include="Refunds\IRefundBuilder.cs" />
-    <Compile Include="Steps\AuthorizePaymentStepBase.cs" />
-    <Compile Include="Steps\CancelPaymentStep.cs" />
-    <Compile Include="Steps\CapturePaymentStep.cs" />
-    <Compile Include="Steps\CreditPaymentStep.cs" />
-    <Compile Include="Steps\PaymentStep.cs" />
-    <Compile Include="Steps\ReleaseRemainingPaymentStep.cs" />
+    <Compile Include="Steps\AuthorizePaymentStep.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Klarna.OrderManagement.nuspec" />
+    <None Include="Klarna.Payments.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Klarna.Common\Klarna.Common.csproj">
+    <ProjectReference Include="..\Klarna.Common\Klarna.Common.v3.csproj">
       <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
-      <Name>Klarna.Common</Name>
+      <Name>Klarna.Common.v3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj">
+      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
+      <Name>Klarna.OrderManagement.v3</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
