@@ -180,6 +180,18 @@
     <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
     </Reference>
+    <Reference Include="Klarna.Checkout.v3, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Klarna.Checkout.v3.1.0.7\lib\net461\Klarna.Checkout.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.Common.v3, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Klarna.Payments.v3.1.0.7\lib\net461\Klarna.Common.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.OrderManagement.v3, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Klarna.OrderManagement.v3.1.0.7\lib\net461\Klarna.OrderManagement.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Klarna.Payments.v3, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\..\packages\Klarna.Payments.v3.1.0.7\lib\net461\Klarna.Payments.v3.dll</HintPath>
+    </Reference>
     <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
     </Reference>
@@ -1065,22 +1077,6 @@
     <Content Include="Views\Shared\_Facet.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Klarna.Checkout\Klarna.Checkout.v3.csproj">
-      <Project>{dfe6ab6e-4a39-4ec6-afa7-d5364a5fdeeb}</Project>
-      <Name>Klarna.Checkout.v3</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.Common\Klarna.Common.v3.csproj">
-      <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
-      <Name>Klarna.Common.v3</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj">
-      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
-      <Name>Klarna.OrderManagement.v3</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\src\Klarna.Payments\Klarna.Payments.v3.csproj">
-      <Project>{d32786df-e314-4e0d-a0dd-0047fa2316f9}</Project>
-      <Name>Klarna.Payments.v3</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EPiServer.Reference.Commerce.Shared\EPiServer.Reference.Commerce.Shared.csproj">
       <Project>{341c8e14-4eae-4946-9841-45f9818265a8}</Project>
       <Name>EPiServer.Reference.Commerce.Shared</Name>
