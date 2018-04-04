@@ -5,11 +5,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C5B383DF-10B4-4330-A000-F981DB51DA89}</ProjectGuid>
+    <ProjectGuid>{30EB451C-21EE-4F1C-A5E1-EC1E4CECE607}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Klarna.Common</RootNamespace>
-    <AssemblyName>Klarna.Common</AssemblyName>
+    <RootNamespace>Klarna.OrderManagement.CommerceManager</RootNamespace>
+    <AssemblyName>Klarna.OrderManagement.CommerceManager.v3</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -96,9 +96,6 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
     </Reference>
     <Reference Include="Klarna.Rest, Version=2.2.1.0, Culture=neutral, PublicKeyToken=a952321ed6e24c14, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Klarna.Rest.2.2.1.0\lib\net40\Klarna.Rest.dll</HintPath>
@@ -225,38 +222,34 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConnectionConfiguration.cs" />
-    <Compile Include="Extensions\AddressExtensions.cs" />
-    <Compile Include="Extensions\CustomerAddressExtensions.cs" />
-    <Compile Include="Extensions\ILineItemTaxCalculator.cs" />
-    <Compile Include="Extensions\LineItemExtensions.cs" />
-    <Compile Include="Extensions\LineItemTaxCalculator.cs" />
-    <Compile Include="Extensions\OrderGroupExtensions.cs" />
-    <Compile Include="Extensions\ShipmentExtensions.cs" />
-    <Compile Include="Helpers\AmountHelper.cs" />
-    <Compile Include="Helpers\CountryCodeHelper.cs" />
-    <Compile Include="Helpers\CountryRegionProvider.cs" />
-    <Compile Include="Helpers\ICountryRegionProvider.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="Extensions\PaymentMethodExtensions.cs" />
-    <Compile Include="Helpers\SiteUrlHelper.cs" />
-    <Compile Include="IKlarnaService.cs" />
-    <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
-    <Compile Include="Initialization\MetadataInitializationBase.cs" />
-    <Compile Include="KlarnaService.cs" />
-    <Compile Include="Models\FraudStatus.cs" />
-    <Compile Include="Models\NotificationModel.cs" />
-    <Compile Include="Models\PatchedOrderLine.cs" />
-    <Compile Include="Extensions\PaymentExtensions.cs" />
-    <Compile Include="Models\PatchedProductIdentifiers.cs" />
+    <Compile Include="KlarnaSummary\KlarnaPaymentControl.ascx.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="KlarnaSummary\KlarnaPaymentControl.ascx.designer.cs">
+      <DependentUpon>KlarnaPaymentControl.ascx.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="KlarnaSummary\KlarnaPaymentControl.ascx">
+      <SubType>ASPXCodeBehind</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="app.config" />
+    <None Include="Klarna.OrderManagement.CommerceManager.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Steps\" />
+    <ProjectReference Include="..\Klarna.Common\Klarna.Common.v3.csproj">
+      <Project>{c5b383df-10b4-4330-a000-f981db51da89}</Project>
+      <Name>Klarna.Common.v3</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj">
+      <Project>{b6a17719-4f3c-42c5-8953-e6b64a6f13a3}</Project>
+      <Name>Klarna.OrderManagement.v3</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

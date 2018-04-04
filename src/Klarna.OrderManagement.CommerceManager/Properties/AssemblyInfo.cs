@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Klarna.OrderManagement.CommerceManager")]
-[assembly: AssemblyDescription("Klarna OrderManagement CommerceManager")]
+[assembly: AssemblyTitle("Klarna.OrderManagement.CommerceManager.v3")]
+[assembly: AssemblyDescription("Klarna OrderManagement (kco-v3) integration for Episerver CM")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Geta")]
-[assembly: AssemblyProduct("Klarna.OrderManagement.CommerceManager")]
+[assembly: AssemblyProduct("Klarna.OrderManagement.CommerceManager.v3")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

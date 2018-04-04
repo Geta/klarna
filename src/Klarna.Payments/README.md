@@ -31,11 +31,11 @@ More information about the Klarna Payments flow: https://developers.klarna.com/e
 
 Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
 
-    Install-Package Klarna.Payments
+    Install-Package Klarna.Payments.v3
 
 For the Commerce Manager site run the following package:
 
-    Install-Package Klarna.Payments.CommerceManager
+    Install-Package Klarna.Payments.CommerceManager.v3
 </details>
 <details>
   <summary>Configure Commerce Manager (click to expand)</summary>
