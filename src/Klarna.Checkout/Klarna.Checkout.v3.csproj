@@ -248,7 +248,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Klarna.Checkout.nuspec" />
+    <None Include="Klarna.Checkout.v3.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

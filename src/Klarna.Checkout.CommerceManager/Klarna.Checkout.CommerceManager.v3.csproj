@@ -236,7 +236,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Klarna.Checkout.CommerceManager.nuspec" />
+    <None Include="Klarna.Checkout.CommerceManager.v3.nuspec" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

@@ -250,7 +250,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Klarna.OrderManagement.nuspec" />
+    <None Include="Klarna.OrderManagement.v3.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
