@@ -287,3 +287,6 @@ https://klarna.geta.no
 
 ## Package maintainer
 [Brian Weeteling](https://github.com/brianweet)
+
+## Changelog
+[Changelog](CHANGELOG.md)

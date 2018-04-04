@@ -276,3 +276,6 @@ if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't
 
 ## Package maintainer
 https://github.com/patkleef
+
+## Changelog
+[Changelog](CHANGELOG.md)
