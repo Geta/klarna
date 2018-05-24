@@ -214,7 +214,7 @@ namespace Klarna.Checkout
             var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
             if (string.IsNullOrWhiteSpace(marketCountry))
             {
-                throw new ConfigurationException($"Please select a country in CM for market {cart.Market.MarketId}");
+                throw new ConfigurationException($"Please select a country in CM for market {cart.MarketId}");
             }
             var checkoutConfiguration = GetCheckoutConfiguration(cart.Market);
 
@@ -457,7 +457,7 @@ namespace Klarna.Checkout
 
         private IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)
         {
-            var methods = ShippingManager.GetShippingMethodsByMarket(cart.Market.MarketId.Value, false);
+            var methods = ShippingManager.GetShippingMethodsByMarket(cart.MarketId.Value, false);
             var currentLanguage = preferredCulture.TwoLetterISOLanguageName;
 
             var shippingOptions = methods.ShippingMethod

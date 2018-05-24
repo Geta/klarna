@@ -49,7 +49,7 @@ namespace Klarna.Payments
         {
             // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
-            var config = GetConfiguration(cart.Market.MarketId);
+            var config = GetConfiguration(cart.MarketId);
 
             var sessionRequest = GetSessionRequest(cart, config, canSendPersonalInformation);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
@@ -121,7 +121,7 @@ namespace Klarna.Payments
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
-            var config = GetConfiguration(cart.Market.MarketId);
+            var config = GetConfiguration(cart.MarketId);
             var sessionRequest = GetSessionRequest(cart, config, true);
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
@@ -239,7 +239,7 @@ namespace Klarna.Payments
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                var config = GetConfiguration(cart.Market.MarketId);
+                var config = GetConfiguration(cart.MarketId);
                 request = sessionBuilder.Build(request, cart, config, dic, true);
             }
 
@@ -283,7 +283,7 @@ namespace Klarna.Payments
                     Confirmation = config.ConfirmationUrl,
                     Notification = config.NotificationUrl,
                 };
-                request.Options = GetWidgetOptions(paymentMethod, cart.Market.MarketId);
+                request.Options = GetWidgetOptions(paymentMethod, cart.MarketId);
             }
 
             if (includePersonalInformation)

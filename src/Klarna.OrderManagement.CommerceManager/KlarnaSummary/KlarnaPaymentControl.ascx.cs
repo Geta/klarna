@@ -46,7 +46,7 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
             if (paymentMethod?.PaymentMethod.FirstOrDefault() != null
                 && paymentMethod.PaymentMethod.First().SystemKeyword.Contains("Klarna"))
             {
-                var klarnaOrderService = _klarnaOrderServiceFactory.Service.Create(paymentMethod, purchaseOrder.Market.MarketId);
+                var klarnaOrderService = _klarnaOrderServiceFactory.Service.Create(paymentMethod, purchaseOrder.MarketId);
 
                 var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
                 var orderData = klarnaOrderService.GetOrder(orderId).Result;

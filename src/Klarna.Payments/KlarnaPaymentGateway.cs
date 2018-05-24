@@ -103,11 +103,11 @@ namespace Klarna.Payments
             {
                 Logger.Debug("Klarna checkout gateway. Processing Payment ....");
 
-                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory, KlarnaPaymentsService);
-                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
-                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
-                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
-                var releaseRemainingPaymentStep = new ReleaseRemainingPaymentStep(payment, OrderGroup.Market.MarketId, KlarnaOrderServiceFactory);
+                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, KlarnaPaymentsService);
+                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
+                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
+                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
+                var releaseRemainingPaymentStep = new ReleaseRemainingPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
 
                 authorizePaymentStep.SetSuccessor(cancelPaymentStep);
                 cancelPaymentStep.SetSuccessor(capturePaymentStep);
