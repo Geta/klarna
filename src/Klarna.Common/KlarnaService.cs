@@ -9,6 +9,7 @@ using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Payments.Models;
 using Klarna.Rest.Models;
+using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
 
@@ -20,12 +21,18 @@ namespace Klarna.Common
         private readonly IOrderRepository _orderRepository;
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly IMarketService _marketService;
 
-        protected KlarnaService(IOrderRepository orderRepository, IPaymentProcessor paymentProcessor, IOrderGroupCalculator orderGroupCalculator)
+        protected KlarnaService(
+            IOrderRepository orderRepository,
+            IPaymentProcessor paymentProcessor,
+            IOrderGroupCalculator orderGroupCalculator,
+            IMarketService marketService)
         {
             _orderRepository = orderRepository;
             _paymentProcessor = paymentProcessor;
             _orderGroupCalculator = orderGroupCalculator;
+            _marketService = marketService;
         }
 
         public void FraudUpdate(NotificationModel notification)
@@ -61,7 +68,8 @@ namespace Klarna.Common
         public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField)
         {
             var shipment = cart.GetFirstShipment();
-            var currentCountry = shipment.ShippingAddress?.CountryCode ?? cart.Market.Countries.FirstOrDefault();
+            var market = _marketService.GetMarket(cart.MarketId);
+            var currentCountry = shipment.ShippingAddress?.CountryCode ?? market.Countries.FirstOrDefault();
 
             var includedTaxesOnLineItems = !CountryCodeHelper.GetContinentByCountry(currentCountry).Equals("NA", StringComparison.InvariantCultureIgnoreCase);
             return GetOrderLines(cart, orderGroupTotals, includedTaxesOnLineItems, sendProductAndImageUrlField);
@@ -127,11 +135,12 @@ namespace Klarna.Common
         {
             var shipment = cart.GetFirstShipment();
             var orderLines = new List<OrderLine>();
+            var market = _marketService.GetMarket(cart.MarketId);
 
             // Line items
             foreach (var lineItem in cart.GetAllLineItems())
             {
-                var orderLine = lineItem.GetOrderLineWithTax(cart.Market, cart.GetFirstShipment(), cart.Currency, sendProductAndImageUrl);
+                var orderLine = lineItem.GetOrderLineWithTax(market, cart.GetFirstShipment(), cart.Currency, sendProductAndImageUrl);
                 orderLines.Add(orderLine);
             }
 

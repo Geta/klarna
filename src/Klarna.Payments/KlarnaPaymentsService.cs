@@ -15,6 +15,7 @@ using Klarna.Common.Helpers;
 using Klarna.Payments.Extensions;
 using Klarna.Rest.Models;
 using Mediachase.Commerce;
+using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
@@ -26,6 +27,7 @@ namespace Klarna.Payments
     public class KlarnaPaymentsService : KlarnaService, IKlarnaPaymentsService
     {
         private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly IMarketService _marketService;
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
@@ -36,10 +38,12 @@ namespace Klarna.Payments
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
+            IMarketService marketService,
             KlarnaServiceApiFactory klarnaServiceApiFactory)
-            : base(orderRepository, paymentProcessor, orderGroupCalculator)
+            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
             _orderGroupCalculator = orderGroupCalculator;
+            _marketService = marketService;
             _orderRepository = orderRepository;
             _orderNumberGenerator = orderNumberGenerator;
             _klarnaServiceApiFactory = klarnaServiceApiFactory;
@@ -56,7 +60,8 @@ namespace Klarna.Payments
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, dic);
             }
-            var currentCountry = cart.Market.Countries.FirstOrDefault();
+            var market = _marketService.GetMarket(cart.MarketId);
+            var currentCountry = market.Countries.FirstOrDefault();
             // Clear PI if we're not allowed to send it yet (can be set by custom session builder)
             if (!canSendPersonalInformation && !CanSendPersonalInformation(currentCountry))
             {
@@ -75,7 +80,7 @@ namespace Klarna.Payments
             {
                 try
                 {
-                    await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+                    await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
                         .UpdateSession(sessionId, sessionRequest)
                         .ConfigureAwait(false);
 
@@ -114,7 +119,7 @@ namespace Klarna.Payments
 
         public async Task<Session> GetSession(ICart cart)
         {
-            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
                 .GetSession(GetSessionId(cart))
                 .ConfigureAwait(false);
         }
@@ -136,7 +141,7 @@ namespace Klarna.Payments
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config);
             }
-            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
                 .CreateOrder(authorizationToken, sessionRequest)
                 .ConfigureAwait(false);
         }
@@ -145,7 +150,7 @@ namespace Klarna.Payments
         {
             try
             {
-                await _klarnaServiceApiFactory.Create(GetConfiguration(market))
+                await _klarnaServiceApiFactory.Create(GetConfiguration(market.MarketId))
                     .CancelAuthorization(authorizationToken)
                     .ConfigureAwait(false);
             }
@@ -263,10 +268,11 @@ namespace Klarna.Payments
 
         private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, bool includePersonalInformation = false)
         {
+            var market = _marketService.GetMarket(cart.MarketId);
             var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var request = new Session
             {
-                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),
+                PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(market.Countries.FirstOrDefault()),
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
@@ -316,7 +322,7 @@ namespace Klarna.Payments
         {
             try
             {
-                var response = await _klarnaServiceApiFactory.Create(GetConfiguration(cart.Market))
+                var response = await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
                     .CreatNewSession(sessionRequest)
                     .ConfigureAwait(false);
 

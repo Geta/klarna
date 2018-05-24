@@ -20,6 +20,7 @@ using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
+using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
@@ -33,6 +34,7 @@ namespace Klarna.Checkout
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));
         private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
+        private readonly IMarketService _marketService;
         private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
 
@@ -45,12 +47,14 @@ namespace Klarna.Checkout
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
             IKlarnaOrderValidator klarnaOrderValidator,
+            IMarketService marketService,
             KlarnaOrderServiceFactory klarnaOrderServiceFactory)
-            : base(orderRepository, paymentProcessor, orderGroupCalculator)
+            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
             _orderGroupCalculator = orderGroupCalculator;
             _orderRepository = orderRepository;
             _klarnaOrderValidator = klarnaOrderValidator;
+            _marketService = marketService;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
@@ -66,7 +70,7 @@ namespace Klarna.Checkout
 
         public CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
         {
-            return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market));
+            return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market.MarketId));
         }
 
         public Client GetClient(IMarket market)
@@ -98,9 +102,10 @@ namespace Klarna.Checkout
 
         public CheckoutOrderData CreateOrder(ICart cart)
         {
-            var checkout = GetClient(cart.Market).NewCheckoutOrder();
-            var orderData = GetCheckoutOrderData(cart, PaymentMethodDto);
-            var checkoutConfiguration = GetCheckoutConfiguration(cart.Market);
+            var market = _marketService.GetMarket(cart.MarketId);
+            var checkout = GetClient(market).NewCheckoutOrder();
+            var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
+            var checkoutConfiguration = GetCheckoutConfiguration(market);
 
             if (checkoutConfiguration.PrefillAddress)
             {
@@ -148,10 +153,11 @@ namespace Klarna.Checkout
 
         public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
         {
-            var client = GetClient(cart.Market);
+            var market = _marketService.GetMarket(cart.MarketId);
+            var client = GetClient(market);
             var checkout = client.NewCheckoutOrder(orderId);
-            var orderData = GetCheckoutOrderData(cart, PaymentMethodDto);
-            var checkoutConfiguration = GetCheckoutConfiguration(cart.Market);
+            var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
+            var checkoutConfiguration = GetCheckoutConfiguration(market);
 
             try
             {
@@ -207,16 +213,16 @@ namespace Klarna.Checkout
             return cart;
         }
 
-        private CheckoutOrderData GetCheckoutOrderData(ICart cart, PaymentMethodDto paymentMethodDto)
+        private CheckoutOrderData GetCheckoutOrderData(ICart cart, IMarket market, PaymentMethodDto paymentMethodDto)
         {
             var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var shipment = cart.GetFirstShipment();
-            var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
+            var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(market.Countries.FirstOrDefault());
             if (string.IsNullOrWhiteSpace(marketCountry))
             {
                 throw new ConfigurationException($"Please select a country in CM for market {cart.MarketId}");
             }
-            var checkoutConfiguration = GetCheckoutConfiguration(cart.Market);
+            var checkoutConfiguration = GetCheckoutConfiguration(market);
 
             var orderData = new PatchedCheckoutOrderData
             {
@@ -256,14 +262,14 @@ namespace Klarna.Checkout
 
             if (paymentMethodDto != null)
             {
-                orderData.Options = GetOptions(cart);
+                orderData.Options = GetOptions(cart.MarketId);
             }
             return orderData;
         }
 
-        private CheckoutOptions GetOptions(ICart cart)
+        private CheckoutOptions GetOptions(MarketId marketId)
         {
-            var configuration = GetConfiguration(cart.Market);
+            var configuration = GetConfiguration(marketId);
             var options = new PatchedCheckoutOptions
             {
                 RequireValidateCallbackSuccess = configuration.RequireValidateCallbackSuccess,
@@ -314,7 +320,7 @@ namespace Klarna.Checkout
 
         public ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
-            var configuration = GetConfiguration(cart.Market);
+            var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
             if (shipment != null && Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out Guid guid))
             {
@@ -341,7 +347,7 @@ namespace Klarna.Checkout
 
         public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
         {
-            var configuration = GetConfiguration(cart.Market);
+            var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
             if (shipment != null)
             {
@@ -369,7 +375,8 @@ namespace Klarna.Checkout
         public bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
-            var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, PaymentMethodDto);
+            var market = _marketService.GetMarket(cart.MarketId);
+            var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, market, PaymentMethodDto);
             localCheckoutOrderData.ShippingAddress = cart.GetFirstShipment().ShippingAddress.ToAddress();
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
             {
@@ -389,7 +396,7 @@ namespace Klarna.Checkout
 
         public void CancelOrder(ICart cart)
         {
-            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(cart.Market));
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(cart.MarketId));
 
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId))
@@ -403,7 +410,7 @@ namespace Klarna.Checkout
 
         public void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
         {
-            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.Market));
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
 
             var orderId = purchaseOrder.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId) && purchaseOrder is PurchaseOrder)
@@ -414,7 +421,7 @@ namespace Klarna.Checkout
 
         public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
-            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.Market));
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
             klarnaOrderService.AcknowledgeOrder(purchaseOrder);
         }
 
@@ -488,7 +495,7 @@ namespace Klarna.Checkout
         {
             if (PaymentMethodDto != null)
             {
-                var configuration = GetConfiguration(cart.Market);
+                var configuration = GetConfiguration(cart.MarketId);
                 return new PatchedMerchantUrls
                 {
                     Terms = new Uri(configuration.TermsUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
