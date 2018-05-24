@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.WebControls;
-using EPiServer.ServiceLocation;
-using ISO3166;
 using Klarna.Common.Extensions;
-using Klarna.Common.Helpers;
 using Klarna.Payments.Extensions;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Web.Console.Interfaces;
@@ -15,7 +10,6 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
     public partial class ConfigurePayment : System.Web.UI.UserControl, IGatewayControl
     {
         private PaymentMethodDto _paymentMethodDto;
-        private Injected<IKlarnaPaymentsService> _klarnaPaymentService;
 
         public string ValidationGroup { get; set; }
 

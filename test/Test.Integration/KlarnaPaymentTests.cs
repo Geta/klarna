@@ -4,6 +4,7 @@ using System.Text;
 using Klarna.Common.Models;
 using Klarna.Payments;
 using Klarna.Payments.Models;
+using Klarna.Rest.Models;
 using Refit;
 using Xunit;
 
@@ -14,8 +15,6 @@ namespace Test.Integration
         private string _apiUrl = "";
         private string _username = "";
         private string _password = "";
-
-        private string _tempClientToken = "";
 
         private string _tempSessionId = "";
 
@@ -50,10 +49,10 @@ namespace Test.Integration
             try
             {
                 var result = KlarnaServiceApi.CreatNewSession(session).Result;
-              
+
                 Assert.False(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.False(true);
             }
@@ -70,7 +69,7 @@ namespace Test.Integration
 
                 Assert.False(true);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.False(true);
             }
@@ -87,7 +86,7 @@ namespace Test.Integration
             session.ShippingAddress = null;
             session.OrderAmount = 1000;
             session.OrderTaxAmount = 0;
-            session.OrderLines = new[]
+            session.OrderLines = new OrderLine[]
             {
                 new PatchedOrderLine { Name = "Product a", Quantity = 1, TotalAmount = 1000, UnitPrice = 1000 }
             };
