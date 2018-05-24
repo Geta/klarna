@@ -48,15 +48,15 @@ namespace Klarna.Common.Extensions
 
         public static OrderLine GetOrderLineWithTax(this ILineItem lineItem, IMarket market, IShipment shipment, Currency currency, bool includeProductAndImageUrl = false)
         {
-            (int unitPrice, int taxRate, int totalDiscountAmount, int totalAmount, int totalTaxAmount) = GetPrices(lineItem, market, shipment, currency);
+            var prices = GetPrices(lineItem, market, shipment, currency);
             return GetOrderLine(
-                lineItem, 
-                includeProductAndImageUrl, 
-                unitPrice, 
-                totalAmount,
-                totalDiscountAmount,
-                totalTaxAmount, 
-                taxRate);
+                lineItem,
+                includeProductAndImageUrl,
+                prices.UnitPrice,
+                prices.TotalAmount,
+                prices.TotalDiscountAmount,
+                prices.TotalTaxAmount,
+                prices.TaxRate);
         }
 
         private static OrderLine GetOrderLine(ILineItem lineItem, bool includeProductAndImageUrl, int unitPrice, int totalAmount, int totalDiscountAmount, int totalTaxAmount, int taxRate)
@@ -96,7 +96,7 @@ namespace Klarna.Common.Extensions
             return orderLine;
         }
 
-        public static (int unitPrice, int taxRate, int totalDiscountAmount, int totalAmount, int totalTaxAmount) GetPrices(ILineItem lineItem, IMarket market, IShipment shipment, Currency currency)
+        public static Prices GetPrices(ILineItem lineItem, IMarket market, IShipment shipment, Currency currency)
         {
             /*
             unit_price integer required
@@ -135,7 +135,7 @@ namespace Klarna.Common.Extensions
             // Must be within 1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
             var totalTaxAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.GetTaxes(extendedPrice, taxValues, taxType));
 
-            return (unitPriceIncludingTax, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
+            return new Prices(unitPriceIncludingTax, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
         }
     }
 }

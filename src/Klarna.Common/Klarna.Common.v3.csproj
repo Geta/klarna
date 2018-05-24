@@ -195,9 +195,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Transactions" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.ValueTuple.4.4.0\lib\net461\System.ValueTuple.dll</HintPath>
-    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
@@ -232,6 +229,7 @@
     <Compile Include="Extensions\LineItemExtensions.cs" />
     <Compile Include="Extensions\LineItemTaxCalculator.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
+    <Compile Include="Models\Prices.cs" />
     <Compile Include="Extensions\ShipmentExtensions.cs" />
     <Compile Include="Helpers\AmountHelper.cs" />
     <Compile Include="Helpers\CountryCodeHelper.cs" />
