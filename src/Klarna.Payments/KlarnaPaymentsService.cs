@@ -25,14 +25,13 @@ namespace Klarna.Payments
     [ServiceConfiguration(typeof(IKlarnaPaymentsService))]
     public class KlarnaPaymentsService : KlarnaService, IKlarnaPaymentsService
     {
-        private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
+        private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly KlarnaServiceApiFactory _klarnaServiceApiFactory;
 
         public KlarnaPaymentsService(
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
             IOrderNumberGenerator orderNumberGenerator,
             IPaymentProcessor paymentProcessor,
@@ -40,7 +39,7 @@ namespace Klarna.Payments
             KlarnaServiceApiFactory klarnaServiceApiFactory)
             : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
-            _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
+            _orderGroupCalculator = orderGroupCalculator;
             _orderRepository = orderRepository;
             _orderNumberGenerator = orderNumberGenerator;
             _klarnaServiceApiFactory = klarnaServiceApiFactory;
@@ -264,7 +263,7 @@ namespace Klarna.Payments
 
         private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, bool includePersonalInformation = false)
         {
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var request = new Session
             {
                 PurchaseCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault()),

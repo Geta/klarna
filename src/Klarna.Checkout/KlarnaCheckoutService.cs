@@ -31,7 +31,7 @@ namespace Klarna.Checkout
     public class KlarnaCheckoutService : KlarnaService, IKlarnaCheckoutService
     {
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));
-        private readonly IOrderGroupTotalsCalculator _orderGroupTotalsCalculator;
+        private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
         private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
@@ -41,7 +41,6 @@ namespace Klarna.Checkout
         private CheckoutConfiguration _checkoutConfiguration;
 
         public KlarnaCheckoutService(
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
             IOrderRepository orderRepository,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
@@ -49,7 +48,7 @@ namespace Klarna.Checkout
             KlarnaOrderServiceFactory klarnaOrderServiceFactory)
             : base(orderRepository, paymentProcessor, orderGroupCalculator)
         {
-            _orderGroupTotalsCalculator = orderGroupTotalsCalculator;
+            _orderGroupCalculator = orderGroupCalculator;
             _orderRepository = orderRepository;
             _klarnaOrderValidator = klarnaOrderValidator;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
@@ -210,7 +209,7 @@ namespace Klarna.Checkout
 
         private CheckoutOrderData GetCheckoutOrderData(ICart cart, PaymentMethodDto paymentMethodDto)
         {
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var shipment = cart.GetFirstShipment();
             var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(cart.Market.Countries.FirstOrDefault());
             if (string.IsNullOrWhiteSpace(marketCountry))
@@ -324,7 +323,7 @@ namespace Klarna.Checkout
                 _orderRepository.Save(cart);
             }
 
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var result =  new ShippingOptionUpdateResponse
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
@@ -350,7 +349,7 @@ namespace Klarna.Checkout
                 _orderRepository.Save(cart);
             }
 
-            var totals = _orderGroupTotalsCalculator.GetTotals(cart);
+            var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var result = new AddressUpdateResponse
             {
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
