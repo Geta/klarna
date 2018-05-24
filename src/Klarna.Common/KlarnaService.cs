@@ -104,7 +104,7 @@ namespace Klarna.Common
             });
 
             // Order level discounts
-            var orderDiscount = cart.GetOrderDiscountTotal(cart.Currency);
+            var orderDiscount = cart.GetOrderDiscountTotal();
             var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
             var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
             if (totalDiscount > 0)
@@ -143,14 +143,14 @@ namespace Klarna.Common
             }
 
             // Without tax
-            var orderLevelDiscount = AmountHelper.GetAmount(cart.GetOrderDiscountTotal(cart.Currency));
+            var orderLevelDiscount = AmountHelper.GetAmount(cart.GetOrderDiscountTotal());
             if (orderLevelDiscount > 0)
             {
                 // Order level discounts with tax
                 var totalOrderAmountWithoutDiscount = orderLines.Where(x => x.TotalAmount.HasValue).Sum(x => x.TotalAmount.Value);
                 var totalOrderAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.Total.Amount);
                 var orderLevelDiscountIncludingTax = totalOrderAmountWithoutDiscount - totalOrderAmountWithDiscount;
-                
+
                 // Tax
                 var discountTax = (orderLevelDiscountIncludingTax - orderLevelDiscount);
 
