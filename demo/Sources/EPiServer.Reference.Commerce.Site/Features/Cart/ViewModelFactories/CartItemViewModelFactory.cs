@@ -33,7 +33,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
         private readonly ILineItemCalculator _lineItemCalculator;
         private readonly IProductService _productService;
         private readonly IRelationRepository _relationRepository;
-        private readonly ILinksRepository _linksRepository;
         readonly ICartService _cartService;
 
         public CartItemViewModelFactory(
@@ -47,7 +46,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
             ILineItemCalculator lineItemCalculator,
             IProductService productService,
             IRelationRepository relationRepository,
-            ILinksRepository linksRepository,
             ICartService cartService)
         {
             _contentLoader = contentLoader;
@@ -61,7 +59,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
             _productService = productService;
             _relationRepository = relationRepository;
             _cartService = cartService;
-            _linksRepository = linksRepository;
         }
 
         public virtual CartItemViewModel CreateCartItemViewModel(ICart cart, ILineItem lineItem, EntryContentBase entry)
@@ -74,7 +71,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
                 DiscountedPrice = GetDiscountedPrice(cart, lineItem),
                 PlacedPrice = new Money(lineItem.PlacedPrice, _currencyService.GetCurrentCurrency()),
                 Quantity = lineItem.Quantity,
-                Url = entry.GetUrl(_linksRepository, _urlResolver),
+                Url = entry.GetUrl(_relationRepository, _urlResolver),
                 Entry = entry,
                 IsAvailable = _pricingService.GetCurrentPrice(entry.Code).HasValue,
                 DiscountedUnitPrice = GetDiscountedUnitPrice(cart, lineItem),

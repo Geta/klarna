@@ -21,12 +21,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
     {
-        private Injected<ILinksRepository> _linksRepository = default(Injected<ILinksRepository>);
         private Injected<UrlResolver> _urlResolver = default(Injected<UrlResolver>);
         private Injected<IContentRepository> _contentRepository = default(Injected<IContentRepository>);
         private Injected<ReferenceConverter> _referenceConverter = default(Injected<ReferenceConverter>);
         private Injected<IRelationRepository> _relationRepository = default(Injected<IRelationRepository>);
-        
+
         public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
         {
             if (checkoutConfiguration == null)
@@ -47,7 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                 }
             }
             UpdateOrderLines(checkoutOrderData.OrderLines, checkoutConfiguration);
-            
+
             return checkoutOrderData;
         }
 
@@ -100,8 +99,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
                     if (checkoutConfiguration.SendProductAndImageUrl && entryContent != null)
                     {
-                        ((PatchedOrderLine)lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl() + entryContent.GetUrl(_linksRepository.Service,
-                            _urlResolver.Service);
+                        ((PatchedOrderLine)lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl()
+                                                                  + entryContent.GetUrl(_relationRepository.Service, _urlResolver.Service);
 
                     }
                 }
@@ -115,7 +114,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             var splitAddress = address.StreetAddress.Split(' ');
             address.StreetName = splitAddress.FirstOrDefault();
             address.StreetNumber = splitAddress.ElementAtOrDefault(1);
-            
+
             address.StreetAddress = string.Empty;
             address.StreetAddress2 = string.Empty;
 

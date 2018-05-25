@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Catalog.Linking;
 using EPiServer.Commerce.Order;
@@ -9,7 +8,6 @@ using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Product.Models;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.ServiceLocation;
-using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
@@ -25,7 +23,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 {
     public class DemoSessionBuilder : ISessionBuilder
     {
-        private Injected<ILinksRepository> _linksRepository = default(Injected<ILinksRepository>);
         private Injected<UrlResolver> _urlResolver = default(Injected<UrlResolver>);
         private Injected<IContentRepository> _contentRepository = default(Injected<IContentRepository>);
         private Injected<ReferenceConverter> _referenceConverter = default(Injected<ReferenceConverter>);
@@ -109,8 +106,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
                         if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)
                         {
-                            ((PatchedOrderLine) lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl() + entryContent.GetUrl(_linksRepository.Service,
-                                _urlResolver.Service);
+                            ((PatchedOrderLine) lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl()
+                                                                       + entryContent.GetUrl(_relationRepository.Service, _urlResolver.Service);
 
                         }
                     }

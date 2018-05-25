@@ -40,9 +40,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             var shippingPlugin = shippingInstance as IShippingPlugin;
             if (shippingPlugin != null)
             {
-                return shippingPlugin.GetRate(shippingMethodInfoModel.MethodId, shipment, ref message);
+                return shippingPlugin.GetRate(currentMarket, shippingMethodInfoModel.MethodId, shipment, ref message);
             }
-            return ((IShippingGateway)shippingInstance).GetRate(shippingMethodInfoModel.MethodId, (Shipment)shipment, ref message);
+            return ((IShippingGateway)shippingInstance).GetRate(currentMarket, shippingMethodInfoModel.MethodId, (Shipment)shipment, ref message);
         }
     }
 }

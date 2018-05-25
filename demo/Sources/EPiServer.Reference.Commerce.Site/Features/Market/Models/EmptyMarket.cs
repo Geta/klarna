@@ -16,6 +16,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Market.Models
             }
         }
 
+        public bool PricesIncludeTax => false;
+
         public IEnumerable<Currency> Currencies
         {
             get

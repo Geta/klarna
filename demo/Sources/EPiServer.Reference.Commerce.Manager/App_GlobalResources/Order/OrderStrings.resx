@@ -870,6 +870,9 @@
   <data name="CancelOrderConfirmation" xml:space="preserve">
     <value>Are you sure you want to cancel current purchase order?</value>
   </data>
+  <data name="CancelPaymentPlanConfirmation" xml:space="preserve">
+    <value>Are you sure you want to cancel current payment plan?</value>
+  </data>
   <data name="CancelReturnConfirmation" xml:space="preserve">
     <value>Are you sure you want to cancel current return request?</value>
   </data>
@@ -1227,8 +1230,11 @@
   <data name="Items" xml:space="preserve">
     <value>Items</value>
   </data>
-  <data name="Total_Before_Tax_And_Shipping" xml:space="preserve">
-    <value>Total Before Tax and Shipping</value>
+  <data name="Total_Excluding_Shipping_Includes_Tax" xml:space="preserve">
+    <value>Total excluding shipping (includes tax)</value>
+  </data>
+  <data name="Total_Excluding_Shipping_And_Tax" xml:space="preserve">
+    <value>Total excluding shipping and tax</value>
   </data>
   <data name="OrderNote_NewPOPattern_ViaPP" xml:space="preserve">
     <value>New purchase order placed by {0} in {1} from payment plan {2}</value>

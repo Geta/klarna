@@ -1,11 +1,6 @@
 ﻿using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Inventory;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes
 {
@@ -37,6 +32,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes
         public string DisplayName { get; set; }
 
         public bool IsGift { get; set; }
+        public int? TaxCategoryId { get; set; }
 
         public Hashtable Properties { get; private set; }
 
