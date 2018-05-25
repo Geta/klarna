@@ -26,7 +26,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
         private readonly IPromotionService _promotionService;
         private readonly IPricingService _pricingService;
         private readonly UrlResolver _urlResolver;
-        private readonly LinksRepository _linksRepository;
         private readonly IRelationRepository _relationRepository;
         private readonly CultureInfo _preferredCulture;
         private readonly ICurrentMarket _currentMarket;
@@ -41,12 +40,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
             IPromotionService promotionService,
             IPricingService pricingService,
             UrlResolver urlResolver,
-            LinksRepository linksRepository,
             IRelationRepository relationRepository,
             ICurrentMarket currentMarket,
             ICurrencyService currencyService,
             AppContextFacade appContext,
-            ReferenceConverter referenceConverter, 
+            ReferenceConverter referenceConverter,
             LanguageService languageService,
             CatalogContentService catalogContentService)
         {
@@ -54,7 +52,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
             _promotionService = promotionService;
             _pricingService = pricingService;
             _urlResolver = urlResolver;
-            _linksRepository = linksRepository;
             _relationRepository = relationRepository;
             _preferredCulture = ContentLanguage.PreferredCulture;
             _currentMarket = currentMarket;
@@ -76,7 +73,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Product.Services
         public string GetSiblingVariantCodeBySize(string siblingCode, string size)
         {
             ContentReference variationReference = _referenceConverter.GetContentLink(siblingCode);
-            IEnumerable<Relation> productRelations = _linksRepository.GetRelationsByTarget(variationReference).ToList();
+            IEnumerable<Relation> productRelations = _relationRepository.GetRelationsByTarget(variationReference).ToList();
             IEnumerable<ProductVariation> siblingsRelations = _relationRepository.GetRelationsBySource<ProductVariation>(productRelations.First().Source);
             IEnumerable<ContentReference> siblingsReferences = siblingsRelations.Select(x => x.Target);
             IEnumerable<IContent> siblingVariants = _contentLoader.GetItems(siblingsReferences, _preferredCulture);

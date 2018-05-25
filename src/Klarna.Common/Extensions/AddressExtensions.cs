@@ -3,7 +3,6 @@ using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
 using Klarna.Rest.Models;
-using Mediachase.Commerce.Orders;
 
 namespace Klarna.Common.Extensions
 {
@@ -31,7 +30,7 @@ namespace Klarna.Common.Extensions
             {
                 address.Region = orderAddress.RegionName;
             }
-           
+
             address.Email = orderAddress.Email;
             address.Phone = orderAddress.DaytimePhoneNumber ?? orderAddress.EveningPhoneNumber;
 
@@ -40,8 +39,8 @@ namespace Klarna.Common.Extensions
 
         public static IOrderAddress ToOrderAddress(this Address address, ICart cart)
         {
-            var orderAddress = cart.CreateOrderAddress(_orderGroupFactory.Service);
-            orderAddress.Id = $"{address.StreetAddress}{address.StreetAddress2}{address.City}";
+            var addressId = $"{address.StreetAddress}{address.StreetAddress2}{address.City}";
+            var orderAddress = cart.CreateOrderAddress(_orderGroupFactory.Service, addressId);
 
             orderAddress.FirstName = address.GivenName;
             orderAddress.LastName = address.FamilyName;

@@ -3,13 +3,15 @@ using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
+using Mediachase.Commerce.Markets;
 
 namespace Klarna.Common.Extensions
 {
     public static class ShipmentExtensions
     {
 #pragma warning disable 649
-        private static Injected<ITaxCalculator> _taxCalculator;
+        private static Injected<IShippingCalculator> _shippingCalculator;
+        private static Injected<IMarketService> _marketService;
 #pragma warning restore 649
 
         public static PatchedOrderLine GetOrderLine(this IShipment shipment, ICart cart, OrderGroupTotals totals, bool includeTaxes)
@@ -20,7 +22,8 @@ namespace Klarna.Common.Extensions
 
             if (includeTaxes)
             {
-                var shippingTaxTotal = _taxCalculator.Service.GetShippingTaxTotal(shipment, cart.Market, cart.Currency);
+                var market = _marketService.Service.GetMarket(cart.MarketId);
+                var shippingTaxTotal = _shippingCalculator.Service.GetShippingTax(shipment, market, cart.Currency);
 
                 if (shippingTaxTotal.Amount > 0)
                 {
