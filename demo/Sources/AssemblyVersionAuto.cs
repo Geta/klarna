@@ -2,6 +2,7 @@ using System.Reflection;
 
 
 
-[assembly: AssemblyVersion("10.4.3.0")]
-[assembly: AssemblyInformationalVersion("10.4.3")]
-[assembly: AssemblyFileVersion("10.4.3.2285")]
+[assembly: AssemblyCopyright("Copyright ? 2018 Episerver")]
+[assembly: AssemblyVersion("12.2.0.0")]
+[assembly: AssemblyInformationalVersion("12.2.0")]
+[assembly: AssemblyFileVersion("12.2.0.3146")]
