@@ -1,4 +1,5 @@
-﻿using EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions;
+﻿using EPiServer.Tracking.Commerce.Data;
+using EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Features.Search.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Search.Services;
@@ -36,10 +37,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Search.Controllers
         public async Task<ActionResult> Index(SearchPage currentPage, FilterOptionViewModel filterOptions)
         {
             var viewModel = _viewModelFactory.Create(currentPage, filterOptions);
-            if (filterOptions.Page <= 1)
+
+            if (filterOptions.Page <= 1 && HttpContext.Request.HttpMethod == "GET")
             {
+                HttpContext.Items[SearchTrackingData.TotalSearchResultsKey] = filterOptions.TotalCount;
+
                 var trackingResult =
-                    await _recommendationService.TrackSearch(HttpContext, filterOptions.Q,
+                    await _recommendationService.TrackSearchAsync(HttpContext, filterOptions.Q,
                         viewModel.ProductViewModels.Select(x => x.Code));
                 viewModel.Recommendations = trackingResult.GetSearchResultRecommendations(_referenceConverter);
             }

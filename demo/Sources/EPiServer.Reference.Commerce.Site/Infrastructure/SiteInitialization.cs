@@ -1,17 +1,22 @@
-using EPiServer.Commerce.Order;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Marketing.Promotions;
 using EPiServer.Commerce.Routing;
 using EPiServer.Editor;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
 using EPiServer.Framework.Web;
 using EPiServer.Globalization;
+using EPiServer.Personalization.Commerce;
+using EPiServer.Personalization.Commerce.Widgets;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
-using EPiServer.Reference.Commerce.Site.Infrastructure.Business;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Reference.Commerce.Site.Infrastructure.WebApi;
 using EPiServer.ServiceLocation;
+using EPiServer.Tracking.Commerce;
 using EPiServer.Web;
+using EPiServer.Web.Routing;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Core;
 using Newtonsoft.Json;
@@ -23,10 +28,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.WebPages;
-using EPiServer.Personalization.Commerce;
-using EPiServer.Personalization.Commerce.Widgets;
 using EPiServer.Reference.Commerce.Site.Features.Checkout;
-using EPiServer.Web.Routing;
 using Klarna.Checkout;
 using Klarna.Payments;
 
@@ -49,23 +51,24 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
 
             AreaRegistration.RegisterAllAreas();
 
+#if DISABLE_PROMOTION_TYPES_FEATURE
             DisablePromotionTypes(context);
+#endif
 
-            SetupExcludedPromotionEntries(context);
+#if EXCLUDE_ITEMS_FROM_PROMOTION_ENGINE_FEATURE
+            SetupExcludePromotionEntries(context);
+#endif
 
-            //This method creates and activates the default Recommendations widgets.
-            //It only needs to run once, not every initialization, and only if you use the Recommendations feature.
-            //Instructions:
-            //* Enter the configuration values for Recommendations in web.config
-            //* Make sure that the episerver:RecommendationsSilentMode flag is not set to true.
-            //* Uncomment the following line, compile, start site, commment the line again, compile.
-
-            //SetupRecommendationsWidgets(context);
+#if ACTIVATE_DEFAULT_PERSONALIZATION_WIDGETS_FEATURE
+            SetupPersonalizationsWidgets(context);
+#endif
         }
 
         public void ConfigureContainer(ServiceConfigurationContext context)
         {
             var services = context.Services;
+
+            services.AddSingleton<IRecommendationContext, RecommendationContext>();
 
             services.AddSingleton<ICurrentMarket, CurrentMarket>();
 
@@ -79,8 +82,6 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
                         locator.GetInstance<CookieService>(),
                         defaultImplementation));
 
-            services.AddTransient<IOrderGroupCalculator, SiteOrderGroupCalculator>();
-            services.AddTransient<IOrderFormCalculator, SiteOrderFormCalculator>();
             services.AddTransient<IModelBinderProvider, ModelBinderProvider>();
             services.AddHttpContextOrThreadScoped<SiteContext, CustomCurrencySiteContext>();
             services.AddTransient<HttpContextBase>(locator => HttpContext.Current.ContextBaseOrNull());
@@ -99,22 +100,61 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
                 config.DependencyResolver = new StructureMapResolver(context.StructureMap());
                 config.MapHttpAttributeRoutes();
             });
+
+#if IRI_CHARACTERS_IN_URL_FEATURE
+            EnableIriCharactersInUrls(context);
+#endif
         }
 
         public void Uninitialize(InitializationEngine context) { }
 
-        private void DisablePromotionTypes(InitializationEngine context)
+        /// <summary>
+        /// Enables the IRI characters in Urls.
+        /// </summary>
+        /// <param name="context">The service configuration context.</param>
+        /// <remarks>
+        /// To use this feature, define IRI_CHARACTERS_IN_URL_FEATURE symbol - this should be done both in Commerce Manager and Front-end sites.
+        /// More information about this feature: http://world.episerver.com/documentation/developer-guides/CMS/routing/internationalized-resource-identifiers-iris/
+        /// To support more Unicode blocks, update the regular expression for ValidCharacters.
+        /// For example, to support Thai Unicode block, add \p{IsThai} to it.
+        /// The supported Unicode blocks can be found here: https://msdn.microsoft.com/en-us/library/20bw873z(v=vs.110).aspx#Anchor_12
+        /// </remarks>
+        private void EnableIriCharactersInUrls(ServiceConfigurationContext context)
         {
-            //var promotionTypeHandler = context.Locate.Advanced.GetInstance<PromotionTypeHandler>();
-
-            // To disable one of built-in promotion types, for example the BuyQuantityGetFreeItems promotion, comment out the following codes:
-            //promotionTypeHandler.DisablePromotions(new[] { typeof(BuyQuantityGetFreeItems) });
-
-            // To disable all built-in promotion types, comment out the following codes:
-            //promotionTypeHandler.DisableBuiltinPromotions();
+            context.Services.RemoveAll<UrlSegmentOptions>();
+            context.Services.AddSingleton(s => new UrlSegmentOptions
+            {
+                SupportIriCharacters = true,
+                ValidCharacters = @"\p{L}0-9\-_~\.\$"
+            });
         }
 
-        private void SetupExcludedPromotionEntries(InitializationEngine context)
+        /// <summary>
+        /// Disables promotion types.
+        /// </summary>
+        /// <param name="context">The initialization engine.</param>
+        /// <remarks>
+        /// To use this feature, define DISABLE_PROMOTION_TYPES_FEATURE symbol.
+        /// </remarks>
+        private void DisablePromotionTypes(InitializationEngine context)
+        {
+            var promotionTypeHandler = context.Locate.Advanced.GetInstance<PromotionTypeHandler>();
+
+            // To disable one of the built-in promotion types, for example the BuyQuantityGetFreeItems promotion.
+            promotionTypeHandler.DisablePromotions(new[] { typeof(BuyQuantityGetFreeItems) });
+
+            // To disable all built-in promotion types.
+            promotionTypeHandler.DisableBuiltinPromotions();
+        }
+
+        /// <summary>
+        /// Excludes items from promotion engine.
+        /// </summary>
+        /// <param name="context">The initialization engine.</param>
+        /// <remarks>
+        /// To use this feature, define EXCLUDE_ITEMS_FROM_PROMOTION_ENGINE_FEATURE symbol.
+        /// </remarks>
+        private void SetupExcludePromotionEntries(InitializationEngine context)
         {
             //To exclude some entries from promotion engine we need an implementation of IEntryFilter.
             //In most cases you can just use EntryFilterSettings to configure the default implementation. Otherwise you can create your own implementation of IEntryFilter if needed.
@@ -136,7 +176,18 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             //filterSettings.AddFilter<EntryContentBase>(x => !ExcludingCodes.Contains(x.Code));
         }
 
-        private void SetupRecommendationsWidgets(InitializationEngine context)
+        /// <summary>
+        /// Creates and activates the default Personalization widgets.
+        /// </summary>
+        /// <param name="context">The initialization engine.</param>
+        /// <remarks>
+        /// To use this feature, define ACTIVATE_DEFAULT_PERSONALIZATION_WIDGETS_FEATURE symbol.
+        /// It only needs to run once, not upon every initialization, and only if you use the Recommendations feature.
+        /// Instructions:
+        ///     Enter the configuration values for Personalization in web.config.
+        ///     Make sure that the episerver:tracking.Enabled setting is set to true, and other personalization settings have proper values.
+        /// </remarks>
+        private void SetupPersonalizationWidgets(InitializationEngine context)
         {
             var configuration = context.Locate.Advanced.GetInstance<PersonalizationClientConfiguration>();
 

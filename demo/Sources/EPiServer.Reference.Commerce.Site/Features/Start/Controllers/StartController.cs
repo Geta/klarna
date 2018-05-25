@@ -2,18 +2,15 @@
 using EPiServer.Commerce.Marketing;
 using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Start.ViewModels;
+using EPiServer.Tracking.Commerce;
 using EPiServer.Web.Mvc;
 using Mediachase.Commerce;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using EPiServer.Commerce.Order;
-using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
-using EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions;
-using EPiServer.ServiceLocation;
-using Mediachase.Commerce.Orders;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Start.Controllers
 {
@@ -32,21 +29,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Start.Controllers
             _currentMarket = currentMarket;
             _marketContentFilter = marketContentFilter;
         }
-        
+
+        [CommerceTracking(TrackingType.Home)]
         public ViewResult Index(StartPage currentPage)
         {
             var viewModel = new StartPageViewModel()
             {
                 StartPage = currentPage,
-                Promotions = GetActivePromotions(),
-                Recommendations = this.GetHomeRecommendations()
+                Recommendations = this.GetHomeRecommendations().Take(6),
+                Promotions = GetActivePromotions()
             };
-            return View(viewModel);
-        }
 
-        protected virtual ContentReference GetCampaignRoot()
-        {
-            return SalesCampaignFolder.CampaignRoot;
+            return View(viewModel);
         }
 
         private IEnumerable<PromotionViewModel> GetActivePromotions()
@@ -76,13 +70,15 @@ namespace EPiServer.Reference.Commerce.Site.Features.Start.Controllers
 
             foreach (var conditionItemReference in itemsOnPromotion.Condition.Items)
             {
-                var conditionItem = _contentLoader.Get<CatalogContentBase>(conditionItemReference);
-                AddIfProduct(conditionItem, conditionProducts);
-
-                var nodeContent = conditionItem as NodeContentBase;
-                if (nodeContent != null)
+                CatalogContentBase conditionItem;
+                if (_contentLoader.TryGet(conditionItemReference, out conditionItem))
                 {
-                    AddItemsRecursive(nodeContent, itemsOnPromotion, conditionProducts);
+                    AddIfProduct(conditionItem, conditionProducts);
+                    var nodeContent = conditionItem as NodeContentBase;
+                    if (nodeContent != null)
+                    {
+                        AddItemsRecursive(nodeContent, itemsOnPromotion, conditionProducts);
+                    }
                 }
             }
 

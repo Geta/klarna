@@ -18,7 +18,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Search.Controllers
 
         public CategoryController(
             SearchViewModelFactory viewModelFactory,
-            IRecommendationService recommendationService, 
+            IRecommendationService recommendationService,
             ReferenceConverter referenceConverter)
         {
             _viewModelFactory = viewModelFactory;
@@ -33,10 +33,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Search.Controllers
 
             if (HttpContext.Request.HttpMethod == "GET")
             {
-                var trackingResult = await _recommendationService.TrackCategory(HttpContext, currentContent);
+                var trackingResult = await _recommendationService.TrackCategoryAsync(HttpContext, currentContent);
                 model.Recommendations = trackingResult.GetCategoryRecommendations(_referenceConverter);
             }
-            
+
             return View(model);
         }
 

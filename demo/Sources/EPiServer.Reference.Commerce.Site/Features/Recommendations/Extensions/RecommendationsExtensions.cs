@@ -1,11 +1,10 @@
-﻿using EPiServer.Core;
+﻿using EPiServer.Personalization.Commerce.Tracking;
+using EPiServer.Tracking.Commerce.Data;
 using Mediachase.Commerce.Catalog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using EPiServer.Personalization.Commerce.Extensions;
-using EPiServer.Personalization.Commerce.Tracking;
-using EPiServer.Tracking.Commerce.Data;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions
 {
@@ -16,20 +15,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Extensions
         private const string Home = "homeWidget";
         private const string Category = "categoryWidget";
         private const string SearchResult = "searchWidget";
-
-        public static IEnumerable<Recommendation> GetAlternativeProductsRecommendations(this ControllerBase controller)
-        {
-            return controller.GetRecommendationGroups()
-                .Where(x => x.Area == ProductAlternatives)
-                .SelectMany(x => x.Recommendations);
-        }
-
-        public static IEnumerable<Recommendation> GetCrossSellProductsRecommendations(this ControllerBase controller)
-        {
-            return controller.GetRecommendationGroups()
-                .Where(x => x.Area == ProductCrossSells)
-                .SelectMany(x => x.Recommendations);
-        }
 
         public static IEnumerable<Recommendation> GetHomeRecommendations(this ControllerBase controller)
         {

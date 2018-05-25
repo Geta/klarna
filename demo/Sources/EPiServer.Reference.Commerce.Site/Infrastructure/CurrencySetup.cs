@@ -18,12 +18,12 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
                 Factor = factor;
             }
 
-            public string Currency;
-            public string Name;
-            public decimal Factor;
+            public readonly string Currency;
+            public readonly string Name;
+            public readonly decimal Factor;
         }
 
-        private readonly CurrencyConversion[] _conversionRatesToUsd = new [] {
+        private readonly CurrencyConversion[] _conversionRatesToUsd = {
             new CurrencyConversion("USD", "US dollar", 1m),
             new CurrencyConversion("SEK", "Swedish krona", 0.12m),
             new CurrencyConversion("AUD", "Australian dollar", 0.78m),
@@ -41,30 +41,33 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             EnsureCurrencies();
 
             var dto = CurrencyManager.GetCurrencyDto();
+            var workingDto = (CurrencyDto) dto.Copy();
             foreach (var conversion in _conversionRatesToUsd)
             {
                 var toCurrencies = _conversionRatesToUsd.Where(c => c != conversion).ToList();
-                AddRates(dto, conversion, toCurrencies);
+                AddRates(workingDto, conversion, toCurrencies);
             }
-            CurrencyManager.SaveCurrency(dto);
+            CurrencyManager.SaveCurrency(workingDto);
         }
 
         private void EnsureCurrencies()
         {
             bool isDirty = false;
             var dto = CurrencyManager.GetCurrencyDto();
+            var workingDto = (CurrencyDto) dto.Copy();
+
             foreach (var conversion in _conversionRatesToUsd)
             {
-                if (GetCurrency(dto, conversion.Currency) == null)
+                if (GetCurrency(workingDto, conversion.Currency) == null)
                 {
-                    dto.Currency.AddCurrencyRow(conversion.Currency, conversion.Name, DateTime.Now);
+                    workingDto.Currency.AddCurrencyRow(conversion.Currency, conversion.Name, DateTime.Now);
                     isDirty = true;
                 }
             }
 
             if (isDirty)
             {
-                CurrencyManager.SaveCurrency(dto);
+                CurrencyManager.SaveCurrency(workingDto);
             }
         }
 
@@ -85,6 +88,4 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure
             return (CurrencyDto.CurrencyRow)dto.Currency.Select("CurrencyCode = '" + currencyCode + "'").SingleOrDefault();
         }
     }
-
-
 }

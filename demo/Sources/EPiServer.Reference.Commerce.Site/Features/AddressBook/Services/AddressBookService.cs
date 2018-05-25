@@ -120,8 +120,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
 
         public IOrderAddress ConvertToAddress(AddressModel model, IOrderGroup orderGroup)
         {
-            var address = orderGroup.CreateOrderAddress(_orderGroupFactory);
-            address.Id = model.Name;
+            var address = orderGroup.CreateOrderAddress(_orderGroupFactory, model.Name);            
             MapToAddress(model, address);
 
             return address;
@@ -260,9 +259,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
 
         public CustomerAddress GetPreferredBillingAddress()
         {
-            return _customerContext.CurrentContact.CurrentContact != null ?
-                _customerContext.CurrentContact.CurrentContact.PreferredBillingAddress
-                : null;
+            return _customerContext.CurrentContact.CurrentContact?.PreferredBillingAddress;
         }
 
         public void LoadAddress(AddressModel addressModel)
@@ -270,11 +267,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
             var currentContact = _customerContext.CurrentContact;
 
             addressModel.CountryOptions = GetAllCountries();
-
-            if (addressModel.CountryCode == null && addressModel.CountryOptions.Any())
-            {
-                addressModel.CountryCode = addressModel.CountryOptions.First().Code;
-            }
 
             if (!string.IsNullOrEmpty(addressModel.AddressId))
             {
@@ -286,13 +278,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
                 }
             }
 
-            if (!string.IsNullOrEmpty(addressModel.CountryCode))
+            var countryCode = addressModel.CountryCode;
+            if (countryCode == null && addressModel.CountryOptions.Any())
+            {
+                countryCode = addressModel.CountryOptions.First().Code;
+            }
+
+            if (!string.IsNullOrEmpty(countryCode))
             {
                 if (addressModel.CountryRegion == null)
                 {
                     addressModel.CountryRegion = new CountryRegionViewModel();
                 }
-                addressModel.CountryRegion.RegionOptions = GetRegionsByCountryCode(addressModel.CountryCode);
+                addressModel.CountryRegion.RegionOptions = GetRegionsByCountryCode(countryCode);
             }
         }
 
@@ -323,8 +321,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
                     ShippingDefault = _customerContext.CurrentContact.PreferredShippingAddress != null 
                                             && customerAddress.AddressId == _customerContext.CurrentContact.PreferredShippingAddressId,
                     BillingDefault = _customerContext.CurrentContact.PreferredBillingAddress != null 
-                                            && customerAddress.AddressId == _customerContext.CurrentContact.PreferredBillingAddressId,
-                    DaytimePhoneNumber = customerAddress.DaytimePhoneNumber
+                                            && customerAddress.AddressId == _customerContext.CurrentContact.PreferredBillingAddressId
                 }));
             }
 
@@ -355,8 +352,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
         {
             var customer = _customerContext.CurrentContact.CurrentContact;
             return customer == null ||
-                   (customer.PreferredShippingAddressId.HasValue &&
-                    customer.PreferredShippingAddressId == customer.PreferredBillingAddressId);
+                   customer.PreferredShippingAddressId.HasValue &&
+                   customer.PreferredShippingAddressId == customer.PreferredBillingAddressId;
         }
 
         private CountryViewModel GetCountryByCode(AddressModel addressModel)
@@ -381,7 +378,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Services
 
         private IEnumerable<string> GetRegionsForCountry(CountryDto.CountryRow country)
         {
-            return country == null ? Enumerable.Empty<string>() : country.GetStateProvinceRows().Select(x => x.Name).ToList();
+            return country?.GetStateProvinceRows().Select(x => x.Name) ?? Enumerable.Empty<string>();
         }
 
         private CustomerAddress CreateOrUpdateCustomerAddress(CurrentContactFacade contact, AddressModel addressModel)

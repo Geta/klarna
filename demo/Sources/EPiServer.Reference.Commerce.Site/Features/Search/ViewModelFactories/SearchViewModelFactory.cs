@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Mvc;
-using EPiServer.Core;
+﻿using EPiServer.Core;
 using EPiServer.Framework.Localization;
 using EPiServer.Personalization.Commerce.Tracking;
-using Mediachase.Search;
 using EPiServer.Reference.Commerce.Site.Features.Search.Services;
 using EPiServer.Reference.Commerce.Site.Features.Search.ViewModels;
+using Mediachase.Search;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web.Mvc;
+using ISearchService = EPiServer.Reference.Commerce.Site.Features.Search.Services.ISearchService;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Search.ViewModelFactories
 {
@@ -37,7 +38,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Search.ViewModelFactories
 
             var customSearchResult = _searchService.Search(currentContent, viewModel);
 
-            viewModel.TotalCount = customSearchResult.SearchResult != null ? customSearchResult.SearchResult.TotalCount : 0;
+            viewModel.TotalCount = customSearchResult.SearchResult?.TotalCount ?? 0;
             viewModel.FacetGroups = customSearchResult.FacetGroups.ToList();
 
             viewModel.Sorting = _searchService.GetSortOrder().Select(x => new SelectListItem

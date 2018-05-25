@@ -28,12 +28,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Services
         private readonly LanguageService _languageService;
 
         public CatalogContentService(
-            IContentLoader contentLoader,
-            IRelationRepository relationRepository,
-            ICurrentMarket currentMarket,
-            FilterPublished filterPublished,
-            LanguageResolver languageResolver,
-            ReferenceConverter referenceConverter,
+            IContentLoader contentLoader, 
+            IRelationRepository relationRepository, 
+            ICurrentMarket currentMarket, 
+            FilterPublished filterPublished, 
+            LanguageResolver languageResolver, 
+            ReferenceConverter referenceConverter, 
             LanguageService languageService)
         {
             _contentLoader = contentLoader;
@@ -60,7 +60,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Services
             return GetVariants<T>(currentContent.GetVariants(_relationRepository), _languageResolver.GetPreferredCulture());
         }
 
-        public virtual IEnumerable<T> GetVariants<T>(IEnumerable<ContentReference> contentLinks, CultureInfo cultureInfo) where T : VariationContent
+        public virtual IEnumerable<T> GetVariants<T>(IEnumerable<ContentReference> contentLinks, CultureInfo cultureInfo) where T: VariationContent
         {
             return _contentLoader
                 .GetItems(contentLinks, cultureInfo)
@@ -81,7 +81,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Services
                 .GetItems(product.GetVariants(_relationRepository), CultureInfo.GetCultureInfo(language))
                 .OfType<T>();
         }
-
+        
         public virtual IEnumerable<T> GetSiblingVariants<T>(string code) where T : VariationContent
         {
             var productRelations = _relationRepository.GetParents<ProductVariation>(_referenceConverter.GetContentLink(code));
@@ -89,7 +89,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Services
             return GetVariants<T>(siblingsRelations.Select(x => x.Child), _languageResolver.GetPreferredCulture());
         }
 
-        public virtual T GetParentProduct<T>(EntryContentBase entry) where T : ProductContent
+        public virtual T GetParentProduct<T>(EntryContentBase entry) where T: ProductContent
         {
             return Get<T>(entry.GetParentProducts(_relationRepository).SingleOrDefault());
         }
@@ -113,7 +113,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Services
         {
             return _contentLoader.TryGet(_referenceConverter.GetContentLink(code), out product);
         }
-
+        
         public virtual IEnumerable<T> GetItems<T>(IEnumerable<string> codes) where T : EntryContentBase
         {
             return _contentLoader.GetItems(codes.Select(x => _referenceConverter.GetContentLink(x)), _languageResolver.GetPreferredCulture()).OfType<T>();
@@ -135,7 +135,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Services
 
             return Enumerable.Empty<FashionProduct>();
         }
-
+        
         public virtual string GetTopCategoryName(EntryContentBase content)
         {
             var parent = _contentLoader.Get<CatalogContentBase>(content.ParentLink);

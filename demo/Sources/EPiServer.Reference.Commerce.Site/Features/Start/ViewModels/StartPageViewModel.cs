@@ -1,7 +1,8 @@
 ﻿using EPiServer.Core;
+using EPiServer.Personalization.Commerce.Tracking;
+using EPiServer.Tracking.Commerce;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using System.Collections.Generic;
-using EPiServer.Personalization.Commerce.Tracking;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Start.ViewModels
 {

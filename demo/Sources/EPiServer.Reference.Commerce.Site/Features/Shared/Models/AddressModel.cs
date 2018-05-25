@@ -53,8 +53,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Models
         public CountryRegionViewModel CountryRegion { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/Email")]
-        //[LocalizedEmail("/Shared/Address/Form/Error/InvalidEmail")]
-        [LocalizedRequired("/Shared/Address/Form/Empty/Email")]
+        [LocalizedEmail("/Shared/Address/Form/Error/InvalidEmail")]
         public string Email { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/ShippingAddress")]
@@ -64,7 +63,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Models
         public bool BillingDefault { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/DaytimePhoneNumber")]
-        [LocalizedRequired("/Shared/Address/Form/Empty/DaytimePhoneNumber")]
         public string DaytimePhoneNumber { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/Organization")]

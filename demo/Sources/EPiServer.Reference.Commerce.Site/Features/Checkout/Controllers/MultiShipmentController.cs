@@ -47,17 +47,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [HttpPost]
         public ActionResult Index(MultiShipmentPage currentPage, MultiShipmentViewModel viewModel)
         {
-            if (viewModel.CartItems == null || !viewModel.CartItems.Any())
-            {
-                var home = Url.ContentUrl(ContentReference.StartPage);
-                return Redirect(home);
-            }
-
-            for (var i = 0; i < viewModel.CartItems.Count(); i++)
+            for (var i = 0; i < viewModel.CartItems.Length; i++)
             {
                 if (string.IsNullOrEmpty(viewModel.CartItems[i].AddressId))
                 {
-                    ModelState.AddModelError(string.Format("CartItems[{0}].AddressId", i), _localizationService.GetString("/Checkout/MultiShipment/Empty/AddressId"));
+                    ModelState.AddModelError($"CartItems[{i}].AddressId", _localizationService.GetString("/Checkout/MultiShipment/Empty/AddressId"));
                 }
             }
 
@@ -73,10 +67,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return RedirectToAction("Index", new { node = currentPage.ParentLink });
         }
 
-        private ICart Cart
-        {
-            get { return _cart ?? (_cart = _cartService.LoadCart(_cartService.DefaultCartName)); }
-        }
+        private ICart Cart => _cart ?? (_cart = _cartService.LoadCart(_cartService.DefaultCartName));
 
         private IList<AddressModel> GetAddresses(MultiShipmentViewModel viewModel)
         {

@@ -1,25 +1,48 @@
-﻿using EPiServer.Framework.Localization;
+﻿using EPiServer.Commerce.Order;
+using EPiServer.Framework.Localization;
+using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using System;
-using EPiServer.Commerce.Order;
+using System.Linq;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
-    public abstract class PaymentMethodBase
+    public abstract class PaymentMethodBase : IPaymentMethod
     {
-        protected readonly LocalizationService _localizationService;
-        protected readonly IOrderGroupFactory _orderGroupFactory;
+        protected readonly LocalizationService LocalizationService;
+        protected readonly IOrderGroupFactory OrderGroupFactory;
 
-        protected PaymentMethodBase(LocalizationService localizationService, IOrderGroupFactory orderGroupFactory)
+        public Guid PaymentMethodId { get; }
+
+        public abstract string SystemKeyword { get; }
+
+        public string Name { get; }
+
+        public string Description { get; }
+
+        protected PaymentMethodBase(LocalizationService localizationService,
+            IOrderGroupFactory orderGroupFactory,
+            LanguageService languageService,
+            IPaymentManagerFacade paymentManager)
         {
-            _localizationService = localizationService;
-            _orderGroupFactory = orderGroupFactory;
+            LocalizationService = localizationService;
+            OrderGroupFactory = orderGroupFactory;
+
+            if (!string.IsNullOrEmpty(SystemKeyword))
+            {
+                var currentLanguage = languageService.GetCurrentLanguage().TwoLetterISOLanguageName;
+                var dto = paymentManager.GetPaymentMethodBySystemName(SystemKeyword, currentLanguage);
+                var paymentMethod = dto?.PaymentMethod?.FirstOrDefault();
+                if (paymentMethod != null)
+                {
+                    PaymentMethodId = paymentMethod.PaymentMethodId;
+                    Name = paymentMethod.Name;
+                    Description = paymentMethod.Description;
+                }
+            }
         }
 
-        public Guid PaymentMethodId { get; set; }
-
         public abstract IPayment CreatePayment(decimal amount, IOrderGroup orderGroup);
-
-        public abstract void PostProcess(IPayment payment);
 
         public abstract bool ValidateData();
     }

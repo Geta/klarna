@@ -1,11 +1,12 @@
 ﻿var Checkout = {
     init: function () {
         $(document)
-            //.on('change', '.jsChangePayment', Checkout.changePayment)
-            .on('change', '.jsChangeShipment', Checkout.changeShipment)
+            .on('change', '.jsChangePayment', Checkout.changePayment)
             .on('change', '.jsChangeAddress', Checkout.changeAddress)
             .on('change', '.jsChangeTaxAddress', Checkout.changeTaxAddress)
             .on('change', '#MiniCart', Checkout.refreshView)
+            .on('change', '#MiniCartResponsive', Checkout.refreshView)
+            .on('change', '#CheckoutView .jsChangeCartItem', Checkout.refreshView)
             .on('click', '.jsNewAddress', Checkout.newAddress)
             .on('click', '#AlternativeAddressButton', Checkout.enableShippingAddress)
             .on('click', '.remove-shipping-address', Checkout.removeShippingAddress)
@@ -17,13 +18,14 @@
                 }
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
-                    KlarnaCheckout.authorize();                    
+                    KlarnaCheckout.authorize();
                 }
             });
 
         Checkout.initializeAddressAreas();
     },
     initializeAddressAreas: function () {
+
         if ($("#UseBillingAddressForShipment").val() == "False") {
             Checkout.doEnableShippingAddress();
         }
@@ -68,11 +70,11 @@
         var selectedPaymentMethod = $(".jsChangePayment:checked").val();
 
         if (window._klarnaCheckout && selectedPaymentMethod === "KlarnaCheckout") {
-            window._klarnaCheckout(function (api) {
+            window._klarnaCheckout(function(api) {
                 api.resume();
             });
-        }
-        else {
+
+        } else {
 
             var view = $("#CheckoutView");
 
@@ -96,7 +98,6 @@
         AddressBook.showNewAddressDialog($(this));
     },
     changeAddress: function () {
-
         var form = $('.jsCheckoutForm');
         var id = $(this).attr("id");
         var isBilling = id.indexOf("Billing") > -1;
@@ -122,46 +123,37 @@
             }
         });
     },
-
-    changeTaxAddress: function () {
-        var id = $(this).attr("id");
+    changeTaxAddress: function (sender) {
+        if (sender.originalEvent instanceof Event) {
+            sender = $(this);
+        }
+        var id = $(sender).attr("id");
         if ((id.indexOf("Billing") > -1) && $("#UseBillingAddressForShipment").val() == "False") {
             return;
         }
         var form = $('.jsCheckoutForm');
-
+        if (form.length == 0)
+        {
+            return;
+        }
         $.ajax({
             type: "POST",
             cache: false,
-            url: $(this).closest('.jsCheckoutAddress').data('url'),
+            url: $(sender).closest('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
             success: function (result) {
                 Checkout.updateOrderSummary();
             }
         });
     },
-
     changePayment: function () {
-        var form = $('.jsCheckoutForm');
         $.ajax({
             type: "POST",
-            url: form.data("updateurl"),
-            data: form.serialize(),
+            url: $(this).data('url'),
             success: function (result) {
                 $('.jsPaymentMethod').replaceWith($(result).find('.jsPaymentMethod'));
                 Checkout.updateOrderSummary();
                 Misc.updateValidation('jsCheckoutForm');
-            }
-        });
-    },
-    changeShipment: function () {
-        var form = $('.jsCheckoutForm');
-        $.ajax({
-            type: "POST",
-            url: form.data("updateurl"),
-            data: form.serialize(),
-            success: function (result) {
-                Checkout.updateOrderSummary();
             }
         });
     },
@@ -172,7 +164,6 @@
             url: $('.jsOrderSummary').data('url'),
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
-
                 if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
                     KlarnaCheckout.load();
                 }
@@ -206,7 +197,7 @@
             }
         });
     },
-    doRemoveShippingAddress: function () {
+    doRemoveShippingAddress: function() {
         $("#AlternativeAddressButton").show();
         $(".shipping-address:visible").slideToggle(300);
         $(".shipping-address").css("display", "none");

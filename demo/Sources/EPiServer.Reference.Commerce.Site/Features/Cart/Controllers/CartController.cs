@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories;
+using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
 using System.Web.Mvc;
@@ -17,7 +18,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
         private readonly IRecommendationService _recommendationService;
         readonly CartViewModelFactory _cartViewModelFactory;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
-        
+
 
         public CartController(
             ICartService cartService,
@@ -51,8 +52,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
         [AllowDBWrite]
         public async Task<ActionResult> AddToCart(string code)
         {
-            string warningMessage = string.Empty;
-
             ModelState.Clear();
 
             if (Cart == null)
@@ -64,26 +63,36 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
             if (result.EntriesAddedToCart)
             {
                 _orderRepository.Save(Cart);
-                await _recommendationService.TrackCart(HttpContext);
+                await _recommendationService.TrackCartAsync(HttpContext);
                 return MiniCartDetails();
             }
-            
+
             return new HttpStatusCodeResult(500, result.GetComposedValidationMessage());
         }
 
         [HttpPost]
         [AllowDBWrite]
-        public async Task<ActionResult> ChangeCartItem(int shipmentId, string code, decimal quantity, string size, string newSize)
+        public async Task<ActionResult> ChangeCartItem(int shipmentId, string code, decimal quantity, string size, string newSize, string displayName)
         {
             ModelState.Clear();
 
-            _cartService.ChangeCartItem(Cart, shipmentId, code, quantity, size, newSize);
+            _cartService.ChangeCartItem(Cart, shipmentId, code, quantity, size, newSize, displayName);
             _orderRepository.Save(Cart);
-            await _recommendationService.TrackCart(HttpContext);
+            await _recommendationService.TrackCartAsync(HttpContext);
+            return MiniCartDetails();
+        }
+
+        [HttpPost]
+        [AllowDBWrite]
+        public ActionResult UpdateShippingMethod(UpdateShippingMethodViewModel viewModel)
+        {
+            ModelState.Clear();
 
             _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+            _cartService.UpdateShippingMethod(Cart, viewModel.ShipmentId, viewModel.ShippingMethodId);
+            _orderRepository.Save(Cart);
 
-            return MiniCartDetails();
+            return LargeCart();
         }
 
         private ICart Cart

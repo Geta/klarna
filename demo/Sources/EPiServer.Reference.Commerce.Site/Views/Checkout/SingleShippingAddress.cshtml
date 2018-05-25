@@ -1,4 +1,5 @@
-﻿@using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels
+﻿@using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels
+@using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels
 @model CheckoutViewModel
 @{
     Layout = null;
@@ -20,6 +21,7 @@
                             <div class="jsCheckoutAddress" data-url="@Url.Action("ChangeAddress", "Checkout", new {@node = @Model.StartPage.CheckoutPage})">
 
                                 @Html.HiddenFor(model => model.Shipments[0].Address.Name)
+                                @Html.HiddenFor(model => model.Shipments[0].Address.DaytimePhoneNumber)
                                 @Html.HiddenFor(model => model.Shipments[0].Address.BillingDefault)
                                 @Html.HiddenFor(model => model.Shipments[0].Address.ShippingDefault)
 
@@ -55,12 +57,6 @@
 										@Html.TextBoxFor(model => model.Shipments[0].Address.Email, new {@class = "form-control"})
 										@Html.ValidationMessageFor(model => model.Shipments[0].Address.Email)
 									</div>
-
-                                    <div class="form-group">
-                                        @Html.LabelFor(model => model.Shipments[0].Address.DaytimePhoneNumber)
-                                        @Html.TextBoxFor(model => model.Shipments[0].Address.DaytimePhoneNumber, new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Shipments[0].Address.DaytimePhoneNumber)
-                                    </div>
 
 									<div class="form-group">
 										@Html.LabelFor(model => model.Shipments[0].Address.Line1)
@@ -101,11 +97,11 @@
             <h4>@Html.Translate("/Checkout/Shipment/Labels/ChooseDelivery")</h4>
             @foreach (var shippingMethodViewModel in Model.Shipments.First().ShippingMethods ?? Enumerable.Empty<ShippingMethodViewModel>())
             {
-                <div class="radio">
+                <div class="radio shipping-method" data-url="@Url.Action("UpdateShippingMethod", "Cart", new { ShipmentId = Model.Shipments[0].ShipmentId, ShippingMethodId = shippingMethodViewModel.Id })">
                     <label>
                         @Html.RadioButtonFor(model => model.Shipments[0].ShippingMethodId, shippingMethodViewModel.Id, new { @id = shippingMethodViewModel.Id, @class = "jsChangeShipment" })
                         @shippingMethodViewModel.DisplayName
-                        @shippingMethodViewModel.Price.ToString()
+                        @Helpers.RenderMoney(shippingMethodViewModel.Price)
                     </label>
                 </div>
             }

@@ -2,8 +2,9 @@
 using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
-using System;
 using System.ComponentModel;
+using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using Klarna.Checkout;
 using Klarna.Payments.Models;
 
@@ -11,16 +12,28 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
     public class KlarnaCheckoutPaymentMethod : PaymentMethodBase, IDataErrorInfo
     {
+        private readonly IOrderGroupFactory _orderGroupFactory;
+        public override string SystemKeyword => Constants.KlarnaCheckoutSystemKeyword;
+
         public KlarnaCheckoutPaymentMethod()
-            : this(LocalizationService.Current, ServiceLocator.Current.GetInstance<IOrderGroupFactory>())
+            : this(
+                LocalizationService.Current,
+                ServiceLocator.Current.GetInstance<IOrderGroupFactory>(),
+                ServiceLocator.Current.GetInstance<LanguageService>(),
+                ServiceLocator.Current.GetInstance<IPaymentManagerFacade>())
         {
         }
 
-        public KlarnaCheckoutPaymentMethod(LocalizationService localizationService, IOrderGroupFactory orderGroupFactory)
-            : base(localizationService, orderGroupFactory)
+        public KlarnaCheckoutPaymentMethod(
+            LocalizationService localizationService,
+            IOrderGroupFactory orderGroupFactory,
+            LanguageService languageService,
+            IPaymentManagerFacade paymentManager)
+            : base(localizationService, orderGroupFactory, languageService, paymentManager)
         {
+            _orderGroupFactory = orderGroupFactory;
         }
-        
+
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
         {
@@ -34,7 +47,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             return payment;
         }
 
-        public override void PostProcess(IPayment payment)
+        public void PostProcess(IPayment payment)
         {
             if (payment.Properties[Klarna.Common.Constants.FraudStatusPaymentField]?.ToString() == FraudStatus.PENDING.ToString())
             {

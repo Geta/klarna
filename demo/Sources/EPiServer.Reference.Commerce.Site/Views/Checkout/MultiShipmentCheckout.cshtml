@@ -1,3 +1,5 @@
+@using EPiServer.Personalization.Commerce.Extensions
+@using EPiServer.Tracking.Commerce
 @model EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels.CheckoutViewModel
 @{
     if (Request.IsAjaxRequest())
@@ -64,13 +66,11 @@
 
     @using (Html.BeginForm("Purchase", "Checkout", FormMethod.Post, new { @class = "jsCheckoutForm", @data_UpdateUrl = Url.Action("Update", null, null) }))
     {
-        @Html.HiddenFor(x => x.AuthorizationToken)
-
         <div class="row section-box">
             <div class="col-xs-12">
                 <div class="checkout-cart jsLargeCart">
                     @{
-                        for (int shipmentIndex = 1; shipmentIndex <= Model.Shipments.Count(); shipmentIndex++)
+                        for (int shipmentIndex = 1; shipmentIndex <= Model.Shipments.Count; shipmentIndex++)
                         {
                             @Html.HiddenFor(model => model.Shipments[shipmentIndex - 1].Address.AddressId)
                             @Html.HiddenFor(model => model.Shipments[shipmentIndex - 1].Address.Name)
@@ -86,7 +86,7 @@
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="row">
                                         <div class="col-xs-12">
-                                            <h2>Shipment @shipmentIndex of @Model.Shipments.Count()</h2>
+                                            <h2>Shipment @shipmentIndex of @Model.Shipments.Count</h2>
                                             @{ Html.RenderPartial("_AddressSummaryLine", Model.Shipments[shipmentIndex - 1].Address); }
                                         </div>
                                     </div>
@@ -114,7 +114,7 @@
                                                         }
                                                         else
                                                         {
-                                                            <span class="product-price xs-vertical-margin">@Helpers.RenderMoney(cartItem.DiscountedPrice.Value)</span>
+                                                            <span class="product-price xs-vertical-margin">@Helpers.RenderMoney(cartItem.PlacedPrice)</span>
                                                         }
                                                     </div>
 
@@ -129,7 +129,7 @@
                                                     </div>
 
                                                     <div class="col-xs-6 col-sm-2 product-col-price text-right">
-                                                        @cartItem.DiscountedPrice.ToString()
+                                                        @Helpers.RenderMoney(cartItem.DiscountedPrice.GetValueOrDefault())
                                                     </div>
 
                                                 </div>
@@ -142,56 +142,69 @@
                                     <strong>@Html.Translate("/Checkout/MultiShipment/DeliveryOption")</strong><br />
                                     @foreach (var shippingMethodViewModel in Model.Shipments[shipmentIndex - 1].ShippingMethods)
                                     {
-                                        <div class="radio">
+                                        <div class="radio shipping-method" data-url="@Url.Action("UpdateShippingMethod", "Cart", new { ShipmentId = Model.Shipments[shipmentIndex - 1].ShipmentId, ShippingMethodId = shippingMethodViewModel.Id })">
                                             <label>
                                                 @Html.RadioButtonFor(model => Model.Shipments[shipmentIndex - 1].ShippingMethodId, shippingMethodViewModel.Id, new { @id = shippingMethodViewModel.Id, @class = "jsChangeShipment" })
                                                 @shippingMethodViewModel.DisplayName
-                                                @shippingMethodViewModel.Price.ToString()
+                                                @Helpers.RenderMoney(shippingMethodViewModel.Price)
                                             </label>
                                         </div>
                                     }
                                 </div>
                             </div>
-                                                }
+                        }
                     }
                 </div>
             </div>
         </div>
-                                                if (!ViewData.ModelState.IsValid)
-                                                {
-                                                    <div class="alert alert-danger">
-                                                        @foreach (var item in ViewData.ModelState)
-                                                        {
-                                                            foreach (var error in item.Value.Errors)
-                                                            {
-                                                                <p>@error.ErrorMessage</p>
-                                                            }
-                                                        }
-                                                    </div>
-                                                }
 
-                                                if (!(bool)ViewData["IsReadOnly"])
-                                                {
-                                                    <h2>@Html.Translate("/Checkout/Payment/Heading")</h2>
-                                                    <div class="row section-box">
-                                                        <div id="billingAddressContainer" class="col-md-6 col-xs-12">
-                                                            @{ Html.RenderPartial("BillingAddress", Model); }
-                                                        </div>
-                                                        <div class="col-md-6 col-xs-12">
-                                                            @{ Html.RenderPartial("Payment", Model); }
-                                                        </div>
-                                                        <input type="hidden" name="shippingAddressIndex" id="ShippingAddressIndex" />
-                                                    </div>
-                                                                }
+        if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="alert alert-warning">
+                @Model.Message
+            </div>
+        }
 
-                                                                <div class="row section-box">
-                                                                    <div class="col-xs-12">
-                                                                        @{ Html.RenderAction("OrderSummary"); }
-                                                                        @if (!(bool)ViewData["IsReadOnly"])
+        if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                @foreach (var item in ViewData.ModelState)
                 {
-                                                                            <button type="submit" class="btn btn-primary btn--blue pull-right">@Html.Translate("/Checkout/PlaceOrder")</button>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                                            }
+                    foreach (var error in item.Value.Errors)
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                }
+            </div>
+        }
+
+        if (!(bool)ViewData["IsReadOnly"])
+        {
+            <h2>@Html.Translate("/Checkout/Payment/Heading")</h2>
+            <div class="row section-box">
+                <div id="billingAddressContainer" class="col-md-6 col-xs-12">
+                    @{ Html.RenderPartial("BillingAddress", Model); }
+                </div>
+                <div class="col-md-6 col-xs-12">
+                    @{ Html.RenderAction("PaymentMethodSelection", "Payment"); }     
+                </div>
+                <input type="hidden" name="shippingAddressIndex" id="ShippingAddressIndex" />
+            </div>
+        }
+
+        <div class="row section-box">
+            <div class="col-xs-12">
+                @{ Html.RenderAction("OrderSummary"); }
+                @if (!(bool)ViewData["IsReadOnly"])
+                {
+                    <button type="submit" class="btn btn-primary btn--blue pull-right">@Html.Translate("/Checkout/PlaceOrder")</button>
+                }
+            </div>
+        </div>
+
+        if (Request.IsAjaxRequest())
+        {
+            @Html.SetupOnLoadTracking()
+        }
+    }
 </div>

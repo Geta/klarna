@@ -1,6 +1,4 @@
-﻿@using EPiServer.Reference.Commerce.Site.Features.Recommendations
-
-@model EPiServer.Reference.Commerce.Site.Features.Product.ViewModels.FashionProductViewModel
+﻿@model EPiServer.Reference.Commerce.Site.Features.Product.ViewModels.FashionProductViewModel
 
 <div class="row jsProductDetails">
 
@@ -30,7 +28,7 @@
     <div class="col-xs-12 col-sm-8 product-info">
         <div class="row">
             <div class="col-xs-12">
-                <h1>@Html.PropertyFor(x => x.Variant.DisplayName)</h1>
+                <h1>@Html.PropertyFor(x => x.Product.DisplayName)</h1>
             </div>
             <div class="col-xs-12 col-sm-6">
                 <h2 class="product-brand">@Html.PropertyFor(x => x.Product.Brand)</h2>
@@ -103,6 +101,9 @@
                 <span class="warning-message"></span>
             </div>
         </div>
+        <div class="warehouse-availability-container" 
+             data-url="@Url.Action("GetAvailability", "Warehouse")"
+             data-sku-code="@Model.Variant.Code"></div>
     </div>
 </div>
 
@@ -123,7 +124,12 @@
     }
 }
 
-
-@section RightMarginRecommendations {@{ Html.RenderAction("Index", "Recommendations", new { entryLinks = Model.AlternativeProducts });}}
-
-@section BottomRecommendations {@{ Html.RenderAction("Index", "Recommendations", new { entryLinks = Model.CrossSellProducts });}}
+@if (@Functions.UseClientSideTracking())
+{
+    @section RecommendationsContextSettings { sectionMappings: [{ area: "productAlternativesWidget", selector: ".recommendations-right", numberOfItemsToRender: 3 }, { area: "productCrossSellsWidget", selector: ".recommendations-bottom"}] }
+}
+else
+{
+    @section RightMarginRecommendations {@{ Html.RenderAction("Index", "Recommendations", new {recommendations = Model.AlternativeProducts}); }}
+    @section BottomRecommendations {@{ Html.RenderAction("Index", "Recommendations", new {recommendations = Model.CrossSellProducts}); }}
+}

@@ -25,6 +25,7 @@
     }
     @using (Html.BeginForm("RegisterAccount", "Login", FormMethod.Post, new { @class = "jsRegistration", @role = "form" }))
     {
+        @Html.AntiForgeryToken()
         @Html.HiddenFor(x => x.Address.Name)
 
         <div class="form-group">
@@ -70,16 +71,6 @@
                 @Html.TextBoxFor(x => x.Address.City, new { @class = "form-control" })
                 @Html.ValidationMessageFor(x => x.Address.City)
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(x => x.Address.DaytimePhoneNumber)
-            @Html.TextBoxFor(x => x.Address.DaytimePhoneNumber, new { @class = "form-control" })
-            @Html.ValidationMessageFor(x => x.Address.DaytimePhoneNumber)
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(x => x.Address.Email)
-            @Html.TextBoxFor(x => x.Address.Email, new { @class = "form-control" })
-            @Html.ValidationMessageFor(x => x.Address.Email)
         </div>
         @Html.EditorFor(model => model.Address.CountryRegion, Model.Address.CountryRegion)
 

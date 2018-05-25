@@ -73,7 +73,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             _relationRepository = relationRepository;
         }
 
-        public void ChangeCartItem(ICart cart, int shipmentId, string code, decimal quantity, string size, string newSize)
+        public void ChangeCartItem(ICart cart, int shipmentId, string code, decimal quantity, string size, string newSize, string displayName)
         {
             if (quantity > 0)
             {
@@ -84,7 +84,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
                 else
                 {
                     var newCode = _productService.GetSiblingVariantCodeBySize(code, newSize);
-                    UpdateLineItemSku(cart, shipmentId, code, newCode, quantity);
+                    UpdateLineItemSku(cart, shipmentId, code, newCode, quantity, displayName);
                 }
             }
             else
@@ -93,24 +93,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             }
         }
 
-        public string DefaultCartName
-        {
-            get { return "Default"; }
-        }
+        public string DefaultCartName => "Default";
 
-        public string DefaultWishListName
-        {
-            get { return "WishList"; }
-        }
+        public string DefaultWishListName => "WishList";
 
         public void RecreateLineItemsBasedOnShipments(ICart cart, IEnumerable<CartItemViewModel> cartItems, IEnumerable<AddressModel> addresses)
         {
             var form = cart.GetFirstForm();
             var items = cartItems
-                .GroupBy(x => new { x.AddressId, x.Code, x.IsGift })
+                .GroupBy(x => new { x.AddressId, x.Code, x.DisplayName, x.IsGift })
                 .Select(x => new
                 {
                     Code = x.Key.Code,
+                    DisplayName = x.Key.DisplayName,
                     AddressId = x.Key.AddressId,
                     Quantity = x.Count(),
                     IsGift = x.Key.IsGift
@@ -132,6 +127,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
                 foreach (var item in items.Where(x => x.AddressId == address.AddressId))
                 {
                     var lineItem = cart.CreateLineItem(item.Code, _orderGroupFactory);
+                    lineItem.DisplayName = item.DisplayName;
                     lineItem.IsGift = item.IsGift;
                     lineItem.Quantity = item.Quantity;
                     shipment.LineItems.Add(lineItem);
@@ -170,6 +166,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             ValidateCart(cart);
         }
 
+        public void UpdateShippingMethod(ICart cart, int shipmentId, Guid shippingMethodId)
+        {
+            var shipment = cart.GetFirstForm().Shipments.First(x => x.ShipmentId == shipmentId);
+            shipment.ShippingMethodId = shippingMethodId;
+
+            ValidateCart(cart);
+        }
+
         public AddToCartResult AddToCart(ICart cart, string code, decimal quantity)
         {
             var result = new AddToCartResult();
@@ -178,9 +182,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
 
             if (entryContent is BundleContent)
             {
-                foreach (var relation in _relationRepository.GetRelationsBySource<BundleEntry>(contentLink))
+                foreach (var relation in _relationRepository.GetChildren<BundleEntry>(contentLink))
                 {
-                    var entry = _contentLoader.Get<EntryContentBase>(relation.Target);
+                    var entry = _contentLoader.Get<EntryContentBase>(relation.Child);
                     var recursiveResult = AddToCart(cart, entry.Code, relation.Quantity ?? 1);
                     if (recursiveResult.EntriesAddedToCart)
                     {
@@ -196,14 +200,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
                 return result;
             }
 
-            var lineItem = cart.GetAllLineItems().FirstOrDefault(x => x.Code == code);
+            var lineItem = cart.GetAllLineItems().FirstOrDefault(x => x.Code == code && !x.IsGift);
 
             if (lineItem == null)
             {
-                lineItem = cart.CreateLineItem(code, _orderGroupFactory);
-                lineItem.DisplayName = entryContent.DisplayName;
-                lineItem.Quantity = quantity;
-                cart.AddLineItem(lineItem, _orderGroupFactory);
+                lineItem = AddNewLineItem(cart, code, quantity, entryContent.DisplayName);
             }
             else
             {
@@ -231,7 +232,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
                 // If there is an item which has no price in the new currency, a NullReference exception will be thrown.
                 // Mixing currencies in cart is not allowed.
                 // It's up to site's managers to ensure that all items have prices in allowed currency.
-                lineItem.PlacedPrice = _pricingService.GetPrice(lineItem.Code, cart.Market.MarketId, currency).Value.Amount;
+                lineItem.PlacedPrice = _pricingService.GetPrice(lineItem.Code, cart.MarketId, currency).UnitPrice.Amount;
             }
 
             ValidateCart(cart);
@@ -248,8 +249,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             cart.ValidateOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _lineItemValidator);
             cart.UpdatePlacedPriceOrRemoveLineItems(_customerContext.GetContactById(cart.CustomerId), (item, issue) => validationIssues.AddValidationIssues(item, issue), _placedPriceProcessor);
             cart.UpdateInventoryOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _inventoryProcessor);
-            
-            cart.ApplyDiscounts(_promotionEngine, new PromotionEngineSettings());
+
+            ApplyDiscounts(cart);
+
+            // Try to validate gift items inventory and don't catch validation issues.
+            cart.UpdateInventoryOrRemoveLineItems((item, issue) =>
+            {
+                validationIssues.AddValidationIssues(item, item.IsGift ? ValidationIssue.RemovedGiftDueToInsufficientQuantityInInventory : issue);
+            }, _inventoryProcessor);
 
             return validationIssues;
         }
@@ -298,7 +305,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
                 return false;
             }
             couponCodes.Add(couponCode);
-            var rewardDescriptions = cart.ApplyDiscounts(_promotionEngine, new PromotionEngineSettings());
+            var rewardDescriptions = ApplyDiscounts(cart);
             var appliedCoupons = rewardDescriptions
                 .Where(r => r.AppliedCoupon != null)
                 .Select(r => r.AppliedCoupon);
@@ -314,7 +321,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
         public void RemoveCouponCode(ICart cart, string couponCode)
         {
             cart.GetFirstForm().CouponCodes.Remove(couponCode);
-            cart.ApplyDiscounts(_promotionEngine, new PromotionEngineSettings());
+            ApplyDiscounts(cart);
+        }
+
+        public IEnumerable<RewardDescription> ApplyDiscounts(ICart cart)
+        {
+            return cart.ApplyDiscounts(_promotionEngine, new PromotionEngineSettings());
         }
 
         private void RemoveLineItem(ICart cart, int shipmentId, string code)
@@ -341,10 +353,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             foreach (var validationIssue in validationIssues)
             {
                 var warning = new StringBuilder();
-                warning.Append(string.Format("Line Item with code {0} ", lineItem.Code));
-                validationIssue.Value.Aggregate(warning, (current, issue) => current.Append(issue));
+                warning.Append($"Line Item with code {lineItem.Code} ");
+                validationIssue.Value.Aggregate(warning, (current, issue) => current.Append(issue).Append(", "));
 
-                result.ValidationMessages.Add(warning.ToString());
+                result.ValidationMessages.Add(warning.ToString().TrimEnd(',', ' '));
             }
 
             if (!validationIssues.HasItemBeenRemoved(lineItem))
@@ -353,7 +365,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             }
         }
 
-        private void UpdateLineItemSku(ICart cart, int shipmentId, string oldCode, string newCode, decimal quantity)
+        private void UpdateLineItemSku(ICart cart, int shipmentId, string oldCode, string newCode, decimal quantity, string displayName)
         {
             RemoveLineItem(cart, shipmentId, oldCode);
 
@@ -366,18 +378,26 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             }
             else
             {
-                newLineItem = cart.CreateLineItem(newCode, _orderGroupFactory);
-                newLineItem.Quantity = quantity;
-                cart.AddLineItem(newLineItem, _orderGroupFactory);
-
-                var price = _pricingService.GetCurrentPrice(newCode);
-                if (price.HasValue)
-                {
-                    newLineItem.PlacedPrice = price.Value.Amount;
-                }
+                AddNewLineItem(cart, newCode, quantity, displayName);
             }
 
             ValidateCart(cart);
+        }
+
+        private ILineItem AddNewLineItem(ICart cart, string newCode, decimal quantity, string displayName)
+        {
+            var newLineItem = cart.CreateLineItem(newCode, _orderGroupFactory);
+            newLineItem.Quantity = quantity;
+            newLineItem.DisplayName = displayName;
+            cart.AddLineItem(newLineItem, _orderGroupFactory);
+
+            var price = _pricingService.GetPrice(newCode);
+            if (price != null)
+            {
+                newLineItem.PlacedPrice = price.UnitPrice.Amount;
+            }
+
+            return newLineItem;
         }
 
         private void ChangeQuantity(ICart cart, int shipmentId, string code, decimal quantity)
