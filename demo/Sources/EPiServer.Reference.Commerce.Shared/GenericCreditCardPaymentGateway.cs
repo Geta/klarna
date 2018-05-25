@@ -6,30 +6,27 @@ namespace EPiServer.Reference.Commerce.Shared
 {
     public class GenericCreditCardPaymentGateway : AbstractPaymentGateway, IPaymentPlugin
     {
-        public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
-        {
-            var creditCardPayment = (CreditCardPayment)payment;
-
-            if (!creditCardPayment.CreditCardNumber.EndsWith("4"))
-            {
-                return PaymentProcessingResult.CreateSuccessfulResult("Invalid credit card number.");
-            }
-
-            return PaymentProcessingResult.CreateSuccessfulResult("Payment successful.");
-        }
-
         /// <inheritdoc/>
         public override bool ProcessPayment(Payment payment, ref string message)
         {
-            var creditCardPayment = (CreditCardPayment)payment;
+            var paymentProcessingResult = ProcessPayment(payment.Parent.Parent, payment);
+            message = paymentProcessingResult.Message;
+            return paymentProcessingResult.IsSuccessful;
+        }
 
-            if (!creditCardPayment.CreditCardNumber.EndsWith("4"))
-            {
-                message = "Invalid credit card number.";
-                return false;
-            }
+        /// <summary>
+        /// Processes the payment. Can be used for both positive and negative transactions.
+        /// </summary>
+        /// <param name="orderGroup">The order group.</param>
+        /// <param name="payment">The payment.</param>
+        /// <returns>The payment processing result.</returns>
+        public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
+        {
+            var creditCardPayment = (ICreditCardPayment)payment;
 
-            return true;
+            return creditCardPayment.CreditCardNumber.EndsWith("4")
+                ? PaymentProcessingResult.CreateSuccessfulResult(string.Empty)
+                : PaymentProcessingResult.CreateUnsuccessfulResult("Invalid credit card number.");
         }
     }
 }
