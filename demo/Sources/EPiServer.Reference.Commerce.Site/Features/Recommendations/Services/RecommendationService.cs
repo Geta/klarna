@@ -2,17 +2,19 @@
 using EPiServer.Commerce.Order;
 using EPiServer.Personalization.Commerce.Tracking;
 using EPiServer.Reference.Commerce.Site.Features.Product.Services;
+using EPiServer.Reference.Commerce.Site.Features.Recommendations.ViewModels;
 using EPiServer.ServiceLocation;
 using EPiServer.Tracking.Commerce;
 using EPiServer.Tracking.Commerce.Data;
 using EPiServer.Tracking.Core;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
+using Mediachase.Commerce;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using EPiServer.Reference.Commerce.Site.Features.Recommendations.ViewModels;
+
 
 namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
 {
@@ -22,6 +24,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
         private readonly ServiceAccessor<IContentRouteHelper> _contentRouteHelperAccessor;
         private readonly IContextModeResolver _contextModeResolver;
         private readonly IProductService _productService;
+        private readonly ICurrentMarket _currentMarketService;
         private readonly TrackingDataFactory _trackingDataFactory;
         private readonly ITrackingService _trackingService;
 
@@ -29,9 +32,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             ServiceAccessor<IContentRouteHelper> contentRouteHelperAccessor,
             IContextModeResolver contextModeResolver,
             IProductService productService,
+            ICurrentMarket currentMarketService,
             TrackingDataFactory trackingDataFactory,
             ITrackingService trackingService)
         {
+            _currentMarketService = currentMarketService;
             _contentRouteHelperAccessor = contentRouteHelperAccessor;
             _contextModeResolver = contextModeResolver;
             _productService = productService;
@@ -39,7 +44,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             _trackingService = trackingService;
         }
 
-        public async Task<TrackingResponseData> TrackProduct(HttpContextBase httpContext, string productCode, bool skipRecommendations)
+        public async Task<TrackingResponseData> TrackProductAsync(HttpContextBase httpContext, string productCode, bool skipRecommendations)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
@@ -47,16 +52,17 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateProductTrackingData(productCode, httpContext);
+            AddMarketAttribute(trackingData);
 
             if (skipRecommendations)
             {
                 trackingData.SkipRecommendations();
             }
-
+           
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public async Task<TrackingResponseData> TrackSearch(HttpContextBase httpContext, string searchTerm, IEnumerable<string> productCodes)
+        public async Task<TrackingResponseData> TrackSearchAsync(HttpContextBase httpContext, string searchTerm, IEnumerable<string> productCodes)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default || string.IsNullOrWhiteSpace(searchTerm))
             {
@@ -64,10 +70,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateSearchTrackingData(searchTerm, productCodes, httpContext);
+            AddMarketAttribute(trackingData);
+
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public async Task<TrackingResponseData> TrackOrder(HttpContextBase httpContext, IPurchaseOrder order)
+        public async Task<TrackingResponseData> TrackOrderAsync(HttpContextBase httpContext, IPurchaseOrder order)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
@@ -75,10 +83,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateOrderTrackingData(order, httpContext);
+            AddMarketAttribute(trackingData);
+
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public async Task<TrackingResponseData> TrackCategory(HttpContextBase httpContext, NodeContent category)
+        public async Task<TrackingResponseData> TrackCategoryAsync(HttpContextBase httpContext, NodeContent category)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
@@ -86,10 +96,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateCategoryTrackingData(category, httpContext);
+            AddMarketAttribute(trackingData);
+
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public async Task<TrackingResponseData> TrackCart(HttpContextBase httpContext)
+        public async Task<TrackingResponseData> TrackCartAsync(HttpContextBase httpContext)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
@@ -97,11 +109,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateCartTrackingData(httpContext);
+            AddMarketAttribute(trackingData);
             trackingData.SkipRecommendations();
+
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public async Task<TrackingResponseData> TrackWishlist(HttpContextBase httpContext)
+        public async Task<TrackingResponseData> TrackWishlistAsync(HttpContextBase httpContext)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
@@ -109,10 +123,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateWishListTrackingData(httpContext);
+            AddMarketAttribute(trackingData);
+
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
-        public async Task<TrackingResponseData> TrackCheckout(HttpContextBase httpContext)
+        public async Task<TrackingResponseData> TrackCheckoutAsync(HttpContextBase httpContext)
         {
             if (_contextModeResolver.CurrentMode != ContextMode.Default)
             {
@@ -120,6 +136,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
             }
 
             var trackingData = _trackingDataFactory.CreateCheckoutTrackingData(httpContext);
+            AddMarketAttribute(trackingData);
+
             return await _trackingService.TrackAsync(trackingData, httpContext, _contentRouteHelperAccessor().Content);
         }
 
@@ -130,6 +148,24 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
                     x.RecommendationId,
                     _productService.GetProductTileViewModel(x.ContentLink))
             );
+        }
+
+        /// <summary>
+        /// Adds the current market ID as a custom tracking attribute, so that it could
+        /// be used in the Personalization portal e.g. to filter widgets depending on
+        /// the user's market. This is mainly to demonstrate the use of custom attributes,
+        /// it will not automatically affect the tracking or recommendations.
+        /// </summary>
+        /// <param name="trackingData">The tracking data.</param>
+        private void AddMarketAttribute(CommerceTrackingData trackingData)
+        {
+            var currentMarket = _currentMarketService.GetCurrentMarket();
+            if (currentMarket == null)
+            {
+                return;
+            }
+
+            trackingData.SetCustomAttribute("MarketId", currentMarket.MarketId.Value);
         }
     }
 }

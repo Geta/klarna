@@ -1,8 +1,8 @@
 using EPiServer.Core;
+using EPiServer.Personalization.Commerce.Tracking;
 using EPiServer.Reference.Commerce.Site.Features.Product.ViewModels;
 using Mediachase.Search;
 using System.Collections.Generic;
-using EPiServer.Personalization.Commerce.Tracking;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Search.ViewModels
 {

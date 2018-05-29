@@ -1,19 +1,30 @@
 ﻿using EPiServer.Commerce.Order;
 using EPiServer.Framework.Localization;
+using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
+    [ServiceConfiguration(typeof(IPaymentMethod))]
     public class CashOnDeliveryPaymentMethod : PaymentMethodBase
     {
-        public CashOnDeliveryPaymentMethod()
-            : this(LocalizationService.Current, ServiceLocator.Current.GetInstance<IOrderGroupFactory>())
+        public override string SystemKeyword => "CashOnDelivery";
+
+        public CashOnDeliveryPaymentMethod() 
+            : this(LocalizationService.Current, 
+                  ServiceLocator.Current.GetInstance<IOrderGroupFactory>(),
+                  ServiceLocator.Current.GetInstance<LanguageService>(),
+                  ServiceLocator.Current.GetInstance<IPaymentManagerFacade>())
         {
         }
 
-        public CashOnDeliveryPaymentMethod(LocalizationService localizationService, IOrderGroupFactory orderGroupFactory)
-            : base(localizationService, orderGroupFactory)
+        public CashOnDeliveryPaymentMethod(LocalizationService localizationService,
+            IOrderGroupFactory orderGroupFactory,
+            LanguageService languageService,
+            IPaymentManagerFacade paymentManager)
+            : base(localizationService, orderGroupFactory, languageService, paymentManager)
         {
         }
 
@@ -24,19 +35,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
         {
-            var payment = orderGroup.CreatePayment(_orderGroupFactory);
+            var payment = orderGroup.CreatePayment(OrderGroupFactory);
             payment.PaymentType = PaymentType.Other;
             payment.PaymentMethodId = PaymentMethodId;
-            payment.PaymentMethodName = "CashOnDelivery";
+            payment.PaymentMethodName = SystemKeyword;
             payment.Amount = amount;
             payment.Status = PaymentStatus.Pending.ToString();
             payment.TransactionType = TransactionType.Authorization.ToString();
             return payment;
-        }
-
-        public override void PostProcess(IPayment payment)
-        {
-            payment.Status = PaymentStatus.Processed.ToString();
         }
     }
 }

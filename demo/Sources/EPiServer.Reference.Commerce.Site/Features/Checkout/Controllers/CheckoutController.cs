@@ -2,11 +2,10 @@
 using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
+using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
-using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
-using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
@@ -15,21 +14,11 @@ using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
 using System.Web.Mvc;
-using EPiServer.Globalization;
-using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
-using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
-using EPiServer.ServiceLocation;
 using Klarna.Checkout;
-using Klarna.Common;
-using Klarna.Common.Extensions;
-using Klarna.OrderManagement;
 using Klarna.Payments;
-using Klarna.Rest.Models;
-using Mediachase.Commerce.Orders.Managers;
-using Constants = Klarna.Checkout.Constants;
+using Mediachase.Commerce.Markets;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -47,6 +36,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly IKlarnaPaymentsService _klarnaPaymentsService;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         private readonly IContentLoader _contentLoader;
+        private readonly IMarketService _marketService;
 
         public CheckoutController(
             ICurrencyService currencyService,
@@ -59,7 +49,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             CheckoutService checkoutService,
             IKlarnaPaymentsService klarnaPaymentsService,
             IKlarnaCheckoutService klarnaCheckoutService,
-            IContentLoader contentLoader)
+            IContentLoader contentLoader,
+            IMarketService marketService)
         {
             _currencyService = currencyService;
             _controllerExceptionHandler = controllerExceptionHandler;
@@ -72,6 +63,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _klarnaPaymentsService = klarnaPaymentsService;
             _klarnaCheckoutService = klarnaCheckoutService;
             _contentLoader = contentLoader;
+            _marketService = marketService;
         }
 
         [HttpGet]
@@ -83,37 +75,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return View("EmptyCart");
             }
 
-            IPaymentMethodViewModel<PaymentMethodBase> paymentMethod = null;
-            var selectedPaymentMethod = Request["paymentMethod"];
-            if (!string.IsNullOrEmpty(selectedPaymentMethod))
-            {
-                paymentMethod = PaymentMethodViewModelResolver.Resolve(selectedPaymentMethod);
-                paymentMethod.SystemName = selectedPaymentMethod;
-            }
-
-            var viewModel = CreateCheckoutViewModel(currentPage, paymentMethod);
+            var viewModel = CreateCheckoutViewModel(currentPage);
 
             Cart.Currency = _currencyService.GetCurrentCurrency();
-            
-            if (User.Identity.IsAuthenticated)
-            {
-                _checkoutService.UpdateShippingAddresses(Cart, viewModel);
-            }
 
+            _checkoutService.UpdateShippingAddresses(Cart, viewModel);
             _checkoutService.UpdateShippingMethods(Cart, viewModel.Shipments);
-            _checkoutService.ApplyDiscounts(Cart);
+
+            _cartService.ApplyDiscounts(Cart);
             _orderRepository.Save(Cart);
 
-            if (viewModel.Payment.SystemName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
-            {
-                await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
-                (viewModel.Payment as KlarnaPaymentsViewModel)?.InitializeValues();
-            }
-            if (viewModel.Payment.SystemName.Equals(Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword))
-            {
-                _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
-                (viewModel.Payment as KlarnaCheckoutViewModel)?.InitializeValues();
-            }
+            await _recommendationService.TrackCheckoutAsync(HttpContext);
+
+            _checkoutService.ProcessPaymentCancel(viewModel, TempData, ControllerContext);
+
             return View(viewModel.ViewName, viewModel);
         }
 
@@ -131,34 +106,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public async Task<ActionResult> Update(CheckoutPage currentPage, UpdateShippingMethodViewModel shipmentViewModel, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel, CheckoutViewModel inputModel)
-        {
-            ModelState.Clear();
-
-            _checkoutService.UpdateShippingMethods(Cart, shipmentViewModel.Shipments);
-            _checkoutService.ApplyDiscounts(Cart);
-            _orderRepository.Save(Cart);
-
-            var viewModel = CreateCheckoutViewModel(currentPage, paymentViewModel);
-            
-            await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
-
-            return PartialView("Partial", viewModel);
-        }
-
-        [HttpPost]
-        [AllowDBWrite]
         public async Task<ActionResult> ChangeAddress(UpdateAddressViewModel addressViewModel)
         {
             ModelState.Clear();
             var viewModel = CreateCheckoutViewModel(addressViewModel.CurrentPage);
             _checkoutService.CheckoutAddressHandling.ChangeAddress(viewModel, addressViewModel);
 
-            //if (User.Identity.IsAuthenticated)
-            //{
             _checkoutService.UpdateShippingAddresses(Cart, viewModel);
-            //}
-            
+
             _orderRepository.Save(Cart);
 
             var addressViewName = addressViewModel.ShippingAddressIndex > -1 ? "SingleShippingAddress" : "BillingAddress";
@@ -196,81 +151,71 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var viewModel = CreateCheckoutViewModel(currentPage);
             return View(viewModel.ViewName, viewModel);
         }
-        
+
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult Purchase(CheckoutViewModel viewModel, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel)
+        public ActionResult Purchase(CheckoutViewModel viewModel, IPaymentMethod paymentMethod)
         {
             if (CartIsNullOrEmpty())
             {
                 return Redirect(Url.ContentUrl(ContentReference.StartPage));
             }
 
-            // Since the payment property is marked with an exclude binding attribute in the CheckoutViewModel
-            // it needs to be manually re-added again.
-            viewModel.Payment = paymentViewModel;
-            
-            if (User.Identity.IsAuthenticated)
+            viewModel.Payment = paymentMethod;
+
+            viewModel.IsAuthenticated = User.Identity.IsAuthenticated;
+
+            _checkoutService.CheckoutAddressHandling.UpdateUserAddresses(viewModel);
+
+            if (!_checkoutService.ValidateOrder(ModelState, viewModel, _cartService.ValidateCart(Cart)))
             {
-                _checkoutService.CheckoutAddressHandling.UpdateAuthenticatedUserAddresses(viewModel);
-
-                var validation = _checkoutService.AuthenticatedPurchaseValidation;
-
-                if (!validation.ValidateModel(ModelState, viewModel) ||
-                    !validation.ValidateOrderOperation(ModelState, _cartService.ValidateCart(Cart)) ||
-                    !validation.ValidateOrderOperation(ModelState, _cartService.RequestInventory(Cart)))
-                {
-                    return View(viewModel);
-                }
+                return View(viewModel);
             }
-            else
-            {
-                _checkoutService.CheckoutAddressHandling.UpdateAnonymousUserAddresses(viewModel);
 
-                var validation = _checkoutService.AnonymousPurchaseValidation;
-              
-                if (!validation.ValidateModel(ModelState, viewModel) ||
-                    !validation.ValidateOrderOperation(ModelState, _cartService.ValidateCart(Cart)) ||
-                    !validation.ValidateOrderOperation(ModelState, _cartService.RequestInventory(Cart)))
-                {
-                    return View(viewModel);
-                }
+            if (!paymentMethod.ValidateData())
+            {
+                return View(viewModel);
             }
 
             _checkoutService.UpdateShippingAddresses(Cart, viewModel);
+
             _checkoutService.CreateAndAddPaymentToCart(Cart, viewModel);
 
             var purchaseOrder = _checkoutService.PlaceOrder(Cart, ModelState, viewModel);
+            if (!string.IsNullOrEmpty(viewModel.RedirectUrl))
+            {
+                return Redirect(viewModel.RedirectUrl);
+            }
+
             if (purchaseOrder == null)
             {
                 return View(viewModel);
             }
-            
+
             var result = _klarnaPaymentsService.Complete(purchaseOrder);
             if (result.IsRedirect)
             {
-                Redirect(result.RedirectUrl);
+                return Redirect(result.RedirectUrl);
             }
 
             var confirmationSentSuccessfully = _checkoutService.SendConfirmation(viewModel, purchaseOrder);
-          
+
             return Redirect(_checkoutService.BuildRedirectionUrl(viewModel, purchaseOrder, confirmationSentSuccessfully));
         }
 
         [HttpGet]
         public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
         {
-            //var klarnaOrderService = ServiceLocator.Current.GetInstance<IKlarnaOrderService>();
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {
-                var order = _klarnaCheckoutService.GetOrder(klarna_order_id, cart.Market);
+                var market = _marketService.GetMarket(cart.MarketId);
+                var order = _klarnaCheckoutService.GetOrder(klarna_order_id, market);
                 if (order.Status == "checkout_complete")
                 {
                     var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
                     if (purchaseOrder == null)
                     {
-                        //var asdfadsfds = klarnaOrderService.GetOrder(klarna_order_id);
                         ModelState.AddModelError("", "Error occurred while creating a purchase order");
 
                         return RedirectToAction("Index");
@@ -279,7 +224,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     _checkoutService.SendConfirmation(new CheckoutViewModel
                     {
                         CurrentPage = _contentLoader.Get<CheckoutPage>(_contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage),
-                        BillingAddress = new AddressModel { Email = purchaseOrder.GetFirstForm().Payments.FirstOrDefault()?.BillingAddress.Email}
+                        BillingAddress = new Shared.Models.AddressModel { Email = purchaseOrder.GetFirstForm().Payments.FirstOrDefault()?.BillingAddress.Email }
                     }, purchaseOrder);
 
                     return Redirect(_checkoutService.BuildRedirectionUrl(purchaseOrder));
@@ -291,7 +236,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
             return HttpNotFound();
         }
-      
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)
         {
@@ -317,15 +261,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return View(checkoutViewModel.ViewName, CreateCheckoutViewModel(checkoutViewModel.CurrentPage, checkoutViewModel.Payment));
         }
 
-        private CheckoutViewModel CreateCheckoutViewModel(CheckoutPage currentPage, IPaymentMethodViewModel<PaymentMethodBase> paymentViewModel = null)
+        private CheckoutViewModel CreateCheckoutViewModel(CheckoutPage currentPage, IPaymentMethod paymentMethod = null)
         {
-            return _checkoutViewModelFactory.CreateCheckoutViewModel(Cart, currentPage, paymentViewModel);
+            return _checkoutViewModelFactory.CreateCheckoutViewModel(Cart, currentPage, paymentMethod);
         }
 
-        private ICart Cart
-        {
-            get { return _cart ?? (_cart = _cartService.LoadCart(_cartService.DefaultCartName)); }
-        }
+        private ICart Cart => _cart ?? (_cart = _cartService.LoadCart(_cartService.DefaultCartName));
 
         private bool CartIsNullOrEmpty()
         {

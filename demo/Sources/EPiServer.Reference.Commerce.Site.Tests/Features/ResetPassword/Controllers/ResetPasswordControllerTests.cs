@@ -21,6 +21,12 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.ResetPassword.Control
     public class ResetPasswordControllerTests
     {
         [Fact]
+        public void ResetPasswordController_Should_InitEmailServiceForUserManager()
+        {            
+            Assert.NotNull(_subject.UserManager.EmailService);
+        }
+
+        [Fact]
         public void Index_ShouldReturnForgotPasswordView()
         {
             ViewResult result = _subject.Index(_resetPasswordPageMock.Object) as ViewResult;
@@ -105,7 +111,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.ResetPassword.Control
             var contentLoaderMock = new Mock<IContentLoader>();
             var mailServiceMock = new Mock<IMailService>();
             var localizationService = new MemoryLocalizationService();
-            var customerContextFacade = new Mock<CustomerContextFacade>();
+            var customerContextFacade = new Mock<CustomerContextFacade>(null);
 
             _resetPasswordPageMock = new Mock<ResetPasswordPage>();
             _userManagerMock = new Mock<ApplicationUserManager<SiteUser>>(userStoreMock.Object);

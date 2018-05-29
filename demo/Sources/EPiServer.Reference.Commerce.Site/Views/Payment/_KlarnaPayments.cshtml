@@ -1,0 +1,31 @@
+﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods.KlarnaPaymentsPaymentMethod
+
+@Html.HiddenFor(model => model.SystemKeyword)
+
+@if (!string.IsNullOrWhiteSpace(Model.KlarnaLogoUrl))
+{
+    <img src="@Model.KlarnaLogoUrl" alt="Klarna logo" class="klarna-logo" />
+}
+<div id="klarna_container"></div>
+<div id="klarna_container_error" class="alert alert-danger" hidden>@Html.Translate("/Checkout/Payment/Errors/NotAvailable")</div>
+
+<script>
+    (function () {
+        var klarnaData = {
+            klarna_container: "#klarna_container",
+            client_token: '@Model.ClientToken'
+        };
+
+        // Register callback function to be executed after initial load
+        window.klarnaAsyncCallback = function () {
+            KlarnaCheckout.load(klarnaData);
+        };
+
+        // Only call this if jQuery/Klarna/KlarnaCheckout has been loaded already
+        if (window.jQuery && window.Klarna && window.KlarnaCheckout) {
+            window.setTimeout(function () {
+                KlarnaCheckout.load(klarnaData);
+            }, 100);
+        }
+    })();
+</script>

@@ -26,6 +26,10 @@
           <Currency>Valutaslag</Currency>
         </Labels>
       </Market>
+      <PricesInformation>
+        <IncludeTax>Alla priser inklusive moms</IncludeTax>
+        <ExcludeTax>Alla priser exklusive moms</ExcludeTax>
+      </PricesInformation>
     </Header>
     <Facet>
       <Choices>Artiklar:</Choices>
@@ -66,6 +70,9 @@
         <Size>Välj Storlek</Size>
       </VariationSelection>
     </ProductPage>
+    <Warehouse>
+      <Availability>Produkten är tillgänglig i följande varuhus:</Availability>
+    </Warehouse>
     <Checkout>
       <EmptyCart>Din varukorg är tom.</EmptyCart>
       <Coupons>
@@ -101,7 +108,6 @@
           <PlacedPricedChanged>Priset för artikel {0} har förändrats sedan den lades till din varukorg.</PlacedPricedChanged>
           <AdjustedQuantity>Antalet av artikel {0} har förändrats.</AdjustedQuantity>
           <ProcessingPaymentFailure>Behandlingen av din betalning misslyckades.</ProcessingPaymentFailure>
-          <NotAvailable>Payment method not available, select a different payment method instead</NotAvailable>
         </Errors>
         <Methods>
           <CashOnDelivery>
@@ -133,6 +139,9 @@
       </Payment>
       <Billing>
         <Heading>Faktureringsadress</Heading>
+        <Errors>
+          <EmptyEmail>Faktureringsadress: E-post krävs</EmptyEmail>
+        </Errors>
       </Billing>
       <Shipment>
         <ShippingTo>Levereras till:</ShippingTo>
@@ -141,6 +150,7 @@
         <Heading>Leveransadress</Heading>
         <Labels>
           <ChooseDelivery>Välj leveranssätt</ChooseDelivery>
+          <FreeOfCharge>Gratis</FreeOfCharge>
         </Labels>
         <Empty>
           <ChooseDelivery>Leveranssätt krävs</ChooseDelivery>
@@ -173,7 +183,6 @@
           <FirstName>Förnamn krävs</FirstName>
           <LastName>Efternamn krävs</LastName>
           <Email>E-postadress krävs</Email>
-          <DaytimePhoneNumber>Phone krävs</DaytimePhoneNumber>
           <Address>Leveransadress krävs</Address>
           <Country>Land krävs</Country>
           <City>Stad krävs</City>
@@ -231,6 +240,10 @@
       <ShippingCost>Beräknade fraktkostnader</ShippingCost>
       <ShippingSubtotal>Frakt Delsumma</ShippingSubtotal>
       <ShippingDiscount>Frakt Rabatt</ShippingDiscount>
+      <ShipmentCost>Frakt Kostnad</ShipmentCost>
+      <ShippingItemsTotal>Varor Totalt</ShippingItemsTotal>
+      <ShippingMethod>Fraktsätt</ShippingMethod>
+      <ShippingAddress>Fraktaddress</ShippingAddress>
       <TaxTotal>Beräknad skatt </TaxTotal>
       <CartTotal>Total för kundvagnen</CartTotal>
       <BillingDetails>Faktureringsinformation</BillingDetails>
@@ -519,8 +532,8 @@
             <Name>Namn *:</Name>
             <ShippingAddress>Standardleveransadress</ShippingAddress>
             <BillingAddress>Standardfaktureringsadress</BillingAddress>
-            <DaytimePhoneNumber>Telefonnummer *:</DaytimePhoneNumber>
-            <Email>E-post *:</Email>
+            <DaytimePhoneNumber>Telefonnummer:</DaytimePhoneNumber>
+            <Email>E-post:</Email>
           </Label>
           <Error>
             <InvalidEmail>Du måste ange en giltig e-postadress</InvalidEmail>

@@ -1,11 +1,9 @@
-﻿using EPiServer.Commerce.Order;
-using EPiServer.Reference.Commerce.Site.Features.AddressBook.Pages;
+﻿using EPiServer.Reference.Commerce.Site.Features.AddressBook.Pages;
 using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes;
 using Mediachase.BusinessFoundation.Data;
 using Mediachase.Commerce.Customers;
-using Moq;
 using System;
 using System.Linq;
 using Xunit;
@@ -190,7 +188,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.AddressBook
         {
             _subject.Delete(_address1.AddressId.ToString());
 
-            Assert.Equal<int>(1, _currentContact.ContactAddresses.Count());
+            Assert.Single(_currentContact.ContactAddresses);
         }
 
         [Fact]
@@ -229,6 +227,15 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.AddressBook
             _subject.LoadAddress(model);
 
             Assert.Null(model.AddressId);
+        }
+
+        [Fact]
+        public void LoadAddress_WhenModelHasNoCountryCode_ShouldReturnModelWithoutCountryCode()
+        {
+            var model = new AddressModel();
+            _subject.LoadAddress(model);
+
+            Assert.Null(model.CountryCode);
         }
 
         [Fact]

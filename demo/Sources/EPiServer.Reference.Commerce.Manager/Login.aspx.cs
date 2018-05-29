@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Mediachase.Commerce.Manager.Apps.Order.Payments.Tabs;
+using AppContext = Mediachase.Commerce.Core.AppContext;
 
 namespace EPiServer.Reference.Commerce.Manager
 {
@@ -37,7 +37,7 @@ namespace EPiServer.Reference.Commerce.Manager
             {
                 return;
             }
-            LoginCtrl.FindControl("ApplicationRow").Visible = Mediachase.Commerce.Core.AppContext.Current.GetApplicationDto().Application.Count != 1;
+            LoginCtrl.FindControl("ApplicationRow").Visible = AppContext.Current.GetApplicationDto().Application.Count != 1;
             LoginCtrl.Focus();
         }
 

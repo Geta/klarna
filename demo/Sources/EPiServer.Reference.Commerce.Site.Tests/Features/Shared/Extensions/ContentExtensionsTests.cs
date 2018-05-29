@@ -19,7 +19,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Shared.Extensions
 
             var result = ContentExtensions.GetUrl(variant, _relationRepositoryMock.Object, _urlResolverMock.Object);
 
-            Assert.Equal<string>(_url, result);
+            Assert.Equal(_url, result);
         }
 
         [Fact]
@@ -29,21 +29,21 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Shared.Extensions
 
             var result = ContentExtensions.GetUrl(variant, _relationRepositoryMock.Object, _urlResolverMock.Object);
 
-            Assert.Equal<string>(_url + "?variationCode=" + variant.Code, result);
+            Assert.Equal(_url + "?variationCode=" + variant.Code, result);
         }
 
         [Fact]
         public void GetUrl_WhenNoRelationExists_ShouldReturnEmptyString()
         {
             _relationRepositoryMock
-                .Setup(x => x.GetRelationsByTarget<ProductVariation>(It.IsAny<ContentReference>()))
+                .Setup(x => x.GetParents<ProductVariation>(It.IsAny<ContentReference>()))
                 .Returns(Enumerable.Empty<ProductVariation>());
 
             var variant = new VariationContent();
 
             var result = ContentExtensions.GetUrl(variant, _relationRepositoryMock.Object, _urlResolverMock.Object);
 
-            Assert.Equal<string>(string.Empty, result);
+            Assert.Equal(string.Empty, result);
         }
 
         private Mock<IRelationRepository> _relationRepositoryMock;
@@ -54,8 +54,8 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Shared.Extensions
         public ContentExtensionsTests()
         {
             _relationRepositoryMock = new Mock<IRelationRepository>();
-            _relationRepositoryMock.Setup(x => x.GetRelationsByTarget<ProductVariation>(It.IsAny<ContentReference>()))
-                .Returns(new[] { new ProductVariation() { Source = new ContentReference(1) } });
+            _relationRepositoryMock.Setup(x => x.GetParents<ProductVariation>(It.IsAny<ContentReference>()))
+                .Returns(new[] {new ProductVariation {Parent = new ContentReference(1)}});
 
             _url = "http://domain.com/";
             _urlResolverMock = new Mock<UrlResolver>();

@@ -5,8 +5,11 @@ using EPiServer.Editor;
 using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
+using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Web.Mvc.Html;
+using Mediachase.Commerce.Markets;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Globalization;
 using Klarna.Checkout;
@@ -16,37 +19,42 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
     public class OrderConfirmationController : OrderConfirmationControllerBase<OrderConfirmationPage>
     {
+        private readonly IRecommendationService _recommendationService;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
 
         public OrderConfirmationController(
             ConfirmationService confirmationService,
             AddressBookService addressBookService,
             CustomerContextFacade customerContextFacade,
-            IOrderGroupTotalsCalculator orderGroupTotalsCalculator,
+            IOrderGroupCalculator orderGroupCalculator,
+            IMarketService marketService,
+            IRecommendationService recommendationService,
             IKlarnaCheckoutService klarnaCheckoutService)
-            : base(confirmationService, addressBookService, customerContextFacade, orderGroupTotalsCalculator)
+            : base(confirmationService, addressBookService, customerContextFacade, orderGroupCalculator, marketService)
         {
+            _recommendationService = recommendationService;
             _klarnaCheckoutService = klarnaCheckoutService;
         }
 
         [HttpGet]
-        public ActionResult Index(OrderConfirmationPage currentPage, string notificationMessage, int? orderNumber, string trackingNumber)
+        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, int? orderNumber)
         {
             IPurchaseOrder order = null;
             if (PageEditing.PageIsInEditMode)
             {
-                order = _confirmationService.CreateFakePurchaseOrder();
+                order = ConfirmationService.CreateFakePurchaseOrder();
             }
             else if (orderNumber.HasValue)
             {
-                order = _confirmationService.GetOrder(orderNumber.Value);
-            }
-            else if (!string.IsNullOrEmpty(trackingNumber))
-            {
-                order = _confirmationService.GetByTrackingNumber(trackingNumber);
+                order = ConfirmationService.GetOrder(orderNumber.Value);
+
+                if (order != null)
+                {
+                    await _recommendationService.TrackOrderAsync(HttpContext, order);
+                }
             }
 
-            if (order != null/* && order.CustomerId == _customerContext.CurrentContactId*/)
+            if (order != null && order.CustomerId == CustomerContext.CurrentContactId)
             {
                 var viewModel = CreateViewModel(currentPage, order);
                 viewModel.NotificationMessage = notificationMessage;
@@ -58,7 +66,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
                 if (paymentMethod != null &&
                     order.GetFirstForm().Payments.Any(x => x.PaymentMethodId == paymentMethod.PaymentMethodId &&
-                    !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
+                                                           !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
                 {
                     var klarnaOrder =
                         _klarnaCheckoutService.GetOrder(

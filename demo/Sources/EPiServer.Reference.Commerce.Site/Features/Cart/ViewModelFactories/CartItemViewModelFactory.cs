@@ -7,16 +7,13 @@ using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
-using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Product.Models;
 using EPiServer.Reference.Commerce.Site.Features.Product.Services;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Services;
-using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Mediachase.Commerce;
-using Mediachase.Commerce.Catalog;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
 {
@@ -26,12 +23,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
         private readonly IContentLoader _contentLoader;
         private readonly IPricingService _pricingService;
         private readonly UrlResolver _urlResolver;
-        private readonly ICurrentMarket _currentMarket;
-        private readonly ICurrencyService _currencyService;
-        private readonly IPromotionService _promotionService;
-        private readonly AppContextFacade _appContext;
-        private readonly ILineItemCalculator _lineItemCalculator;
-        private readonly IProductService _productService;
+        private readonly CatalogContentService _catalogContentService;
         private readonly IRelationRepository _relationRepository;
         readonly ICartService _cartService;
 
@@ -39,24 +31,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
             IContentLoader contentLoader,
             IPricingService pricingService,
             UrlResolver urlResolver,
-            ICurrentMarket currentMarket,
-            ICurrencyService currencyService,
-            IPromotionService promotionService,
-            AppContextFacade appContext,
-            ILineItemCalculator lineItemCalculator,
-            IProductService productService,
+            CatalogContentService catalogContentService,
             IRelationRepository relationRepository,
             ICartService cartService)
         {
             _contentLoader = contentLoader;
             _pricingService = pricingService;
             _urlResolver = urlResolver;
-            _currentMarket = currentMarket;
-            _currencyService = currencyService;
-            _promotionService = promotionService;
-            _appContext = appContext;
-            _lineItemCalculator = lineItemCalculator;
-            _productService = productService;
+            _catalogContentService = catalogContentService;
             _relationRepository = relationRepository;
             _cartService = cartService;
         }
@@ -69,11 +51,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
                 DisplayName = entry.DisplayName,
                 ImageUrl = entry.GetAssets<IContentImage>(_contentLoader, _urlResolver).FirstOrDefault() ?? "",
                 DiscountedPrice = GetDiscountedPrice(cart, lineItem),
-                PlacedPrice = new Money(lineItem.PlacedPrice, _currencyService.GetCurrentCurrency()),
+                PlacedPrice = _pricingService.GetMoney(lineItem.PlacedPrice),
                 Quantity = lineItem.Quantity,
                 Url = entry.GetUrl(_relationRepository, _urlResolver),
                 Entry = entry,
-                IsAvailable = _pricingService.GetCurrentPrice(entry.Code).HasValue,
+                IsAvailable = _pricingService.GetPrice(entry.Code) != null,
                 DiscountedUnitPrice = GetDiscountedUnitPrice(cart, lineItem),
                 IsGift = lineItem.IsGift
             };
@@ -83,7 +65,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
                 entry.ContentLink;
 
             FashionProduct product;
-            if (_contentLoader.TryGet<FashionProduct>(productLink, out product))
+            if (_contentLoader.TryGet(productLink, out product))
             {
                 viewModel.Brand = GetBrand(product);
             }
@@ -106,25 +88,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories
         private IEnumerable<string> GetAvailableSizes(FashionProduct product, FashionVariant entry)
         {
             return product != null ?
-                _productService.GetVariants(product).Where(x => x.Color.Equals(entry.Color, StringComparison.OrdinalIgnoreCase)).Select(x => x.Size)
+                _catalogContentService.GetVariants<FashionVariant>(product).Where(x => x.Color.Equals(entry.Color, StringComparison.OrdinalIgnoreCase)).Select(x => x.Size)
                 : Enumerable.Empty<string>();
         }
 
         private string GetBrand(FashionProduct product)
         {
-            return product != null ? product.Brand : null;
+            return product?.Brand;
         }
 
         private Money? GetDiscountedPrice(ICart cart, ILineItem lineItem)
         {
-            var marketId = _currentMarket.GetCurrentMarket().MarketId;
-            var currency = _currencyService.GetCurrentCurrency();
-            if (cart.Name.Equals(_cartService.DefaultWishListName))
-            {
-                var discountedPrice = _promotionService.GetDiscountPrice(new CatalogKey(_appContext.ApplicationId, lineItem.Code), marketId, currency);
-                return discountedPrice != null ? discountedPrice.UnitPrice : (Money?)null;
-            }
-            return lineItem.GetDiscountedPrice(cart.Currency, _lineItemCalculator);
+            return cart.Name.Equals(_cartService.DefaultWishListName) ? 
+                _pricingService.GetDiscountPrice(lineItem.Code)?.UnitPrice : 
+                _pricingService.GetDiscountedPrice(lineItem, cart.Currency);
         }
     }
 }

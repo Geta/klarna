@@ -1,4 +1,6 @@
-﻿@model EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels.CheckoutViewModel
+﻿@using EPiServer.Personalization.Commerce.Extensions
+@using EPiServer.Tracking.Commerce
+@model EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels.CheckoutViewModel
 @{
     if (Request.IsAjaxRequest())
     {
@@ -70,6 +72,13 @@
         </div>
     </div>
 
+    @if (!string.IsNullOrEmpty(Model.Message))
+    {
+        <div class="alert alert-warning">
+            @Model.Message
+        </div>
+    }
+
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="alert alert-danger">
@@ -104,7 +113,7 @@
                             @{ Html.RenderPartial("BillingAddress", Model); }
                         </div>
                         <div class="col-md-6 col-xs-12">
-                            @{ Html.RenderPartial("Payment", Model); }
+                            @{ Html.RenderAction("PaymentMethodSelection", "Payment"); }
                         </div>
                     </div>
                     <h2>@Html.Translate("/Checkout/Shipment/Heading")</h2>
@@ -113,19 +122,25 @@
                             @{ Html.RenderPartial("SingleShippingAddress", Model); }
                         </div>
                     </div>
-                 }
-            }
+                }
+        }
+
         @if (!Model.KlarnaCheckoutPaymentMethodSelected)
         {
             <div class="row section-box">
                 <div class="col-xs-12">
                     @{ Html.RenderAction("OrderSummary"); }
-                    @if (!(bool)ViewData["IsReadOnly"])
+                    @if (!(bool) ViewData["IsReadOnly"])
                     {
                         <button type="submit" class="btn btn-primary btn--blue pull-right">@Html.Translate("/Checkout/PlaceOrder")</button>
                     }
                 </div>
             </div>
         }
-</form>
+
+        @if (Request.IsAjaxRequest())
+        {
+            @Html.SetupOnLoadTracking()
+        }
+    </form>
 </div>

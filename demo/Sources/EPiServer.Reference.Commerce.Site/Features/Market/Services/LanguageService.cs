@@ -48,7 +48,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Market.Services
                 else
                 {
                     var currentMarket = _currentMarket.GetCurrentMarket();
-                    if (currentMarket != null && currentMarket.DefaultLanguage != null)
+                    if (currentMarket?.DefaultLanguage != null)
                     {
                         chosenLanguage = currentMarket.DefaultLanguage.Name;
                     }
@@ -89,9 +89,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Market.Services
             }
         }
 
-        private IMarket CurrentMarket
-        {
-            get { return _currentMarket.GetCurrentMarket(); }
-        }
+        private IMarket CurrentMarket => _currentMarket.GetCurrentMarket();
     }
 }

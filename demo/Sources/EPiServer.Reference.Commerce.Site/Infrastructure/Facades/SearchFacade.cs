@@ -5,6 +5,7 @@ using Mediachase.Commerce.Website.Search;
 using Mediachase.Search;
 using Mediachase.Search.Extensions;
 using StringCollection = System.Collections.Specialized.StringCollection;
+using AppContext = Mediachase.Commerce.Core.AppContext;
 
 namespace EPiServer.Reference.Commerce.Site.Infrastructure.Facades
 {
@@ -33,10 +34,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Facades
             return _searchProviderType;
         }
 
-        public virtual SearchFilter[] SearchFilters
-        {
-            get { return SearchFilterHelper.Current.SearchConfig.SearchFilters; }
-        }
+        public virtual SearchFilter[] SearchFilters => SearchFilterHelper.Current.SearchConfig.SearchFilters;
 
         public virtual StringCollection GetOutlinesForNode(string code)
         {
@@ -49,7 +47,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Facades
             {
                 return;
             }
-            _searchManager = new SearchManager(Mediachase.Commerce.Core.AppContext.Current.ApplicationName);
+            _searchManager = new SearchManager(AppContext.Current.ApplicationName);
             _searchProviderType = LoadSearchProvider();
             _initialized = true;
         }
@@ -77,7 +75,5 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Facades
 
             return SearchProviderType.Unknown;
         }
-
-
     }
 }

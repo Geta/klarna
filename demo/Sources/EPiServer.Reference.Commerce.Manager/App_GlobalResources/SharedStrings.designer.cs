@@ -4445,6 +4445,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Prices Include Tax.
+        /// </summary>
+        internal static string Prices_Include_Tax {
+            get {
+                return ResourceManager.GetString("Prices_Include_Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This property will affect how prices in this market are calculated in orders.
+        /// </summary>
+        internal static string Prices_Include_Tax_Information {
+            get {
+                return ResourceManager.GetString("Prices_Include_Tax_Information", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Priority.
         /// </summary>
         internal static string Priority {

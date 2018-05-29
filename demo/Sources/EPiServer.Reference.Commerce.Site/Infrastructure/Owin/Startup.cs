@@ -15,13 +15,19 @@ using Microsoft.Owin.Security.Twitter;
 using Owin;
 using System;
 
+#if !(MIXED_MODE_AUTHENTICATION)
 [assembly: OwinStartup(typeof(EPiServer.Reference.Commerce.Site.Infrastructure.Owin.Startup))]
+#endif
 namespace EPiServer.Reference.Commerce.Site.Infrastructure.Owin
 {
     public class Startup
     {
         // For more information on configuring authentication,
         // please visit http://world.episerver.com/documentation/Items/Developers-Guide/Episerver-CMS/9/Security/episerver-aspnetidentity/
+        // For more information on configuring OpenID Connect,
+        // please visit https://world.episerver.com/documentation/developer-guides/commerce/security/support-for-openid-connect-in-episerver-commerce/
+        // Note: The Katana team is working hard on updating performance and security however sometimes bugs are logged.
+        // Please visit https://github.com/aspnet/AspNetKatana/issues to stay on top of issues that could affect your implementation. 
 
         private readonly IConnectionStringHandler _connectionStringHandler;
 
@@ -56,8 +62,8 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Owin
                     OnValidateIdentity = SecurityStampValidator.OnValidateIdentity<ApplicationUserManager<SiteUser>, SiteUser>(
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => manager.GenerateUserIdentityAsync(user)),
-                    OnApplyRedirect = (context => context.Response.Redirect(context.RedirectUri)),
-                    OnResponseSignOut = (context => context.Response.Redirect(UrlResolver.Current.GetUrl(ContentReference.StartPage)))
+                    OnApplyRedirect = context => context.Response.Redirect(context.RedirectUri),
+                    OnResponseSignOut = context => context.Response.Redirect(UrlResolver.Current.GetUrl(ContentReference.StartPage))
                 }
             });
 
@@ -71,31 +77,38 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Owin
             // This is similar to the RememberMe option when you log in.
             app.UseTwoFactorRememberBrowserCookie(DefaultAuthenticationTypes.TwoFactorRememberBrowserCookie);
 
-            // To enable using an external provider like Facebook or Google, uncomment the options you want to make available.
-            // Also remember to apply the correct client id and secret code to each method that you call below.
-            // Uncomment the external login providers you want to enable in your site. Don't forget to change their respective client id and secret.
+#if GOOGLE_ACCOUNT_LOGIN_FEATURE
+            EnableGoogleAccountLogin(app);
+#endif
 
-            //EnableMicrosoftAccountLogin(app);
-            //EnableTwitterAccountLogin(app);
-            //EnableFacebookAccountLogin(app);
-            //EnableGoogleAccountLogin(app);
+#if FACEBOOK_ACCOUNT_LOGIN_FEATURE
+            EnableFacebookAccountLogin(app);
+#endif
+
+#if TWITTER_ACCOUNT_LOGIN_FEATURE
+            EnableTwitterAccountLogin(app);
+#endif
+
+#if MICROSOFT_ACCOUNT_LOGIN_FEATURE
+            EnableMicrosoftAccountLogin(app);
+#endif
         }
 
         /// <summary>
         /// Enables authenticating users using their Google+ account.
         /// </summary>
-        /// <remarks>
-        /// To use this feature you need to have a developer account registered and a client project created at Google. You can do all
-        /// this at https://console.developers.google.com.
-        /// Once the client is created, copy the client id and client secret that is provided and put them as credentials in this
-        /// method.
-        /// Security Note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
-        /// </remarks>
         /// <param name="app">The application to associate with the login provider.</param>
+        /// <remarks>
+        /// To use this feature, define GOOGLE_ACCOUNT_LOGIN_FEATURE symbol.
+        /// A Google+ developer account and an app needs to be created at https://console.developers.google.com.
+        /// Update ClientId and ClientSecret values with provided client id and client secret.
+        /// Security note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
+        /// Note: Please visit https://github.com/aspnet/AspNetKatana/issues to stay on top of issues that could affect your implementation.
+        /// </remarks>
         private static void EnableGoogleAccountLogin(IAppBuilder app)
         {
             // Note that the id and secret code below are fictitious and will not work when calling Google.
-            GoogleOAuth2AuthenticationOptions googleOptions = new GoogleOAuth2AuthenticationOptions()
+            var googleOptions = new GoogleOAuth2AuthenticationOptions()
             {
                 ClientId = "<ChangeThis>",
                 ClientSecret = "<ChangeThis>",
@@ -107,41 +120,44 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Owin
         /// <summary>
         /// Enables authenticating users using their Facebook account.
         /// </summary>
-        /// <remarks>
-        /// To use this feature you need to have a developer account registered and an app created at Facebook. You can do all
-        /// this at https://developers.facebook.com/apps.
-        /// Once the app is created, copy the client id and client secret that is provided and put them as credentials in this
-        /// method.
-        /// Security Note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
-        /// </remarks>
         /// <param name="app">The application to associate with the login provider.</param>
+        /// <remarks>
+        /// To use this feature, define FACEBOOK_ACCOUNT_LOGIN_FEATURE symbol.
+        /// A Facebook developer account and an app needs to be created at https://developers.facebook.com/apps.
+        /// Update AppId and AppSecret values with provided client id and client secret.
+        /// Security note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
+        /// Note: Please visit https://github.com/aspnet/AspNetKatana/issues to stay on top of issues that could affect your implementation.
+        /// </remarks>
         private static void EnableFacebookAccountLogin(IAppBuilder app)
         {
             // Note that the id and secret code below are fictitious and will not work when calling Facebook.
-            FacebookAuthenticationOptions facebookOptions = new FacebookAuthenticationOptions
+            var facebookOptions = new FacebookAuthenticationOptions
             {
                 AppId = "<ChangeThis>",
                 AppSecret = "<ChangeThis>"
             };
+            facebookOptions.Scope.Add("public_profile");
             facebookOptions.Scope.Add("email");
+            facebookOptions.Fields.Add("email");
+            facebookOptions.Fields.Add("name");
             app.UseFacebookAuthentication(facebookOptions);
         }
 
         /// <summary>
         /// Enables authenticating users using their Twitter account.
         /// </summary>
-        /// <remarks>
-        /// To use this feature you need to have a developer account registered and an app created at Twitter. You can do all
-        /// this at https://dev.twitter.com/apps.
-        /// Once the app is created, copy the client id and client secret that is provided and put them as credentials in this
-        /// method.
-        /// Security Note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
-        /// </remarks>
         /// <param name="app">The application to associate with the login provider.</param>
+        /// <remarks>
+        /// To use this feature, define TWITTER_ACCOUNT_LOGIN_FEATURE symbol.
+        /// A Twitter developer account and an app needs to be created at https://dev.twitter.com/apps.
+        /// Update ConsumerKey and ConsumerSecret values with provided client id and client secret.
+        /// Security note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
+        /// Note: Please visit https://github.com/aspnet/AspNetKatana/issues to stay on top of issues that could affect your implementation.
+        /// </remarks>
         private static void EnableTwitterAccountLogin(IAppBuilder app)
         {
             // Note that the id and secret code below are fictitious and will not work when calling Twitter.
-            TwitterAuthenticationOptions twitterOptions = new TwitterAuthenticationOptions
+            var twitterOptions = new TwitterAuthenticationOptions
             {
                 ConsumerKey = "<ChangeThis>",
                 ConsumerSecret = "<ChangeThis>"
@@ -152,18 +168,18 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.Owin
         /// <summary>
         /// Enables authenticating users using their Microsoft account.
         /// </summary>
-        /// <remarks>
-        /// To use this feature you need to have a developer account registered and an app created at Microsoft. You can do all
-        /// this at https://account.live.com/developers/applications.
-        /// Once the app is created, copy the client id and client secret that is provided and put them as credentials in this
-        /// method.
-        /// Security Note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
-        /// </remarks>
         /// <param name="app">The application to associate with the login provider.</param>
+        /// <remarks>
+        /// To use this feature, define MICROSOFT_ACCOUNT_LOGIN_FEATURE symbol.
+        /// A Microsoft developer account and an app needs to be created at https://account.live.com/developers/applications.
+        /// Update ClientId and ClientSecret values with provided client id and client secret.
+        /// Security note: Never store sensitive data in your source code. The account and credentials are added to the code above to keep the sample simple.
+        /// Note: Please visit https://github.com/aspnet/AspNetKatana/issues to stay on top of issues that could affect your implementation.
+        /// </remarks>
         private static void EnableMicrosoftAccountLogin(IAppBuilder app)
         {
             // Note that the id and secret code below are fictitious and will not work when calling Microsoft.
-            MicrosoftAccountAuthenticationOptions microsoftOptions = new MicrosoftAccountAuthenticationOptions
+            var microsoftOptions = new MicrosoftAccountAuthenticationOptions
             {
                 ClientId = "<ChangeThis>",
                 ClientSecret = "<ChangeThis>"

@@ -26,11 +26,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Controllers
             UserService = userService;
         }
 
-        public UserService UserService { get; private set; }
+        public UserService UserService { get; }
 
-        public ApplicationSignInManager<SiteUser> SignInManager { get; private set; }
+        public ApplicationSignInManager<SiteUser> SignInManager { get; }
 
-        public ApplicationUserManager<SiteUser> UserManager { get; private set; }
+        public ApplicationUserManager<SiteUser> UserManager { get; }
 
         /// <summary>
         /// Redirects the request to the original URL.
@@ -70,22 +70,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Controllers
                 return;
             }
 
-            if (UserManager != null)
-            {
-                UserManager.Dispose();
-            }
+            UserManager?.Dispose();
+            SignInManager?.Dispose();
+            UserService?.Dispose();
 
-            if (SignInManager != null)
-            {
-                SignInManager.Dispose();    
-            }
-
-            if (UserService != null)
-            {
-                UserService.Dispose();
-            }
-
-            base.Dispose(disposing);
+            base.Dispose(true);
 
             _disposed = true;
         }

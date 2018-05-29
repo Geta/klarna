@@ -38,7 +38,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Controllers
         [HttpGet]
         public ActionResult Index(AddressBookPage currentPage)
         {
-            AddressCollectionViewModel viewModel = _addressBookService.GetAddressBookViewModel(currentPage);
+            var viewModel = _addressBookService.GetAddressBookViewModel(currentPage);
 
             return View(viewModel);
         }
@@ -46,7 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Controllers
         [HttpGet]
         public ActionResult EditForm(AddressBookPage currentPage, string addressId)
         {
-            AddressViewModel viewModel = new AddressViewModel
+            var viewModel = new AddressViewModel
             {
                 Address = new AddressModel
                 {
@@ -65,9 +65,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.AddressBook.Controllers
         public ActionResult GetRegionsForCountry(string countryCode, string region, string htmlPrefix)
         {
             ViewData.TemplateInfo.HtmlFieldPrefix = htmlPrefix;
-            var countryRegion = new CountryRegionViewModel();
-            countryRegion.RegionOptions = _addressBookService.GetRegionsByCountryCode(countryCode);
-            countryRegion.Region = region;
+            var countryRegion = new CountryRegionViewModel
+            {
+                RegionOptions = _addressBookService.GetRegionsByCountryCode(countryCode),
+                Region = region
+            };
 
             return PartialView("~/Views/Shared/EditorTemplates/AddressRegion.cshtml", countryRegion);
         }

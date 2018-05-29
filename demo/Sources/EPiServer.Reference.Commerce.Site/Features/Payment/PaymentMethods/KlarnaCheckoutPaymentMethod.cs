@@ -2,25 +2,57 @@
 using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
-using System;
 using System.ComponentModel;
+using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
+using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using Klarna.Checkout;
 using Klarna.Payments.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
+    [ServiceConfiguration(typeof(IPaymentMethod))]
     public class KlarnaCheckoutPaymentMethod : PaymentMethodBase, IDataErrorInfo
     {
+        private readonly IOrderGroupFactory _orderGroupFactory;
+        private readonly ICartService _cartService;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+
+        public override string SystemKeyword => Constants.KlarnaCheckoutSystemKeyword;
+
         public KlarnaCheckoutPaymentMethod()
-            : this(LocalizationService.Current, ServiceLocator.Current.GetInstance<IOrderGroupFactory>())
+            : this(
+                LocalizationService.Current,
+                ServiceLocator.Current.GetInstance<IOrderGroupFactory>(),
+                ServiceLocator.Current.GetInstance<LanguageService>(),
+                ServiceLocator.Current.GetInstance<IPaymentManagerFacade>(),
+                ServiceLocator.Current.GetInstance<ICartService>(),
+                ServiceLocator.Current.GetInstance<IKlarnaCheckoutService>())
         {
         }
 
-        public KlarnaCheckoutPaymentMethod(LocalizationService localizationService, IOrderGroupFactory orderGroupFactory)
-            : base(localizationService, orderGroupFactory)
+        public KlarnaCheckoutPaymentMethod(
+            LocalizationService localizationService,
+            IOrderGroupFactory orderGroupFactory,
+            LanguageService languageService,
+            IPaymentManagerFacade paymentManager,
+            ICartService cartService,
+            IKlarnaCheckoutService klarnaCheckoutService)
+            : base(localizationService, orderGroupFactory, languageService, paymentManager)
         {
+            _orderGroupFactory = orderGroupFactory;
+            _cartService = cartService;
+            _klarnaCheckoutService = klarnaCheckoutService;
+
+            InitializeValues();
         }
-        
+
+        public void InitializeValues()
+        {
+            var cart = _cartService.LoadCart(_cartService.DefaultCartName);
+            var orderData = _klarnaCheckoutService.CreateOrUpdateOrder(cart);
+            HtmlSnippet = orderData?.HtmlSnippet;
+        }
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
         {
@@ -34,7 +66,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             return payment;
         }
 
-        public override void PostProcess(IPayment payment)
+        public void PostProcess(IPayment payment)
         {
             if (payment.Properties[Klarna.Common.Constants.FraudStatusPaymentField]?.ToString() == FraudStatus.PENDING.ToString())
             {
@@ -47,11 +79,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             return true;
         }
 
-        public string this[string columnName]
-        {
-            get { return string.Empty; }
-        }
+        public string this[string columnName] => string.Empty;
 
         public string Error { get; }
+
+        public string HtmlSnippet { get; set; }
     }
 }

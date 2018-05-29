@@ -26,6 +26,10 @@
           <Currency>Currency</Currency>
         </Labels>
       </Market>
+      <PricesInformation>
+        <IncludeTax>All prices include tax</IncludeTax>
+        <ExcludeTax>All prices exclude tax</ExcludeTax>
+      </PricesInformation>
     </Header>
     <Facet>
       <Choices>Products:</Choices>
@@ -66,6 +70,9 @@
         <Size>Select Size</Size>
       </VariationSelection>
     </ProductPage>
+    <Warehouse>
+      <Availability>The product is available in the following warehouses:</Availability>
+    </Warehouse>
     <Checkout>
       <EmptyCart>Your cart is empty.</EmptyCart>
       <Coupons>
@@ -101,7 +108,6 @@
           <PlacedPricedChanged>The price for product {0} has changed since it was added to your cart.</PlacedPricedChanged>
           <AdjustedQuantity>The quantity of product {0} has changed.</AdjustedQuantity>
           <ProcessingPaymentFailure>Failed to process your payment.</ProcessingPaymentFailure>
-          <NotAvailable>Payment method not available, select a different payment method instead</NotAvailable>
         </Errors>
         <Methods>
           <CashOnDelivery>
@@ -133,6 +139,9 @@
       </Payment>
       <Billing>
         <Heading>Billing address</Heading>
+        <Errors>
+          <EmptyEmail>Billing address: Email is required</EmptyEmail>
+        </Errors>
       </Billing>
       <Shipment>
         <ShippingTo>Shipping to:</ShippingTo>
@@ -141,6 +150,7 @@
         <Heading>Shipping details</Heading>
         <Labels>
           <ChooseDelivery>Choose delivery</ChooseDelivery>
+          <FreeOfCharge>Free</FreeOfCharge>
         </Labels>
         <Empty>
           <ChooseDelivery>Delivery is required</ChooseDelivery>
@@ -167,13 +177,11 @@
           <ZipCode>Zip code:</ZipCode>
           <SaveAddress>Save address</SaveAddress>
           <AddressId>Selected address</AddressId>
-          <DaytimePhoneNumber>Phone number</DaytimePhoneNumber>
         </Labels>
         <Empty>
           <FirstName>First name is required</FirstName>
           <LastName>Last name is required</LastName>
           <Email>Email address is required</Email>
-          <DaytimePhoneNumber>Phone number address is required</DaytimePhoneNumber>
           <Address>Shipping address is required</Address>
           <Country>Country is required</Country>
           <City>City is required</City>
@@ -231,6 +239,10 @@
       <OrderLevelDiscounts>Additional Order Level Discounts</OrderLevelDiscounts>
       <ShippingAndTax>Shipping &amp; Tax</ShippingAndTax>
       <ShippingCost>Estimated Shipping Costs</ShippingCost>
+      <ShipmentCost>Shipment Cost</ShipmentCost>
+      <ShippingItemsTotal>Shipping Items Total</ShippingItemsTotal>
+      <ShippingMethod>Shipping Method</ShippingMethod>
+      <ShippingAddress>Shipping address</ShippingAddress>
       <TaxTotal>Estimated Tax to Be Collected</TaxTotal>
       <CartTotal>Total for cart</CartTotal>
       <BillingDetails>Billing details</BillingDetails>
@@ -509,7 +521,6 @@
             <BillingAddress>Billing address is required</BillingAddress>
             <ShippingAddress>Shipping address is required</ShippingAddress>
             <ShippingMethod>Delivery option is required</ShippingMethod>
-            <DaytimePhoneNumber>Phone number is required</DaytimePhoneNumber>
           </Empty>
           <Label>
             <FirstName>First name *:</FirstName>
@@ -524,8 +535,8 @@
             <Name>Name *:</Name>
             <ShippingAddress>Preferred shipping address</ShippingAddress>
             <BillingAddress>Preferred billing address</BillingAddress>
-            <DaytimePhoneNumber>Phone number *:</DaytimePhoneNumber>
-            <Email>Email *:</Email>
+            <DaytimePhoneNumber>Phone number:</DaytimePhoneNumber>
+            <Email>Email:</Email>
           </Label>
           <Error>
             <InvalidEmail>You have to enter a valid email address</InvalidEmail>
@@ -543,10 +554,10 @@
         <AllItems>Applies to all items</AllItems>
       </Promotion>
     </StartPage>
-  <ProductRecommendations>
-    <Label>
-      <RecommendedProducts>Recommended products</RecommendedProducts>
-    </Label>
-  </ProductRecommendations>
+    <ProductRecommendations>
+      <Label>
+        <RecommendedProducts>Recommended products</RecommendedProducts>
+      </Label>
+    </ProductRecommendations>
   </language>
 </languages>

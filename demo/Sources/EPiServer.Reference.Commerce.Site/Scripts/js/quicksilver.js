@@ -6,9 +6,11 @@
     Misc.init();
     login.init();
     ProductPage.init();
+    Warehouse.init();
     Registration.init();
     Search.init();
     Navigation.init();
+    Recommendations.init();
 
     $("[data-hide]").on("click", function () {
         $(this).closest("." + $(this).attr("data-hide")).hide();

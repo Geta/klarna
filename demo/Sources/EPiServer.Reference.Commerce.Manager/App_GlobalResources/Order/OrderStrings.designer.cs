@@ -178,6 +178,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Are you sure you want to cancel current payment plan?.
+        /// </summary>
+        internal static string CancelPaymentPlanConfirmation {
+            get {
+                return ResourceManager.GetString("CancelPaymentPlanConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to cancel current return request?.
         /// </summary>
         internal static string CancelReturnConfirmation {
@@ -3553,11 +3562,20 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Total Before Tax and Shipping.
+        ///   Looks up a localized string similar to Total excluding shipping and tax.
         /// </summary>
-        internal static string Total_Before_Tax_And_Shipping {
+        internal static string Total_Excluding_Shipping_And_Tax {
             get {
-                return ResourceManager.GetString("Total_Before_Tax_And_Shipping", resourceCulture);
+                return ResourceManager.GetString("Total_Excluding_Shipping_And_Tax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Total excluding shipping (includes tax).
+        /// </summary>
+        internal static string Total_Excluding_Shipping_Includes_Tax {
+            get {
+                return ResourceManager.GetString("Total_Excluding_Shipping_Includes_Tax", resourceCulture);
             }
         }
         

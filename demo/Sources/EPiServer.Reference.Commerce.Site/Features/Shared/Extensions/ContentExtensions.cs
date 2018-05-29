@@ -34,7 +34,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Extensions
         public static string GetUrl(this EntryContentBase entry, IRelationRepository relationRepository, UrlResolver urlResolver)
         {
             var productLink = entry is VariationContent ?
-                entry.GetParentProducts(relationRepository).FirstOrDefault() :
+                entry.GetParentProducts(relationRepository).FirstOrDefault() : 
                 entry.ContentLink;
 
             if (productLink == null)
@@ -48,7 +48,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Shared.Extensions
             {
                 urlBuilder.QueryCollection.Add("variationCode", entry.Code);
             }
-
+            
             return urlBuilder.ToString();
         }
     }

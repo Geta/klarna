@@ -36,6 +36,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.ResetPassword.Controllers
             _contentLoader = contentLoader;
             _mailService = mailService;
             _localizationService = localizationService;
+            UserManager.EmailService = mailService;
         }
 
         [AllowAnonymous]
@@ -88,7 +89,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.ResetPassword.Controllers
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
-            ResetPasswordViewModel viewModel = new ResetPasswordViewModel { Code = code };
+            var viewModel = new ResetPasswordViewModel { Code = code };
             return code == null ? View("Error") : View("ResetPassword", viewModel);
         }
 

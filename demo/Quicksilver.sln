@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+VisualStudioVersion = 15.0.27703.2018
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EPiServer.Reference.Commerce.Site", "Sources\EPiServer.Reference.Commerce.Site\EPiServer.Reference.Commerce.Site.csproj", "{9AC1DC21-C56D-49EB-A264-9441D8602F1A}"
 EndProject
@@ -78,5 +78,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DCAB7012-CC8D-49ED-B67E-192C509B558F}
 	EndGlobalSection
 EndGlobal
