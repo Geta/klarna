@@ -3,16 +3,26 @@ using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
 using System.ComponentModel;
+using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using Klarna.Payments;
+using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
+using Mediachase.Commerce;
+using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
+    [ServiceConfiguration(typeof(IPaymentMethod))]
     public class KlarnaPaymentsPaymentMethod : PaymentMethodBase, IDataErrorInfo
     {
+        private string _klarnaLogoUrl;
         private readonly IOrderGroupFactory _orderGroupFactory;
+        private readonly ICartService _cartService;
+        private readonly ICurrentMarket _currentMarket;
+        private readonly IKlarnaPaymentsService _klarnaPaymentsService;
+
         public override string SystemKeyword => Constants.KlarnaPaymentSystemKeyword;
 
         public KlarnaPaymentsPaymentMethod()
@@ -20,7 +30,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                 LocalizationService.Current,
                 ServiceLocator.Current.GetInstance<IOrderGroupFactory>(),
                 ServiceLocator.Current.GetInstance<LanguageService>(),
-                ServiceLocator.Current.GetInstance<IPaymentManagerFacade>())
+                ServiceLocator.Current.GetInstance<IPaymentManagerFacade>(),
+                ServiceLocator.Current.GetInstance<ICartService>(),
+                ServiceLocator.Current.GetInstance<ICurrentMarket>(),
+                ServiceLocator.Current.GetInstance<IKlarnaPaymentsService>())
         {
         }
 
@@ -28,12 +41,26 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                 LocalizationService localizationService,
                 IOrderGroupFactory orderGroupFactory,
                 LanguageService languageService,
-                IPaymentManagerFacade paymentManager)
+                IPaymentManagerFacade paymentManager,
+                ICartService cartService,
+                ICurrentMarket currentMarket,
+                IKlarnaPaymentsService klarnaPaymentsService)
             : base(localizationService, orderGroupFactory, languageService, paymentManager)
         {
             _orderGroupFactory = orderGroupFactory;
+            _cartService = cartService;
+            _currentMarket = currentMarket;
+            _klarnaPaymentsService = klarnaPaymentsService;
+
+            InitializeValues();
         }
 
+        public void InitializeValues()
+        {
+            var cart = _cartService.LoadCart(_cartService.DefaultCartName);
+            _klarnaPaymentsService.CreateOrUpdateSession(cart);
+            ClientToken = _klarnaPaymentsService.GetClientToken(cart);
+        }
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
         {
@@ -60,11 +87,27 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             return true;
         }
 
-        public string this[string columnName]
-        {
-            get { return string.Empty; }
-        }
+        public string this[string columnName] => string.Empty;
 
         public string Error { get; }
+
+        public string ClientToken { get; set; }
+
+        public string KlarnaLogoUrl
+        {
+            get
+            {
+                if (_klarnaLogoUrl != null)
+                {
+                    return _klarnaLogoUrl;
+                }
+
+                var paymentMethodDto = PaymentManager.GetPaymentMethod(PaymentMethodId);
+                var config = paymentMethodDto.GetKlarnaPaymentsConfiguration(_currentMarket.GetCurrentMarket().MarketId);
+                _klarnaLogoUrl = config.LogoUrl;
+
+                return _klarnaLogoUrl;
+            }
+        }
     }
 }

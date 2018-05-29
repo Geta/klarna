@@ -1,6 +1,6 @@
-﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels.KlarnaPaymentsViewModel
+﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods.KlarnaPaymentsPaymentMethod
 
-@Html.HiddenFor(model => model.PaymentMethod.PaymentMethodId)
+@Html.HiddenFor(model => model.SystemKeyword)
 
 @if (!string.IsNullOrWhiteSpace(Model.KlarnaLogoUrl))
 {

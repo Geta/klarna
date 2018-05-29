@@ -408,8 +408,6 @@
     <Compile Include="Features\Payment\Services\IPaymentManagerFacade.cs" />
     <Compile Include="Features\Payment\Services\PaymentManagerFacade.cs" />
     <Compile Include="Features\Payment\ViewModelFactories\PaymentMethodViewModelFactory.cs" />
-    <Compile Include="Features\Payment\ViewModels\KlarnaCheckoutViewModel.cs" />
-    <Compile Include="Features\Payment\ViewModels\KlarnaPaymentsViewModel.cs" />
     <Compile Include="Features\Payment\ViewModels\PaymentMethodSelectionViewModel.cs" />
     <Compile Include="Features\Payment\ViewModels\PaymentMethodViewModel.cs" />
     <Compile Include="Features\Product\Controllers\BundleController.cs" />
