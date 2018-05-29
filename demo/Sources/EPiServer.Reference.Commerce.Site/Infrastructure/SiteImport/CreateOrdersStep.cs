@@ -19,7 +19,8 @@ using System.Web.Hosting;
 
 namespace EPiServer.Reference.Commerce.Site.Infrastructure.SiteImport
 {
-    [ServiceConfiguration(typeof(IMigrationStep))]
+    // TODO: Disabled for sites which are already initialized. Uncomment when you need to initialize it in a fresh DB.
+    // [ServiceConfiguration(typeof(IMigrationStep))]
     public class CreateOrdersStep : IMigrationStep
     {
         private IProgressMessenger _progressMessenger;
