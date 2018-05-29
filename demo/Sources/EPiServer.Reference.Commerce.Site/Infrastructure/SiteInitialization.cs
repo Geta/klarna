@@ -28,6 +28,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.WebPages;
+using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Checkout;
 using Klarna.Checkout;
 using Klarna.Payments;

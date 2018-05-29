@@ -21,7 +21,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
         public PaymentMethodViewModelFactory(
             ICurrentMarket currentMarket,
             LanguageService languageService,
-            IEnumerable<IPaymentMethod> paymentMethods, 
+            IEnumerable<IPaymentMethod> paymentMethods,
             IPaymentManagerFacade paymentManager)
         {
             _currentMarket = currentMarket;
@@ -59,7 +59,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
                 PaymentMethods = availablePaymentMethods
             };
 
-            viewModel.SelectedPaymentMethod = viewModel.PaymentMethods.FirstOrDefault(x => x.IsDefault) 
+            viewModel.SelectedPaymentMethod = viewModel.PaymentMethods.FirstOrDefault(x => x.IsDefault)
                 ?? viewModel.PaymentMethods.FirstOrDefault();
 
             return viewModel;
