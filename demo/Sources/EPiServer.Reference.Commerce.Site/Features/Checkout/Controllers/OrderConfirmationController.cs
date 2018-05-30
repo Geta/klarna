@@ -19,6 +19,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
     public class OrderConfirmationController : OrderConfirmationControllerBase<OrderConfirmationPage>
     {
+        private readonly IMarketService _marketService;
         private readonly IRecommendationService _recommendationService;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
 
@@ -32,26 +33,33 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             IKlarnaCheckoutService klarnaCheckoutService)
             : base(confirmationService, addressBookService, customerContextFacade, orderGroupCalculator, marketService)
         {
+            _marketService = marketService;
             _recommendationService = recommendationService;
             _klarnaCheckoutService = klarnaCheckoutService;
         }
 
         [HttpGet]
-        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, int? orderNumber)
+        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, string orderNumber, string trackingNumber)
         {
             IPurchaseOrder order = null;
+            int orderId;
+            trackingNumber = string.IsNullOrEmpty(trackingNumber) ? orderNumber : trackingNumber;
             if (PageEditing.PageIsInEditMode)
             {
                 order = ConfirmationService.CreateFakePurchaseOrder();
             }
-            else if (orderNumber.HasValue)
+            else if (int.TryParse(orderNumber, out orderId))
             {
-                order = ConfirmationService.GetOrder(orderNumber.Value);
+                order = ConfirmationService.GetOrder(orderId);
+            }
+            else if (!string.IsNullOrEmpty(trackingNumber))
+            {
+                order = ConfirmationService.GetByTrackingNumber(trackingNumber);
+            }
 
-                if (order != null)
-                {
-                    await _recommendationService.TrackOrderAsync(HttpContext, order);
-                }
+            if (order != null)
+            {
+                await _recommendationService.TrackOrderAsync(HttpContext, order);
             }
 
             if (order != null && order.CustomerId == CustomerContext.CurrentContactId)
@@ -68,9 +76,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                     order.GetFirstForm().Payments.Any(x => x.PaymentMethodId == paymentMethod.PaymentMethodId &&
                                                            !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
                 {
+                    var market = _marketService.GetMarket(order.MarketId);
                     var klarnaOrder =
                         _klarnaCheckoutService.GetOrder(
-                            order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString(), order.Market);
+                            order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString(), market);
                     viewModel.KlarnaCheckoutHtmlSnippet = klarnaOrder.HtmlSnippet;
                     viewModel.IsKlarnaCheckout = true;
                 }
