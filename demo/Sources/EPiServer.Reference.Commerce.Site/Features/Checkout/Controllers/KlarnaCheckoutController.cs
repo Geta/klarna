@@ -5,12 +5,12 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
 using EPiServer.Commerce.Order;
-using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
+using Mediachase.Commerce.Markets;
 using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -18,28 +18,27 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
     [RoutePrefix("klarnacheckout")]
     public class KlarnaCheckoutController : ApiController
     {
-        private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         private readonly IOrderRepository _orderRepository;
-        private readonly ILineItemValidator _lineItemValidator;
         private readonly ICartService _cartService;
         private readonly CheckoutService _checkoutService;
+        private readonly IMarketService _marketService;
 
 
         public KlarnaCheckoutController(
             IKlarnaCheckoutService klarnaCheckoutService,
-            IOrderRepository orderRepository, 
-            ILineItemValidator lineItemValidator, 
-            ICartService cartService, 
-            CheckoutService checkoutService)
+            IOrderRepository orderRepository,
+            ICartService cartService,
+            CheckoutService checkoutService,
+            IMarketService marketService)
         {
             _klarnaCheckoutService = klarnaCheckoutService;
             _orderRepository = orderRepository;
-            _lineItemValidator = lineItemValidator;
             _cartService = cartService;
             _checkoutService = checkoutService;
+            _marketService = marketService;
         }
-        
+
         [Route("cart/{orderGroupId}/shippingoptionupdate")]
         [AcceptVerbs("POST")]
         [HttpPost]
@@ -151,7 +150,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 return purchaseOrder;
             }
-            
+
             // Check if we still have a cart and can create an order
             var cart = _orderRepository.Load<ICart>(orderGroupId);
             var cartKlarnaOrderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
@@ -160,7 +159,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 return null;
             }
 
-            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId, cart.Market);
+            var market = _marketService.GetMarket(cart.MarketId);
+            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId, market);
             if (!order.Status.Equals("checkout_complete"))
             {
                 // Won't create order, Klarna checkout not complete

@@ -227,6 +227,7 @@
     <Compile Include="KlarnaCheckoutGateway.cs" />
     <Compile Include="KlarnaCheckoutService.cs" />
     <Compile Include="KlarnaOrderValidator.cs" />
+    <Compile Include="LoggingCheckoutOrder.cs" />
     <Compile Include="Models\AddressUpdateResponse.cs" />
     <Compile Include="Models\AddressUpdateRequest.cs" />
     <Compile Include="Models\ErrorResult.cs" />

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
@@ -16,6 +15,7 @@ using Klarna.Common.Helpers;
 using Klarna.OrderManagement;
 using Klarna.Payments.Models;
 using Klarna.Rest;
+using Klarna.Rest.Checkout;
 using Klarna.Rest.Models;
 using Klarna.Rest.Transport;
 using Mediachase.Commerce;
@@ -80,7 +80,7 @@ namespace Klarna.Checkout
                 var connectionConfiguration = GetCheckoutConfiguration(market);
                 var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
                 connector.UserAgent.AddField("Platform", "EPiServer", typeof(EPiServer.Core.IContent).Assembly.GetName().Version.ToString(), new string[0]);
-                connector.UserAgent.AddField("Module", "Klarna.Checkout", typeof(Klarna.Checkout.KlarnaCheckoutService).Assembly.GetName().Version.ToString(), new string[0]);
+                connector.UserAgent.AddField("Module", "Klarna.Checkout", typeof(KlarnaCheckoutService).Assembly.GetName().Version.ToString(), new string[0]);
 
                 _client = new Client(connector);
             }
@@ -103,7 +103,7 @@ namespace Klarna.Checkout
         public CheckoutOrderData CreateOrder(ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
-            var checkout = GetClient(market).NewCheckoutOrder();
+            var checkout = CreateCheckoutOrder(market);
             var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
@@ -133,6 +133,7 @@ namespace Klarna.Checkout
                     checkoutOrderDataBuilder.Build(orderData, cart, checkoutConfiguration);
                 }
                 checkout.Create(orderData);
+
                 orderData = checkout.Fetch();
 
                 UpdateCartWithOrderData(cart, orderData);
@@ -154,8 +155,7 @@ namespace Klarna.Checkout
         public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
-            var client = GetClient(market);
-            var checkout = client.NewCheckoutOrder(orderId);
+            var checkout = CreateCheckoutOrder(orderId, market);
             var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
@@ -165,6 +165,7 @@ namespace Klarna.Checkout
                 {
                     checkoutOrderDataBuilder.Build(orderData, cart, checkoutConfiguration);
                 }
+
                 orderData = checkout.Update(orderData);
 
                 cart = UpdateCartWithOrderData(cart, orderData);
@@ -307,8 +308,7 @@ namespace Klarna.Checkout
 
         public CheckoutOrderData GetOrder(string klarnaOrderId, IMarket market)
         {
-            var client = GetClient(market);
-            var checkout = client.NewCheckoutOrder(klarnaOrderId);
+            var checkout = CreateCheckoutOrder(klarnaOrderId, market);
             return checkout.Fetch();
         }
 
@@ -516,6 +516,23 @@ namespace Klarna.Checkout
         {
             var countries = CountryManager.GetCountries();
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
+        }
+
+        private ICheckoutOrder CreateCheckoutOrder(IMarket market)
+        {
+            return CreateCheckoutOrder(market, client => client.NewCheckoutOrder());
+        }
+
+        private ICheckoutOrder CreateCheckoutOrder(string klarnaOrderId, IMarket market)
+        {
+            return CreateCheckoutOrder(market, client => client.NewCheckoutOrder(klarnaOrderId));
+        }
+
+        private ICheckoutOrder CreateCheckoutOrder(IMarket market, Func<Client, ICheckoutOrder> factory)
+        {
+            var client = GetClient(market);
+            var checkoutOrder = factory(client);
+            return new LoggingCheckoutOrder(checkoutOrder);
         }
     }
 }
