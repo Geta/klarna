@@ -282,6 +282,9 @@ The KlarnaPaymentGateway save notes about payment updates at the order.
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
 </details>
 
+## Local development environment
+In order to use / work on this package locally you'll need a tool called www.ngrok.com. This tool can forward a generated ngrok URL to a localhost URL. Klarna Checkout will react on interactions in the widget by executing (push) URL's (configured in commerce manager). If Klarna can't successfully do these request it will show an error modal in the widget. 
+
 ## Demo
 https://klarna.geta.no
 
