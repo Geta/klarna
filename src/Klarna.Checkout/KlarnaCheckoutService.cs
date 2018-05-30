@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
-using System.Reflection;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
@@ -80,7 +79,7 @@ namespace Klarna.Checkout
                 var connectionConfiguration = GetCheckoutConfiguration(market);
                 var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
                 connector.UserAgent.AddField("Platform", "EPiServer", typeof(EPiServer.Core.IContent).Assembly.GetName().Version.ToString(), new string[0]);
-                connector.UserAgent.AddField("Module", "Klarna.Checkout", typeof(Klarna.Checkout.KlarnaCheckoutService).Assembly.GetName().Version.ToString(), new string[0]);
+                connector.UserAgent.AddField("Module", "Klarna.Checkout", typeof(KlarnaCheckoutService).Assembly.GetName().Version.ToString(), new string[0]);
 
                 _client = new Client(connector);
             }
