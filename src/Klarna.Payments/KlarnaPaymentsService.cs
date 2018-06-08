@@ -281,7 +281,8 @@ namespace Klarna.Payments
                 OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrlField).ToArray()
             };
 
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
+                Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
             if (paymentMethod != null)
             {
                 request.MerchantUrl = new MerchantUrl
@@ -372,7 +373,8 @@ namespace Klarna.Payments
 
         public PaymentsConfiguration GetConfiguration(MarketId marketId)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
+                Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
             if (paymentMethod == null)
             {
                 throw new Exception(
