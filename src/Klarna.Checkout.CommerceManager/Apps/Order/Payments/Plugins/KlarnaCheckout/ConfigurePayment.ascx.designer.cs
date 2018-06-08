@@ -11,7 +11,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
     
     
     public partial class ConfigurePayment {
-
+        
         /// <summary>
         /// ConfigureUpdatePanelContentPanel control.
         /// </summary>
@@ -20,7 +20,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.UpdatePanel ConfigureUpdatePanelContentPanel;
-
+        
         /// <summary>
         /// marketDropDownList control.
         /// </summary>
@@ -182,15 +182,6 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtRadiusBorder;
-        
-        /// <summary>
-        /// regexRadiusBorder control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RegularExpressionValidator regexRadiusBorder;
         
         /// <summary>
         /// txtColorCheckboxCheckmark control.

@@ -12,7 +12,7 @@
 <div class="karnapayment-parameters">
 
 <h2>Market</h2>
-    
+
 <table class="DataForm">
     <tbody>
          <tr>
@@ -23,7 +23,7 @@
         </tr>
     </tbody>
 </table>
-    
+
 <h2>Klarna connection settings</h2>
 
 
@@ -52,7 +52,7 @@
         </tr>
     </tbody>
 </table>
-    
+
 <h2>Klarna widget settings</h2>
 
 <table class="DataForm">
@@ -96,7 +96,6 @@
             <td class="FormLabelCell">Radius border:</td>
             <td class="FormFieldCell">
                 <asp:TextBox runat="server" ID="txtRadiusBorder" />
-                <asp:RegularExpressionValidator  ControlToValidate="txtRadiusBorder" ID="regexRadiusBorder" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Radius border invalid color"></asp:RegularExpressionValidator>
             </td>
         </tr>
         <tr>
@@ -168,9 +167,9 @@
         </tr>
     </tbody>
 </table>
-    
+
 <h2>Klarna Widget additional checkbox</h2>
-    
+
 <table class="DataForm">
     <tbody>
         <tr>
@@ -193,7 +192,7 @@
         </tr>
     </tbody>
 </table>
-    
+
 <h2>Merchant/callback URLs</h2>
 
 <table class="DataForm">
