@@ -9,9 +9,9 @@
         </style>
 
         <div class="karnapayment-parameters">
-            
+
             <h2>Market</h2>
-    
+
             <table class="DataForm">
                 <tbody>
                      <tr>
@@ -22,7 +22,7 @@
                     </tr>
                 </tbody>
             </table>
-    
+
         <h2>Klarna connection setting</h2>
 
 
@@ -148,7 +148,7 @@
                 </tr>
             </tbody>
         </table>
-    
+
         <h2>Other setting</h2>
 
         <table class="DataForm">
