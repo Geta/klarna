@@ -58,15 +58,11 @@ namespace Klarna.Checkout
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
-        public PaymentMethodDto PaymentMethodDto
-        {
-            get
-            {
-                return _paymentMethodDto ?? (_paymentMethodDto =
-                           PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword,
-                               ContentLanguage.PreferredCulture.Name));
-            }
-        }
+        public PaymentMethodDto PaymentMethodDto =>
+            _paymentMethodDto
+            ?? (_paymentMethodDto =
+                PaymentManager.GetPaymentMethodBySystemName(
+                    Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true));
 
         public CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
         {
@@ -432,7 +428,8 @@ namespace Klarna.Checkout
 
         public CheckoutConfiguration GetConfiguration(MarketId marketId)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name);
+            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
+                Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
             if (paymentMethod == null)
             {
                 throw new Exception(

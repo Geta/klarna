@@ -7,6 +7,7 @@
 <style>
     .karnapayment-parameters table.DataForm tbody tr td.FormLabelCell { width: 200px; }
     .karnapayment-parameters h2 { margin-top: 20px }
+    .karnapayment-parameters-url { width: 500px; }
 </style>
 
 <div class="karnapayment-parameters">
@@ -46,7 +47,7 @@
         <tr>
             <td class="FormLabelCell">ApiUrl:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtApiUrl"  />
+                <asp:TextBox runat="server" ID="txtApiUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredApiUrl" runat="server" ControlToValidate="txtApiUrl" ErrorMessage="Api URL is required." />
             </td>
         </tr>
@@ -200,62 +201,62 @@
          <tr>
             <td class="FormLabelCell">Checkout URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtCheckoutUrl" />
+                <asp:TextBox runat="server" ID="txtCheckoutUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredCheckoutUrl" runat="server" ControlToValidate="txtCheckoutUrl" ErrorMessage="Checkout URL is required." />
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Terms URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtTermsUrl" />
+                <asp:TextBox runat="server" ID="txtTermsUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredTermsUrl" runat="server" ControlToValidate="txtTermsUrl" ErrorMessage="Terms URL is required." />
             </td>
         </tr>
          <tr>
             <td class="FormLabelCell">Cancellation terms URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtCancellationTermsUrl" />
+                <asp:TextBox runat="server" ID="txtCancellationTermsUrl" CssClass="karnapayment-parameters-url" />
             </td>
         </tr>
          <tr>
             <td class="FormLabelCell">Push URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtPushUrl" />
+                <asp:TextBox runat="server" ID="txtPushUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredPushUrl" runat="server" ControlToValidate="txtPushUrl" ErrorMessage="Push URL is required." />
             </td>
         </tr>
          <tr>
             <td class="FormLabelCell">Notification/fraud URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtNotificationUrl" />
+                <asp:TextBox runat="server" ID="txtNotificationUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredNotificationUrl" runat="server" ControlToValidate="txtNotificationUrl" ErrorMessage="Notification URL is required." />
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Shipping option update URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtShippingOptionUpdateUrl" />
+                <asp:TextBox runat="server" ID="txtShippingOptionUpdateUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredShippingOptionUpdateUrl" runat="server" ControlToValidate="txtShippingOptionUpdateUrl" ErrorMessage="Shipping option update URL is required." />
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Address update URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtAddressUpdateUrl" />
+                <asp:TextBox runat="server" ID="txtAddressUpdateUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredAddressUpdateUrl" runat="server" ControlToValidate="txtAddressUpdateUrl" ErrorMessage="Address update URL is required." />
             </td>
         </tr>
         <tr>
             <td class="FormLabelCell">Order validation URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtOrderValidationUrl" />
+                <asp:TextBox runat="server" ID="txtOrderValidationUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredOrderValidationUrl" runat="server" ControlToValidate="txtOrderValidationUrl" ErrorMessage="Order validation URL is required." />
             </td>
         </tr>
          <tr>
             <td class="FormLabelCell">Confirmation URL:</td>
             <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtConfirmationUrl" />
+                <asp:TextBox runat="server" ID="txtConfirmationUrl" CssClass="karnapayment-parameters-url" />
                 <asp:RequiredFieldValidator ID="requiredConfirmationUrl" runat="server" ControlToValidate="txtConfirmationUrl" ErrorMessage="Confirmation URL is required." />
             </td>
         </tr>
