@@ -4,8 +4,9 @@
  <asp:UpdatePanel UpdateMode="Conditional" ID="ConfigureUpdatePanelContentPanel" runat="server" RenderMode="Inline" ChildrenAsTriggers="true">
         <ContentTemplate>
         <style>
-            .karnapayment-parameters table.DataForm tbody tr td.FormLabelCell { width: 200px; }
+            .karnapayment-parameters table.DataForm tbody tr td.FormLabelCell { width: 170px; }
             .karnapayment-parameters h2 { margin-top: 20px }
+            .karnapayment-parameters-url { width: 500px; }
         </style>
 
         <div class="karnapayment-parameters">
@@ -45,7 +46,7 @@
                 <tr>
                     <td class="FormLabelCell">ApiUrl:</td>
                     <td class="FormFieldCell">
-                        <asp:TextBox runat="server" ID="txtApiUrl"  />
+                        <asp:TextBox runat="server" ID="txtApiUrl" CssClass="karnapayment-parameters-url" />
                         <asp:RequiredFieldValidator ID="requiredApiUrl" runat="server" ControlToValidate="txtApiUrl" ErrorMessage="Api URL is required." />
                     </td>
                 </tr>
@@ -59,7 +60,7 @@
                 <tr>
                     <td class="FormLabelCell">Klarna logo url:</td>
                     <td class="FormFieldCell">
-                        <asp:TextBox runat="server" ID="txtKlarnaLogoUrl" />
+                        <asp:TextBox runat="server" ID="txtKlarnaLogoUrl" CssClass="karnapayment-parameters-url" />
                     </td>
                 </tr>
                  <tr>
@@ -156,14 +157,14 @@
                  <tr>
                     <td class="FormLabelCell">Confirmation URL:</td>
                     <td class="FormFieldCell">
-                        <asp:TextBox runat="server" ID="txtConfirmationUrl" />
+                        <asp:TextBox runat="server" ID="txtConfirmationUrl" CssClass="karnapayment-parameters-url" />
                         <asp:RequiredFieldValidator ID="requiredConfirmationUrl" runat="server" ControlToValidate="txtConfirmationUrl" ErrorMessage="Confirmation URL is required." />
                     </td>
                 </tr>
                 <tr>
                     <td class="FormLabelCell">Notification URL:</td>
                     <td class="FormFieldCell">
-                        <asp:TextBox runat="server" ID="txtNotificationUrl" />
+                        <asp:TextBox runat="server" ID="txtNotificationUrl" CssClass="karnapayment-parameters-url" />
                         <asp:RequiredFieldValidator ID="requiredNotificationUrl" runat="server" ControlToValidate="txtNotificationUrl" ErrorMessage="Notification URL is required." />
                     </td>
                 </tr>
