@@ -7,7 +7,6 @@ using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
-using Klarna.Checkout.Extensions;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
@@ -35,6 +34,7 @@ namespace Klarna.Checkout
         private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
         private readonly IMarketService _marketService;
+        private readonly ICheckoutConfigurationLoader _checkoutConfigurationLoader;
         private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
 
@@ -48,6 +48,7 @@ namespace Klarna.Checkout
             IOrderGroupCalculator orderGroupCalculator,
             IKlarnaOrderValidator klarnaOrderValidator,
             IMarketService marketService,
+            ICheckoutConfigurationLoader checkoutConfigurationLoader,
             KlarnaOrderServiceFactory klarnaOrderServiceFactory)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
@@ -55,6 +56,7 @@ namespace Klarna.Checkout
             _orderRepository = orderRepository;
             _klarnaOrderValidator = klarnaOrderValidator;
             _marketService = marketService;
+            _checkoutConfigurationLoader = checkoutConfigurationLoader;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
@@ -428,14 +430,7 @@ namespace Klarna.Checkout
 
         public CheckoutConfiguration GetConfiguration(MarketId marketId)
         {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
-                Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
-            if (paymentMethod == null)
-            {
-                throw new Exception(
-                    $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
-            }
-            return paymentMethod.GetKlarnaCheckoutConfiguration(marketId);
+            return _checkoutConfigurationLoader.GetConfiguration(marketId);
         }
 
         public void Complete(IPurchaseOrder purchaseOrder)

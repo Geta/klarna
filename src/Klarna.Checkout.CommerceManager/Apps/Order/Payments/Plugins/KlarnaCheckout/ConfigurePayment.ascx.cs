@@ -12,13 +12,13 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
     public partial class ConfigurePayment : System.Web.UI.UserControl, IGatewayControl
     {
         private PaymentMethodDto _paymentMethodDto;
-        private IKlarnaCheckoutService _klarnaCheckoutService;
+        private ICheckoutConfigurationLoader _checkoutConfigurationLoader;
 
         public string ValidationGroup { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            _klarnaCheckoutService = ServiceLocator.Current.GetInstance<IKlarnaCheckoutService>();
+            _checkoutConfigurationLoader = ServiceLocator.Current.GetInstance<ICheckoutConfigurationLoader>();
             if (IsPostBack || _paymentMethodDto?.PaymentMethodParameter == null) return;
 
             var markets = _paymentMethodDto.PaymentMethod.First().GetMarketPaymentMethodsRows();
@@ -156,7 +156,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         {
             try
             {
-                return _klarnaCheckoutService.GetConfiguration(marketId);
+                return _checkoutConfigurationLoader.GetConfiguration(marketId);
             }
             catch
             {
