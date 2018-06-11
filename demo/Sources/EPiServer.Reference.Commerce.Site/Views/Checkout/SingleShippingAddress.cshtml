@@ -27,7 +27,7 @@
 
                                 @if (User.Identity.IsAuthenticated)
                                 {
-                                    <div class="form-group">                                        
+                                    <div class="form-group">
                                         @Html.DropDownListFor(model => model.Shipments[0].Address.AddressId,
                                             new SelectList(Model.AvailableAddresses, "AddressId", "Name", !string.IsNullOrEmpty(Model.Shipments[0].Address.AddressId) ? Model.Shipments[0].Address.AddressId : string.Empty),
                                             new {@class = "form-control jsChangeAddress address-dropdown" })

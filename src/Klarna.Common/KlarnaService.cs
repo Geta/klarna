@@ -7,7 +7,6 @@ using EPiServer.Logging;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Payments.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
@@ -38,31 +37,29 @@ namespace Klarna.Common
         public void FraudUpdate(NotificationModel notification)
         {
             var order = GetPurchaseOrderByKlarnaOrderId(notification.OrderId);
-            if (order != null)
+            if (order == null) return;
+
+            var orderForm = order.GetFirstForm();
+            var payment = orderForm.Payments.FirstOrDefault();
+            if (payment == null || payment.Status != PaymentStatus.Pending.ToString()) return;
+
+            payment.Properties[Constants.FraudStatusPaymentField] = notification.Status.ToString();
+
+            try
             {
-                var orderForm = order.GetFirstForm();
-                var payment = orderForm.Payments.FirstOrDefault();
-                if (payment != null && payment.Status == PaymentStatus.Pending.ToString())
+                var result = order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+                if (result.FirstOrDefault()?.IsSuccessful == false)
                 {
-                    payment.Properties[Constants.FraudStatusPaymentField] = notification.Status.ToString();
+                    PaymentStatusManager.FailPayment((Payment)payment);
 
-                    try
-                    {
-                        var result = order.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
-                        if (result.FirstOrDefault()?.IsSuccessful == false)
-                        {
-                            PaymentStatusManager.FailPayment((Payment)payment);
-
-                            _orderRepository.Save(order);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex.Message, ex);
-                    }
                     _orderRepository.Save(order);
                 }
             }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+            }
+            _orderRepository.Save(order);
         }
 
         public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField)
