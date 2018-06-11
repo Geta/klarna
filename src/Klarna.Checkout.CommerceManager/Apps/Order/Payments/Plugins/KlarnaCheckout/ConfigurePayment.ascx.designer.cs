@@ -319,6 +319,24 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
         protected global::System.Web.UI.WebControls.CheckBox additionalCheckboxRequiredCheckBox;
         
         /// <summary>
+        /// txtBaseUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtBaseUrl;
+        
+        /// <summary>
+        /// requiredBaseUrl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator requiredBaseUrl;
+        
+        /// <summary>
         /// txtCheckoutUrl control.
         /// </summary>
         /// <remarks>

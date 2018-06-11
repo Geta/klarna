@@ -17,6 +17,7 @@ namespace Klarna.Checkout
         public bool SendShippingCountries { get; set; }
         public bool PrefillAddress { get; set; }
         public bool SendShippingOptionsPriorAddresses { get; set; } = true;
+        public string BaseUrl { get; set; }
         public string ConfirmationUrl { get; set; }
         public string TermsUrl { get; set; }
         public string CancellationTermsUrl { get; set; }
