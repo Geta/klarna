@@ -485,23 +485,38 @@ namespace Klarna.Checkout
 
         private PatchedMerchantUrls GetMerchantUrls(ICart cart)
         {
-            if (PaymentMethodDto != null)
+            if (PaymentMethodDto == null) return null;
+
+            var configuration = GetConfiguration(cart.MarketId);
+
+            Uri ToUri(Func<CheckoutConfiguration, string> fieldSelector)
             {
-                var configuration = GetConfiguration(cart.MarketId);
-                return new PatchedMerchantUrls
+                var url = fieldSelector(configuration).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString());
+                if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
                 {
-                    Terms = new Uri(configuration.TermsUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? new Uri(configuration.CancellationTermsUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())) : null,
-                    Checkout = new Uri(configuration.CheckoutUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Confirmation = new Uri(configuration.ConfirmationUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Push = new Uri(configuration.PushUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    AddressUpdate = new Uri(configuration.AddressUpdateUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    ShippingOptionUpdate = new Uri(configuration.ShippingOptionUpdateUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Notification = new Uri(configuration.NotificationUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString())),
-                    Validation = new Uri(configuration.OrderValidationUrl.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString()))
-                };
+                    return uri;
+                }
+
+                if (Uri.TryCreate(configuration.BaseUrl, UriKind.Absolute, out var baseUri))
+                {
+                    return new Uri(baseUri, url);
+                }
+
+                return null;
             }
-            return null;
+
+            return new PatchedMerchantUrls
+            {
+                Terms = ToUri(c => c.TermsUrl),
+                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToUri(c => c.CancellationTermsUrl) : null,
+                Checkout = ToUri(c => c.CheckoutUrl),
+                Confirmation = ToUri(c => c.ConfirmationUrl),
+                Push = ToUri(c => c.PushUrl),
+                AddressUpdate = ToUri(c => c.AddressUpdateUrl),
+                ShippingOptionUpdate = ToUri(c => c.ShippingOptionUpdateUrl),
+                Notification = ToUri(c => c.NotificationUrl),
+                Validation = ToUri(c => c.OrderValidationUrl)
+            };
         }
 
         private IEnumerable<string> GetCountries()
