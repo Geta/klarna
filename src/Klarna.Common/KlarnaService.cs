@@ -7,7 +7,6 @@ using EPiServer.Logging;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Payments.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
