@@ -220,7 +220,8 @@
   <ItemGroup>
     <Compile Include="CheckoutConfiguration.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />
+    <Compile Include="DefaultCheckoutConfigurationLoader.cs" />
+    <Compile Include="ICheckoutConfigurationLoader.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />
     <Compile Include="ICheckoutOrderDataBuilder.cs" />
