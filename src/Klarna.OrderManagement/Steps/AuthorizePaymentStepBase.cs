@@ -44,29 +44,24 @@ namespace Klarna.OrderManagement.Steps
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_ACCEPTED))
             {
                 payment.Status = PaymentStatus.Processed.ToString();
-
                 OrderStatusManager.ReleaseHoldOnOrder((PurchaseOrder)orderGroup);
-
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk accepted");
-
                 return true;
             }
 
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_REJECTED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
-
+                OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk rejected");
-
                 return false;
             }
 
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_STOPPED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
-
+                OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk stopped");
-
                 return false;
             }
 
