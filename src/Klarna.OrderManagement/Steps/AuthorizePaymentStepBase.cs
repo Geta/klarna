@@ -60,7 +60,7 @@ namespace Klarna.OrderManagement.Steps
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_STOPPED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
-
+                OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk stopped");
                 return false;
             }
