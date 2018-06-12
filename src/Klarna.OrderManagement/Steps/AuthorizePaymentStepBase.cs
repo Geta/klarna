@@ -1,4 +1,5 @@
 ﻿using EPiServer.Commerce.Order;
+using Klarna.Common.Extensions;
 using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
@@ -31,7 +32,7 @@ namespace Klarna.OrderManagement.Steps
 
         private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
-            if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_ACCEPTED.ToString())
+            if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_ACCEPTED))
             {
                 payment.Status = PaymentStatus.Processed.ToString();
 
@@ -42,7 +43,7 @@ namespace Klarna.OrderManagement.Steps
                 return true;
             }
 
-            if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
+            if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_REJECTED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
 
@@ -51,7 +52,7 @@ namespace Klarna.OrderManagement.Steps
                 return false;
             }
 
-            if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
+            if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_STOPPED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
 

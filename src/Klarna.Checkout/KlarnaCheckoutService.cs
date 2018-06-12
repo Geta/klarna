@@ -446,8 +446,7 @@ namespace Klarna.Checkout
                 return;
             }
 
-            var fraudStatus = payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString();
-            if (fraudStatus == FraudStatus.PENDING.ToString())
+            if (payment.HasFraudStatus(FraudStatus.PENDING))
             {
                 OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
                 _orderRepository.Save(purchaseOrder);
