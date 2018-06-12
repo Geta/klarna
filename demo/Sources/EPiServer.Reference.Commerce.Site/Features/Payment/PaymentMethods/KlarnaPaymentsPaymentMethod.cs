@@ -59,7 +59,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             _klarnaPaymentsService.CreateOrUpdateSession(cart);
-            ClientToken = _klarnaPaymentsService.GetClientToken(cart);
+            ClientToken = cart.GetKlarnaClientToken();
         }
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)

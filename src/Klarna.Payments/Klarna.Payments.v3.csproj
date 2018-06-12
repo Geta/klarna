@@ -231,6 +231,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\CartExtensions.cs" />
     <Compile Include="KlarnaServiceApiFactory.cs" />
     <Compile Include="Models\CompletionResult.cs" />
     <Compile Include="PaymentsConfiguration.cs" />
