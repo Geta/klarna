@@ -335,8 +335,8 @@ namespace Klarna.Payments
                     .CreatNewSession(sessionRequest)
                     .ConfigureAwait(false);
 
-                cart.Properties[Constants.KlarnaSessionIdCartField] = response.SessionId;
-                cart.Properties[Constants.KlarnaClientTokenCartField] = response.ClientToken;
+                cart.SetKlarnaSessionId(response.SessionId);
+                cart.SetKlarnaClientToken(response.ClientToken);
 
                 _orderRepository.Save(cart);
 
