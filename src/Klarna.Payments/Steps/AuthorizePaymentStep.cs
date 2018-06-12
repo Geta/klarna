@@ -24,7 +24,7 @@ namespace Klarna.Payments.Steps
         {
             _klarnaPaymentService = klarnaPaymentService;
         }
-        
+
         public override bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message)
         {
             var authorizationToken = payment.Properties[Constants.AuthorizationTokenPaymentField]?.ToString();
