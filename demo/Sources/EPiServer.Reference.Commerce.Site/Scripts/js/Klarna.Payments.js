@@ -1,4 +1,4 @@
-﻿var KlarnaCheckout = {};
+﻿var KlarnaPayments = {};
 
 (function ($) {
     // quick and dirty country mapping
@@ -71,7 +71,7 @@
 
     function initKlarna(state, clientToken) {
         if (state.initializedForToken !== clientToken) {
-            Klarna.Credit.init({
+            Klarna.Payments.init({
                 client_token: clientToken
             });
             state.initializedForToken = clientToken;
@@ -96,7 +96,7 @@
             return;
         }
 
-        Klarna.Credit.load({
+        Klarna.Payments.load({
             container: settings.klarna_container
         }, function (result) {
             if (!result.show_form) {
@@ -141,7 +141,7 @@
             getPersonalInfoPromise
             .done(function (personalInformation) {
                 // We should have all necessary personal information here, pass it to authorize call
-                Klarna.Credit.authorize(personalInformation,
+                    Klarna.Payments.authorize(personalInformation,
                     function (result) {
                         // We're allowed to share personal information after this call, only need this info if authorize failed
                         if (!result.show_form || !result.approved || !result.authorization_token) {
@@ -174,7 +174,7 @@
         }
     };
 
-    KlarnaCheckout = {
+    KlarnaPayments = {
         load: load,
         authorize: authorize
     };
