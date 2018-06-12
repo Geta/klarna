@@ -11,7 +11,6 @@ using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
 using Mediachase.Commerce.Markets;
-using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -106,15 +105,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("fraud")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult FraudNotification()
+        public IHttpActionResult FraudNotification(NotificationModel notification)
         {
-            var requestParams = Request.Content.ReadAsStringAsync().Result;
-            if (!string.IsNullOrEmpty(requestParams))
-            {
-                var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
-
-                _klarnaCheckoutService.FraudUpdate(notification);
-            }
+            _klarnaCheckoutService.FraudUpdate(notification);
             return Ok();
         }
 
