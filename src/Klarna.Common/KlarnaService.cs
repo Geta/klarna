@@ -41,7 +41,7 @@ namespace Klarna.Common
 
             var orderForm = order.GetFirstForm();
             var payment = orderForm.Payments.FirstOrDefault();
-            if (payment == null || payment.Status != PaymentStatus.Pending.ToString()) return;
+            if (payment == null) return;
 
             payment.Properties[Constants.FraudStatusPaymentField] = notification.Status.ToString();
 
@@ -51,7 +51,6 @@ namespace Klarna.Common
                 if (result.FirstOrDefault()?.IsSuccessful == false)
                 {
                     PaymentStatusManager.FailPayment((Payment)payment);
-
                     _orderRepository.Save(order);
                 }
             }
