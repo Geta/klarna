@@ -16,18 +16,22 @@ namespace Klarna.OrderManagement.Steps
 
         public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
         {
-            if (payment.TransactionType == TransactionType.Authorization.ToString())
+            if (payment.TransactionType != TransactionType.Authorization.ToString())
             {
-                // Fraud status update
-                if (payment.Status == PaymentStatus.Pending.ToString() && orderGroup is IPurchaseOrder)
-                {
-                    return ProcessFraudUpdate(payment, orderGroup, ref message);
-                }
-
-                return ProcessAuthorization(payment, orderGroup, ref message);
+                return Successor != null && Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
             }
 
-            return Successor != null && Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
+            if (ShouldProcessFraudUpdate(payment, orderGroup))
+            {
+                return ProcessFraudUpdate(payment, orderGroup, ref message);
+            }
+
+            return ProcessAuthorization(payment, orderGroup, ref message);
+        }
+
+        private static bool ShouldProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup)
+        {
+            return payment.Status == PaymentStatus.Pending.ToString() && orderGroup is IPurchaseOrder;
         }
 
         private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
