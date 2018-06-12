@@ -3,26 +3,23 @@ using System.Web.Http;
 using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using Klarna.Payments;
-using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Common.Extensions;
 using Klarna.Common.Models;
 using Klarna.Payments.Models;
-using Newtonsoft.Json;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
     [RoutePrefix("klarnaapi")]
     public class KlarnaPaymentController : ApiController
     {
-        private ILogger _log = LogManager.GetLogger(typeof(KlarnaPaymentController));
         private readonly CustomerContextFacade _customerContextFacade;
         private readonly IKlarnaPaymentsService _klarnaPaymentsService;
         private readonly ICartService _cartService;
 
         public KlarnaPaymentController(
-            CustomerContextFacade customerContextFacade, 
-            IKlarnaPaymentsService klarnaPaymentsService, 
+            CustomerContextFacade customerContextFacade,
+            IKlarnaPaymentsService klarnaPaymentsService,
             ICartService cartService)
         {
             _klarnaPaymentsService = klarnaPaymentsService;
@@ -42,7 +39,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             var sessionRequest = GetPersonalInformationSession(cart, billingAddressId);
-            
+
             return Ok(sessionRequest);
         }
 
@@ -60,28 +57,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return InternalServerError();
         }
 
-        [Route("fraud/")]
+        [Route("fraud")]
         [AcceptVerbs("Post")]
         [HttpPost]
-        public IHttpActionResult FraudNotification()
+        public IHttpActionResult FraudNotification(NotificationModel notification)
         {
-            var requestParams = Request.Content.ReadAsStringAsync().Result;
-
-            _log.Error("KlarnaPaymentController.FraudNotification called: " + requestParams);
-
-            if (!string.IsNullOrEmpty(requestParams))
-            {
-                var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
-
-                _klarnaPaymentsService.FraudUpdate(notification);
-            }
+            _klarnaPaymentsService.FraudUpdate(notification);
             return Ok();
         }
 
         private PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
         {
             var request = _klarnaPaymentsService.GetPersonalInformationSession(cart);
-            
+
             // Get billling address info
             var billingAddress =
                 _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == billingAddressId)?

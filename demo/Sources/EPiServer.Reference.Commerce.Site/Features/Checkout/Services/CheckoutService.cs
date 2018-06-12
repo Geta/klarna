@@ -22,6 +22,7 @@ using EPiServer.Globalization;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using Klarna.Checkout;
+using Klarna.Common.Extensions;
 using Klarna.Payments.Models;
 using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders.Managers;
@@ -276,7 +277,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 throw new InvalidOperationException("Wrong amount");
             }
 
-            if (payment.Properties[Klarna.Common.Constants.FraudStatusPaymentField]?.ToString() == FraudStatus.PENDING.ToString())
+            if (payment.HasFraudStatus(FraudStatus.PENDING))
             {
                 payment.Status = PaymentStatus.Pending.ToString();
             }
