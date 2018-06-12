@@ -1,5 +1,4 @@
 ﻿using EPiServer.Commerce.Order;
-using EPiServer.Logging;
 using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
@@ -9,32 +8,25 @@ namespace Klarna.OrderManagement.Steps
 {
     public abstract class AuthorizePaymentStepBase : PaymentStep
     {
-        private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStepBase));
-
         protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
             : base(payment, marketId, klarnaOrderServiceFactory)
         {
         }
-        
+
         public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
         {
             if (payment.TransactionType == TransactionType.Authorization.ToString())
             {
                 // Fraud status update
-                if (payment.Status == PaymentStatus.Pending.ToString() && orderGroup is IPurchaseOrder /*!string.IsNullOrEmpty(orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString())*/)
+                if (payment.Status == PaymentStatus.Pending.ToString() && orderGroup is IPurchaseOrder)
                 {
                     return ProcessFraudUpdate(payment, orderGroup, ref message);
                 }
-                else
-                {
-                    return ProcessAuthorization(payment, orderGroup, ref message);
-                }
+
+                return ProcessAuthorization(payment, orderGroup, ref message);
             }
-            else if (Successor != null)
-            {
-                return Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
-            }
-            return false;
+
+            return Successor != null && Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
         }
 
         private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
@@ -49,7 +41,8 @@ namespace Klarna.OrderManagement.Steps
 
                 return true;
             }
-            else if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
+
+            if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_REJECTED.ToString())
             {
                 payment.Status = PaymentStatus.Failed.ToString();
 
@@ -57,16 +50,16 @@ namespace Klarna.OrderManagement.Steps
 
                 return false;
             }
-            else if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
-            {
-                //TODO Fraud status stopped
 
+            if (payment.Properties[Common.Constants.FraudStatusPaymentField]?.ToString() == NotificationFraudStatus.FRAUD_RISK_STOPPED.ToString())
+            {
                 payment.Status = PaymentStatus.Failed.ToString();
 
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk stopped");
 
                 return false;
             }
+
             message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Common.Constants.FraudStatusPaymentField]} or no fraud notifications received so far.";
             return false;
         }
