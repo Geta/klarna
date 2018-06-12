@@ -31,7 +31,12 @@ namespace Klarna.OrderManagement.Steps
 
         private static bool ShouldProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup)
         {
-            return payment.Status == PaymentStatus.Pending.ToString() && orderGroup is IPurchaseOrder;
+            if (!(orderGroup is IPurchaseOrder)) return false;
+
+            var isPending = payment.Status == PaymentStatus.Pending.ToString();
+            var isFraudStopped = orderGroup.OrderStatus != OrderStatus.Completed
+                                 && payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_STOPPED);
+            return isPending || isFraudStopped;
         }
 
         private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
