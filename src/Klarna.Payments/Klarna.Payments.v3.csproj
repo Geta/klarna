@@ -234,6 +234,7 @@
     <Compile Include="Extensions\CartExtensions.cs" />
     <Compile Include="KlarnaServiceApiFactory.cs" />
     <Compile Include="Models\CompletionResult.cs" />
+    <Compile Include="Models\PaymentMethodCategory.cs" />
     <Compile Include="PaymentsConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Extensions\PaymentMethodDtoExtensions.cs" />

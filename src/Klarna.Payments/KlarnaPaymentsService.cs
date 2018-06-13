@@ -337,6 +337,7 @@ namespace Klarna.Payments
 
                 cart.SetKlarnaSessionId(response.SessionId);
                 cart.SetKlarnaClientToken(response.ClientToken);
+                cart.SetPaymentMethodCategories(response.PaymentMethodCategories);
 
                 _orderRepository.Save(cart);
 

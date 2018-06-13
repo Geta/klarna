@@ -1,6 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using EPiServer.Commerce.Order;
+using Klarna.Payments.Models;
+using Newtonsoft.Json;
 
 namespace Klarna.Payments.Extensions
 {
@@ -24,6 +26,20 @@ namespace Klarna.Payments.Extensions
         public static void SetKlarnaClientToken(this ICart cart, string clientToken)
         {
             cart.Properties[Constants.KlarnaClientTokenCartField] = clientToken;
+        }
+
+        public static IEnumerable<PaymentMethodCategory> GetPaymentMethodCategories(this ICart cart)
+        {
+            var value = cart.Properties[Constants.KlarnaPaymentMethodCategoriesCartField]?.ToString() ?? string.Empty;
+            return JsonConvert.DeserializeObject<PaymentMethodCategory[]>(value);
+        }
+
+        public static void SetPaymentMethodCategories(
+            this ICart cart,
+            IEnumerable<PaymentMethodCategory> paymentMethodCategories)
+        {
+            var serialized = JsonConvert.SerializeObject(paymentMethodCategories.ToArray());
+            cart.Properties[Constants.KlarnaPaymentMethodCategoriesCartField] = serialized;
         }
     }
 }
