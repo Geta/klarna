@@ -28,13 +28,13 @@ namespace Klarna.Payments.Extensions
             cart.Properties[Constants.KlarnaClientTokenCartField] = clientToken;
         }
 
-        public static IEnumerable<PaymentMethodCategory> GetPaymentMethodCategories(this ICart cart)
+        public static IEnumerable<PaymentMethodCategory> GetKlarnaPaymentMethodCategories(this ICart cart)
         {
             var value = cart.Properties[Constants.KlarnaPaymentMethodCategoriesCartField]?.ToString() ?? string.Empty;
             return JsonConvert.DeserializeObject<PaymentMethodCategory[]>(value);
         }
 
-        public static void SetPaymentMethodCategories(
+        public static void SetKlarnaPaymentMethodCategories(
             this ICart cart,
             IEnumerable<PaymentMethodCategory> paymentMethodCategories)
         {
