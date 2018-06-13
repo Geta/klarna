@@ -1,4 +1,4 @@
-﻿var KlarnaCheckout = {};
+﻿var KlarnaPayments = {};
 
 (function ($) {
     // quick and dirty country mapping
@@ -9,7 +9,8 @@
     var state = {
         initializedForToken: '',
         isAuthorizing: false,
-        authorizationToken: ''
+        authorizationToken: '',
+        paymentMethodCategory: ''
     };
 
     var settings = {
@@ -71,7 +72,7 @@
 
     function initKlarna(state, clientToken) {
         if (state.initializedForToken !== clientToken) {
-            Klarna.Credit.init({
+            Klarna.Payments.init({
                 client_token: clientToken
             });
             state.initializedForToken = clientToken;
@@ -96,8 +97,24 @@
             return;
         }
 
-        Klarna.Credit.load({
-            container: settings.klarna_container
+        $('[data-klarna-payments-select]').on('change',
+            function () {
+                loadWidget(state);
+            });
+
+        loadWidget(state);
+    }
+
+    function loadWidget(state) {
+
+        var paymentMethodCategory = $('[data-klarna-payments-select]:checked').data('klarna-payments-select');
+        if (!paymentMethodCategory) return;
+
+        state.paymentMethodCategory = paymentMethodCategory;
+
+        Klarna.Payments.load({
+            container: settings.klarna_container,
+            payment_method_category: paymentMethodCategory
         }, function (result) {
             if (!result.show_form) {
                 // Unrecoverable error
@@ -106,7 +123,7 @@
                 $("#klarna_container_error").hide();
             }
         });
-    };
+    }
 
     function authorize() {
         // Prevent multiple authorize calls
@@ -141,26 +158,29 @@
             getPersonalInfoPromise
             .done(function (personalInformation) {
                 // We should have all necessary personal information here, pass it to authorize call
-                Klarna.Credit.authorize(personalInformation,
-                    function (result) {
-                        // We're allowed to share personal information after this call, only need this info if authorize failed
-                        if (!result.show_form || !result.approved || !result.authorization_token) {
-                            $.post(urls.allowSharingOfPersonalInformation);
-                        }
+                Klarna.Payments.authorize({
+                    payment_method_category: state.paymentMethodCategory
+                },
+                personalInformation,
+                function (result) {
+                    // We're allowed to share personal information after this call, only need this info if authorize failed
+                    if (!result.show_form || !result.approved || !result.authorization_token) {
+                        $.post(urls.allowSharingOfPersonalInformation);
+                    }
 
-                        if (!result.show_form) {
-                            // 'Unrecoverable' error
-                            hideForm();
-                        } else {
-                            if (result.approved && result.authorization_token) {
-                                state.authorizationToken = result.authorization_token;
+                    if (!result.show_form) {
+                        // 'Unrecoverable' error
+                        hideForm();
+                    } else {
+                        if (result.approved && result.authorization_token) {
+                            state.authorizationToken = result.authorization_token;
 
-                                // Set auth token in form field and submit the form
-                                $("#AuthorizationToken").val(state.authorizationToken);
-                                $('.jsCheckoutForm').submit();
-                            }
+                            // Set auth token in form field and submit the form
+                            $("#AuthorizationToken").val(state.authorizationToken);
+                            $('.jsCheckoutForm').submit();
                         }
-                    });
+                    }
+                });
             })
             .fail(function (result) {
                 console.error("Something went wrong", result);
@@ -174,7 +194,7 @@
         }
     };
 
-    KlarnaCheckout = {
+    KlarnaPayments = {
         load: load,
         authorize: authorize
     };

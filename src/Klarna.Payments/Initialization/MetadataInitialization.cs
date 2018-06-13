@@ -17,6 +17,7 @@ namespace Klarna.Payments.Initialization
 
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaSessionIdCartField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaClientTokenCartField), Common.Constants.CartClass);
+            JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaPaymentMethodCategoriesCartField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.KlarnaAllowSharingOfPersonalInformationCartField, MetaDataType.Boolean), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Constants.CartOrderNumberTempCartField), Common.Constants.CartClass);
             JoinField(mdContext, GetOrCreateCardField(mdContext, Common.Constants.KlarnaOrderIdField), Common.Constants.CartClass);

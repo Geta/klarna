@@ -51,7 +51,42 @@ namespace Klarna.Payments
 
         public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null)
         {
-            // Check if we shared PI before, if so it allows us to share it again
+            var sessionRequest = CreateSessionRequest(cart, dic);
+            var sessionId = cart.GetKlarnaSessionId();
+
+            if (string.IsNullOrEmpty(sessionId))
+            {
+                return await CreateSession(sessionRequest, cart);
+            }
+
+            try
+            {
+                await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
+                    .UpdateSession(sessionId, sessionRequest)
+                    .ConfigureAwait(false);
+
+                return true;
+            }
+            catch (ApiException apiException)
+            {
+                if (apiException.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return await CreateSession(sessionRequest, cart);
+                }
+
+                _logger.Error(apiException.Message, apiException);
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex.Message, ex);
+                return false;
+            }
+        }
+
+        private Session CreateSessionRequest(ICart cart, IDictionary<string, object> dic)
+        {
+// Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
             var config = GetConfiguration(cart.MarketId);
 
@@ -60,10 +95,12 @@ namespace Klarna.Payments
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, dic);
             }
+
             var market = _marketService.GetMarket(cart.MarketId);
             var currentCountry = market.Countries.FirstOrDefault();
             // Clear PI if we're not allowed to send it yet (can be set by custom session builder)
-            if (!canSendPersonalInformation && !CanSendPersonalInformation(currentCountry))
+            if (!canSendPersonalInformation
+                && !CanSendPersonalInformation(currentCountry))
             {
                 // Can't share PI yet, will be done during the first authorize call
                 sessionRequest.ShippingAddress = null;
@@ -75,52 +112,24 @@ namespace Klarna.Payments
                     sessionRequest.Customer = null;
                 }
             }
-            var sessionId = cart.Properties[Constants.KlarnaSessionIdCartField]?.ToString();
-            if (!string.IsNullOrEmpty(sessionId))
-            {
-                try
-                {
-                    await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
-                        .UpdateSession(sessionId, sessionRequest)
-                        .ConfigureAwait(false);
 
-                    return true;
-                }
-                catch (ApiException apiException)
-                {
-                    // Create new session if current one is not found
-                    if (apiException.StatusCode == HttpStatusCode.NotFound)
-                    {
-                        return await CreateSession(sessionRequest, cart);
-                    }
-
-                    _logger.Error(apiException.Message, apiException);
-                    return false;
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex.Message, ex);
-
-                    return false;
-                }
-            }
-            return await CreateSession(sessionRequest, cart);
+            return sessionRequest;
         }
 
         public string GetSessionId(ICart cart)
         {
-            return cart.Properties[Constants.KlarnaSessionIdCartField]?.ToString();
+            return cart.GetKlarnaSessionId();
         }
 
         public string GetClientToken(ICart cart)
         {
-            return cart.Properties[Constants.KlarnaClientTokenCartField]?.ToString();
+            return cart.GetKlarnaClientToken();
         }
 
         public async Task<Session> GetSession(ICart cart)
         {
             return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
-                .GetSession(GetSessionId(cart))
+                .GetSession(cart.GetKlarnaSessionId())
                 .ConfigureAwait(false);
         }
 
@@ -326,8 +335,9 @@ namespace Klarna.Payments
                     .CreatNewSession(sessionRequest)
                     .ConfigureAwait(false);
 
-                cart.Properties[Constants.KlarnaSessionIdCartField] = response.SessionId;
-                cart.Properties[Constants.KlarnaClientTokenCartField] = response.ClientToken;
+                cart.SetKlarnaSessionId(response.SessionId);
+                cart.SetKlarnaClientToken(response.ClientToken);
+                cart.SetKlarnaPaymentMethodCategories(response.PaymentMethodCategories);
 
                 _orderRepository.Save(cart);
 

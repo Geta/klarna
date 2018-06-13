@@ -18,7 +18,7 @@
                 }
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
-                    KlarnaCheckout.authorize();
+                    KlarnaPayments.authorize();
                 }
             });
 
@@ -165,7 +165,7 @@
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
                 if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
-                    KlarnaCheckout.load();
+                    KlarnaPayments.load();
                 }
             }
         });

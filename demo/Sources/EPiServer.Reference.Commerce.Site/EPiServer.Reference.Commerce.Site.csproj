@@ -400,7 +400,7 @@
     <Content Include="Scripts\js\AddressBook.js" />
     <Content Include="Scripts\js\Cart.js" />
     <Content Include="Scripts\js\Checkout.js" />
-    <Content Include="Scripts\js\Checkout.Klarna.js" />
+    <Content Include="Scripts\js\Klarna.Payments.js" />
     <Content Include="Scripts\js\Login.js" />
     <Content Include="Scripts\js\Market.js" />
     <Content Include="Scripts\js\Misc.js" />

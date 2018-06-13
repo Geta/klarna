@@ -7,6 +7,7 @@
         // Cart property fields
         public const string KlarnaSessionIdCartField = "KlarnaSessionIdCart";
         public const string KlarnaClientTokenCartField = "KlarnaClientTokenCart";
+        public const string KlarnaPaymentMethodCategoriesCartField = "KlarnaPaymentMethodCategoriesCart";
         public const string KlarnaAllowSharingOfPersonalInformationCartField = "KlarnaAllowSharingOfPersonalInformationCart";
         public const string CartOrderNumberTempCartField = "CartOrderNumberTempCart";
 

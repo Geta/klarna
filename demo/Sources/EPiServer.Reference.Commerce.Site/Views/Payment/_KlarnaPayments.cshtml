@@ -6,6 +6,24 @@
 {
     <img src="@Model.KlarnaLogoUrl" alt="Klarna logo" class="klarna-logo" />
 }
+
+<div class="row">
+    <div class="col-xs-12">
+        @{ var first = true; }
+        @foreach (var category in Model.PaymentMethodCategories)
+        {
+            <div class="radio">
+                <label>
+                    <input type="radio" name="KlarnaPaymentMethodCategory" value="@category.Identifier" data-klarna-payments-select="@category.Identifier" @(first ? "checked" : string.Empty) />
+                    <img src="@category.AssetUrls.Standard" alt="@category.Name" class="klarna-logo" />
+                    @category.Name
+                </label>
+            </div>
+            first = false;
+        }
+    </div>
+</div>
+
 <div id="klarna_container"></div>
 <div id="klarna_container_error" class="alert alert-danger" hidden>@Html.Translate("/Checkout/Payment/Errors/NotAvailable")</div>
 
@@ -18,13 +36,13 @@
 
         // Register callback function to be executed after initial load
         window.klarnaAsyncCallback = function () {
-            KlarnaCheckout.load(klarnaData);
+            KlarnaPayments.load(klarnaData);
         };
 
-        // Only call this if jQuery/Klarna/KlarnaCheckout has been loaded already
-        if (window.jQuery && window.Klarna && window.KlarnaCheckout) {
+        // Only call this if jQuery/Klarna/KlarnaPayments has been loaded already
+        if (window.jQuery && window.Klarna && window.KlarnaPayments) {
             window.setTimeout(function () {
-                KlarnaCheckout.load(klarnaData);
+                KlarnaPayments.load(klarnaData);
             }, 100);
         }
     })();

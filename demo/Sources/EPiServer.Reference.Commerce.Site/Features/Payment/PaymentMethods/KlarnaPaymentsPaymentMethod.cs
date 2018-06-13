@@ -1,4 +1,5 @@
-﻿using EPiServer.Commerce.Order;
+﻿using System.Collections.Generic;
+using EPiServer.Commerce.Order;
 using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
@@ -59,8 +60,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             _klarnaPaymentsService.CreateOrUpdateSession(cart);
-            ClientToken = _klarnaPaymentsService.GetClientToken(cart);
+            ClientToken = cart.GetKlarnaClientToken();
+            PaymentMethodCategories = cart.GetKlarnaPaymentMethodCategories();
         }
+
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)
         {
@@ -92,6 +95,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         public string Error { get; }
 
         public string ClientToken { get; set; }
+
+        public IEnumerable<PaymentMethodCategory> PaymentMethodCategories { get; private set; }
 
         public string KlarnaLogoUrl
         {
