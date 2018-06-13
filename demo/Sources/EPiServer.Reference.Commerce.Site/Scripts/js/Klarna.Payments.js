@@ -96,8 +96,22 @@
             return;
         }
 
+        $('[data-klarna-payments-select]').on('change',
+            function() {
+                loadWidget();
+            });
+
+        loadWidget();
+    }
+
+    function loadWidget() {
+
+        var paymentMethodCategory = $('[data-klarna-payments-select]:checked').data('klarna-payments-select');
+        if (!paymentMethodCategory) return;
+
         Klarna.Payments.load({
-            container: settings.klarna_container
+            container: settings.klarna_container,
+            payment_method_category: paymentMethodCategory
         }, function (result) {
             if (!result.show_form) {
                 // Unrecoverable error
@@ -106,7 +120,7 @@
                 $("#klarna_container_error").hide();
             }
         });
-    };
+    }
 
     function authorize() {
         // Prevent multiple authorize calls
