@@ -9,7 +9,8 @@
     var state = {
         initializedForToken: '',
         isAuthorizing: false,
-        authorizationToken: ''
+        authorizationToken: '',
+        paymentMethodCategory: ''
     };
 
     var settings = {
@@ -97,17 +98,19 @@
         }
 
         $('[data-klarna-payments-select]').on('change',
-            function() {
-                loadWidget();
+            function () {
+                loadWidget(state);
             });
 
-        loadWidget();
+        loadWidget(state);
     }
 
-    function loadWidget() {
+    function loadWidget(state) {
 
         var paymentMethodCategory = $('[data-klarna-payments-select]:checked').data('klarna-payments-select');
         if (!paymentMethodCategory) return;
+
+        state.paymentMethodCategory = paymentMethodCategory;
 
         Klarna.Payments.load({
             container: settings.klarna_container,
@@ -155,26 +158,29 @@
             getPersonalInfoPromise
             .done(function (personalInformation) {
                 // We should have all necessary personal information here, pass it to authorize call
-                    Klarna.Payments.authorize(personalInformation,
-                    function (result) {
-                        // We're allowed to share personal information after this call, only need this info if authorize failed
-                        if (!result.show_form || !result.approved || !result.authorization_token) {
-                            $.post(urls.allowSharingOfPersonalInformation);
-                        }
+                Klarna.Payments.authorize({
+                    payment_method_category: state.paymentMethodCategory
+                },
+                personalInformation,
+                function (result) {
+                    // We're allowed to share personal information after this call, only need this info if authorize failed
+                    if (!result.show_form || !result.approved || !result.authorization_token) {
+                        $.post(urls.allowSharingOfPersonalInformation);
+                    }
 
-                        if (!result.show_form) {
-                            // 'Unrecoverable' error
-                            hideForm();
-                        } else {
-                            if (result.approved && result.authorization_token) {
-                                state.authorizationToken = result.authorization_token;
+                    if (!result.show_form) {
+                        // 'Unrecoverable' error
+                        hideForm();
+                    } else {
+                        if (result.approved && result.authorization_token) {
+                            state.authorizationToken = result.authorization_token;
 
-                                // Set auth token in form field and submit the form
-                                $("#AuthorizationToken").val(state.authorizationToken);
-                                $('.jsCheckoutForm').submit();
-                            }
+                            // Set auth token in form field and submit the form
+                            $("#AuthorizationToken").val(state.authorizationToken);
+                            $('.jsCheckoutForm').submit();
                         }
-                    });
+                    }
+                });
             })
             .fail(function (result) {
                 console.error("Something went wrong", result);

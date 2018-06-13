@@ -9,12 +9,12 @@
 
 <div class="row">
     <div class="col-xs-12">
-        @{ var first = false; }
+        @{ var first = true; }
         @foreach (var category in Model.PaymentMethodCategories)
         {
             <div class="radio">
                 <label>
-                    <input type="radio" name="klarna-payments-select" data-klarna-payments-select="@category.Identifier" @(first ? "checked" : string.Empty) />
+                    <input type="radio" name="KlarnaPaymentMethodCategory" value="@category.Identifier" data-klarna-payments-select="@category.Identifier" @(first ? "checked" : string.Empty) />
                     <img src="@category.AssetUrls.Standard" alt="@category.Name" class="klarna-logo" />
                     @category.Name
                 </label>
