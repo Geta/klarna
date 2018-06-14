@@ -22,7 +22,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             if (IsPostBack || _paymentMethodDto?.PaymentMethodParameter == null) return;
 
             var markets = _paymentMethodDto.PaymentMethod.First().GetMarketPaymentMethodsRows();
-            if (markets == null) return;
+            if (markets == null || markets.Length == 0) return;
 
             var checkoutConfiguration = GetConfiguration(markets.First().MarketId);
             BindConfigurationData(checkoutConfiguration);
