@@ -15,7 +15,8 @@
 
     var settings = {
         klarna_container: '',
-        client_token: ''
+        client_token: '',
+        payment_method_categories: []
     };
 
     var urls = {
@@ -63,7 +64,9 @@
         if (!newSettings) {
             return false;
         }
-        if (settings.klarna_container === newSettings.klarna_container && settings.client_token === newSettings.client_token) {
+        if (settings.klarna_container === newSettings.klarna_container
+            && settings.client_token === newSettings.client_token
+            && settings.payment_method_categories === newSettings.payment_method_categories) {
             return false;
         }
 
@@ -88,6 +91,7 @@
         if (newSettings && newSettings.client_token && shouldUpdateSettings(settings, newSettings)) {
             settings.client_token = newSettings.client_token;
             settings.klarna_container = newSettings.klarna_container;
+            settings.payment_method_categories = newSettings.payment_method_categories;
 
             // Init new settings
             initKlarna(state, settings.client_token);
@@ -99,29 +103,37 @@
 
         $('[data-klarna-payments-select]').on('change',
             function () {
-                loadWidget(state);
+                setPaymentMethodCategory(state);
             });
 
-        loadWidget(state);
+        setPaymentMethodCategory(state);
+        loadWidgets();
     }
 
-    function loadWidget(state) {
-
+    function setPaymentMethodCategory(state) {
         var paymentMethodCategory = $('[data-klarna-payments-select]:checked').data('klarna-payments-select');
         if (!paymentMethodCategory) return;
-
         state.paymentMethodCategory = paymentMethodCategory;
+    }
 
-        Klarna.Payments.load({
-            container: settings.klarna_container,
-            payment_method_category: paymentMethodCategory
-        }, function (result) {
-            if (!result.show_form) {
-                // Unrecoverable error
-                hideForm();
-            } else {
-                $("#klarna_container_error").hide();
-            }
+    function loadWidgets() {
+
+        settings.payment_method_categories.forEach(function(category) {
+
+            var container = settings.klarna_container + "_" + category;
+            var errorContainer = settings.klarna_container + "_error_" + category;
+
+            Klarna.Payments.load({
+                container: container,
+                payment_method_category: category
+            }, function (result) {
+                if (!result.show_form) {
+                    // Unrecoverable error
+                    hideForm();
+                } else {
+                    $(errorContainer).hide();
+                }
+            });
         });
     }
 
