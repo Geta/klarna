@@ -1,5 +1,4 @@
 ﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="ConfigurePayment.ascx.cs" Inherits="Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPayments.ConfigurePayment" %>
-<%@ Register TagPrefix="mc" Namespace="Mediachase.BusinessFoundation" Assembly="Mediachase.BusinessFoundation, Version=10.4.3.0, Culture=neutral, PublicKeyToken=41d2e7a615ba286c" %>
 
  <asp:UpdatePanel UpdateMode="Conditional" ID="ConfigureUpdatePanelContentPanel" runat="server" RenderMode="Inline" ChildrenAsTriggers="true">
         <ContentTemplate>
@@ -144,7 +143,6 @@
                     <td class="FormLabelCell">Color radius border:</td>
                     <td class="FormFieldCell">
                         <asp:TextBox runat="server" ID="txtRadiusBorder" />
-                        <asp:RegularExpressionValidator  ControlToValidate="txtRadiusBorder" ID="regexRadiusBorder" ValidationExpression="^#([A-Fa-f0-9]{6})$" runat="server" ErrorMessage="Color radius border invalid color"></asp:RegularExpressionValidator>
                     </td>
                 </tr>
             </tbody>
