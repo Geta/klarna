@@ -108,7 +108,10 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Payment.ViewModelFact
             _languageServiceMock = new Mock<LanguageService>(null, null, null);
             _languageServiceMock.Setup(x => x.GetCurrentLanguage()).Returns(new CultureInfo("en-US"));
 
-            _subject = new PaymentMethodViewModelFactory(_currentMarketMock.Object, _languageServiceMock.Object, _paymentMethods.Select(x => x.PaymentMethod), _paymentManagerMock.Object);
+            var contentLoaderMock = new Mock<IContentLoader>();
+
+            _subject = new PaymentMethodViewModelFactory(
+                _currentMarketMock.Object, _languageServiceMock.Object, _paymentMethods.Select(x => x.PaymentMethod), _paymentManagerMock.Object, contentLoaderMock.Object);
         }
     }
 }
