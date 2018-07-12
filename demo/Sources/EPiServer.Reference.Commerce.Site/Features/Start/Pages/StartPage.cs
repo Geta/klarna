@@ -117,5 +117,22 @@ namespace EPiServer.Reference.Commerce.Site.Features.Start.Pages
             Order = 10)]
         public virtual ContentReference PageNotFound { get; set; }
 
+        [Display(
+            Name = "Klarna Checkout enabled",
+            GroupName = SiteTabs.Commerce,
+            Order = 10)]
+        public virtual bool KlarnaCheckoutEnabled { get; set; }
+
+        [Display(
+            Name = "Klarna Payments enabled",
+            GroupName = SiteTabs.Commerce,
+            Order = 20)]
+        public virtual bool KlarnaPaymentsEnabled { get; set; }
+
+        [Display(
+            Name = "Other payments enabled",
+            GroupName = SiteTabs.Commerce,
+            Order = 30)]
+        public virtual bool OtherPaymentsEnabled { get; set; }
     }
 }
