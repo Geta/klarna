@@ -56,7 +56,7 @@ namespace Klarna.Payments
 
             if (string.IsNullOrEmpty(sessionId))
             {
-                return await CreateSession(sessionRequest, cart);
+                return await CreateSession(sessionRequest, cart).ConfigureAwait(false);
             }
 
             try
@@ -71,7 +71,7 @@ namespace Klarna.Payments
             {
                 if (apiException.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return await CreateSession(sessionRequest, cart);
+                    return await CreateSession(sessionRequest, cart).ConfigureAwait(false);
                 }
 
                 _logger.Error(apiException.Message, apiException);

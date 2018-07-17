@@ -15,7 +15,7 @@ using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
-    [ServiceConfiguration(typeof(IPaymentMethod))]
+    [ServiceConfiguration(typeof(IPaymentMethod), Lifecycle = ServiceInstanceScope.Hybrid)]
     public class KlarnaPaymentsPaymentMethod : PaymentMethodBase, IDataErrorInfo
     {
         private string _klarnaLogoUrl;
@@ -59,9 +59,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         public void InitializeValues()
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
-            _klarnaPaymentsService.CreateOrUpdateSession(cart);
-            ClientToken = cart.GetKlarnaClientToken();
-            PaymentMethodCategories = cart.GetKlarnaPaymentMethodCategories();
+            if (_klarnaPaymentsService.CreateOrUpdateSession(cart).Result)
+            {
+                ClientToken = cart.GetKlarnaClientToken();
+                PaymentMethodCategories = cart.GetKlarnaPaymentMethodCategories();
+            }
         }
 
 
