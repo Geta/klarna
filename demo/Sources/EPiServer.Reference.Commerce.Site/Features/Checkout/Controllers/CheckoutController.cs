@@ -16,8 +16,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
+using EPiServer.Web;
 using Klarna.Checkout;
 using Klarna.Payments;
+using Klarna.Payments.Models;
 using Mediachase.Commerce.Markets;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -118,7 +120,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var addressViewName = addressViewModel.ShippingAddressIndex > -1 ? "SingleShippingAddress" : "BillingAddress";
 
-            await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
+            await _klarnaPaymentsService.CreateOrUpdateSession(Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
 
             return PartialView(addressViewName, viewModel);
         }
