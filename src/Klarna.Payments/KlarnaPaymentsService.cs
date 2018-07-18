@@ -20,6 +20,8 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using Refit;
+using Options = Klarna.Payments.Models.Options;
+using SiteDefinition = EPiServer.Web.SiteDefinition;
 
 namespace Klarna.Payments
 {
@@ -49,14 +51,14 @@ namespace Klarna.Payments
             _klarnaServiceApiFactory = klarnaServiceApiFactory;
         }
 
-        public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null)
+        public async Task<bool> CreateOrUpdateSession(ICart cart, SessionSettings settings)
         {
-            var sessionRequest = CreateSessionRequest(cart, dic);
+            var sessionRequest = CreateSessionRequest(cart, settings);
             var sessionId = cart.GetKlarnaSessionId();
 
             if (string.IsNullOrEmpty(sessionId))
             {
-                return await CreateSession(sessionRequest, cart).ConfigureAwait(false);
+                return await CreateSession(sessionRequest, cart, settings).ConfigureAwait(false);
             }
 
             try
@@ -71,7 +73,7 @@ namespace Klarna.Payments
             {
                 if (apiException.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return await CreateSession(sessionRequest, cart).ConfigureAwait(false);
+                    return await CreateSession(sessionRequest, cart, settings).ConfigureAwait(false);
                 }
 
                 _logger.Error(apiException.Message, apiException);
@@ -84,16 +86,24 @@ namespace Klarna.Payments
             }
         }
 
-        private Session CreateSessionRequest(ICart cart, IDictionary<string, object> dic)
+        public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null)
+        {
+            var additional = dic ?? new Dictionary<string, object>();
+            return await CreateOrUpdateSession(
+                    cart, new SessionSettings(SiteDefinition.Current.SiteUrl) {AdditionalValues = additional})
+                .ConfigureAwait(false);
+        }
+
+        private Session CreateSessionRequest(ICart cart, SessionSettings settings)
         {
 // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
             var config = GetConfiguration(cart.MarketId);
 
-            var sessionRequest = GetSessionRequest(cart, config, canSendPersonalInformation);
+            var sessionRequest = GetSessionRequest(cart, config, settings.SiteUrl, canSendPersonalInformation);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, dic);
+                sessionRequest = sessionBuilder.Build(sessionRequest, cart, config, settings.AdditionalValues);
             }
 
             var market = _marketService.GetMarket(cart.MarketId);
@@ -136,7 +146,7 @@ namespace Klarna.Payments
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
             var config = GetConfiguration(cart.MarketId);
-            var sessionRequest = GetSessionRequest(cart, config, true);
+            var sessionRequest = GetSessionRequest(cart, config, cart.GetSiteUrl(), true);
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
             _orderRepository.Save(cart);
@@ -274,7 +284,7 @@ namespace Klarna.Payments
             }
         }
 
-        private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, bool includePersonalInformation = false)
+        private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, Uri siteUrl, bool includePersonalInformation = false)
         {
             var market = _marketService.GetMarket(cart.MarketId);
             var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
@@ -295,8 +305,8 @@ namespace Klarna.Payments
             {
                 request.MerchantUrl = new MerchantUrl
                 {
-                    Confirmation = config.ConfirmationUrl,
-                    Notification = config.NotificationUrl,
+                    Confirmation = ToFullSiteUrl(siteUrl, config.ConfirmationUrl),
+                    Notification = ToFullSiteUrl(siteUrl, config.NotificationUrl),
                 };
                 request.Options = GetWidgetOptions(paymentMethod, cart.MarketId);
             }
@@ -327,7 +337,22 @@ namespace Klarna.Payments
             return request;
         }
 
-        private async Task<bool> CreateSession(Session sessionRequest, ICart cart)
+        private string ToFullSiteUrl(Uri siteUrl, string url)
+        {
+            if (Uri.TryCreate(url, UriKind.Absolute, out var absolute))
+            {
+                return absolute.ToString();
+            }
+
+            if (siteUrl == null)
+            {
+                siteUrl = SiteDefinition.Current.SiteUrl;
+            }
+
+            return new Uri(siteUrl, url).ToString();
+        }
+
+        private async Task<bool> CreateSession(Session sessionRequest, ICart cart, SessionSettings settings)
         {
             try
             {
@@ -338,6 +363,7 @@ namespace Klarna.Payments
                 cart.SetKlarnaSessionId(response.SessionId);
                 cart.SetKlarnaClientToken(response.ClientToken);
                 cart.SetKlarnaPaymentMethodCategories(response.PaymentMethodCategories);
+                cart.SetSiteUrl(settings.SiteUrl);
 
                 _orderRepository.Save(cart);
 

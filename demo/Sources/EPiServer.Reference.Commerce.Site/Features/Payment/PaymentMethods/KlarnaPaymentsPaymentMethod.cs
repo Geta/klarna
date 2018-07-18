@@ -7,6 +7,7 @@ using System.ComponentModel;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
+using EPiServer.Web;
 using Klarna.Payments;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
@@ -59,7 +60,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         public void InitializeValues()
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
-            if (_klarnaPaymentsService.CreateOrUpdateSession(cart).Result)
+            var siteUrl = SiteDefinition.Current.SiteUrl;
+            if (_klarnaPaymentsService.CreateOrUpdateSession(cart, new SessionSettings(siteUrl)).Result)
             {
                 ClientToken = cart.GetKlarnaClientToken();
                 PaymentMethodCategories = cart.GetKlarnaPaymentMethodCategories();

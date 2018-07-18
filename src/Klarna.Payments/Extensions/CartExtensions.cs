@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Commerce.Order;
+using EPiServer.Web;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
 
@@ -40,6 +42,18 @@ namespace Klarna.Payments.Extensions
         {
             var serialized = JsonConvert.SerializeObject(paymentMethodCategories.ToArray());
             cart.Properties[Constants.KlarnaPaymentMethodCategoriesCartField] = serialized;
+        }
+
+        public static Uri GetSiteUrl(this ICart cart)
+        {
+            var url = cart.Properties[Constants.KlarnaSiteUrlCartField]?.ToString() ?? string.Empty;
+            return Uri.TryCreate(url, UriKind.Absolute, out var uri) ? uri : SiteDefinition.Current.SiteUrl;
+        }
+
+        public static void SetSiteUrl(
+            this ICart cart, Uri siteUrl)
+        {
+            cart.Properties[Constants.KlarnaSiteUrlCartField] = siteUrl?.ToString() ?? string.Empty;
         }
     }
 }
