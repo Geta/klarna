@@ -75,7 +75,6 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             additionalCheckboxDefaultCheckedCheckBox.Checked = checkoutConfiguration.AdditionalCheckboxDefaultChecked;
             additionalCheckboxRequiredCheckBox.Checked = checkoutConfiguration.AdditionalCheckboxRequired;
 
-            txtBaseUrl.Text = checkoutConfiguration.BaseUrl;
             txtConfirmationUrl.Text = checkoutConfiguration.ConfirmationUrl;
             txtTermsUrl.Text = checkoutConfiguration.TermsUrl;
             txtCancellationTermsUrl.Text = checkoutConfiguration.CancellationTermsUrl;
@@ -127,7 +126,6 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
                 AdditionalCheckboxText = additionalCheckboxTextTextBox.Text,
                 AdditionalCheckboxDefaultChecked = additionalCheckboxDefaultCheckedCheckBox.Checked,
                 AdditionalCheckboxRequired = additionalCheckboxRequiredCheckBox.Checked,
-                BaseUrl = txtBaseUrl.Text,
                 ConfirmationUrl = txtConfirmationUrl.Text,
                 TermsUrl = txtTermsUrl.Text,
                 CancellationTermsUrl = txtCancellationTermsUrl.Text,

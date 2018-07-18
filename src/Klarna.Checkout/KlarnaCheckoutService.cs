@@ -7,6 +7,7 @@ using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
+using EPiServer.Web;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
@@ -212,7 +213,8 @@ namespace Klarna.Checkout
             return cart;
         }
 
-        private CheckoutOrderData GetCheckoutOrderData(ICart cart, IMarket market, PaymentMethodDto paymentMethodDto)
+        private CheckoutOrderData GetCheckoutOrderData(
+            ICart cart, IMarket market, PaymentMethodDto paymentMethodDto)
         {
             var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
             var shipment = cart.GetFirstShipment();
@@ -488,7 +490,7 @@ namespace Klarna.Checkout
 
             var configuration = GetConfiguration(cart.MarketId);
 
-            Uri ToUri(Func<CheckoutConfiguration, string> fieldSelector)
+            Uri ToFullSiteUrl(Func<CheckoutConfiguration, string> fieldSelector)
             {
                 var url = fieldSelector(configuration).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString());
                 if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
@@ -496,25 +498,20 @@ namespace Klarna.Checkout
                     return uri;
                 }
 
-                if (Uri.TryCreate(configuration.BaseUrl, UriKind.Absolute, out var baseUri))
-                {
-                    return new Uri(baseUri, url);
-                }
-
-                return null;
+                return new Uri(SiteDefinition.Current.SiteUrl, url);
             }
 
             return new PatchedMerchantUrls
             {
-                Terms = ToUri(c => c.TermsUrl),
-                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToUri(c => c.CancellationTermsUrl) : null,
-                Checkout = ToUri(c => c.CheckoutUrl),
-                Confirmation = ToUri(c => c.ConfirmationUrl),
-                Push = ToUri(c => c.PushUrl),
-                AddressUpdate = ToUri(c => c.AddressUpdateUrl),
-                ShippingOptionUpdate = ToUri(c => c.ShippingOptionUpdateUrl),
-                Notification = ToUri(c => c.NotificationUrl),
-                Validation = ToUri(c => c.OrderValidationUrl)
+                Terms = ToFullSiteUrl(c => c.TermsUrl),
+                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToFullSiteUrl(c => c.CancellationTermsUrl) : null,
+                Checkout = ToFullSiteUrl(c => c.CheckoutUrl),
+                Confirmation = ToFullSiteUrl(c => c.ConfirmationUrl),
+                Push = ToFullSiteUrl(c => c.PushUrl),
+                AddressUpdate = ToFullSiteUrl(c => c.AddressUpdateUrl),
+                ShippingOptionUpdate = ToFullSiteUrl(c => c.ShippingOptionUpdateUrl),
+                Notification = ToFullSiteUrl(c => c.NotificationUrl),
+                Validation = ToFullSiteUrl(c => c.OrderValidationUrl)
             };
         }
 
