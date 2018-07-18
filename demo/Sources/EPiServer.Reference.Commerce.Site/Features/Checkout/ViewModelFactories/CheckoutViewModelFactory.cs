@@ -14,6 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories;
 using Klarna.Checkout;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
@@ -27,6 +28,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
         readonly UrlResolver _urlResolver;
         readonly ServiceAccessor<HttpContextBase> _httpContextAccessor;
         readonly ShipmentViewModelFactory _shipmentViewModelFactory;
+        private readonly PaymentMethodViewModelFactory _paymentMethodViewModelFactory;
 
         public CheckoutViewModelFactory(
             LocalizationService localizationService,
@@ -34,7 +36,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
             IContentLoader contentLoader,
             UrlResolver urlResolver,
             ServiceAccessor<HttpContextBase> httpContextAccessor,
-            ShipmentViewModelFactory shipmentViewModelFactory)
+            ShipmentViewModelFactory shipmentViewModelFactory,
+            PaymentMethodViewModelFactory paymentMethodViewModelFactory)
         {
             _localizationService = localizationService;
             _addressBookService = addressBookService;
@@ -42,6 +45,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
             _urlResolver = urlResolver;
             _httpContextAccessor = httpContextAccessor;
             _shipmentViewModelFactory = shipmentViewModelFactory;
+            _paymentMethodViewModelFactory = paymentMethodViewModelFactory;
         }
 
         public virtual CheckoutViewModel CreateCheckoutViewModel(ICart cart, CheckoutPage currentPage, IPaymentMethod paymentMethod = null)
@@ -56,6 +60,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
 
             var shipments = _shipmentViewModelFactory.CreateShipmentsViewModel(cart).ToList();
             var useBillingAddressForShipment = shipments.Count == 1 && currentBillingAdressId == currentShippingAddressId && _addressBookService.UseBillingAddressForShipment();
+
+            var payments = _paymentMethodViewModelFactory.CreatePaymentMethodSelectionViewModel(paymentMethod);
+            paymentMethod = payments.SelectedPaymentMethod.PaymentMethod;
 
             var viewModel = new CheckoutViewModel
             {
