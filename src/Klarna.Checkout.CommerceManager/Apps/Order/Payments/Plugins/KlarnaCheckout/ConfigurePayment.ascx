@@ -198,13 +198,6 @@
 
 <table class="DataForm">
     <tbody>
-        <tr>
-            <td class="FormLabelCell">Base URL:</td>
-            <td class="FormFieldCell">
-                <asp:TextBox runat="server" ID="txtBaseUrl" CssClass="karnapayment-parameters-url" />
-                <asp:RequiredFieldValidator ID="requiredBaseUrl" runat="server" ControlToValidate="txtBaseUrl" ErrorMessage="Base URL is required." />
-            </td>
-        </tr>
          <tr>
             <td class="FormLabelCell">Checkout URL:</td>
             <td class="FormFieldCell">
