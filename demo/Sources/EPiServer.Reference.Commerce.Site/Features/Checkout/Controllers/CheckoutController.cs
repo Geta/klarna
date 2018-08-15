@@ -129,6 +129,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         public ActionResult OrderSummary()
         {
             var viewModel = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(Cart);
+
+            var success = _klarnaPaymentsService.CreateOrUpdateSession(Cart, new SessionSettings(SiteDefinition.Current.SiteUrl)).Result;
+
             return PartialView(viewModel);
         }
 
