@@ -104,9 +104,11 @@
         $('[data-klarna-payments-select]').on('change',
             function () {
                 setPaymentMethodCategory(state);
+                setWidgetVisibility();
             });
 
         setPaymentMethodCategory(state);
+        setWidgetVisibility();
         loadWidgets();
     }
 
@@ -114,6 +116,21 @@
         var paymentMethodCategory = $('[data-klarna-payments-select]:checked').data('klarna-payments-select');
         if (!paymentMethodCategory) return;
         state.paymentMethodCategory = paymentMethodCategory;
+    }
+
+    function setWidgetVisibility() {
+        settings.payment_method_categories.forEach(function(category) {
+
+            var container = settings.klarna_container + "_" + category;
+            var errorContainer = settings.klarna_container + "_error_" + category;
+
+            if (state.paymentMethodCategory === category) {
+                $(container).show();
+            } else {
+                $(container).hide();
+                $(errorContainer).hide();
+            }
+        });
     }
 
     function loadWidgets() {
