@@ -20,9 +20,7 @@
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
                     Checkout.disableCheckoutSubmit();
-                    KlarnaPayments.authorize(function () {
-                        Checkout.enableCheckoutSubmit();
-                    });
+                    KlarnaPayments.authorize();
                 }
             });
 
@@ -111,13 +109,14 @@
             $("#ShippingAddressIndex").val($(".jsChangeAddress").index($(this)) - 1);
         }
 
-        Checkout.disableCheckoutSubmit();
-
-        $.ajax({
+        AjaxQueue.addReq({
             type: "POST",
             cache: false,
             url: $(this).closest('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 if (isBilling) {
                     $("#billingAddressContainer").html($(result));
@@ -143,13 +142,14 @@
             return;
         }
 
-        Checkout.disableCheckoutSubmit();
-
-        $.ajax({
+        AjaxQueue.addReq({
             type: "POST",
             cache: false,
             url: $(sender).closest('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 Checkout.updateOrderSummary();
             }
@@ -157,11 +157,12 @@
     },
     changePayment: function () {
 
-        Checkout.disableCheckoutSubmit();
-
-        $.ajax({
+        AjaxQueue.addReq({
             type: "POST",
             url: $(this).data('url'),
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 $('.jsPaymentMethod').replaceWith($(result).find('.jsPaymentMethod'));
                 Checkout.updateOrderSummary();
@@ -170,10 +171,13 @@
         });
     },
     updateOrderSummary: function () {
-        $.ajax({
+        AjaxQueue.addReq({
             cache: false,
             type: "GET",
             url: $('.jsOrderSummary').data('url'),
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
                 if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
@@ -194,18 +198,19 @@
 
         event.preventDefault();
 
-        Checkout.disableCheckoutSubmit();
-
         Checkout.doEnableShippingAddress();
 
         var form = $('.jsCheckoutForm');
         $("#ShippingAddressIndex").val(0);
 
-        $.ajax({
+        AjaxQueue.addReq({
             type: "POST",
             cache: false,
             url: $('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 $("#AddressContainer").html($(result));
                 Checkout.initializeAddressAreas();
@@ -223,18 +228,19 @@
 
         event.preventDefault();
 
-        Checkout.disableCheckoutSubmit();
-
         Checkout.doRemoveShippingAddress();
 
         var form = $('.jsCheckoutForm');
         $("#ShippingAddressIndex").val(-1);
 
-        $.ajax({
+        AjaxQueue.addReq({
             type: "POST",
             cache: false,
             url: $('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
@@ -245,12 +251,13 @@
         var container = $(this).closest('.shipping-method');
         var url = container.data('url');
 
-        Checkout.disableCheckoutSubmit();
-
-        $.ajax({
+        AjaxQueue.addReq({
             type: "POST",
             url: url,
             cache: false,
+            beforeSend: function(){
+                Checkout.disableCheckoutSubmit();
+            },
             success: function (result) {
                 Checkout.updateOrderSummary();
             }

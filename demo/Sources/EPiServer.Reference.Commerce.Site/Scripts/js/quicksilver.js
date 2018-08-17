@@ -1,4 +1,5 @@
 ﻿$(document).ready(function () {
+    AjaxQueue.init();
     AddressBook.init();
     Cart.init();
     Checkout.init();
