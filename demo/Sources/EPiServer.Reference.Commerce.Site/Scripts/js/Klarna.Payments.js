@@ -150,7 +150,9 @@
                 } else {
                     $(errorContainer).hide();
                 }
-                callback();
+                if (callback){
+                    callback();
+                }
             });
         });
     }
@@ -210,7 +212,9 @@
                             $('.jsCheckoutForm').submit();
                         }
                     }
-                    callback();
+                    if (callback) {
+                        callback();
+                    }
                 });
             })
             .fail(function (result) {
