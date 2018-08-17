@@ -3,6 +3,7 @@
         $(document)
             .on('change', '.jsChangePayment', Checkout.changePayment)
             .on('change', '.jsChangeAddress', Checkout.changeAddress)
+            .on('change', '.jsChangeShipment', Checkout.changeShipment)
             .on('change', '.jsChangeTaxAddress', Checkout.changeTaxAddress)
             .on('change', '#MiniCart', Checkout.refreshView)
             .on('change', '#MiniCartResponsive', Checkout.refreshView)
@@ -18,7 +19,10 @@
                 }
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
-                    KlarnaPayments.authorize();
+                    Checkout.disableCheckoutSubmit();
+                    KlarnaPayments.authorize(function () {
+                        Checkout.enableCheckoutSubmit();
+                    });
                 }
             });
 
@@ -107,6 +111,8 @@
             $("#ShippingAddressIndex").val($(".jsChangeAddress").index($(this)) - 1);
         }
 
+        Checkout.disableCheckoutSubmit();
+
         $.ajax({
             type: "POST",
             cache: false,
@@ -136,6 +142,9 @@
         {
             return;
         }
+
+        Checkout.disableCheckoutSubmit();
+
         $.ajax({
             type: "POST",
             cache: false,
@@ -147,6 +156,9 @@
         });
     },
     changePayment: function () {
+
+        Checkout.disableCheckoutSubmit();
+
         $.ajax({
             type: "POST",
             url: $(this).data('url'),
@@ -165,7 +177,9 @@
             success: function (result) {
                 $('.jsOrderSummary').replaceWith($(result).filter('.jsOrderSummary'));
                 if ($(".jsChangePayment:checked").val() === "KlarnaPayments") {
-                    KlarnaPayments.load();
+                    KlarnaPayments.load(null, function () {
+                        Checkout.enableCheckoutSubmit();
+                    });
                 }
             }
         });
@@ -179,6 +193,8 @@
     enableShippingAddress: function (event) {
 
         event.preventDefault();
+
+        Checkout.disableCheckoutSubmit();
 
         Checkout.doEnableShippingAddress();
 
@@ -207,6 +223,8 @@
 
         event.preventDefault();
 
+        Checkout.disableCheckoutSubmit();
+
         Checkout.doRemoveShippingAddress();
 
         var form = $('.jsCheckoutForm');
@@ -222,5 +240,26 @@
                 Checkout.updateOrderSummary();
             }
         });
+    },
+    changeShipment: function () {
+        var container = $(this).closest('.shipping-method');
+        var url = container.data('url');
+
+        Checkout.disableCheckoutSubmit();
+
+        $.ajax({
+            type: "POST",
+            url: url,
+            cache: false,
+            success: function (result) {
+                Checkout.updateOrderSummary();
+            }
+        });
+    },
+    disableCheckoutSubmit: function () {
+        $('.jsCheckoutSubmit').prop('disabled', true);
+    },
+    enableCheckoutSubmit: function () {
+        $('.jsCheckoutSubmit').prop('disabled', false);
     }
 };

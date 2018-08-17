@@ -87,7 +87,7 @@
         $("#klarna_container_error").show();
     }
 
-    function load(newSettings) {
+    function load(newSettings, callback) {
         if (newSettings && newSettings.client_token && shouldUpdateSettings(settings, newSettings)) {
             settings.client_token = newSettings.client_token;
             settings.klarna_container = newSettings.klarna_container;
@@ -109,7 +109,7 @@
 
         setPaymentMethodCategory(state);
         setWidgetVisibility();
-        loadWidgets();
+        loadWidgets(callback);
     }
 
     function setPaymentMethodCategory(state) {
@@ -133,7 +133,7 @@
         });
     }
 
-    function loadWidgets() {
+    function loadWidgets(callback) {
 
         settings.payment_method_categories.forEach(function(category) {
 
@@ -150,11 +150,12 @@
                 } else {
                     $(errorContainer).hide();
                 }
+                callback();
             });
         });
     }
 
-    function authorize() {
+    function authorize(callback) {
         // Prevent multiple authorize calls
         if (state.isAuthorizing) {
             return;
@@ -209,6 +210,7 @@
                             $('.jsCheckoutForm').submit();
                         }
                     }
+                    callback();
                 });
             })
             .fail(function (result) {

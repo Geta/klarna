@@ -132,7 +132,7 @@
                     @{ Html.RenderAction("OrderSummary"); }
                     @if (!(bool) ViewData["IsReadOnly"])
                     {
-                        <button type="submit" class="btn btn-primary btn--blue pull-right">@Html.Translate("/Checkout/PlaceOrder")</button>
+                        <button type="submit" class="btn btn-primary btn--blue pull-right jsCheckoutSubmit">@Html.Translate("/Checkout/PlaceOrder")</button>
                     }
                 </div>
             </div>
