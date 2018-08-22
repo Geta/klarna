@@ -246,12 +246,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
         [HttpPost]
         [AllowDBWrite]
-        public ActionResult UpdateShippingMethod(UpdateShippingMethodViewModel viewModel)
+        public ActionResult UpdateShippingMethod(CheckoutPage currentPage, UpdateShippingMethodViewModel viewModel)
         {
             ModelState.Clear();
 
             _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
             _cartService.UpdateShippingMethod(Cart, viewModel.ShipmentId, viewModel.ShippingMethodId);
+
+            var checkoutModel = CreateCheckoutViewModel(currentPage);
+            _checkoutService.UpdateShippingAddresses(Cart, checkoutModel);
+
             _orderRepository.Save(Cart);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
