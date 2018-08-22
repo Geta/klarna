@@ -13,8 +13,10 @@ using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Web;
 using Klarna.Checkout;
@@ -240,6 +242,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 }
             }
             return HttpNotFound();
+        }
+
+        [HttpPost]
+        [AllowDBWrite]
+        public ActionResult UpdateShippingMethod(UpdateShippingMethodViewModel viewModel)
+        {
+            ModelState.Clear();
+
+            _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
+            _cartService.UpdateShippingMethod(Cart, viewModel.ShipmentId, viewModel.ShippingMethodId);
+            _orderRepository.Save(Cart);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)
