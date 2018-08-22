@@ -58,7 +58,7 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 - Class Name(*) - choose **Klarna.Checkout.KlarnaCheckoutGateway**
 - Payment Class(*) - choose **Mediachase.Commerce.Orders.OtherPayment**
 - IsActive - **Yes**
-- Supports Recurring - **No** - Klarna Checkout does not support recurring payments
+- Supports Recurring - **No** - this Klarna Checkout integration does not support recurring payments
 - Select shipping methods available for this payment
 - Select markets available for this payment
 
