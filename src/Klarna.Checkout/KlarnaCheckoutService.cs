@@ -199,7 +199,7 @@ namespace Klarna.Checkout
         private ICart UpdateCartWithOrderData(ICart cart, CheckoutOrderData orderData)
         {
             var shipment = cart.GetFirstShipment();
-            if (shipment != null && orderData.ShippingAddress != null)
+            if (shipment != null && orderData.ShippingAddress.IsValid())
             {
                 shipment.ShippingAddress = orderData.ShippingAddress.ToOrderAddress(cart);
                 _orderRepository.Save(cart);
