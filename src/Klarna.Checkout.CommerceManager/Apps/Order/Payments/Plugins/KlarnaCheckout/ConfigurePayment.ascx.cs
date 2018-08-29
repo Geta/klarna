@@ -3,6 +3,7 @@ using System.Linq;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Extensions;
 using Mediachase.Commerce;
+using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Web.Console.Interfaces;
 using Newtonsoft.Json;
@@ -13,18 +14,21 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
     {
         private PaymentMethodDto _paymentMethodDto;
         private ICheckoutConfigurationLoader _checkoutConfigurationLoader;
+        private IMarketService _marketService;
 
         public string ValidationGroup { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            _marketService = ServiceLocator.Current.GetInstance<IMarketService>();
             _checkoutConfigurationLoader = ServiceLocator.Current.GetInstance<ICheckoutConfigurationLoader>();
             if (IsPostBack || _paymentMethodDto?.PaymentMethodParameter == null) return;
 
             var markets = _paymentMethodDto.PaymentMethod.First().GetMarketPaymentMethodsRows();
             if (markets == null || markets.Length == 0) return;
 
-            var checkoutConfiguration = GetConfiguration(markets.First().MarketId);
+            var market = _marketService.GetMarket(markets.First().MarketId);
+            var checkoutConfiguration = GetConfiguration(markets.First().MarketId, market.DefaultLanguage.Name);
             BindConfigurationData(checkoutConfiguration);
             BindMarketData(markets);
         }
@@ -145,16 +149,17 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
 
         protected void marketDropDownList_OnSelectedIndexChanged(object sender, EventArgs e)
         {
-            var checkoutConfiguration = GetConfiguration(new MarketId(marketDropDownList.SelectedValue));
+            var market = _marketService.GetMarket(new MarketId(marketDropDownList.SelectedValue));
+            var checkoutConfiguration = GetConfiguration(new MarketId(marketDropDownList.SelectedValue), market.DefaultLanguage.Name);
             BindConfigurationData(checkoutConfiguration);
             ConfigureUpdatePanelContentPanel.Update();
         }
 
-        private CheckoutConfiguration GetConfiguration(MarketId marketId)
+        private CheckoutConfiguration GetConfiguration(MarketId marketId, string languageId)
         {
             try
             {
-                return _checkoutConfigurationLoader.GetConfiguration(marketId);
+                return _checkoutConfigurationLoader.GetConfiguration(marketId, languageId);
             }
             catch
             {

@@ -12,16 +12,21 @@ namespace Klarna.Checkout
     [ServiceConfiguration(typeof(ICheckoutConfigurationLoader))]
     public class DefaultCheckoutConfigurationLoader : ICheckoutConfigurationLoader
     {
-        public CheckoutConfiguration GetConfiguration(MarketId marketId)
+        public CheckoutConfiguration GetConfiguration(MarketId marketId, string languageId)
         {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
-                Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
+                Constants.KlarnaCheckoutSystemKeyword, languageId, returnInactive: true);
             if (paymentMethod == null)
             {
                 throw new Exception(
                     $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
             }
             return GetKlarnaCheckoutConfiguration(paymentMethod, marketId);
+        }
+
+        public CheckoutConfiguration GetConfiguration(MarketId marketId)
+        {
+            return GetConfiguration(marketId, ContentLanguage.PreferredCulture.Name);
         }
 
         private static CheckoutConfiguration GetKlarnaCheckoutConfiguration(
