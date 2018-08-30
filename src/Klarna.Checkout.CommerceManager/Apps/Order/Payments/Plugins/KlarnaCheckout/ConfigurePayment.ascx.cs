@@ -28,7 +28,7 @@ namespace Klarna.Checkout.CommerceManager.Apps.Order.Payments.Plugins.KlarnaChec
             if (markets == null || markets.Length == 0) return;
 
             var market = _marketService.GetMarket(markets.First().MarketId);
-            var checkoutConfiguration = GetConfiguration(markets.First().MarketId, market.DefaultLanguage.Name);
+            var checkoutConfiguration = GetConfiguration(market.MarketId, market.DefaultLanguage.Name);
             BindConfigurationData(checkoutConfiguration);
             BindMarketData(markets);
         }
