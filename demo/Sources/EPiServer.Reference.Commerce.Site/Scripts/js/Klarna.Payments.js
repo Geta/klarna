@@ -157,7 +157,7 @@
         });
     }
 
-    function authorize(callback) {
+    function authorize(onError) {
         // Prevent multiple authorize calls
         if (state.isAuthorizing) {
             return;
@@ -197,6 +197,9 @@
                 function (result) {
                     // We're allowed to share personal information after this call, only need this info if authorize failed
                     if (!result.show_form || !result.approved || !result.authorization_token) {
+                        if (onError) {
+                            onError();
+                        }
                         $.post(urls.allowSharingOfPersonalInformation);
                     }
 
@@ -211,9 +214,6 @@
                             $("#AuthorizationToken").val(state.authorizationToken);
                             $('.jsCheckoutForm').submit();
                         }
-                    }
-                    if (callback) {
-                        callback();
                     }
                 });
             })

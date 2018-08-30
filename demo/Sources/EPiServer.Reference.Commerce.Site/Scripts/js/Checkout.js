@@ -20,7 +20,7 @@
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
                     Checkout.disableCheckoutSubmit();
-                    KlarnaPayments.authorize();
+                    KlarnaPayments.authorize(Checkout.enableCheckoutSubmit);
                 }
             });
 
