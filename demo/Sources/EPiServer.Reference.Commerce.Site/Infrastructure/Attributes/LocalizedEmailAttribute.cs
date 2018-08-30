@@ -3,7 +3,7 @@
     public class LocalizedEmailAttribute : LocalizedRegularExpressionAttribute
     {
         public LocalizedEmailAttribute(string name)
-            : base(@"^[_a-z0-9-]+(\.[_a-z0-9-]+)*(\+[a-z0-9-]+)?@[a-z0-9-]+(\.[a-z0-9-]+)*$", name)
+            : base(@"^[_a-z0-9-]+(\.[_a-z0-9-]+)*(\+[_a-z0-9-]+)?@[a-z0-9-]+(\.[a-z0-9-]+)*$", name)
         {
         }
     }
