@@ -428,6 +428,7 @@
     <Content Include="lang\Quicksilver_EN.xml">
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Styles\loading.less" />
     <Content Include="Styles\style.css" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

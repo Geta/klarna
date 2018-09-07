@@ -19,8 +19,12 @@
                 }
                 if ($("#AuthorizationToken").val() === '') {
                     e.preventDefault();
+                    Checkout.showLoadingOverlay();
                     Checkout.disableCheckoutSubmit();
-                    KlarnaPayments.authorize(Checkout.enableCheckoutSubmit);
+                    KlarnaPayments.authorize(function () {
+                        Checkout.enableCheckoutSubmit();
+                        Checkout.hideLoadingOverlay();
+                    });
                 }
             });
 
@@ -268,5 +272,11 @@
     },
     enableCheckoutSubmit: function () {
         $('.jsCheckoutSubmit').prop('disabled', false);
+    },
+    showLoadingOverlay: function () {
+        $('#loading-overlay').fadeIn();
+    },
+    hideLoadingOverlay: function () {
+        $('#loading-overlay').fadeOut();
     }
 };
