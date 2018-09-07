@@ -54,7 +54,7 @@
 
 									<div class="form-group">
 										@Html.LabelFor(model => model.Shipments[0].Address.Email)
-										@Html.TextBoxFor(model => model.Shipments[0].Address.Email, new {@class = "form-control"})
+										@Html.TextBoxFor(model => model.Shipments[0].Address.Email, new {@class = "form-control jsChangeTaxAddress"})
 										@Html.ValidationMessageFor(model => model.Shipments[0].Address.Email)
 									</div>
 
