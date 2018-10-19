@@ -61,18 +61,18 @@ namespace Klarna.Checkout
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
-        public PaymentMethodDto PaymentMethodDto =>
+        public virtual PaymentMethodDto PaymentMethodDto =>
             _paymentMethodDto
             ?? (_paymentMethodDto =
                 PaymentManager.GetPaymentMethodBySystemName(
                     Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true));
 
-        public CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
+        public virtual CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
         {
             return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market.MarketId));
         }
 
-        public Client GetClient(IMarket market)
+        public virtual Client GetClient(IMarket market)
         {
             if (PaymentMethodDto != null)
             {
@@ -86,7 +86,7 @@ namespace Klarna.Checkout
             return _client;
         }
 
-        public CheckoutOrderData CreateOrUpdateOrder(ICart cart)
+        public virtual CheckoutOrderData CreateOrUpdateOrder(ICart cart)
         {
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (string.IsNullOrWhiteSpace(orderId))
@@ -99,7 +99,7 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData CreateOrder(ICart cart)
+        public virtual CheckoutOrderData CreateOrder(ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
             var checkout = CreateCheckoutOrder(market);
@@ -151,7 +151,7 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData UpdateOrder(string orderId, ICart cart)
+        public virtual CheckoutOrderData UpdateOrder(string orderId, ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
             var checkout = CreateCheckoutOrder(orderId, market);
@@ -196,7 +196,7 @@ namespace Klarna.Checkout
             }
         }
 
-        private ICart UpdateCartWithOrderData(ICart cart, CheckoutOrderData orderData)
+        protected virtual ICart UpdateCartWithOrderData(ICart cart, CheckoutOrderData orderData)
         {
             var shipment = cart.GetFirstShipment();
             if (shipment != null && orderData.ShippingAddress.IsValid())
@@ -213,7 +213,7 @@ namespace Klarna.Checkout
             return cart;
         }
 
-        private CheckoutOrderData GetCheckoutOrderData(
+        protected virtual CheckoutOrderData GetCheckoutOrderData(
             ICart cart, IMarket market, PaymentMethodDto paymentMethodDto)
         {
             var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
@@ -268,7 +268,7 @@ namespace Klarna.Checkout
             return orderData;
         }
 
-        private CheckoutOptions GetOptions(MarketId marketId)
+        protected virtual CheckoutOptions GetOptions(MarketId marketId)
         {
             var configuration = GetConfiguration(marketId);
             var options = new PatchedCheckoutOptions
@@ -301,24 +301,24 @@ namespace Klarna.Checkout
             return options;
         }
 
-        private string GetColor(string colorString)
+        protected virtual string GetColor(string colorString)
         {
             return string.IsNullOrWhiteSpace(colorString) ? null : colorString;
         }
 
-        public CheckoutOrderData GetOrder(string klarnaOrderId, IMarket market)
+        public virtual CheckoutOrderData GetOrder(string klarnaOrderId, IMarket market)
         {
             var checkout = CreateCheckoutOrder(klarnaOrderId, market);
             return checkout.Fetch();
         }
 
-        public ICart GetCartByKlarnaOrderId(int orderGroupdId, string orderId)
+        public virtual ICart GetCartByKlarnaOrderId(int orderGroupdId, string orderId)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupdId);
             return cart;
         }
 
-        public ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
+        public virtual ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
@@ -345,7 +345,7 @@ namespace Klarna.Checkout
             return result;
         }
 
-        public AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
+        public virtual AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
@@ -372,7 +372,7 @@ namespace Klarna.Checkout
             return result;
         }
 
-        public bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
+        public virtual bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
             var market = _marketService.GetMarket(cart.MarketId);
@@ -394,7 +394,7 @@ namespace Klarna.Checkout
             return true;
         }
 
-        public void CancelOrder(ICart cart)
+        public virtual void CancelOrder(ICart cart)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(cart.MarketId));
 
@@ -408,7 +408,7 @@ namespace Klarna.Checkout
             }
         }
 
-        public void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
+        public virtual void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
 
@@ -419,23 +419,23 @@ namespace Klarna.Checkout
             }
         }
 
-        public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        public virtual void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
             klarnaOrderService.AcknowledgeOrder(purchaseOrder);
         }
 
-        public CheckoutConfiguration GetConfiguration(IMarket market)
+        public virtual CheckoutConfiguration GetConfiguration(IMarket market)
         {
             return GetConfiguration(market.MarketId);
         }
 
-        public CheckoutConfiguration GetConfiguration(MarketId marketId)
+        public virtual CheckoutConfiguration GetConfiguration(MarketId marketId)
         {
             return _checkoutConfigurationLoader.GetConfiguration(marketId);
         }
 
-        public void Complete(IPurchaseOrder purchaseOrder)
+        public virtual void Complete(IPurchaseOrder purchaseOrder)
         {
             if (purchaseOrder == null)
             {
@@ -455,7 +455,7 @@ namespace Klarna.Checkout
             }
         }
 
-        private IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)
+        protected virtual IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.MarketId.Value, false);
             var currentLanguage = preferredCulture.TwoLetterISOLanguageName;
@@ -484,7 +484,7 @@ namespace Klarna.Checkout
             return shippingOptions;
         }
 
-        private PatchedMerchantUrls GetMerchantUrls(ICart cart)
+        protected virtual PatchedMerchantUrls GetMerchantUrls(ICart cart)
         {
             if (PaymentMethodDto == null) return null;
 
@@ -515,23 +515,23 @@ namespace Klarna.Checkout
             };
         }
 
-        private IEnumerable<string> GetCountries()
+        protected virtual IEnumerable<string> GetCountries()
         {
             var countries = CountryManager.GetCountries();
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
         }
 
-        private ICheckoutOrder CreateCheckoutOrder(IMarket market)
+        protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market)
         {
             return CreateCheckoutOrder(market, client => client.NewCheckoutOrder());
         }
 
-        private ICheckoutOrder CreateCheckoutOrder(string klarnaOrderId, IMarket market)
+        protected virtual ICheckoutOrder CreateCheckoutOrder(string klarnaOrderId, IMarket market)
         {
             return CreateCheckoutOrder(market, client => client.NewCheckoutOrder(klarnaOrderId));
         }
 
-        private ICheckoutOrder CreateCheckoutOrder(IMarket market, Func<Client, ICheckoutOrder> factory)
+        protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market, Func<Client, ICheckoutOrder> factory)
         {
             var client = GetClient(market);
             var checkoutOrder = factory(client);
