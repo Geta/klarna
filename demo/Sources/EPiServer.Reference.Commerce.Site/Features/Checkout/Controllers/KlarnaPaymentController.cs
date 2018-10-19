@@ -66,6 +66,24 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
+        [Route("cart/{orderGroupId}/push")]
+        [AcceptVerbs("POST")]
+        [HttpPost]
+        public IHttpActionResult Push(int orderGroupId, string klarna_order_id)
+        {
+            if (klarna_order_id == null)
+            {
+                return BadRequest();
+            }
+            var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            if (purchaseOrder == null)
+            {
+                return NotFound();
+            }
+
+            return Ok();
+        }
+
         private PersonalInformationSession GetPersonalInformationSession(ICart cart, string billingAddressId)
         {
             var request = _klarnaPaymentsService.GetPersonalInformationSession(cart);
@@ -77,6 +95,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             request.BillingAddress = billingAddress;
 
             return request;
+        }
+
+        private IPurchaseOrder GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
+        {
+            // Check if the order has been created already
+            var purchaseOrder = _klarnaPaymentsService.GetPurchaseOrderByKlarnaOrderId(klarnaOrderId);
+            if (purchaseOrder != null)
+            {
+                return purchaseOrder;
+            }
+
+            //<todo>Implement logic to Check cart for klarna payment and create purchase order</todo>
+
+            return null;
         }
     }
 }

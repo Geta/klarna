@@ -26,5 +26,6 @@ namespace Klarna.Payments
 
         public string ConfirmationUrl { get; set; }
         public string NotificationUrl { get; set; }
+        public string PushUrl { get; set; }
     }
 }

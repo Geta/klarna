@@ -307,6 +307,7 @@ namespace Klarna.Payments
                 {
                     Confirmation = ToFullSiteUrl(siteUrl, config.ConfirmationUrl),
                     Notification = ToFullSiteUrl(siteUrl, config.NotificationUrl),
+                    Push = ToFullSiteUrl(siteUrl, config.PushUrl)
                 };
                 request.Options = GetWidgetOptions(paymentMethod, cart.MarketId);
             }

@@ -167,6 +167,13 @@
                     </td>
                 </tr>
                 <tr>
+                    <td class="FormLabelCell">Push URL:</td>
+                    <td class="FormFieldCell">
+                        <asp:TextBox runat="server" ID="txtPushUrl" CssClass="karnapayment-parameters-url" />
+                        <asp:RequiredFieldValidator ID="requiredPushUrl" runat="server" ControlToValidate="txtPushUrl" ErrorMessage="Push URL is required." />
+                    </td>
+                </tr>
+                <tr>
                     <td class="FormLabelCell">Send product and image URL:</td>
                     <td class="FormFieldCell">
                         <asp:CheckBox runat="server" ID="SendProductAndImageUrlCheckBox" />

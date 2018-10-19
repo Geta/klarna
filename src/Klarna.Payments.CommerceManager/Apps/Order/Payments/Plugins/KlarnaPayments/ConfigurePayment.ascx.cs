@@ -71,6 +71,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
 
             txtConfirmationUrl.Text = paymentsConfiguration.ConfirmationUrl;
             txtNotificationUrl.Text = paymentsConfiguration.NotificationUrl;
+            txtPushUrl.Text = paymentsConfiguration.PushUrl;
             SendProductAndImageUrlCheckBox.Checked = paymentsConfiguration.SendProductAndImageUrlField;
             UseAttachmentsCheckBox.Checked = paymentsConfiguration.UseAttachments;
             PreAssesmentCheckBox.Checked = paymentsConfiguration.CustomerPreAssessment;
@@ -113,6 +114,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
 
             configuration.ConfirmationUrl = txtConfirmationUrl.Text;
             configuration.NotificationUrl = txtNotificationUrl.Text;
+            configuration.PushUrl = txtPushUrl.Text;
             configuration.SendProductAndImageUrlField = SendProductAndImageUrlCheckBox.Checked;
             configuration.UseAttachments = UseAttachmentsCheckBox.Checked;
             configuration.CustomerPreAssessment = PreAssesmentCheckBox.Checked;
