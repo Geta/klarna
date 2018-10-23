@@ -215,4 +215,4 @@ Note: this information is only displayed  when a Klarna payment is added to the 
 https://github.com/patkleef
 
 ## Changelog
-[Changelog](CHANGELOG.md)
+[Changelog](../../CHANGELOG.md)
