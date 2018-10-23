@@ -293,4 +293,4 @@ https://klarna.geta.no
 [Brian Weeteling](https://github.com/brianweet)
 
 ## Changelog
-[Changelog](CHANGELOG.md)
+[Changelog](../../CHANGELOG.md)
