@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3]
+
+### Changed
+- Update System.Security.Cryptography.Xml to version="4.4.2" (security vulnerabilities)
+
 ## [2.0.2] 
 
 ### Changed
