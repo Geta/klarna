@@ -275,6 +275,9 @@ if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't
 ```
 </details>
 
+## Demo
+https://kp-klarna.geta.no
+
 ## Package maintainer
 https://github.com/patkleef
 
