@@ -458,7 +458,7 @@ namespace Klarna.Checkout
         protected virtual IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.MarketId.Value, false);
-            var currentLanguage = preferredCulture.TwoLetterISOLanguageName;
+            var currentLanguage = preferredCulture.Name;
 
             var shippingOptions = methods.ShippingMethod
                 .Where(shippingMethodRow => currentLanguage.Equals(shippingMethodRow.LanguageId,
