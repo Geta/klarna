@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4]
+
+### Changed
+- Fixed shipment option loading by language.
+
 ## [2.0.3]
 
 ### Changed
