@@ -221,7 +221,9 @@
     <Compile Include="CheckoutConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DefaultCheckoutConfigurationLoader.cs" />
+    <Compile Include="DefaultCheckoutLanguageIdConverter.cs" />
     <Compile Include="ICheckoutConfigurationLoader.cs" />
+    <Compile Include="ICheckoutLanguageIdConverter.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />
     <Compile Include="ICheckoutOrderDataBuilder.cs" />
