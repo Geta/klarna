@@ -38,6 +38,7 @@ namespace Klarna.Checkout
         private readonly ICheckoutConfigurationLoader _checkoutConfigurationLoader;
         private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
+        private readonly ICheckoutLanguageIdConverter _checkoutLanguageIdConverter;
 
         private Client _client;
         private PaymentMethodDto _paymentMethodDto;
@@ -50,7 +51,8 @@ namespace Klarna.Checkout
             IKlarnaOrderValidator klarnaOrderValidator,
             IMarketService marketService,
             ICheckoutConfigurationLoader checkoutConfigurationLoader,
-            KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+            KlarnaOrderServiceFactory klarnaOrderServiceFactory, 
+            ICheckoutLanguageIdConverter checkoutLanguageIdConverter)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
             _orderGroupCalculator = orderGroupCalculator;
@@ -59,6 +61,7 @@ namespace Klarna.Checkout
             _marketService = marketService;
             _checkoutConfigurationLoader = checkoutConfigurationLoader;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
+            _checkoutLanguageIdConverter = checkoutLanguageIdConverter;
         }
 
         public virtual PaymentMethodDto PaymentMethodDto =>
@@ -229,7 +232,7 @@ namespace Klarna.Checkout
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = ContentLanguage.PreferredCulture.Name,
+                Locale = _checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(ContentLanguage.PreferredCulture.Name),
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
