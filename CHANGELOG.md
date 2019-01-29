@@ -1,6 +1,10 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [2.0.5]
+
+### Changed
+- Added mapping from language NO to NB to make the widget render in norwegian.
 
 ## [2.0.4]
 
