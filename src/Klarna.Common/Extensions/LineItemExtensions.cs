@@ -46,7 +46,12 @@ namespace Klarna.Common.Extensions
                 0, 0, 0);
         }
 
-        public static OrderLine GetOrderLineWithTax(this ILineItem lineItem, IMarket market, IShipment shipment, Currency currency, bool includeProductAndImageUrl = false)
+        public static OrderLine GetOrderLineWithTax(
+            this ILineItem lineItem,
+            IMarket market,
+            IShipment shipment,
+            Currency currency,
+            bool includeProductAndImageUrl = false)
         {
             var prices = GetPrices(lineItem, market, shipment, currency);
             return GetOrderLine(
@@ -59,13 +64,22 @@ namespace Klarna.Common.Extensions
                 prices.TaxRate);
         }
 
-        private static OrderLine GetOrderLine(ILineItem lineItem, bool includeProductAndImageUrl, int unitPrice, int totalAmount, int totalDiscountAmount, int totalTaxAmount, int taxRate)
+        private static OrderLine GetOrderLine(
+            ILineItem lineItem,
+            bool includeProductAndImageUrl,
+            int unitPrice,
+            int totalAmount,
+            int totalDiscountAmount,
+            int totalTaxAmount,
+            int taxRate)
         {
             var orderLine = new PatchedOrderLine
             {
                 Quantity = (int)lineItem.Quantity,
                 Name = lineItem.DisplayName,
-                Reference = lineItem.Code.Length > 64 ? lineItem.Code.Substring(0, (_maxOrderlineReference - 1)) : lineItem.Code, // can't use more then 64 characters for the order reference
+                Reference = lineItem.Code.Length > 64
+                    ? lineItem.Code.Substring(0, (_maxOrderlineReference - 1))
+                    : lineItem.Code, // can't use more then 64 characters for the order reference
                 Type = "physical"
             };
 

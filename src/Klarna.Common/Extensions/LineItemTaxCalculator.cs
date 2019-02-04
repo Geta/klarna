@@ -46,7 +46,7 @@ namespace Klarna.Common.Extensions
         {
             return taxes
                 .Where(x => x.TaxType == taxtype)
-                .Sum(x => basePrice * (decimal)x.Percentage * new decimal(1, 0, 0, false, 2));
+                .Sum(x => basePrice * (decimal)x.Percentage * 0.01m);
         }
 
         public bool TryGetTaxCategoryId(ILineItem item, out int taxCategoryId)
