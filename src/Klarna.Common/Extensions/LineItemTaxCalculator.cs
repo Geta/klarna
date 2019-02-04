@@ -27,6 +27,18 @@ namespace Klarna.Common.Extensions
             _contentRepository = contentRepository;
         }
 
+        public decimal PriceIncludingTaxAmount(decimal basePrice, decimal taxAmount, IMarket market)
+        {
+            if (market.PricesIncludeTax) return basePrice;
+            return basePrice + taxAmount;
+        }
+
+        public decimal PriceIncludingTaxPercent(decimal basePrice, decimal taxPercent, IMarket market)
+        {
+            if (market.PricesIncludeTax) return basePrice;
+            return basePrice * taxPercent * 0.01m + basePrice;
+        }
+
         public decimal PriceIncludingTax(decimal basePrice, IEnumerable<ITaxValue> taxes, TaxType taxtype)
         {
             return basePrice + GetTaxes(basePrice, taxes, taxtype);

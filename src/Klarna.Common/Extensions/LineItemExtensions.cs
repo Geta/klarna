@@ -4,7 +4,6 @@ using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.ServiceLocation;
-using EPiServer.Web;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
@@ -23,6 +22,7 @@ namespace Klarna.Common.Extensions
         private static Injected<IContentRepository> _contentRepository;
         private static Injected<ILineItemTaxCalculator> _lineItemTaxCalculator;
         private static readonly int _maxOrderlineReference = 64;
+        private static Injected<ILineItemCalculator> _lineItemCalculator;
 #pragma warning restore 649
 
         private static string GetVariantImage(ContentReference contentReference)
@@ -138,16 +138,21 @@ namespace Klarna.Common.Extensions
                 .Where(x => x.TaxType == taxType)
                 .Sum(x => (decimal)x.Percentage);
 
+            var salesTax = _lineItemCalculator.Service.GetSalesTax(lineItem, market, currency, shipment.ShippingAddress);
+
             // Includes tax, excludes discount. (max value: 100000000)
-            var unitPriceIncludingTax = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.PriceIncludingTax(unitPrice, taxValues, taxType));
+            var unitPriceIncludingTax = AmountHelper.GetAmount(
+                _lineItemTaxCalculator.Service.PriceIncludingTaxPercent(unitPrice, taxPercentage, market));
             // Non - negative minor units. Includes tax
-            int totalDiscountAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.PriceIncludingTax(discountAmount, taxValues, taxType));
+            var totalDiscountAmount = AmountHelper.GetAmount(
+                _lineItemTaxCalculator.Service.PriceIncludingTaxPercent(discountAmount, taxPercentage, market));
             // Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within quantity. (max value: 100000000)
-            var totalAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.PriceIncludingTax(extendedPrice, taxValues, taxType));
+            var totalAmount = AmountHelper.GetAmount(
+                _lineItemTaxCalculator.Service.PriceIncludingTaxAmount(extendedPrice, salesTax.Amount, market));
             // Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
             var taxRate = AmountHelper.GetAmount(taxPercentage);
             // Must be within 1 of total_amount - total_amount * 10000 / (10000 + tax_rate). Negative when type is discount.
-            var totalTaxAmount = AmountHelper.GetAmount(_lineItemTaxCalculator.Service.GetTaxes(extendedPrice, taxValues, taxType));
+            var totalTaxAmount = AmountHelper.GetAmount(salesTax.Amount);
 
             return new Prices(unitPriceIncludingTax, taxRate, totalDiscountAmount, totalAmount, totalTaxAmount);
         }
