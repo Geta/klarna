@@ -68,13 +68,17 @@ namespace Klarna.Common
             var market = _marketService.GetMarket(cart.MarketId);
             var currentCountry = shipment.ShippingAddress?.CountryCode ?? market.Countries.FirstOrDefault();
 
-            var includedTaxesOnLineItems = !CountryCodeHelper.GetContinentByCountry(currentCountry).Equals("NA", StringComparison.InvariantCultureIgnoreCase);
+            var includedTaxesOnLineItems =
+                !CountryCodeHelper.GetContinentByCountry(currentCountry)
+                    .Equals("NA", StringComparison.InvariantCultureIgnoreCase);
             return GetOrderLines(cart, orderGroupTotals, includedTaxesOnLineItems, sendProductAndImageUrlField);
         }
 
         public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems, bool sendProductAndImageUrl)
         {
-            return includeTaxOnLineItems ? GetOrderLinesWithTax(cart, orderGroupTotals, sendProductAndImageUrl) : GetOrderLinesWithoutTax(cart, orderGroupTotals, sendProductAndImageUrl);
+            return includeTaxOnLineItems
+                ? GetOrderLinesWithTax(cart, orderGroupTotals, sendProductAndImageUrl)
+                : GetOrderLinesWithoutTax(cart, orderGroupTotals, sendProductAndImageUrl);
         }
 
         private List<OrderLine> GetOrderLinesWithoutTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
