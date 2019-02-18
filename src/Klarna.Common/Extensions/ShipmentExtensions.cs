@@ -28,9 +28,16 @@ namespace Klarna.Common.Extensions
                 if (shippingTaxTotal.Amount > 0)
                 {
                     totalTaxAmount = AmountHelper.GetAmount(shippingTaxTotal.Amount);
-                    taxRate = AmountHelper.GetAmount((shippingTaxTotal.Amount / totals.ShippingTotal.Amount) * 100);
 
-                    total = total + totalTaxAmount;
+                    taxRate = AmountHelper.GetAmount(shippingTaxTotal.Amount * 100 /
+                                                     (market.PricesIncludeTax
+                                                         ? totals.ShippingTotal.Amount - shippingTaxTotal.Amount
+                                                         : totals.ShippingTotal.Amount));
+
+                    if (!market.PricesIncludeTax)
+                    {
+                        total = total + totalTaxAmount;
+                    }
                 }
             }
 
