@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.7]
+
+### Changed
+- Fixed a bug when shipping tax was not calculated properly for markets which has "PriceIncludeTax" setting.
+
 ## [2.0.6]
 
 ### Changed
