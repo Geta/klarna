@@ -29,10 +29,10 @@ namespace Klarna.Common.Extensions
                 {
                     totalTaxAmount = AmountHelper.GetAmount(shippingTaxTotal.Amount);
 
-                    taxRate = AmountHelper.GetAmount(shippingTaxTotal.Amount * 100 /
-                                                     (market.PricesIncludeTax
-                                                         ? totals.ShippingTotal.Amount - shippingTaxTotal.Amount
-                                                         : totals.ShippingTotal.Amount));
+                    var shippingTotalExcludingTax = market.PricesIncludeTax
+                        ? totals.ShippingTotal.Amount - shippingTaxTotal.Amount
+                        : totals.ShippingTotal.Amount;
+                    taxRate = AmountHelper.GetAmount(shippingTaxTotal.Amount * 100 / shippingTotalExcludingTax);
 
                     if (!market.PricesIncludeTax)
                     {
