@@ -157,12 +157,21 @@ namespace Klarna.Common
             if (orderLevelDiscount > 0)
             {
                 // Order level discounts with tax
-                var totalOrderAmountWithoutDiscount = orderLines.Where(x => x.TotalAmount.HasValue).Sum(x => x.TotalAmount.Value);
+                var totalOrderAmountWithoutDiscount =
+                    orderLines
+                        .Where(x => x.TotalAmount.HasValue)
+                        .Sum(x => x.TotalAmount.Value);
                 var totalOrderAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.Total.Amount);
                 var orderLevelDiscountIncludingTax = totalOrderAmountWithoutDiscount - totalOrderAmountWithDiscount;
 
                 // Tax
-                var discountTax = (orderLevelDiscountIncludingTax - orderLevelDiscount);
+                var totalTaxAmountWithoutDiscount =
+                    orderLines
+                        .Where(x => x.TotalTaxAmount.HasValue)
+                        .Sum(x => x.TotalTaxAmount.Value);
+                var totalTaxAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.TaxTotal);
+                var discountTax = totalTaxAmountWithoutDiscount - totalTaxAmountWithDiscount;
+                var taxRate = discountTax * 100 / (orderLevelDiscountIncludingTax - discountTax);
 
                 orderLines.Add(new PatchedOrderLine()
                 {
@@ -172,7 +181,7 @@ namespace Klarna.Common
                     TotalAmount = orderLevelDiscountIncludingTax * -1,
                     UnitPrice = orderLevelDiscountIncludingTax * -1,
                     TotalTaxAmount = discountTax * -1,
-                    TaxRate = AmountHelper.GetAmount(((decimal) discountTax) / orderLevelDiscount * 100)
+                    TaxRate = AmountHelper.GetAmount(taxRate)
                 });
             }
             return orderLines;
