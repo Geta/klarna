@@ -22,7 +22,7 @@ namespace Klarna.Common.Extensions
         private static Injected<IContentRepository> _contentRepository;
         private static Injected<ILineItemTaxCalculator> _lineItemTaxCalculator;
         private static readonly int _maxOrderlineReference = 64;
-        private static Injected<ILineItemCalculator> _lineItemCalculator;
+        private static Injected<ITaxCalculator> _taxCalculator;
 #pragma warning restore 649
 
         private static string GetVariantImage(ContentReference contentReference)
@@ -129,7 +129,7 @@ namespace Klarna.Common.Extensions
             // All excluding tax
             var unitPrice = lineItem.PlacedPrice;
             var totalPriceWithoutDiscount = lineItem.PlacedPrice * lineItem.Quantity;
-            var extendedPrice = lineItem.GetDiscountedPrice(currency).Amount;
+            var extendedPrice = lineItem.GetDiscountedPrice(currency);
             var discountAmount = (totalPriceWithoutDiscount - extendedPrice);
 
             // Tax value
@@ -138,7 +138,11 @@ namespace Klarna.Common.Extensions
                 .Where(x => x.TaxType == taxType)
                 .Sum(x => (decimal)x.Percentage);
 
-            var salesTax = _lineItemCalculator.Service.GetSalesTax(lineItem, market, currency, shipment.ShippingAddress);
+            // Using ITaxCalculator instead of ILineItemCalculator because ILineItemCalculator
+            // calculates tax from the price which includes order discount amount and line item discount amount
+            // but should use only line item discount amount
+            var salesTax =
+                _taxCalculator.Service.GetSalesTax(lineItem, market, shipment.ShippingAddress, extendedPrice);
 
             // Includes tax, excludes discount. (max value: 100000000)
             var unitPriceIncludingTax = AmountHelper.GetAmount(
