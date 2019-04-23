@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Commerce.Order;
-using EPiServer.Web;
 using Klarna.Common.Helpers;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;

@@ -7,7 +7,6 @@ using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
-using EPiServer.Web;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
