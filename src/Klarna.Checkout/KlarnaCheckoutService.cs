@@ -51,7 +51,7 @@ namespace Klarna.Checkout
             IKlarnaOrderValidator klarnaOrderValidator,
             IMarketService marketService,
             ICheckoutConfigurationLoader checkoutConfigurationLoader,
-            KlarnaOrderServiceFactory klarnaOrderServiceFactory, 
+            KlarnaOrderServiceFactory klarnaOrderServiceFactory,
             ICheckoutLanguageIdConverter checkoutLanguageIdConverter)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
@@ -501,7 +501,7 @@ namespace Klarna.Checkout
                     return uri;
                 }
 
-                return new Uri(SiteDefinition.Current.SiteUrl, url);
+                return new Uri(SiteUrlHelper.GetCurrentSiteUrl(), url);
             }
 
             return new PatchedMerchantUrls

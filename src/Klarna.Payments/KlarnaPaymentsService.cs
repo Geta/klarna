@@ -21,7 +21,6 @@ using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using Refit;
 using Options = Klarna.Payments.Models.Options;
-using SiteDefinition = EPiServer.Web.SiteDefinition;
 
 namespace Klarna.Payments
 {
@@ -90,7 +89,7 @@ namespace Klarna.Payments
         {
             var additional = dic ?? new Dictionary<string, object>();
             return await CreateOrUpdateSession(
-                    cart, new SessionSettings(SiteDefinition.Current.SiteUrl) {AdditionalValues = additional})
+                    cart, new SessionSettings(SiteUrlHelper.GetCurrentSiteUrl()) {AdditionalValues = additional})
                 .ConfigureAwait(false);
         }
 
@@ -346,7 +345,7 @@ namespace Klarna.Payments
 
             if (siteUrl == null)
             {
-                siteUrl = SiteDefinition.Current.SiteUrl;
+                siteUrl = SiteUrlHelper.GetCurrentSiteUrl();
             }
 
             return new Uri(siteUrl, url).ToString();

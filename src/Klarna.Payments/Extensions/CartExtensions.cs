@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.Web;
+using Klarna.Common.Helpers;
 using Klarna.Payments.Models;
 using Newtonsoft.Json;
 
@@ -47,7 +48,7 @@ namespace Klarna.Payments.Extensions
         public static Uri GetSiteUrl(this ICart cart)
         {
             var url = cart.Properties[Constants.KlarnaSiteUrlCartField]?.ToString() ?? string.Empty;
-            return Uri.TryCreate(url, UriKind.Absolute, out var uri) ? uri : SiteDefinition.Current.SiteUrl;
+            return Uri.TryCreate(url, UriKind.Absolute, out var uri) ? uri : SiteUrlHelper.GetCurrentSiteUrl();
         }
 
         public static void SetSiteUrl(
