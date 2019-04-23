@@ -103,8 +103,8 @@ namespace Klarna.Common.Extensions
                 var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Code);
                 if (!ContentReference.IsNullOrEmpty(contentLink))
                 {
-                    orderLine.ProductUrl = SiteUrlHelper.GetAbsoluteUrl() + _urlResolver.Service.GetUrl(contentLink);
-                    orderLine.ProductImageUrl = SiteUrlHelper.GetAbsoluteUrl() + GetVariantImage(contentLink);
+                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink).ToAbsoluteUrl();
+                    orderLine.ProductImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
                 }
             }
             return orderLine;

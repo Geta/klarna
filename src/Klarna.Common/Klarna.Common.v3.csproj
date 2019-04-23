@@ -228,6 +228,7 @@
     <Compile Include="Extensions\LineItemExtensions.cs" />
     <Compile Include="Extensions\LineItemTaxCalculator.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
+    <Compile Include="Extensions\SiteUrlExtensions.cs" />
     <Compile Include="Models\Prices.cs" />
     <Compile Include="Extensions\ShipmentExtensions.cs" />
     <Compile Include="Helpers\AmountHelper.cs" />

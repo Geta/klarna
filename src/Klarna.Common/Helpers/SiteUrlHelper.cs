@@ -24,24 +24,9 @@ namespace Klarna.Common.Helpers
             return primaryHost?.Url ?? site?.SiteUrl;
         }
 
-        public static string GetAbsoluteUrl()
-        {
-            var siteUrl = GetCurrentSiteUrl();
-            return NormalizeUrl(siteUrl);
-        }
-
         private static SiteDefinition GetCurrentSite()
         {
             return Site ?? SiteDefinitionRepository.Service.List().FirstOrDefault();
-        }
-
-        private static string NormalizeUrl(Uri siteUri)
-        {
-            var siteUrl = siteUri?.ToString();
-            if (string.IsNullOrEmpty(siteUrl)) return string.Empty;
-
-            var lastIndexOfSlash = siteUrl.LastIndexOf("/", StringComparison.InvariantCultureIgnoreCase);
-            return siteUrl.Substring(0, lastIndexOfSlash != 1 ? lastIndexOfSlash : siteUrl.Length - 1);
         }
     }
 }
