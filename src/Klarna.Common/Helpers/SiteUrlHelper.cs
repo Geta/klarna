@@ -24,6 +24,12 @@ namespace Klarna.Common.Helpers
             return primaryHost?.Url ?? site?.SiteUrl;
         }
 
+        public static string GetAbsoluteUrl()
+        {
+            var siteUrl = GetCurrentSiteUrl();
+            return siteUrl?.ToString().TrimEnd('/');
+        }
+
         private static SiteDefinition GetCurrentSite()
         {
             return Site ?? SiteDefinitionRepository.Service.List().FirstOrDefault();
