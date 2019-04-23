@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [2.0.10]
 
+### Changed
 - Using primary host as a site URL with fallback to site URL.
 
 ## [2.0.8]
