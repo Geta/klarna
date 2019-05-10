@@ -6,6 +6,10 @@ EPiServer Klarna Checkout integration
 Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](https://developers.klarna.com/en/gb/kco-v3/checkout) as the checkout solution for your EPiServer Commerce sites.
 This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna.
 
+## Integration
+
+![Klarna Checkout integration](https://github.com/Geta/Klarna/raw/master/docs/images/klarna-checkout-integration.png)
+
 ## Features
 * Klarna.Checkout is the integration between EPiServer and the Klarna Checkout API (https://developers.klarna.com/api/#checkout-api-order)
 * Klarna.Checkout.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
