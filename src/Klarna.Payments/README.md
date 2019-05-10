@@ -7,6 +7,10 @@ This library consists of two assemblies. Both are mandatory for a creating an in
 Klarna.Payments is the integration between EPiServer and the Klarna Payments API (https://developers.klarna.com/api/#payments-api).
 Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager.
 
+## Integration
+
+![Klarna Payments integration](https://github.com/Geta/Klarna/raw/master/docs/images/klarna-payments-integration.png)
+
 ## Features
 * Loading Klarna Payments widget
 * Cancel payments
