@@ -71,7 +71,7 @@ Set the colors and border size for the Klarna widget. The Klarna logo should be 
 
 **Other settings**
 
-After payment is completed the confirmation url must be called. This can be done with this method:
+After payment is completed the [confirmation url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__confirmation) must be called. This can be done with this method:
 ```csharp
 var result = _klarnaPaymentsService.Complete(purchaseOrder);
 if (result.IsRedirect)
@@ -79,7 +79,9 @@ if (result.IsRedirect)
     return Redirect(result.RedirectUrl);
 }
 ```
-Notification url is called by Klarna for fraud updates. See further in the documentation for an example implementation. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
+In Quicksilver the order confirmation page URL would look something like this: '/en/checkout/order-confirmation'.
+
+[Notification url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__notification) is called by Klarna for updates. See further in the documentation for an example implementation or in the [demo site](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L63) and would be '/klarnaapi/fraud'. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases.
 
 The 'Pre-assesment' field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This option is only available in the U.S. market and will be ignored for all other markets. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
 
