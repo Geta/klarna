@@ -28,12 +28,12 @@ Klarna.Payments.CommerceManager contains a usercontrol for the payment method co
 - **EPiServer: Create purchase order** - Create purchase order in EPiServer
 - **Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are send to the configured notification URL (configured in Commerce Manager)
 
-More information about the Klarna Payments flow: https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods
+More information about the Klarna Payments flow: https://developers.klarna.com/documentation/klarna-payments/.
 
 <details>
   <summary>Setup (click to expand)</summary>
 
-Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
+Start by installing NuGet packages (use [NuGet](https://nuget.episerver.com/)):
 
     Install-Package Klarna.Payments.v3
 
@@ -173,16 +173,16 @@ The following properties are set by default (read from current cart and payment 
 - **ShippingAddress**
 - **BillingAddress**
 
-Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-session.
+Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-credit-session.
 
-When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. Full documentation about this topic can be found here: https://developers.klarna.com/en/se/kco-v2/checkout/use-cases
+When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. Full documentation about this topic can be found here: https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data.
 
 </details>
 
 <details>
   <summary>Authorize payment client-side (click to expand)</summary>
 
-The last step just before creating an order is to do an [authorization call](https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods/3-authorize). In this call we will provide Klarna with any missing personal information (which might be missing due to legislation). Up until now no personal information might have been synced to Klarna, which makes risk assessment quite hard to accomplish. During the authorize call we provide Klarna with the required personal information (billing-/shipping address, customer info). Klarna will conduct a full risk assessment after which it will provide immediate feedback, which is described on the previously linked [docs](https://developers.klarna.com/en/gb/kco-v3/klarna-payment-methods/3-authorize).
+The last step just before creating an order is to do an [authorization call](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/). In this call we will provide Klarna with any missing personal information (which might be missing due to legislation). Up until now no personal information might have been synced to Klarna, which makes risk assessment quite hard to accomplish. During the authorize call we provide Klarna with the required personal information (billing-/shipping address, customer info). Klarna will conduct a full risk assessment after which it will provide immediate feedback, which is described on the previously linked [docs](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/).
 As Quicksilver supports both authenticated and anonymous checkout, we have multiple ways to retrieve personal information for the current customer.
 
 Ways to retrieve personal information (PI):
