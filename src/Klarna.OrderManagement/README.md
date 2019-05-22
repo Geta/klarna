@@ -195,8 +195,8 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
 ```
 </details>
 <details>
-  <summary>Order notes (click to expand)</summary>
-	<a name="order-notes"></a>
+  <summary>Order notes (click to expand)<a name="order-notes"></a></summary>
+	
 EPiServer uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform users about the Klarna payment process. 
 
 ![Order notes](/docs/screenshots/order-notes-complete.PNG?raw=true "Order notes")
