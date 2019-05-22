@@ -5,7 +5,7 @@ EPiServer Klarna order management
 
 Klarna.OrderManagement is a library for processing a Klarna payment in EPiServer Commerce. This package supports both payments of Klarna.Payments and Klarna.Checkout. 
 
-More about Klarna ordermanagement: https://developers.klarna.com/en/gb/kco-v3/order-management
+More about Klarna ordermanagement: https://developers.klarna.com/resources/order-management/
 
 ## Features
 * Capture
@@ -196,7 +196,7 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
 </details>
 <details>
   <summary>Order notes (click to expand)</summary>
-
+	<a name="order-notes"></a>
 EPiServer uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform users about the Klarna payment process. 
 
 ![Order notes](/docs/screenshots/order-notes-complete.PNG?raw=true "Order notes")
