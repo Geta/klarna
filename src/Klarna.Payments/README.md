@@ -265,6 +265,10 @@ The KlarnaPaymentGateway save notes about payment updates at the order.
   
 This repository includes the [Quicksilver demo site](https://github.com/Geta/Klarna/tree/master/demo) which contains an example implementation of this package. The implementation requires both frontend and backend changes.
 
+**Start page setting**
+
+When running the demo code in this repository make sure to enable Klarna Payments on the start page (Commerce tab).
+
 **Load Klarna JS script**
 
 Load the Klarna API Javascript.
