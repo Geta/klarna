@@ -1,9 +1,9 @@
-EPiServer Klarna Payments integration
-=============
+# EPiServer Klarna Payments integration
 
 ## Description
+
 Klarna.Payments is a library which helps to integrate Klarna Payments as one of the payment options in your EPiServer Commerce sites.
-This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna. 
+This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna.
 Klarna.Payments is the integration between EPiServer and the Klarna Payments API (https://developers.klarna.com/api/#payments-api).
 Klarna.Payments.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager.
 
@@ -12,18 +12,20 @@ Klarna.Payments.CommerceManager contains a usercontrol for the payment method co
 ![Klarna Payments integration](https://github.com/Geta/Klarna/raw/master/docs/images/klarna-payments-integration.png)
 
 ## Features
-* Loading Klarna Payments widget
-* Cancel payments
-* Returns
-* Multi shipments
-* Fraud checks + notifications
-* Payment step history saved on order notes
-* Configurations in Commerce Manager
+
+- Loading Klarna Payments widget
+- Cancel payments
+- Returns
+- Multi shipments
+- Fraud checks + notifications
+- Payment step history saved on order notes
+- Configurations in Commerce Manager
 
 ### Payment process
-- **Customer visits checkout page** - Klarna session is created or updated 
-- **Klarna widget is loaded (payment option)**  
-- **Customer presses the Purchase button**  - Klarna payment authorize is called client-side 
+
+- **Customer visits checkout page** - Klarna session is created or updated
+- **Klarna widget is loaded (payment option)**
+- **Customer presses the Purchase button** - Klarna payment authorize is called client-side
 - **Klarna: Create order** - When payment authorization is completed then create order (payment gateway) at Klarna
 - **EPiServer: Create purchase order** - Create purchase order in EPiServer
 - **Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are send to the configured notification URL (configured in Commerce Manager)
@@ -40,21 +42,23 @@ Start by installing NuGet packages (use [NuGet](https://nuget.episerver.com/)):
 For the Commerce Manager site run the following package:
 
     Install-Package Klarna.Payments.CommerceManager.v3
+
 </details>
 <details>
   <summary>Configure Commerce Manager (click to expand)</summary>
 
 Login into Commerce Manager and open **Administration -> Order System -> Payments**. Then click **New** and in **Overview** tab fill:
 
-- **Name(*)**
-- **System Keyword(*)** - KlarnaPayments (the integration will not work when something else is entered in this field)
-- **Language(*)** - allows a specific language to be specified for the payment gateway
-- **Class Name(*)** - choose **Klarna.Payments.KlarnaPaymentGateway**
-- **Payment Class(*)** - choose **Mediachase.Commerce.Orders.OtherPayment**
+- **Name(\*)**
+- **System Keyword(\*)** - KlarnaPayments (the integration will not work when something else is entered in this field)
+- **Language(\*)** - allows a specific language to be specified for the payment gateway
+- **Class Name(\*)** - choose **Klarna.Payments.KlarnaPaymentGateway**
+- **Payment Class(\*)** - choose **Mediachase.Commerce.Orders.OtherPayment**
 - **IsActive** - **Yes**
 - **Supports Recurring** - **No** - this Klarna Payments integration does not support recurring payments
 
-(*) mandatory
+(\*) mandatory
+
 - select shipping methods available for this payment
 
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
@@ -72,6 +76,7 @@ Set the colors and border size for the Klarna widget. The Klarna logo should be 
 **Other settings**
 
 After payment is completed the [confirmation url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__confirmation) must be called. This can be done with this method:
+
 ```csharp
 var result = _klarnaPaymentsService.Complete(purchaseOrder);
 if (result.IsRedirect)
@@ -79,6 +84,7 @@ if (result.IsRedirect)
     return Redirect(result.RedirectUrl);
 }
 ```
+
 In Quicksilver the order confirmation page URL would look something like this: '/en/checkout/order-confirmation'.
 
 [Notification url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__notification) is called by Klarna for fraud updates. See further in the documentation for an example implementation or in the [demo site](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L63) and would be '/klarnaapi/fraud'. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data.
@@ -99,7 +105,7 @@ sessionRequest.Customer = new Customer
 **Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager nuget (see above)**
 
 - In the **Markets** tab select a market for which this payment will be available.
-</details>
+  </details>
 
 <details>
   <summary>Creating session (click to expand)</summary>
@@ -162,6 +168,7 @@ public class DemoSessionBuilder : ISessionBuilder
 ```
 
 The following properties are set by default (read from current cart and payment method configurations):
+
 - **PurchaseCountry**
 - **MerchantUrl.Confirmation**
 - **MerchantUrl.Notification**
@@ -186,29 +193,33 @@ The last step just before creating an order is to do an [authorization call](htt
 As Quicksilver supports both authenticated and anonymous checkout, we have multiple ways to retrieve personal information for the current customer.
 
 Ways to retrieve personal information (PI):
+
 - Authenticated user
-    - In this case we expect that (most of) the personal information exists server side. We do an api call to the provided KlarnaPaymentController (url: "/klarnaapi/personal") to retrieve personal information. Due to the way the Quicksilver checkout process is set up, we have to provide the currently selected billing address id; because it is not stored server side (yet). 
+  - In this case we expect that (most of) the personal information exists server side. We do an api call to the provided KlarnaPaymentController (url: "/klarnaapi/personal") to retrieve personal information. Due to the way the Quicksilver checkout process is set up, we have to provide the currently selected billing address id; because it is not stored server side (yet).
 - Anonymous user
-    - In this case we expect that no information exists server side. We retrieve personal information from form fields and use that to populate the object with personal information. 
+  - In this case we expect that no information exists server side. We retrieve personal information from form fields and use that to populate the object with personal information.
 
 If anything goes wrong it could be that the Klarna widget will display a pop-up, allowing the user to recover from any errors. In case of non-recoverable error(s); the widget should be hidden and we should inform the user to select a different payment method. The happy flow (no errors) would mean that we will retrieve an authorization token from Klarna and can continue with the checkout process.
 Receiving an authorization token means that the risk assessment succeeded and we're able to complete the order. The authorization token is provided during the form post to Epi (purchase). This authorization token is important because it allows us to make sure no changes were made client side (as you can change the cart items in the authorization call as well).
 
 Checkout flow:
+
 - Server side - During checkout we use the CreateOrUpdateSession to update the session at Klarna (this does not contain any PI)
 - Client side - When the user clicks on 'Place order' we use the Klarna javascript library to do an authorize call, providing the necessary PI.
-    - If authorize succeeds we receive an authorization token, which we add to the checkout form and pass on to our server
-    - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaPaymentsService - AllowedToSharePersonalInformation). 
+  - If authorize succeeds we receive an authorization token, which we add to the checkout form and pass on to our server
+  - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaPaymentsService - AllowedToSharePersonalInformation).
 - Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'truth'), using this session and the authorization token we can create an order in Klarna.
-    - If creating an order fails, the authorize request has been tampered with and the payment fails
-    
- In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
+  - If creating an order fails, the authorize request has been tampered with and the payment fails
+
+In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
+
 </details>
 
 <details>
   <summary>Create order (click to expand)</summary>
 
-The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation. 
+The KlarnaPaymentGateway will create an order at Klarna when the authorization (client-side) is done. The ISessionBuilder is called again to override the default values or set other extra values when necessary. When the Gateway returns true (indicating the payment is processed) a PurchaseOrder can be created. This should be done by the developer, the QuickSilver demo site contains an example implementation.
+
 </details>
 
 <details>
@@ -237,6 +248,7 @@ public IHttpActionResult FraudNotification()
 
 When a payment needs an additional review, the payment in EPiServer is set to the status PENDING and the order to ONHOLD. When the fraud status callback URL is called and the payment is accepted the payment status will be set to PROCESSED and the order to ONHOLD. If the payment is rejected by Klarna the payment status is set to FAILED.
 ```
+
 </details>
 
 <details>
@@ -245,31 +257,58 @@ When a payment needs an additional review, the payment in EPiServer is set to th
 The KlarnaPaymentGateway save notes about payment updates at the order.
 
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
+
 </details>
 
 <details>
   <summary>Quicksilver demo site implementation (click to expand)</summary>
   
-This repository includes the Quicksilver demo site (https://github.com/Geta/Klarna/tree/master/demo) which contains an example implementation of this package. The following steps are done for implementing this package.
+This repository includes the [Quicksilver demo site](https://github.com/Geta/Klarna/tree/master/demo) which contains an example implementation of this package. The implementation requires both frontend and backend changes.
 
-- Load Klarna api.js on [Layout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_Layout.cshtml#L65)
-- Implement [Klarna.Payments.js](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Klarna.Payments.js) 
-- [Reload the Klarna widget](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L187) each time something changed on the checkout page
-- [Execute authorization](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Checkout.js#L24) at Klarna when Purchase button is clicked
-- Implement [API controller](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs)
-    - GetpersonalInformation - Get personal information for the authorization call. See the section 'Call authorize client-side' for more explanation.
-    - AllowSharingOfPersonalInformation - Check if the personal information can be shared. See the section 'Call authorize client-side' for more explanation.
-    - FraudNotification - Endpoint for fraud notifications pushed by Klarna. This URL can be configured in Commerce Manager, see the 'Configure Commerce Manager' section.
-- Add [_KlarnaPayments.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Payment/_KlarnaPayments.cshtml) view
-- Add [KlarnaPaymentMethodsConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) view
-- Create [KlarnaPaymentsPaymentMethod](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs)
-    - See PostProcess - Set the payment status to pending when the fraud status is pending     
+**Start page setting**
+
+When running the demo code in this repository make sure to enable Klarna Payments on the start page (Commerce tab).
+
+**Load Klarna JS script**
+
+Load the Klarna API Javascript.
+
+```
+    <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+```
+
+**Frontend implementation**
+
+There are a few frontend changes that are required.
+
+- Load and initialize (define settings) the Klarna Payments widget
+- Authorize payment when visitor clicks the purchase button. The authorize action can be used to send some additional personal. Some countries (EU) we can only send personal information in the last (authorize) step. See more info about the [authorize step here](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/)
+
+Example implementation: [Klarna.Payments.js](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Klarna.Payments.js)
+
+**API controller - frontend and callback communication**
+
+The `KlarnaPaymentController` contains actions that are used by the frontend and an action that is used by Klarna for fraud notifications.
+
+- GetpersonalInformation - Get personal information for the authorization call. See the section 'Call authorize client-side' for more explanation.
+- AllowSharingOfPersonalInformation - Check if the personal information can be shared. See the section 'Call authorize client-side' for more explanation.
+- FraudNotification - Endpoint for fraud notifications pushed by Klarna. This URL can be configured in Commerce Manager, see the 'Configure Commerce Manager' section.
+
+**Load and display payment - QuickSilver**
+
+- [\_KlarnaPayments.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Payment/_KlarnaPayments.cshtml) - display Klarna Payment method
+- [\_KlarnaPaymentsConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaPaymentsConfirmation.cshtml) - Klarna Payments confirmation view
+- [KlarnaPaymentsPaymentMethod.cs](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaPaymentsPaymentMethod.cs)
+  - See PostProcess - Set the payment status to pending when the fraud status is pending
 - Implement AuthorizationToken on the [CheckoutViewModel](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/ViewModels/CheckoutViewModel.cs), add hiddenfield on [Single-](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/SingleShipmentCheckout.cshtml) and [MultiShipmentCheckout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Checkout/MultiShipmentCheckout.cshtml)
-- [CheckoutService](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs).CreateAndAddPaymentToCart - Set authorization token on payment object. This should be done before calling the payment gateway - cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
-- Call CreateOrUpdateSession method in the Index, Update and ChangeAddress action of the [CheckoutController](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs)
-- Call the CompleteAndRedirect to redirect the visitor to the confirmation page after creating a PurchaseOrder
 
-Note: if you're not using serialized carts you need to set the OrderNumberMethod property on the cart like below code snippet. This package contains an implementation of the IOrderNumberGenerator. During payment authorization (so before a purchase order is created) it's mandatory to send the order number to Klarna. The custom implementation in the package generates an order number and saves it on the cart. When the SaveAsPurchaseOrder method is called the implementation will return the generated order number from the cart. 
+**Process payment - QuickSilver**
+
+- [CheckoutService](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Services/CheckoutService.cs) `CreateAndAddPaymentToCart` - Set authorization token on payment object. This should be done before calling the payment gateway - `cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator)`
+- Call `CreateOrUpdateSession` method in the Index, Update and ChangeAddress action of the [CheckoutController](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/CheckoutController.cs)
+- Call the `Complete` to redirect the visitor to the confirmation page after creating a PurchaseOrder
+
+Note: if you're not using serialized carts you need to set the OrderNumberMethod property on the cart like below code snippet. This package contains an implementation of the IOrderNumberGenerator. During payment authorization (so before a purchase order is created) it's mandatory to send the order number to Klarna. The custom implementation in the package generates an order number and saves it on the cart. When the SaveAsPurchaseOrder method is called the implementation will return the generated order number from the cart.
 
 ```
 if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't use the IOrderNumberGenerator
@@ -278,13 +317,17 @@ if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't
     ((Mediachase.Commerce.Orders.Cart)cart).OrderNumberMethod = orderNumberGenerator.GenerateOrderNumber;
 }
 ```
+
 </details>
 
 ## Demo
+
 https://kp-klarna.geta.no
 
 ## Package maintainer
+
 https://github.com/patkleef
 
 ## Changelog
+
 [Changelog](../../CHANGELOG.md)
