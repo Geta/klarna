@@ -9,6 +9,7 @@
 					</tr>
 				</tbody>
             </table>
+            <asp:Panel runat="server" ID="OrderInfoPanel">
 	        <table class="orderform-blockheaderlight-datatable" style="background-color: transparent;">
 		        <tbody>
                     <tr>
@@ -74,6 +75,10 @@
                     </tr>
 		        </tbody>
 	        </table>
+            </asp:Panel>
+            <asp:Panel runat="server" ID="OrderInfoErrorPanel" Visible="False">
+                <span>Something went wrong while getting order from Klarna.</span>
+            </asp:Panel>
         </td>
     </tr>
 </table>

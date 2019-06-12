@@ -49,19 +49,28 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
                 var klarnaOrderService = _klarnaOrderServiceFactory.Service.Create(paymentMethod, purchaseOrder.MarketId);
 
                 var orderId = purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString();
-                var orderData = klarnaOrderService.GetOrder(orderId).Result;
 
-                OrderIdLabel.Text = orderData.OrderId;
-                KlarnaReferenceLabel.Text = orderData.KlarnaReference;
-                MerchantReference1Label.Text = orderData.MerchantReference1;
-                MerchantReference2Label.Text = orderData.MerchantReference2;
-                ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
-                StatusLabel.Text = orderData.Status;
-                OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
-                CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
-                RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
+                try
+                {
+                    var orderData = klarnaOrderService.GetOrder(orderId).Result;
 
-                preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
+                    OrderIdLabel.Text = orderData.OrderId;
+                    KlarnaReferenceLabel.Text = orderData.KlarnaReference;
+                    MerchantReference1Label.Text = orderData.MerchantReference1;
+                    MerchantReference2Label.Text = orderData.MerchantReference2;
+                    ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
+                    StatusLabel.Text = orderData.Status;
+                    OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
+                    CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
+                    RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);
+
+                    preLabel.InnerText = JsonConvert.SerializeObject(orderData, Formatting.Indented);
+                }
+                catch (Exception)
+                {
+                    OrderInfoErrorPanel.Visible = true;
+                    OrderInfoPanel.Visible = false;
+                }
             }
             else
             {

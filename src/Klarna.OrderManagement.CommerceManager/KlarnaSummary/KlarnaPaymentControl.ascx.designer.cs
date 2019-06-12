@@ -13,6 +13,15 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary {
     public partial class KlarnaPaymentControl {
         
         /// <summary>
+        /// OrderInfoPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel OrderInfoPanel;
+        
+        /// <summary>
         /// OrderIdLabel control.
         /// </summary>
         /// <remarks>
@@ -101,5 +110,14 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl preLabel;
+        
+        /// <summary>
+        /// OrderInfoErrorPanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel OrderInfoErrorPanel;
     }
 }
