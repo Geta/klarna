@@ -282,6 +282,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 payment.Status = PaymentStatus.Pending.ToString();
             }
 
+            _cartService.RequestInventory(cart);
+
             var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
             var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
             _orderRepository.Delete(cart.OrderLink);
