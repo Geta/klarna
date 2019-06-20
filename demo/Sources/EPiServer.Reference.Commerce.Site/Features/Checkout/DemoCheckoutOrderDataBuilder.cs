@@ -81,7 +81,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
                             var parentLink =
                                 entryContent.GetParentProducts(_relationRepository.Service).SingleOrDefault();
-                            product = _contentRepository.Service.Get<FashionProduct>(parentLink);
+
+                            _contentRepository.Service.TryGet<FashionProduct>(parentLink, out product);
                         }
                     }
 
