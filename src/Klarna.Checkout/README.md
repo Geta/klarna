@@ -106,6 +106,8 @@ The Klarna.Checkout package will replace `{orderGroupId}` in any of the urls wit
 
 **Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager package (see above)**
 
+**Taxes: If the line items prices already include sales tax - make sure that PricesIncludeTax is set to true. This can be configured per market in Episerver Commerce. Default is false.**
+
 </details>
 
 <details>

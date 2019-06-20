@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.12]
+
+### Changed
+
+- Use PricesIncludeTax property on market to determine if tax should be included on orderline
+
 ## [2.0.11]
 
 ### Changed
