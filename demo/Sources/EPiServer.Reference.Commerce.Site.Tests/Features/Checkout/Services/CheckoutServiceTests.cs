@@ -13,6 +13,7 @@ using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes;
 using FluentAssertions;
+using Klarna.Checkout;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
@@ -106,7 +107,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
 
             var viewModel = new CheckoutViewModel
             {
-                BillingAddress = new AddressModel{ AddressId = "billingAddress"},
+                BillingAddress = new AddressModel { AddressId = "billingAddress" },
                 Payment = paymentMethodMock.Object
             };
 
@@ -155,7 +156,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
                 .Returns(() => new OrderReference(0, "", Guid.Empty, null));
 
             var cart = new FakeCart(new MarketImpl(MarketId.Empty), Currency.SEK);
-            cart.GetFirstForm().Payments.Add(new FakePayment {Status = PaymentStatus.Processed.ToString(), Amount = cartTotal.Amount});
+            cart.GetFirstForm().Payments.Add(new FakePayment { Status = PaymentStatus.Processed.ToString(), Amount = cartTotal.Amount });
 
             var modelState = new ModelStateDictionary();
 
@@ -212,10 +213,11 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
             _orderRepositoryMock.Setup(x => x.SaveAsPurchaseOrder(It.IsAny<ICart>()))
                 .Returns(() => new OrderReference(0, "", Guid.Empty, null));
 
-            var returnObject = new Mock<Dictionary<ILineItem, List<ValidationIssue>>>();
+            var returnObject = new Mock<Dictionary<ILineItem, IList<ValidationIssue>>>();
             returnObject.Object.Add(new Mock<ILineItem>().Object, new List<ValidationIssue>() {
                 ValidationIssue.AdjustedQuantityByAvailableQuantity
             });
+
             _cartServiceMock
                 .Setup(x => x.RequestInventory(It.IsAny<ICart>()))
                 .Returns(returnObject.Object);
@@ -317,12 +319,12 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
 
             var confirmationPageMock = Mock.Of<OrderConfirmationPage>(x => x.Language == CultureInfo.CurrentCulture);
             _contentRepositoryMock.Setup(x => x.GetChildren<OrderConfirmationPage>(It.IsAny<ContentReference>()))
-                .Returns(new [] { confirmationPageMock});
+                .Returns(new[] { confirmationPageMock });
 
             var viewModel = new CheckoutViewModel
             {
                 CurrentPage = new CheckoutPage(),
-                BillingAddress = new AddressModel {Email = "email"},
+                BillingAddress = new AddressModel { Email = "email" },
             };
 
             var queryCollection = new NameValueCollection
@@ -378,6 +380,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
         private readonly Mock<IContentRepository> _contentRepositoryMock;
         private readonly Mock<CustomerContextFacade> _customerContextFacadeMock;
         private readonly Mock<IPaymentProcessor> _paymentProcessorMock;
+        private readonly Mock<OrderValidationService> _localizedOrderValidationServiceMock;
         public CheckoutServiceTests()
         {
             var addressBookServiceMock = new Mock<IAddressBookService>();
@@ -393,9 +396,18 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
 
             _paymentProcessorMock = new Mock<IPaymentProcessor>();
             _paymentProcessorMock.Setup(x => x.ProcessPayment(It.IsAny<IOrderGroup>(), It.IsAny<IPayment>(), It.IsAny<IShipment>()))
-                .Returns((IOrderGroup orderGroup, IPayment payment, IShipment shipment) => PaymentProcessingResult.CreateSuccessfulResult("Payment was processed.") );
+                .Returns((IOrderGroup orderGroup, IPayment payment, IShipment shipment) => PaymentProcessingResult.CreateSuccessfulResult("Payment was processed."));
             _cartServiceMock = new Mock<ICartService>();
-            _cartServiceMock.Setup(x => x.RequestInventory(It.IsAny<ICart>())).Returns(new Dictionary<ILineItem, List<ValidationIssue>>());
+            _cartServiceMock.Setup(x => x.RequestInventory(It.IsAny<ICart>())).Returns(new Dictionary<ILineItem, IList<ValidationIssue>>());
+
+            _localizedOrderValidationServiceMock =
+                new Mock<OrderValidationService>(null, null, null, null, null);
+            _localizedOrderValidationServiceMock.Setup(x => x.ValidateOrder(It.IsAny<IOrderGroup>()))
+                .Returns(new Dictionary<ILineItem, IList<ValidationIssue>>());
+
+            var klarnaCheckoutServiceMock = new Mock<IKlarnaCheckoutService>();
+
+            var contentLoaderMock = new Mock<IContentLoader>();
 
             _subject = new CheckoutService(
               addressBookServiceMock.Object,
@@ -407,8 +419,8 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
               _customerContextFacadeMock.Object,
               new MemoryLocalizationService(),
               _mailServiceMock.Object,
-              null,
-              null,
+              contentLoaderMock.Object,
+              klarnaCheckoutServiceMock.Object,
               _cartServiceMock.Object);
         }
     }

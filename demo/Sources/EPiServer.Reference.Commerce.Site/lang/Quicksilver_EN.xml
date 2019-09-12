@@ -45,6 +45,9 @@
         <Button>Sign me up</Button>
       </Newsletter>
       <Social>Be Social</Social>
+      <Legal>
+        <Header>Legal</Header>
+      </Legal>
     </Footer>
     <Product>
       <Quickview>Quick view</Quickview>
@@ -316,7 +319,7 @@
           <PostalCode>Postal code:</PostalCode>
           <ZipCode>Zip code:</ZipCode>
           <Submit>Create an account</Submit>
-          <Newsletter>Send me e-mail updates about the latest products and promotions.</Newsletter>
+          <AcceptMarketingEmail>Send me e-mail updates about the latest products and promotions.</AcceptMarketingEmail>
         </Label>
         <Empty>
           <Address>An address is required</Address>
@@ -369,6 +372,10 @@
         <Heading>Your account has been locked</Heading>
         <Message>As a precaution your account has temporarely been locked due to too many recent login failures. Please come back and try again later.</Message>
       </Lockout>
+      <Unapproved>
+        <Heading>Your account has not been approved by administrators.</Heading>
+        <Message>Please contact administrators for more information.</Message>
+      </Unapproved>
       <BackendLogin>
         <Heading>Edit view</Heading>
         <LoginMessage>
@@ -376,6 +383,16 @@
         </LoginMessage>
       </BackendLogin>
     </Login>
+    <Consent>
+      <Header>Privacy</Header>
+      <AcceptMarketingEmail>Send me e-mail updates about the latest products and promotions.</AcceptMarketingEmail>
+      <Updated>Last updated:</Updated>
+      <NotConfirm>You haven't confirmed your privacy settings yet.</NotConfirm>
+      <Form>
+        <Edit>Edit</Edit>
+        <Submit>Submit</Submit>
+      </Form>
+    </Consent>
     <ResetPassword>
       <Mail>
         <Text>Reset your password using this </Text>

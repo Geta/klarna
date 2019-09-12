@@ -29,7 +29,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
         private Injected<IRelationRepository> _relationRepository = default(Injected<IRelationRepository>);
 
 
-        public Session Build(Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic = null, bool includePersonalInformation = false)
+        public Klarna.Payments.Models.Session Build(
+            Klarna.Payments.Models.Session session, ICart cart, PaymentsConfiguration paymentsConfiguration, IDictionary<string, object> dic = null, bool includePersonalInformation = false)
         {
             if (includePersonalInformation && paymentsConfiguration.CustomerPreAssessment)
             {

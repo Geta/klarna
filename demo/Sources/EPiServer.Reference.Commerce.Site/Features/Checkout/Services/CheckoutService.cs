@@ -1,6 +1,8 @@
-﻿using EPiServer.Commerce.Order;
+﻿using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Framework.Localization;
+using EPiServer.Globalization;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Shared.Services;
 using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
@@ -8,24 +10,23 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
+using Klarna.Checkout;
+using Klarna.Common.Extensions;
+using Klarna.Payments.Models;
+using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
+using Mediachase.Commerce.Orders.Managers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using EPiServer.Globalization;
-using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
-using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
-using Klarna.Checkout;
-using Klarna.Common.Extensions;
-using Klarna.Payments.Models;
-using Klarna.Rest.Models;
-using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 {
@@ -304,7 +305,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             }
         }
 
-        public virtual bool ValidateOrder(ModelStateDictionary modelState, CheckoutViewModel viewModel, Dictionary<ILineItem, List<ValidationIssue>> validationIssueCollections)
+        public virtual bool ValidateOrder(ModelStateDictionary modelState, CheckoutViewModel viewModel, IDictionary<ILineItem, IList<ValidationIssue>> validationMessages)
         {
             PurchaseValidation validation;
             if (viewModel.IsAuthenticated)
@@ -316,7 +317,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 validation = AnonymousPurchaseValidation;
             }
 
-            return validation.ValidateModel(modelState, viewModel) && validation.ValidateOrderOperation(modelState, validationIssueCollections);
+            return validation.ValidateModel(modelState, viewModel) && validation.ValidateOrderOperation(modelState, validationMessages);
         }
 
         public void ProcessPaymentCancel(CheckoutViewModel viewModel, TempDataDictionary tempData, ControllerContext controlerContext)

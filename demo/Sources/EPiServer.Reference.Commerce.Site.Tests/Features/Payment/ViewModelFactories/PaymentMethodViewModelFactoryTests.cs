@@ -110,8 +110,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Payment.ViewModelFact
 
             var contentLoaderMock = new Mock<IContentLoader>();
 
-            _subject = new PaymentMethodViewModelFactory(
-                _currentMarketMock.Object, _languageServiceMock.Object, _paymentMethods.Select(x => x.PaymentMethod), _paymentManagerMock.Object, contentLoaderMock.Object);
+            _subject = new PaymentMethodViewModelFactory(_currentMarketMock.Object, _languageServiceMock.Object, _paymentMethods.Select(x => x.PaymentMethod), _paymentManagerMock.Object, contentLoaderMock.Object);
         }
     }
 }

@@ -1,14 +1,14 @@
 using EPiServer.Commerce.Order;
+using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
+using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using EPiServer.Core;
-using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
 {
@@ -24,7 +24,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
         public PaymentMethodViewModelFactory(
             ICurrentMarket currentMarket,
             LanguageService languageService,
-            IEnumerable<IPaymentMethod> paymentMethods,
+            IEnumerable<IPaymentMethod> paymentMethods, 
             IPaymentManagerFacade paymentManager,
             IContentLoader contentLoader)
         {
@@ -64,7 +64,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
                 PaymentMethods = availablePaymentMethods
             };
 
-            viewModel.SelectedPaymentMethod = viewModel.PaymentMethods.FirstOrDefault(x => x.IsDefault)
+            viewModel.SelectedPaymentMethod = viewModel.PaymentMethods.FirstOrDefault(x => x.IsDefault) 
                 ?? viewModel.PaymentMethods.FirstOrDefault();
 
             return viewModel;

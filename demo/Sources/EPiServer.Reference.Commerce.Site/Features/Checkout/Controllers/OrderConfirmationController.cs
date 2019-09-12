@@ -1,19 +1,19 @@
-﻿using System.Linq;
-using EPiServer.Commerce.Order;
+﻿using EPiServer.Commerce.Order;
 using EPiServer.Core;
 using EPiServer.Editor;
+using EPiServer.Globalization;
 using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.Web.Mvc.Html;
+using Klarna.Checkout;
 using Mediachase.Commerce.Markets;
+using Mediachase.Commerce.Orders.Managers;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using EPiServer.Globalization;
-using Klarna.Checkout;
-using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 {
@@ -39,27 +39,21 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, string orderNumber, string trackingNumber)
+        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, int? orderNumber)
         {
             IPurchaseOrder order = null;
-            int orderId;
-            trackingNumber = string.IsNullOrEmpty(trackingNumber) ? orderNumber : trackingNumber;
             if (PageEditing.PageIsInEditMode)
             {
                 order = ConfirmationService.CreateFakePurchaseOrder();
             }
-            else if (int.TryParse(orderNumber, out orderId))
+            else if (orderNumber.HasValue)
             {
-                order = ConfirmationService.GetOrder(orderId);
-            }
-            else if (!string.IsNullOrEmpty(trackingNumber))
-            {
-                order = ConfirmationService.GetByTrackingNumber(trackingNumber);
-            }
+                order = ConfirmationService.GetOrder(orderNumber.Value);
 
-            if (order != null)
-            {
-                await _recommendationService.TrackOrderAsync(HttpContext, order);
+                if (order != null)
+                {
+                    await _recommendationService.TrackOrderAsync(HttpContext, order);
+                }
             }
 
             if (order != null && order.CustomerId == CustomerContext.CurrentContactId)
