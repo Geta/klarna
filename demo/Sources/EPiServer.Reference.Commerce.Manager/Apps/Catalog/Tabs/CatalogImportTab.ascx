@@ -46,7 +46,7 @@
 </style>
 <script type="text/javascript">
     //The query string "dndUpload=true" is essential to bypass the Mediachase File Upload HTTP Module.
-    var uploadHandler = '<%= Page.ResolveUrl("~/Apps/Core/Uploader/DnDUploadHandler.ashx?dndUpload=true") %>';
+    var uploadHandler = '<%= Page.ResolveUrl("~/Apps/Core/Uploader/DnDUploadHandler.ashx?dndUpload=true&datatype=catalog") %>';
     var initialized = false;
 
     function CheckDragAndDropPanel() {       
@@ -132,7 +132,7 @@
         </asp:TableRow>
         <asp:TableRow>
             <asp:TableCell Width="100%">
-                <mc:FileUploadControl ID="FileUpCtrl" runat="server" ModeType="IFrame" BlockHeight="100px"></mc:FileUploadControl>
+                <mc:FileUploadControl ID="FileUpCtrl" runat="server" ModeType="IFrame" BlockHeight="100px" AllowedFileTypes="csv,zip"></mc:FileUploadControl>
                 <mc:FileUploadProgress ID="fuProgress" runat="server" FileUploadControlID="FileUpCtrl"
                     ProgressBarBoundaryStyle-BorderColor="DarkGoldenrod" ProgressBarBoundaryStyle-BorderStyle="Solid"
                     ProgressBarBoundaryStyle-BorderWidth="1px" ProgressBarBoundaryStyle-Height="17px"
