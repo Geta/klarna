@@ -218,12 +218,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CartExtensions.cs" />
     <Compile Include="CheckoutConfiguration.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DefaultCheckoutConfigurationLoader.cs" />
     <Compile Include="DefaultCheckoutLanguageIdConverter.cs" />
+    <Compile Include="DefaultKlarnaCartValidator.cs" />
     <Compile Include="ICheckoutConfigurationLoader.cs" />
     <Compile Include="ICheckoutLanguageIdConverter.cs" />
+    <Compile Include="IKlarnaCartValidator.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />
     <Compile Include="ICheckoutOrderDataBuilder.cs" />

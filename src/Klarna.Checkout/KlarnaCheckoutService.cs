@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
@@ -38,6 +39,7 @@ namespace Klarna.Checkout
         private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
         private readonly ICheckoutLanguageIdConverter _checkoutLanguageIdConverter;
+        private readonly IKlarnaCartValidator _klarnaCartValidator;
 
         private Client _client;
         private PaymentMethodDto _paymentMethodDto;
@@ -51,7 +53,8 @@ namespace Klarna.Checkout
             IMarketService marketService,
             ICheckoutConfigurationLoader checkoutConfigurationLoader,
             KlarnaOrderServiceFactory klarnaOrderServiceFactory,
-            ICheckoutLanguageIdConverter checkoutLanguageIdConverter)
+            ICheckoutLanguageIdConverter checkoutLanguageIdConverter,
+            IKlarnaCartValidator klarnaCartValidator)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
             _orderGroupCalculator = orderGroupCalculator;
@@ -61,6 +64,7 @@ namespace Klarna.Checkout
             _checkoutConfigurationLoader = checkoutConfigurationLoader;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
             _checkoutLanguageIdConverter = checkoutLanguageIdConverter;
+            _klarnaCartValidator = klarnaCartValidator;
         }
 
         public virtual PaymentMethodDto PaymentMethodDto =>
@@ -324,10 +328,15 @@ namespace Klarna.Checkout
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
+            Dictionary<ILineItem, List<ValidationIssue>> validationIssues = null;
+            IEnumerable<RewardDescription> rewardDescriptions = null;
+            
             if (shipment != null && Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out Guid guid))
             {
-                shipment.ShippingMethodId = guid;
                 shipment.ShippingAddress = shippingOptionUpdateRequest.ShippingAddress.ToOrderAddress(cart);
+                shipment.ShippingMethodId = guid;
+                validationIssues = _klarnaCartValidator.ValidateCart(cart);
+                rewardDescriptions = _klarnaCartValidator.ApplyDiscounts(cart);
                 _orderRepository.Save(cart);
             }
 
@@ -337,13 +346,17 @@ namespace Klarna.Checkout
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
-                PurchaseCurrency = cart.Currency.CurrencyCode
+                PurchaseCurrency = cart.Currency.CurrencyCode,
+                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>(),
+                ValidationIssues = validationIssues,
+                RewardDescriptions = rewardDescriptions
             };
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
             {
                 checkoutOrderDataBuilder.Build(result, cart, configuration);
             }
+            
             return result;
         }
 
@@ -351,9 +364,14 @@ namespace Klarna.Checkout
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
+            Dictionary<ILineItem, List<ValidationIssue>> validationIssues = null;
+            IEnumerable<RewardDescription> rewardDescriptions = null;
+            
             if (shipment != null)
             {
                 shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
+                validationIssues = _klarnaCartValidator.ValidateCart(cart);
+                rewardDescriptions = _klarnaCartValidator.ApplyDiscounts(cart);
                 _orderRepository.Save(cart);
             }
 
@@ -364,13 +382,16 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>()
+                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>(),
+                ValidationIssues = validationIssues,
+                RewardDescriptions = rewardDescriptions
             };
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
             {
                 checkoutOrderDataBuilder.Build(result, cart, configuration);
             }
+            
             return result;
         }
 
@@ -380,6 +401,7 @@ namespace Klarna.Checkout
             var market = _marketService.GetMarket(cart.MarketId);
             var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, market, PaymentMethodDto);
             localCheckoutOrderData.ShippingAddress = cart.GetFirstShipment().ShippingAddress.ToAddress();
+            
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
             {
                 return false;
@@ -481,6 +503,7 @@ namespace Klarna.Checkout
                 shippingOptions.FirstOrDefault(x => x.Id.Equals(shipment.ShippingMethodId.ToString()));
             if (selectedShipment != null)
             {
+                shippingOptions.ForEach(option => option.PreSelected = false);
                 selectedShipment.PreSelected = true;
             }
             return shippingOptions;
