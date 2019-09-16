@@ -328,8 +328,8 @@ namespace Klarna.Checkout
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
-            Dictionary<ILineItem, List<ValidationIssue>> validationIssues = null;
-            IEnumerable<RewardDescription> rewardDescriptions = null;
+            var validationIssues = new Dictionary<ILineItem, List<ValidationIssue>>();
+            var rewardDescriptions = Enumerable.Empty<RewardDescription>();
             
             if (shipment != null && Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out Guid guid))
             {
@@ -347,7 +347,9 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>(),
+                ShippingOptions = configuration.ShippingOptionsInIFrame 
+                    ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture)
+                    : Enumerable.Empty<ShippingOption>(),
                 ValidationIssues = validationIssues,
                 RewardDescriptions = rewardDescriptions
             };
@@ -364,8 +366,8 @@ namespace Klarna.Checkout
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
-            Dictionary<ILineItem, List<ValidationIssue>> validationIssues = null;
-            IEnumerable<RewardDescription> rewardDescriptions = null;
+            var validationIssues = new Dictionary<ILineItem, List<ValidationIssue>>();
+            var rewardDescriptions = Enumerable.Empty<RewardDescription>();
             
             if (shipment != null)
             {
@@ -382,7 +384,9 @@ namespace Klarna.Checkout
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                ShippingOptions = configuration.ShippingOptionsInIFrame ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture) : Enumerable.Empty<ShippingOption>(),
+                ShippingOptions = configuration.ShippingOptionsInIFrame
+                    ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture)
+                    : Enumerable.Empty<ShippingOption>(),
                 ValidationIssues = validationIssues,
                 RewardDescriptions = rewardDescriptions
             };
