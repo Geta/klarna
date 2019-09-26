@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using EPiServer.Commerce.Marketing;
+using EPiServer.Commerce.Order;
 using Klarna.Rest.Models;
 using Newtonsoft.Json;
 
@@ -29,5 +31,12 @@ namespace Klarna.Checkout.Models
 
         [JsonProperty("locale")]
         public string Locale { get; set; }
+
+        [JsonIgnore]
+        public Dictionary<ILineItem, List<ValidationIssue>> ValidationIssues { get; set; }
+        
+        [JsonIgnore]
+        public IEnumerable<RewardDescription> RewardDescriptions { get; set; }
+
     }
 }
