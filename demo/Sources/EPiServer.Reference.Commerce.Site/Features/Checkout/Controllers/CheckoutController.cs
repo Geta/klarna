@@ -9,16 +9,14 @@ using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
+using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
+using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
-using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
-using EPiServer.Web;
 using Klarna.Checkout;
 using Klarna.Payments;
 using Klarna.Payments.Models;
@@ -35,6 +33,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         private readonly IOrderRepository _orderRepository;
         private readonly ICartService _cartService;
         private readonly IRecommendationService _recommendationService;
+        private readonly OrderValidationService _orderValidationService;
         private ICart _cart;
         private readonly CheckoutService _checkoutService;
         private readonly IKlarnaPaymentsService _klarnaPaymentsService;
@@ -50,7 +49,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             ICartService cartService,
             OrderSummaryViewModelFactory orderSummaryViewModelFactory,
             IRecommendationService recommendationService,
-            CheckoutService checkoutService,
+            CheckoutService checkoutService, 
+            OrderValidationService orderValidationService,
             IKlarnaPaymentsService klarnaPaymentsService,
             IKlarnaCheckoutService klarnaCheckoutService,
             IContentLoader contentLoader,
@@ -64,6 +64,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             _orderSummaryViewModelFactory = orderSummaryViewModelFactory;
             _recommendationService = recommendationService;
             _checkoutService = checkoutService;
+            _orderValidationService = orderValidationService;
             _klarnaPaymentsService = klarnaPaymentsService;
             _klarnaCheckoutService = klarnaCheckoutService;
             _contentLoader = contentLoader;
@@ -158,7 +159,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var viewModel = CreateCheckoutViewModel(currentPage);
             return View(viewModel.ViewName, viewModel);
         }
-
+        
         [HttpPost]
         [AllowDBWrite]
         public ActionResult Purchase(CheckoutViewModel viewModel, IPaymentMethod paymentMethod)
@@ -174,18 +175,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             _checkoutService.CheckoutAddressHandling.UpdateUserAddresses(viewModel);
 
-            if (!_checkoutService.ValidateOrder(ModelState, viewModel, _cartService.ValidateCart(Cart)))
+            if (!_checkoutService.ValidateOrder(ModelState, viewModel, _orderValidationService.ValidateOrder(Cart)))
             {
                 return View(viewModel);
             }
-
+            
             if (!paymentMethod.ValidateData())
             {
                 return View(viewModel);
             }
 
             _checkoutService.UpdateShippingAddresses(Cart, viewModel);
-
+            
             _checkoutService.CreateAndAddPaymentToCart(Cart, viewModel);
 
             var purchaseOrder = _checkoutService.PlaceOrder(Cart, ModelState, viewModel);
@@ -242,23 +243,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                 }
             }
             return HttpNotFound();
-        }
-
-        [HttpPost]
-        [AllowDBWrite]
-        public ActionResult UpdateShippingMethod(CheckoutPage currentPage, UpdateShippingMethodViewModel viewModel)
-        {
-            ModelState.Clear();
-
-            _klarnaCheckoutService.CreateOrUpdateOrder(Cart);
-            _cartService.UpdateShippingMethod(Cart, viewModel.ShipmentId, viewModel.ShippingMethodId);
-
-            var checkoutModel = CreateCheckoutViewModel(currentPage);
-            _checkoutService.UpdateShippingAddresses(Cart, checkoutModel);
-
-            _orderRepository.Save(Cart);
-
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         public ActionResult OnPurchaseException(ExceptionContext filterContext)

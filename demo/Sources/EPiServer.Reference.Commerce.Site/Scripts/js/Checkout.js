@@ -73,16 +73,16 @@
     },
     refreshView: function () {
 
+        var view = $("#CheckoutView");
+
         var selectedPaymentMethod = $(".jsChangePayment:checked").val();
 
         if (window._klarnaCheckout && selectedPaymentMethod === "KlarnaCheckout") {
-            window._klarnaCheckout(function(api) {
+            window._klarnaCheckout(function (api) {
                 api.resume();
             });
 
         } else {
-
-            var view = $("#CheckoutView");
 
             if (view.length == 0) {
                 return;
@@ -92,12 +92,26 @@
                 cache: false,
                 type: "GET",
                 url: view.data('url'),
-                success: function(result) {
+                success: function (result) {
                     view.replaceWith($(result));
                     Checkout.initializeAddressAreas();
                 }
             });
         }
+
+        if (view.length == 0) {
+            return;
+        }
+        var url = view.data('url');
+        $.ajax({
+            cache: false,
+            type: "GET",
+            url: view.data('url'),
+            success: function (result) {
+                view.replaceWith($(result));
+                Checkout.initializeAddressAreas();
+            }
+        });
     },
     newAddress: function (e) {
         e.preventDefault();
@@ -113,12 +127,12 @@
             $("#ShippingAddressIndex").val($(".jsChangeAddress").index($(this)) - 1);
         }
 
-        AjaxQueue.addReq({
+        $.ajax({
             type: "POST",
             cache: false,
             url: $(this).closest('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
@@ -145,13 +159,12 @@
         {
             return;
         }
-
-        AjaxQueue.addReq({
+        $.ajax({
             type: "POST",
             cache: false,
             url: $(sender).closest('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
@@ -160,11 +173,10 @@
         });
     },
     changePayment: function () {
-
-        AjaxQueue.addReq({
+        $.ajax({
             type: "POST",
             url: $(this).data('url'),
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
@@ -175,11 +187,11 @@
         });
     },
     updateOrderSummary: function () {
-        AjaxQueue.addReq({
+        $.ajax({
             cache: false,
             type: "GET",
             url: $('.jsOrderSummary').data('url'),
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
@@ -196,27 +208,27 @@
         $("#AlternativeAddressButton").hide();
         $(".shipping-address:hidden").slideToggle(300);
         $(".shipping-address").css("display", "block");
-        $("#UseBillingAddressForShipment").val("False");
+        $("#UseBillingAddressForShipment").val("False");        
     },
     enableShippingAddress: function (event) {
 
         event.preventDefault();
 
         Checkout.doEnableShippingAddress();
-
+        
         var form = $('.jsCheckoutForm');
         $("#ShippingAddressIndex").val(0);
 
-        AjaxQueue.addReq({
+        $.ajax({
             type: "POST",
             cache: false,
             url: $('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
-                $("#AddressContainer").html($(result));
+                $("#AddressContainer").html($(result)); 
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
             }
@@ -226,7 +238,7 @@
         $("#AlternativeAddressButton").show();
         $(".shipping-address:visible").slideToggle(300);
         $(".shipping-address").css("display", "none");
-        $("#UseBillingAddressForShipment").val("True");
+        $("#UseBillingAddressForShipment").val("True");        
     },
     removeShippingAddress: function (event) {
 
@@ -237,12 +249,12 @@
         var form = $('.jsCheckoutForm');
         $("#ShippingAddressIndex").val(-1);
 
-        AjaxQueue.addReq({
+        $.ajax({
             type: "POST",
             cache: false,
             url: $('.jsCheckoutAddress').data('url'),
             data: form.serialize(),
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
@@ -259,7 +271,7 @@
             type: "POST",
             url: url,
             cache: false,
-            beforeSend: function(){
+            beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {

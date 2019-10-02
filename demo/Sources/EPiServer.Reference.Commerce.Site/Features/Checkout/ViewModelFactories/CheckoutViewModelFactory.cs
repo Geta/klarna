@@ -6,6 +6,8 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
+using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories;
+using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.ServiceLocation;
@@ -14,7 +16,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories;
 using Klarna.Checkout;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
@@ -82,7 +83,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
             if (availableAddresses.Any())
             {
                 viewModel.AvailableAddresses.Add(new AddressModel { Name = _localizationService.GetString("/Checkout/MultiShipment/SelectAddress") });
-
+                
                 foreach (var address in availableAddresses)
                 {
                     viewModel.AvailableAddresses.Add(address);
@@ -107,7 +108,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories
         {
             if (viewModel.Shipments.Count == 1)
             {
-                viewModel.Shipments[0].Address = viewModel.AvailableAddresses.SingleOrDefault(x => x.AddressId == shippingAddressId) ??
+                viewModel.Shipments[0].Address = viewModel.AvailableAddresses.SingleOrDefault(x => x.AddressId != null && x.AddressId == shippingAddressId) ??
                                                  viewModel.AvailableAddresses.SingleOrDefault(x => x.ShippingDefault) ??
                                                  viewModel.BillingAddress;
             }

@@ -11,6 +11,8 @@ using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using EPiServer.ServiceLocation;
+using EPiServer.Tracking.Commerce;
+using EPiServer.Tracking.Commerce.Data;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using System;
@@ -27,9 +29,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
         private readonly IPricingService _pricingService;
         private readonly IOrderGroupFactory _orderGroupFactory;
         private readonly CustomerContextFacade _customerContext;
-        private readonly IPlacedPriceProcessor _placedPriceProcessor;
         private readonly IInventoryProcessor _inventoryProcessor;
-        private readonly ILineItemValidator _lineItemValidator;
         private readonly IPromotionEngine _promotionEngine;
         private readonly IOrderRepository _orderRepository;
         private readonly IAddressBookService _addressBookService;
@@ -38,15 +38,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
         private readonly ReferenceConverter _referenceConverter;
         private readonly IContentLoader _contentLoader;
         private readonly IRelationRepository _relationRepository;
+        private readonly OrderValidationService _orderValidationService;
 
         public CartService(
             IProductService productService,
             IPricingService pricingService,
             IOrderGroupFactory orderGroupFactory,
             CustomerContextFacade customerContext,
-            IPlacedPriceProcessor placedPriceProcessor,
             IInventoryProcessor inventoryProcessor,
-            ILineItemValidator lineItemValidator,
             IOrderRepository orderRepository,
             IPromotionEngine promotionEngine,
             IAddressBookService addressBookService,
@@ -54,15 +53,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             ICurrencyService currencyService,
             ReferenceConverter referenceConverter,
             IContentLoader contentLoader,
-            IRelationRepository relationRepository)
+            IRelationRepository relationRepository,
+            OrderValidationService orderValidationService)
         {
             _productService = productService;
             _pricingService = pricingService;
             _orderGroupFactory = orderGroupFactory;
             _customerContext = customerContext;
-            _placedPriceProcessor = placedPriceProcessor;
             _inventoryProcessor = inventoryProcessor;
-            _lineItemValidator = lineItemValidator;
             _promotionEngine = promotionEngine;
             _orderRepository = orderRepository;
             _addressBookService = addressBookService;
@@ -71,26 +69,46 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             _referenceConverter = referenceConverter;
             _contentLoader = contentLoader;
             _relationRepository = relationRepository;
+            _orderValidationService = orderValidationService;
         }
 
-        public void ChangeCartItem(ICart cart, int shipmentId, string code, decimal quantity, string size, string newSize, string displayName)
+        public CartChangeData ChangeCartItem(ICart cart, int shipmentId, string code, 
+            decimal quantity, string size, string newSize, string displayName)
         {
+            CartChangeData cartChange = null;
             if (quantity > 0)
             {
                 if (size == newSize)
                 {
+                    // Custom cart change type: quantityChanged.
+                    cartChange = new CartChangeData("quantityChanged", code);
+                    cartChange.SetChange("oldQuantity", cart.GetAllLineItems().FirstOrDefault(x => x.Code == code).Quantity);
+
                     ChangeQuantity(cart, shipmentId, code, quantity);
+
+                    return cartChange;
                 }
-                else
-                {
-                    var newCode = _productService.GetSiblingVariantCodeBySize(code, newSize);
-                    UpdateLineItemSku(cart, shipmentId, code, newCode, quantity, displayName);
-                }
+
+                // Custom cart change type: variantChanged.
+                cartChange = new CartChangeData("variantChanged", code);
+                cartChange.SetChange("oldSize", size);
+                cartChange.SetChange("oldCode", code);
+                cartChange.SetChange("oldPrice", cart.GetAllLineItems().FirstOrDefault(x => x.Code == code).PlacedPrice);
+
+                var newCode = _productService.GetSiblingVariantCodeBySize(code, newSize);
+                UpdateLineItemSku(cart, shipmentId, code, newCode, quantity, displayName);
+
+                return cartChange;
             }
-            else
-            {
-                RemoveLineItem(cart, shipmentId, code);
-            }
+
+            RemoveLineItem(cart, shipmentId, code);
+            cartChange = new CartChangeData(CartChangeType.ItemRemoved, code);
+            return cartChange;
+        }
+
+        public IDictionary<ILineItem, IList<ValidationIssue>> ValidateCart(ICart cart)
+        {
+            return _orderValidationService.ValidateOrder(cart);
         }
 
         public string DefaultCartName => "Default";
@@ -238,32 +256,9 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             ValidateCart(cart);
         }
 
-        public Dictionary<ILineItem, List<ValidationIssue>> ValidateCart(ICart cart)
+        public IDictionary<ILineItem, IList<ValidationIssue>> RequestInventory(ICart cart)
         {
-            if (cart.Name.Equals(DefaultWishListName))
-            {
-                return new Dictionary<ILineItem, List<ValidationIssue>>();
-            }
-
-            var validationIssues = new Dictionary<ILineItem, List<ValidationIssue>>();
-            cart.ValidateOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _lineItemValidator);
-            cart.UpdatePlacedPriceOrRemoveLineItems(_customerContext.GetContactById(cart.CustomerId), (item, issue) => validationIssues.AddValidationIssues(item, issue), _placedPriceProcessor);
-            cart.UpdateInventoryOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _inventoryProcessor);
-
-            ApplyDiscounts(cart);
-
-            // Try to validate gift items inventory and don't catch validation issues.
-            cart.UpdateInventoryOrRemoveLineItems((item, issue) =>
-            {
-                validationIssues.AddValidationIssues(item, item.IsGift ? ValidationIssue.RemovedGiftDueToInsufficientQuantityInInventory : issue);
-            }, _inventoryProcessor);
-
-            return validationIssues;
-        }
-
-        public Dictionary<ILineItem, List<ValidationIssue>> RequestInventory(ICart cart)
-        {
-            var validationIssues = new Dictionary<ILineItem, List<ValidationIssue>>();
+            var validationIssues = new Dictionary<ILineItem, IList<ValidationIssue>>();
             cart.AdjustInventoryOrRemoveLineItems((item, issue) => validationIssues.AddValidationIssues(item, issue), _inventoryProcessor);
             return validationIssues;
         }
@@ -331,7 +326,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
 
         private void RemoveLineItem(ICart cart, int shipmentId, string code)
         {
-            //gets  the shipment for shipment id or for wish list shipment id as a parameter is always equal zero( wish list).
+            // Gets the shipment for shipment id or for wish list shipment id as a parameter is always equal zero (wish list).
             var shipment = cart.GetFirstForm().Shipments.First(s => s.ShipmentId == shipmentId || shipmentId == 0);
 
             var lineItem = shipment.LineItems.FirstOrDefault(l => l.Code == code);
@@ -348,7 +343,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
             ValidateCart(cart);
         }
 
-        private static void AddValidationMessagesToResult(AddToCartResult result, ILineItem lineItem, Dictionary<ILineItem, List<ValidationIssue>> validationIssues)
+        private static void AddValidationMessagesToResult(AddToCartResult result, ILineItem lineItem, IDictionary<ILineItem, IList<ValidationIssue>> validationIssues)
         {
             foreach (var validationIssue in validationIssues)
             {
@@ -369,7 +364,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
         {
             RemoveLineItem(cart, shipmentId, oldCode);
 
-            //merge same sku's
+            // Merge same sku's.
             var newLineItem = GetFirstLineItem(cart, newCode);
             if (newLineItem != null)
             {
@@ -402,10 +397,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
 
         private void ChangeQuantity(ICart cart, int shipmentId, string code, decimal quantity)
         {
-            if (quantity == 0)
-            {
-                RemoveLineItem(cart, shipmentId, code);
-            }
             var shipment = cart.GetFirstForm().Shipments.First(s => s.ShipmentId == shipmentId);
             var lineItem = shipment.LineItems.FirstOrDefault(x => x.Code == code);
             if (lineItem == null)
@@ -413,7 +404,25 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Services
                 return;
             }
 
-            cart.UpdateLineItemQuantity(shipment, lineItem, quantity);
+            var entry = lineItem.GetEntryContent(_referenceConverter, _contentLoader);
+            var stock = entry as IStockPlacement;
+            var adjustQuantity = quantity;
+
+            if (!lineItem.IsInventoryAllocated && stock != null)
+            {
+                var usingQuantityInOtherShipment = lineItem.ParentOrderGroup.Forms
+                    .SelectMany(form => form.Shipments.Where(x => x.ShipmentId != shipmentId)
+                    .SelectMany(s => s.LineItems)
+                    .Where(i => i.Code == lineItem.Code && i.LineItemId != lineItem.LineItemId && !i.IsGift))
+                    .Sum(l => l.Quantity);
+
+                if (stock.MaxQuantity.HasValue && (adjustQuantity + usingQuantityInOtherShipment > stock.MaxQuantity.Value))
+                {
+                    adjustQuantity = stock.MaxQuantity.Value - usingQuantityInOtherShipment;
+                }
+            }
+
+            cart.UpdateLineItemQuantity(shipment, lineItem, adjustQuantity);
             ValidateCart(cart);
         }
 

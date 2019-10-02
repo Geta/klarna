@@ -9,6 +9,7 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
+using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Tests.TestSupport.Fakes;
@@ -80,7 +81,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.ViewModelFac
 
             currentMarketMock.Setup(x => x.GetCurrentMarket()).Returns(market);
             languageServiceMock.Setup(x => x.GetCurrentLanguage()).Returns(new CultureInfo("en-US"));
-
+            
             var orderGroupFactoryMock = new Mock<IOrderGroupFactory>();
             orderGroupFactoryMock.Setup(x => x.CreatePayment(It.IsAny<IOrderGroup>())).Returns((IOrderGroup orderGroup) => new FakePayment());
             var serviceLocatorMock = new Mock<IServiceLocator>();
@@ -118,6 +119,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.ViewModelFac
                     }
                 }
             });
+            var paymentMethodViewModelFactoryMock = new Mock<PaymentMethodViewModelFactory>();
 
             _subject = new CheckoutViewModelFactory(
                 new MemoryLocalizationService(),
@@ -126,7 +128,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.ViewModelFac
                 urlResolverMock.Object,
                 (() => httpcontextMock.Object),
                 shipmentViewModelFactoryMock.Object,
-                null);
+                paymentMethodViewModelFactoryMock.Object);
         }
     }
 }

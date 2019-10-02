@@ -66,10 +66,11 @@
 
         @Html.RequiredClientResources("Footer")
 
-        @if (@Functions.UseClientSideTracking())
+        @if (Functions.ShouldRenderTrackingSection())
         {
             @Html.Partial("_RecommendationsTemplates")
-            @Html.SetupOnLoadTracking("Recommendations.render", Helpers.RenderContextSettings().ToString())
+            @RenderSection("Tracking", false)
         }
+
     </body>
 </html>

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.0.0]
+
+### Changed
+
+- Upgraded to Episerver Commerce 13.
+
 ## [2.0.12]
 
 ### Changed

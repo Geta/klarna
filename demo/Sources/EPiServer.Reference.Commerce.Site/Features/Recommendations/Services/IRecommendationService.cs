@@ -12,10 +12,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Recommendations.Services
     public interface IRecommendationService
     {
         Task<TrackingResponseData> TrackProductAsync(HttpContextBase httpContext, string productCode, bool skipRecommendations);
-        Task<TrackingResponseData> TrackSearchAsync(HttpContextBase httpContext, string searchTerm, IEnumerable<string> productCodes);
+        Task<TrackingResponseData> TrackSearchAsync(HttpContextBase httpContext, string searchTerm, IEnumerable<string> productCodes, int totalRecordsCount);
         Task<TrackingResponseData> TrackOrderAsync(HttpContextBase httpContext, IPurchaseOrder order);
         Task<TrackingResponseData> TrackCategoryAsync(HttpContextBase httpContext, NodeContent category);
         Task<TrackingResponseData> TrackCartAsync(HttpContextBase httpContext);
+        Task<TrackingResponseData> TrackCartAsync(HttpContextBase httpContext, IEnumerable<CartChangeData> cartChanges);
         Task<TrackingResponseData> TrackWishlistAsync(HttpContextBase httpContext);
         Task<TrackingResponseData> TrackCheckoutAsync(HttpContextBase httpContext);
 

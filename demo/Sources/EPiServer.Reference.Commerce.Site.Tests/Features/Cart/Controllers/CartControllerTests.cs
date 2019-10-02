@@ -4,6 +4,7 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.Controllers;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
+using Klarna.Checkout;
 using Moq;
 using Xunit;
 
@@ -91,7 +92,8 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Cart.Controllers
                     };
                 })
                 .Verifiable();
-            _subject = new CartController(_cartServiceMock.Object, _orderRepositoryMock.Object, Mock.Of<IRecommendationService>(), _cartViewModelFactoryMock.Object, null);
+            var klarnaCheckoutServiceMock = new Mock<IKlarnaCheckoutService>();
+            _subject = new CartController(_cartServiceMock.Object, _orderRepositoryMock.Object, Mock.Of<IRecommendationService>(), _cartViewModelFactoryMock.Object, klarnaCheckoutServiceMock.Object);
         }
     }
 }
