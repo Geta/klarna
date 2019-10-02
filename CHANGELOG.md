@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.13]
+
+### Changed
+
+- Fix for shipment amount validation issue when updating shipping option [#63](https://github.com/Geta/Klarna/pull/63)
+
 ## [2.0.12]
 
 ### Changed
