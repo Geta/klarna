@@ -1,12 +1,15 @@
-using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModelFactories;
 using EPiServer.Reference.Commerce.Site.Features.Cart.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Recommendations.Services;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Attributes;
-using System.Web.Mvc;
+using EPiServer.Tracking.Commerce;
+using EPiServer.Tracking.Commerce.Data;
 using Klarna.Checkout;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
 {
@@ -16,9 +19,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
         private ICart _cart;
         private readonly IOrderRepository _orderRepository;
         private readonly IRecommendationService _recommendationService;
-        readonly CartViewModelFactory _cartViewModelFactory;
+        private readonly CartViewModelFactory _cartViewModelFactory;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
-
 
         public CartController(
             ICartService cartService,
@@ -63,10 +65,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
             if (result.EntriesAddedToCart)
             {
                 _orderRepository.Save(Cart);
-                await _recommendationService.TrackCartAsync(HttpContext);
+                var change = new CartChangeData(CartChangeType.ItemAdded, code);
+                await _recommendationService.TrackCartAsync(HttpContext, new List<CartChangeData>{ change });
                 return MiniCartDetails();
             }
-
+            
             return new HttpStatusCodeResult(500, result.GetComposedValidationMessage());
         }
 
@@ -76,9 +79,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Cart.Controllers
         {
             ModelState.Clear();
 
-            _cartService.ChangeCartItem(Cart, shipmentId, code, quantity, size, newSize, displayName);
+            var cartChange = _cartService.ChangeCartItem(Cart, shipmentId, code, quantity, size, newSize, displayName);
             _orderRepository.Save(Cart);
-            await _recommendationService.TrackCartAsync(HttpContext);
+
+            var changes = new List<CartChangeData>();
+            if (cartChange != null)
+            {
+                changes.Add(cartChange);
+            }
+            
+            await _recommendationService.TrackCartAsync(HttpContext, changes);
             return MiniCartDetails();
         }
 

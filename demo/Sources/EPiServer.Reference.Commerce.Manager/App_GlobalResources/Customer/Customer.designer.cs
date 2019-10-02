@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option or rebuild the Visual Studio project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Web.Application.StronglyTypedResourceProxyBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Web.Application.StronglyTypedResourceProxyBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Customer {
@@ -745,6 +745,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Accept marketing e-mail.
+        /// </summary>
+        internal static string Contact_mf_AcceptMarketingEmail {
+            get {
+                return ResourceManager.GetString("Contact_mf_AcceptMarketingEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date Of Birth.
         /// </summary>
         internal static string Contact_mf_BirthDate {
@@ -777,6 +786,15 @@ namespace Resources {
         internal static string Contact_mf_Code_Description {
             get {
                 return ResourceManager.GetString("Contact_mf_Code_Description", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Consent updated.
+        /// </summary>
+        internal static string Contact_mf_ConsentUpdated {
+            get {
+                return ResourceManager.GetString("Contact_mf_ConsentUpdated", resourceCulture);
             }
         }
         

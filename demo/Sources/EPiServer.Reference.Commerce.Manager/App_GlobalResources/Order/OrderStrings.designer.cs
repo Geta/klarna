@@ -19,7 +19,7 @@ namespace Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option or rebuild the Visual Studio project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Web.Application.StronglyTypedResourceProxyBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Web.Application.StronglyTypedResourceProxyBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class OrderStrings {
@@ -156,6 +156,15 @@ namespace Resources {
         internal static string AsItAppearsOnTheCard {
             get {
                 return ResourceManager.GetString("AsItAppearsOnTheCard", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Awaiting exchange..
+        /// </summary>
+        internal static string Awaiting_Exchange {
+            get {
+                return ResourceManager.GetString("Awaiting_Exchange", resourceCulture);
             }
         }
         
@@ -1186,6 +1195,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to One or more items do not have enough inventory..
+        /// </summary>
+        internal static string Inventory_Insuffient {
+            get {
+                return ResourceManager.GetString("Inventory_Insuffient", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unavailable.
         /// </summary>
         internal static string Inventory_Not_Check {
@@ -2028,6 +2046,15 @@ namespace Resources {
         internal static string Order_No {
             get {
                 return ResourceManager.GetString("Order_No", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order is not fully paid..
+        /// </summary>
+        internal static string Order_Not_Fully_Paid {
+            get {
+                return ResourceManager.GetString("Order_Not_Fully_Paid", resourceCulture);
             }
         }
         
@@ -3238,6 +3265,24 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to SerializableCart mode is enabled. Filtering by Email and Phone Number is not supported.
+        /// </summary>
+        internal static string SerializableCart_Limitations {
+            get {
+                return ResourceManager.GetString("SerializableCart_Limitations", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shipment cannot be released: .
+        /// </summary>
+        internal static string Shipment_Cannot_Be_Released {
+            get {
+                return ResourceManager.GetString("Shipment_Cannot_Be_Released", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Charge customer for original shipment&apos;s shipping rate.
         /// </summary>
         internal static string Shipment_ChargeForFromShipment {
@@ -3346,6 +3391,15 @@ namespace Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Shipping address is not set..
+        /// </summary>
+        internal static string Shipping_Address_Not_Set {
+            get {
+                return ResourceManager.GetString("Shipping_Address_Not_Set", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Shipping Cost.
         /// </summary>
         internal static string Shipping_Cost {
@@ -3405,6 +3459,15 @@ namespace Resources {
         internal static string Shipping_Method_Edit {
             get {
                 return ResourceManager.GetString("Shipping_Method_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Shipping method is not set..
+        /// </summary>
+        internal static string Shipping_Method_Not_Set {
+            get {
+                return ResourceManager.GetString("Shipping_Method_Not_Set", resourceCulture);
             }
         }
         
