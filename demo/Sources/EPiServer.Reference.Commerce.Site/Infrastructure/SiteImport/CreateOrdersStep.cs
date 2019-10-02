@@ -20,7 +20,7 @@ using Mediachase.Commerce.Orders.Managers;
 
 namespace EPiServer.Reference.Commerce.Site.Infrastructure.SiteImport
 {
-    [ServiceConfiguration(typeof(IMigrationStep))]
+    /*[ServiceConfiguration(typeof(IMigrationStep))]*/
     public class CreateOrdersStep : IMigrationStep
     {
         private IProgressMessenger _progressMessenger;
@@ -30,10 +30,10 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.SiteImport
         private readonly IOrderRepository _orderRepository;
         private readonly OrderValidationService _orderValidationService;
 
-        public CreateOrdersStep(ICartService cartService, 
+        public CreateOrdersStep(ICartService cartService,
             IOrderGroupCalculator orderGroupCalculator,
-            IOrderGroupFactory orderGroupFactory, 
-            IOrderRepository orderRepository, 
+            IOrderGroupFactory orderGroupFactory,
+            IOrderRepository orderRepository,
             OrderValidationService orderValidationService)
         {
             _cartService = cartService;

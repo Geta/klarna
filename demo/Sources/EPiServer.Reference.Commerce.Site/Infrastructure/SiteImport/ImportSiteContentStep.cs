@@ -42,7 +42,7 @@ using AppContext = Mediachase.Commerce.Core.AppContext;
 
 namespace EPiServer.Reference.Commerce.Site.Infrastructure.SiteImport
 {
-    [ServiceConfiguration(typeof(IMigrationStep))]
+    /*[ServiceConfiguration(typeof(IMigrationStep))]*/
     public class ImportSiteContentStep : IMigrationStep
     {
         private IProgressMessenger _progressMessenger;
@@ -129,8 +129,8 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.SiteImport
         }
 
         /// <summary>
-        /// This method deletes all enabled payment methods and creates a new credit card payment method, 
-        /// a cash on delivery payment method and a authorize - Pay by credit card payment method for 
+        /// This method deletes all enabled payment methods and creates a new credit card payment method,
+        /// a cash on delivery payment method and a authorize - Pay by credit card payment method for
         /// every language and associates it with all available markets.
         /// </summary>
         /// <remarks>
@@ -385,7 +385,7 @@ namespace EPiServer.Reference.Commerce.Site.Infrastructure.SiteImport
 
         /// <summary>
         /// Synchronizes the meta classes to content type models.
-        /// The synchronization will be done when site starts up. 
+        /// The synchronization will be done when site starts up.
         /// To avoid restarting a site, we do the models synchronization manually.
         /// </summary>
         private static void SyncMetaClassesToContentTypeModels()
