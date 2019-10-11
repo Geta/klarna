@@ -38,7 +38,7 @@ namespace Klarna.OrderManagement.Steps
         }
 
         public abstract bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message);
-        
+
         protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string transactionType, string noteMessage)
         {
             var noteTitle = $"{PaymentMethod.PaymentMethod.FirstOrDefault()?.Name} {transactionType.ToLower()}";
@@ -51,6 +51,12 @@ namespace Klarna.OrderManagement.Steps
             var exceptionMessage = string.Empty;
             switch (ex)
             {
+                case Refit.ApiException refitException:
+                    exceptionMessage =
+                        $"{refitException.StatusCode} " +
+                        $"{refitException.Message}" +
+                        $"{refitException.Content}";
+                    break;
                 case ApiException apiException:
                     exceptionMessage =
                         $"{apiException.ErrorMessage.CorrelationId} " +
