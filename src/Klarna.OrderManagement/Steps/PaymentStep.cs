@@ -51,6 +51,12 @@ namespace Klarna.OrderManagement.Steps
             var exceptionMessage = string.Empty;
             switch (ex)
             {
+                case AggregateException aggregateException:
+                    var innerMessage = GetExceptionMessage(aggregateException.InnerException);
+                    var innerMessages =
+                        string.Join("; ", aggregateException.InnerExceptions.Select(GetExceptionMessage));
+                    exceptionMessage = $"{innerMessage}; {innerMessages}";
+                    break;
                 case Refit.ApiException refitException:
                     exceptionMessage =
                         $"{refitException.StatusCode} " +

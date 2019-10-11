@@ -50,7 +50,7 @@ namespace Klarna.Checkout.Steps
 
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Authorize completed");
             }
-            catch (Exception ex) when (ex is ApiException || ex is WebException)
+            catch (Exception ex) when (ex is ApiException || ex is WebException || ex is AggregateException)
             {
                 var exceptionMessage = GetExceptionMessage(ex);
 
