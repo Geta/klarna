@@ -39,16 +39,27 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, int? orderNumber)
+        public async Task<ActionResult> Index(OrderConfirmationPage currentPage, string notificationMessage, string orderNumber, string trackingNumber)
         {
+            int orderId;
+            trackingNumber = string.IsNullOrEmpty(trackingNumber) ? orderNumber : trackingNumber;
+
             IPurchaseOrder order = null;
             if (PageEditing.PageIsInEditMode)
             {
                 order = ConfirmationService.CreateFakePurchaseOrder();
             }
-            else if (orderNumber.HasValue)
+            else if (int.TryParse(orderNumber, out orderId))
             {
-                order = ConfirmationService.GetOrder(orderNumber.Value);
+                order = ConfirmationService.GetOrder(orderId);
+
+                if (order != null)
+                {
+                    await _recommendationService.TrackOrderAsync(HttpContext, order);
+                }
+            } else if (!string.IsNullOrEmpty(trackingNumber))
+            {
+                order = ConfirmationService.GetByTrackingNumber(trackingNumber);
 
                 if (order != null)
                 {
