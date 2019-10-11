@@ -1,9 +1,12 @@
 ﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.ViewModels.PaymentMethodSelectionViewModel
 @{
     Layout = null;
+
+    var isSingleMethod = Model.PaymentMethods.Count() == 1;
+    var inlineStyle = isSingleMethod ? "style=\"display: none;\"" : string.Empty;
 }
 
-<div class="payment-methods">
+<div class="payment-methods" @Html.Raw(inlineStyle) >
     <div class="row">
         <div class="col-xs-12">
             <h3>@Html.Translate("/Checkout/Payment/Labels/ChoosePayment")</h3>
