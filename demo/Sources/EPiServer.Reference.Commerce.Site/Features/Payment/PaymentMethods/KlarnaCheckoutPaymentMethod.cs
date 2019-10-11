@@ -3,9 +3,11 @@ using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
 using System.ComponentModel;
+using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
+using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using Klarna.Checkout;
 using Klarna.Payments.Models;
 
@@ -16,6 +18,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
     {
         private readonly IOrderGroupFactory _orderGroupFactory;
         private readonly ICartService _cartService;
+        private readonly IContentLoader _contentLoader;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
 
         public override string SystemKeyword => Constants.KlarnaCheckoutSystemKeyword;
@@ -27,6 +30,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                 ServiceLocator.Current.GetInstance<LanguageService>(),
                 ServiceLocator.Current.GetInstance<IPaymentManagerFacade>(),
                 ServiceLocator.Current.GetInstance<ICartService>(),
+                ServiceLocator.Current.GetInstance<IContentLoader>(),
                 ServiceLocator.Current.GetInstance<IKlarnaCheckoutService>())
         {
         }
@@ -37,11 +41,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             LanguageService languageService,
             IPaymentManagerFacade paymentManager,
             ICartService cartService,
+            IContentLoader contentLoader,
             IKlarnaCheckoutService klarnaCheckoutService)
             : base(localizationService, orderGroupFactory, languageService, paymentManager)
         {
             _orderGroupFactory = orderGroupFactory;
             _cartService = cartService;
+            _contentLoader = contentLoader;
             _klarnaCheckoutService = klarnaCheckoutService;
 
             InitializeValues();
@@ -49,6 +55,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public void InitializeValues()
         {
+            var startPage = _contentLoader.Get<StartPage>(ContentReference.StartPage);
+            if (!startPage.KlarnaCheckoutEnabled) return;
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             var orderData = _klarnaCheckoutService.CreateOrUpdateOrder(cart);
             HtmlSnippet = orderData?.HtmlSnippet;
