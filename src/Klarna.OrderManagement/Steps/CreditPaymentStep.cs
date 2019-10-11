@@ -45,7 +45,7 @@ namespace Klarna.OrderManagement.Steps
                         return true;
                     }
                 }
-                catch (Exception ex) when (ex is ApiException || ex is WebException)
+                catch (Exception ex) when (ex is ApiException || ex is WebException || ex is AggregateException)
                 {
                     var exceptionMessage = GetExceptionMessage(ex);
 
