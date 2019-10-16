@@ -208,14 +208,14 @@
         $("#AlternativeAddressButton").hide();
         $(".shipping-address:hidden").slideToggle(300);
         $(".shipping-address").css("display", "block");
-        $("#UseBillingAddressForShipment").val("False");        
+        $("#UseBillingAddressForShipment").val("False");
     },
     enableShippingAddress: function (event) {
 
         event.preventDefault();
 
         Checkout.doEnableShippingAddress();
-        
+
         var form = $('.jsCheckoutForm');
         $("#ShippingAddressIndex").val(0);
 
@@ -228,7 +228,7 @@
                 Checkout.disableCheckoutSubmit();
             },
             success: function (result) {
-                $("#AddressContainer").html($(result)); 
+                $("#AddressContainer").html($(result));
                 Checkout.initializeAddressAreas();
                 Checkout.updateOrderSummary();
             }
@@ -238,7 +238,7 @@
         $("#AlternativeAddressButton").show();
         $(".shipping-address:visible").slideToggle(300);
         $(".shipping-address").css("display", "none");
-        $("#UseBillingAddressForShipment").val("True");        
+        $("#UseBillingAddressForShipment").val("True");
     },
     removeShippingAddress: function (event) {
 
@@ -267,7 +267,7 @@
         var container = $(this).closest('.shipping-method');
         var url = container.data('url');
 
-        AjaxQueue.addReq({
+        $.ajax({
             type: "POST",
             url: url,
             cache: false,
