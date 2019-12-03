@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.Rest.Transport;
+using Klarna.Rest.Core.Communication;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 using Mediachase.MetaDataPlus;

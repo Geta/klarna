@@ -1,14 +1,8 @@
-﻿using Klarna.Payments.Models;
-using Klarna.Rest.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using Klarna.Rest.Core.Model;
 
 namespace Klarna.OrderManagement.Models
 {
-    public class PatchedOrderData : OrderData
+    public class PatchedOrderData : OrderManagementOrder
     {
-        [JsonProperty("fraud_status")]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public FraudStatus FraudStatus { get; set; }
     }
 }
