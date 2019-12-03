@@ -1,10 +1,10 @@
 ﻿using EPiServer.Commerce.Order;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 
 namespace Klarna.OrderManagement
 {
     public interface ICaptureBuilder
     {
-        CaptureData Build(CaptureData captureData, IOrderGroup orderGroup, IOrderForm returnOrderForm, IPayment payment);
+        OrderManagementCapture Build(OrderManagementCapture captureData, IOrderGroup orderGroup, IOrderForm returnOrderForm, IPayment payment);
     }
 }
