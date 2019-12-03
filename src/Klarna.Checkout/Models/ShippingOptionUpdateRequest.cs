@@ -1,6 +1,8 @@
-﻿namespace Klarna.Checkout.Models
+﻿using Klarna.Rest.Core.Model;
+
+namespace Klarna.Checkout.Models
 {
-    public class ShippingOptionUpdateRequest : AddressUpdateRequest
+    public class ShippingOptionUpdateRequest : CallbackAddressUpdateRequest
     {
     }
 }

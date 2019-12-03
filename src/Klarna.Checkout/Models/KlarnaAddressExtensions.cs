@@ -1,11 +1,11 @@
 ﻿using System.Linq;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 
 namespace Klarna.Checkout.Models
 {
     public static class KlarnaAddressExtensions
     {
-        public static bool IsValid(this Address address)
+        public static bool IsValid(this CheckoutAddressInfo address)
         {
             if (address == null)
             {

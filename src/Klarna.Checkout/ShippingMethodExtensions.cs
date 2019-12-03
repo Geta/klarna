@@ -1,5 +1,5 @@
-using Klarna.Checkout.Models;
 using Klarna.Common.Helpers;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Orders.Dto;
 
 namespace Klarna.Checkout

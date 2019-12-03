@@ -1,9 +1,7 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Klarna.Rest.Models;
+using AuthorizeNet;
+using Klarna.Rest.Core.Model;
 using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models
