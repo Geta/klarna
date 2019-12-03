@@ -7,7 +7,8 @@ using EPiServer.Logging;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
+using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
@@ -98,7 +99,7 @@ namespace Klarna.Common
             // Sales tax
             orderLines.Add(new PatchedOrderLine()
             {
-                Type = "sales_tax",
+                Type = OrderLineType.sales_tax,
                 Name = "Sales Tax",
                 Quantity = 1,
                 TotalAmount = AmountHelper.GetAmount(orderGroupTotals.TaxTotal),
@@ -115,7 +116,7 @@ namespace Klarna.Common
             {
                 orderLines.Add(new PatchedOrderLine()
                 {
-                    Type = "discount",
+                    Type = OrderLineType.discount,
                     Name = "Discount",
                     Quantity = 1,
                     TotalAmount = -AmountHelper.GetAmount(totalDiscount),
@@ -170,7 +171,7 @@ namespace Klarna.Common
 
                 orderLines.Add(new PatchedOrderLine()
                 {
-                    Type = "discount",
+                    Type = OrderLineType.discount,
                     Name = "Discount",
                     Quantity = 1,
                     TotalAmount = orderLevelDiscountIncludingTax * -1,
