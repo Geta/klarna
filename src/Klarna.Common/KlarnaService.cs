@@ -155,16 +155,14 @@ namespace Klarna.Common
                 // Order level discounts with tax
                 var totalOrderAmountWithoutDiscount =
                     orderLines
-                        .Where(x => x.TotalAmount.HasValue)
-                        .Sum(x => x.TotalAmount.Value);
+                        .Sum(x => x.TotalAmount);
                 var totalOrderAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.Total.Amount);
                 var orderLevelDiscountIncludingTax = totalOrderAmountWithoutDiscount - totalOrderAmountWithDiscount;
 
                 // Tax
                 var totalTaxAmountWithoutDiscount =
                     orderLines
-                        .Where(x => x.TotalTaxAmount.HasValue)
-                        .Sum(x => x.TotalTaxAmount.Value);
+                        .Sum(x => x.TotalTaxAmount);
                 var totalTaxAmountWithDiscount = AmountHelper.GetAmount(orderGroupTotals.TaxTotal);
                 var discountTax = totalTaxAmountWithoutDiscount - totalTaxAmountWithDiscount;
                 var taxRate = discountTax * 100 / (orderLevelDiscountIncludingTax - discountTax);
@@ -197,7 +195,8 @@ namespace Klarna.Common
             var parameters = new OrderSearchParameters();
             parameters.SqlMetaWhereClause = $"META.{Constants.KlarnaOrderIdField} LIKE '{orderId}'";
 
-            var purchaseOrder = OrderContext.Current.FindPurchaseOrders(parameters, searchOptions)?.FirstOrDefault();
+
+            var purchaseOrder = OrderContext.Current.Search<PurchaseOrder>(parameters, searchOptions)?.FirstOrDefault();
 
             if (purchaseOrder != null)
             {
