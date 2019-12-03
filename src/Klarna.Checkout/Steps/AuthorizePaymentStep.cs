@@ -5,8 +5,8 @@ using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
-using Klarna.Payments.Models;
-using Klarna.Rest.Transport;
+using Klarna.Rest.Core.Communication;
+using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 
@@ -37,7 +37,7 @@ namespace Klarna.Checkout.Steps
 
                     AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Fraud status: {result.FraudStatus}");
 
-                    if (result.FraudStatus == FraudStatus.REJECTED)
+                    if (result.FraudStatus == OrderManagementFraudStatus.REJECTED)
                     {
                         message = "Klarna fraud status rejected";
                         payment.Status = PaymentStatus.Failed.ToString();

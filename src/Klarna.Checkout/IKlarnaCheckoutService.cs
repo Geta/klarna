@@ -2,24 +2,24 @@
 using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
 using Klarna.Common;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 
 namespace Klarna.Checkout
 {
     public interface IKlarnaCheckoutService : IKlarnaService
     {
-        CheckoutOrderData CreateOrUpdateOrder(ICart cart);
-        CheckoutOrderData CreateOrder(ICart cart);
-        CheckoutOrderData UpdateOrder(string orderId, ICart cart);
+        CheckoutOrder CreateOrUpdateOrder(ICart cart);
+        CheckoutOrder CreateOrder(ICart cart);
+        CheckoutOrder UpdateOrder(string orderId, ICart cart);
 
-        CheckoutOrderData GetOrder(string klarnaOrderId, IMarket market);
+        CheckoutOrder GetOrder(string klarnaOrderId, IMarket market);
 
         ICart GetCartByKlarnaOrderId(int orderGroupId, string orderId);
 
         ShippingOptionUpdateResponse UpdateShippingMethod(ICart cart, ShippingOptionUpdateRequest shippingOptionUpdateRequest);
 
-        AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest);
+        AddressUpdateResponse UpdateAddress(ICart cart, CallbackAddressUpdateRequest addressUpdateRequest);
 
         void CancelOrder(ICart cart);
 

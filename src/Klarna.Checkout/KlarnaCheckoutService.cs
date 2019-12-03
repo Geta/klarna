@@ -14,10 +14,9 @@ using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.OrderManagement;
 using Klarna.Payments.Models;
-using Klarna.Rest;
-using Klarna.Rest.Checkout;
-using Klarna.Rest.Models;
-using Klarna.Rest.Transport;
+using Klarna.Rest.Core.Common;
+using Klarna.Rest.Core.Communication;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Markets;
@@ -25,6 +24,7 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using ConfigurationException = EPiServer.Business.Commerce.Exception.ConfigurationException;
+using Client = Klarna.Rest.Core.Klarna;
 
 namespace Klarna.Checkout
 {
@@ -83,16 +83,15 @@ namespace Klarna.Checkout
             if (PaymentMethodDto != null)
             {
                 var connectionConfiguration = GetCheckoutConfiguration(market);
-                var connector = ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl));
-                connector.UserAgent.AddField("Platform", "Episerver.Commerce_", typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version.ToString(), new string[0]);
-                connector.UserAgent.AddField("Module", "Klarna.Checkout_", typeof(KlarnaCheckoutService).Assembly.GetName().Version.ToString(), new string[0]);
 
-                _client = new Client(connector);
+                //todo environment new Uri(connectionConfiguration.ApiUrl)
+
+                _client =  new Client(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
             }
             return _client;
         }
 
-        public virtual CheckoutOrderData CreateOrUpdateOrder(ICart cart)
+        public virtual CheckoutOrder CreateOrUpdateOrder(ICart cart)
         {
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (string.IsNullOrWhiteSpace(orderId))
@@ -105,7 +104,7 @@ namespace Klarna.Checkout
             }
         }
 
-        public virtual CheckoutOrderData CreateOrder(ICart cart)
+        public virtual CheckoutOrder CreateOrder(ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
             var checkout = CreateCheckoutOrder(market);
@@ -118,16 +117,15 @@ namespace Klarna.Checkout
                 var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
                 if (customerContact?.PreferredBillingAddress != null)
                 {
-                    orderData.BillingAddress = customerContact.PreferredBillingAddress.ToAddress();
+                    orderData.BillingCheckoutAddress = customerContact.PreferredBillingAddress.ToAddress();
                 }
 
-                if (orderData.Options.AllowSeparateShippingAddress.HasValue &&
-                    orderData.Options.AllowSeparateShippingAddress.Value)
+                if (orderData.CheckoutOptions.AllowSeparateShippingAddress)
                 {
                     var shipment = cart.GetFirstShipment();
                     if (shipment.ShippingAddress != null)
                     {
-                        orderData.ShippingAddress = shipment.ShippingAddress.ToAddress();
+                        orderData.ShippingCheckoutAddress = shipment.ShippingAddress.ToCheckoutAddress();
                     }
                 }
             }
@@ -137,9 +135,8 @@ namespace Klarna.Checkout
                 {
                     checkoutOrderDataBuilder.Build(orderData, cart, checkoutConfiguration);
                 }
-                checkout.Create(orderData);
 
-                orderData = checkout.Fetch();
+                checkout.Create(orderData);
 
                 UpdateCartWithOrderData(cart, orderData);
 
@@ -157,10 +154,10 @@ namespace Klarna.Checkout
             }
         }
 
-        public virtual CheckoutOrderData UpdateOrder(string orderId, ICart cart)
+        public virtual CheckoutOrder UpdateOrder(string orderId, ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
-            var checkout = CreateCheckoutOrder(orderId, market);
+            var checkout = CreateCheckoutOrder(market);
             var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
@@ -202,12 +199,12 @@ namespace Klarna.Checkout
             }
         }
 
-        protected virtual ICart UpdateCartWithOrderData(ICart cart, CheckoutOrderData orderData)
+        protected virtual ICart UpdateCartWithOrderData(ICart cart, CheckoutOrder orderData)
         {
             var shipment = cart.GetFirstShipment();
-            if (shipment != null && orderData.ShippingAddress.IsValid())
+            if (shipment != null && orderData.ShippingCheckoutAddress.IsValid())
             {
-                shipment.ShippingAddress = orderData.ShippingAddress.ToOrderAddress(cart);
+                shipment.ShippingAddress = orderData.ShippingCheckoutAddress.ToOrderAddress(cart);
                 _orderRepository.Save(cart);
             }
 
@@ -219,7 +216,7 @@ namespace Klarna.Checkout
             return cart;
         }
 
-        protected virtual CheckoutOrderData GetCheckoutOrderData(
+        protected virtual CheckoutOrder GetCheckoutOrderData(
             ICart cart, IMarket market, PaymentMethodDto paymentMethodDto)
         {
             var totals = _orderGroupCalculator.GetOrderGroupTotals(cart);
@@ -254,7 +251,7 @@ namespace Klarna.Checkout
             {
                 if (checkoutConfiguration.ShippingOptionsInIFrame)
                 {
-                    orderData.ShippingOptions = GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture);
+                    orderData.ShippingOptions = GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture).ToList();
                 }
                 else
                 {
@@ -269,7 +266,7 @@ namespace Klarna.Checkout
 
             if (paymentMethodDto != null)
             {
-                orderData.Options = GetOptions(cart.MarketId);
+                orderData.CheckoutOptions = GetOptions(cart.MarketId);
             }
             return orderData;
         }
@@ -297,7 +294,7 @@ namespace Klarna.Checkout
             var additionalCheckboxText = configuration.AdditionalCheckboxText;
             if (!string.IsNullOrEmpty(additionalCheckboxText))
             {
-                options.AdditionalCheckbox = new AdditionalCheckbox
+                options.AdditionalCheckbox = new Rest.Core.Model.AdditionalCheckbox
                 {
                     Text = additionalCheckboxText,
                     Checked = configuration.AdditionalCheckboxDefaultChecked,
@@ -312,10 +309,10 @@ namespace Klarna.Checkout
             return string.IsNullOrWhiteSpace(colorString) ? null : colorString;
         }
 
-        public virtual CheckoutOrderData GetOrder(string klarnaOrderId, IMarket market)
+        public virtual CheckoutOrder GetOrder(string klarnaOrderId, IMarket market)
         {
-            var checkout = CreateCheckoutOrder(klarnaOrderId, market);
-            return checkout.Fetch();
+            var checkout = CreateCheckoutOrder(market);
+            return checkout.Fetch(klarnaOrderId);
         }
 
         public virtual ICart GetCartByKlarnaOrderId(int orderGroupdId, string orderId)
@@ -333,7 +330,7 @@ namespace Klarna.Checkout
             
             if (shipment != null && Guid.TryParse(shippingOptionUpdateRequest.SelectedShippingOption.Id, out Guid guid))
             {
-                shipment.ShippingAddress = shippingOptionUpdateRequest.ShippingAddress.ToOrderAddress(cart);
+                shipment.ShippingAddress = shippingOptionUpdateRequest.ShippingCheckoutAddress.ToOrderAddress(cart);
                 shipment.ShippingMethodId = guid;
                 validationIssues = _klarnaCartValidator.ValidateCart(cart);
                 rewardDescriptions = _klarnaCartValidator.ApplyDiscounts(cart);
@@ -362,7 +359,7 @@ namespace Klarna.Checkout
             return result;
         }
 
-        public virtual AddressUpdateResponse UpdateAddress(ICart cart, AddressUpdateRequest addressUpdateRequest)
+        public virtual AddressUpdateResponse UpdateAddress(ICart cart, CallbackAddressUpdateRequest addressUpdateRequest)
         {
             var configuration = GetConfiguration(cart.MarketId);
             var shipment = cart.GetFirstShipment();
@@ -371,7 +368,7 @@ namespace Klarna.Checkout
             
             if (shipment != null)
             {
-                shipment.ShippingAddress = addressUpdateRequest.ShippingAddress.ToOrderAddress(cart);
+                shipment.ShippingAddress = addressUpdateRequest.ShippingCheckoutAddress.ToOrderAddress(cart);
                 validationIssues = _klarnaCartValidator.ValidateCart(cart);
                 rewardDescriptions = _klarnaCartValidator.ApplyDiscounts(cart);
                 _orderRepository.Save(cart);
@@ -404,7 +401,7 @@ namespace Klarna.Checkout
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
             var market = _marketService.GetMarket(cart.MarketId);
             var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, market, PaymentMethodDto);
-            localCheckoutOrderData.ShippingAddress = cart.GetFirstShipment().ShippingAddress.ToAddress();
+            localCheckoutOrderData.ShippingCheckoutAddress = cart.GetFirstShipment().ShippingAddress.ToCheckoutAddress();
             
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
             {
@@ -507,13 +504,13 @@ namespace Klarna.Checkout
                 shippingOptions.FirstOrDefault(x => x.Id.Equals(shipment.ShippingMethodId.ToString()));
             if (selectedShipment != null)
             {
-                shippingOptions.ForEach(option => option.PreSelected = false);
-                selectedShipment.PreSelected = true;
+                shippingOptions.ForEach(option => option.Preselected = false);
+                selectedShipment.Preselected = true;
             }
             return shippingOptions;
         }
 
-        protected virtual PatchedMerchantUrls GetMerchantUrls(ICart cart)
+        protected virtual CheckoutMerchantUrls GetMerchantUrls(ICart cart)
         {
             if (PaymentMethodDto == null) return null;
 
@@ -530,17 +527,17 @@ namespace Klarna.Checkout
                 return new Uri(SiteUrlHelper.GetCurrentSiteUrl(), url);
             }
 
-            return new PatchedMerchantUrls
+            return new CheckoutMerchantUrls
             {
-                Terms = ToFullSiteUrl(c => c.TermsUrl),
-                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToFullSiteUrl(c => c.CancellationTermsUrl) : null,
-                Checkout = ToFullSiteUrl(c => c.CheckoutUrl),
-                Confirmation = ToFullSiteUrl(c => c.ConfirmationUrl),
-                Push = ToFullSiteUrl(c => c.PushUrl),
-                AddressUpdate = ToFullSiteUrl(c => c.AddressUpdateUrl),
-                ShippingOptionUpdate = ToFullSiteUrl(c => c.ShippingOptionUpdateUrl),
-                Notification = ToFullSiteUrl(c => c.NotificationUrl),
-                Validation = ToFullSiteUrl(c => c.OrderValidationUrl)
+                Terms = ToFullSiteUrl(c => c.TermsUrl).AbsolutePath,
+                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToFullSiteUrl(c => c.CancellationTermsUrl).AbsolutePath : null,
+                Checkout = ToFullSiteUrl(c => c.CheckoutUrl).AbsolutePath,
+                Confirmation = ToFullSiteUrl(c => c.ConfirmationUrl).AbsolutePath,
+                Push = ToFullSiteUrl(c => c.PushUrl).AbsolutePath,
+                AddressUpdate = ToFullSiteUrl(c => c.AddressUpdateUrl).AbsolutePath,
+                ShippingOptionUpdate = ToFullSiteUrl(c => c.ShippingOptionUpdateUrl).AbsolutePath,
+                Notification = ToFullSiteUrl(c => c.NotificationUrl).AbsolutePath,
+                Validation = ToFullSiteUrl(c => c.OrderValidationUrl).AbsolutePath
             };
         }
 
@@ -550,21 +547,21 @@ namespace Klarna.Checkout
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
         }
 
+        //protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market)
+        //{
+        //    return CreateCheckoutOrder(market, client => client.Checkout.CreateOrder(new CheckoutOrder()));
+        //}
+
+        //protected virtual ICheckoutOrder CreateCheckoutOrder(string klarnaOrderId, IMarket market)
+        //{
+        //    return CreateCheckoutOrder(market, client => client.Checkout.CreateOrder());
+        //}
+
         protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market)
         {
-            return CreateCheckoutOrder(market, client => client.NewCheckoutOrder());
-        }
-
-        protected virtual ICheckoutOrder CreateCheckoutOrder(string klarnaOrderId, IMarket market)
-        {
-            return CreateCheckoutOrder(market, client => client.NewCheckoutOrder(klarnaOrderId));
-        }
-
-        protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market, Func<Client, ICheckoutOrder> factory)
-        {
             var client = GetClient(market);
-            var checkoutOrder = factory(client);
-            return new LoggingCheckoutOrder(checkoutOrder);
+            return new LoggingCheckoutOrder(client);
         }
+
     }
 }

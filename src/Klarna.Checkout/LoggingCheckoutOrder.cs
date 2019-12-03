@@ -1,14 +1,26 @@
 ﻿using System;
 using EPiServer.Logging;
-using Klarna.Rest.Checkout;
-using Klarna.Rest.Models;
-using Klarna.Rest.Transport;
+using Klarna.Rest.Core.Communication;
+using Klarna.Rest.Core.Model;
 
 namespace Klarna.Checkout
 {
+    public interface ICheckoutOrder
+    {
+        void Create(CheckoutOrder order);
+        CheckoutOrder Update(CheckoutOrder order);
+        CheckoutOrder Fetch(string orderId);
+    }
+
     public class LoggingCheckoutOrder : ICheckoutOrder
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(LoggingCheckoutOrder));
+        private readonly Rest.Core.Klarna _client;
+
+        public LoggingCheckoutOrder(Rest.Core.Klarna client)
+        {
+            _client = client;
+        }
 
         private readonly ICheckoutOrder _inner;
 
@@ -17,17 +29,11 @@ namespace Klarna.Checkout
             _inner = inner ?? throw new ArgumentNullException(nameof(inner));
         }
 
-        public Uri Location
-        {
-            get => _inner.Location;
-            set => _inner.Location = value;
-        }
-
-        public void Create(CheckoutOrderData checkoutOrderData)
+        public void Create(CheckoutOrder checkoutOrderData)
         {
             try
             {
-                _inner.Create(checkoutOrderData);
+                _client.Checkout.CreateOrder(checkoutOrderData);
             }
             catch (ApiException e)
             {
@@ -36,11 +42,11 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData Update(CheckoutOrderData checkoutOrderData)
+        public CheckoutOrder Update(CheckoutOrder checkoutOrderData)
         {
             try
             {
-                return _inner.Update(checkoutOrderData);
+                return _client.Checkout.UpdateOrder(checkoutOrderData).Result;
             }
             catch (ApiException e)
             {
@@ -49,11 +55,12 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData Fetch()
+        public CheckoutOrder Fetch(string orderId)
         {
             try
             {
-                return _inner.Fetch();
+
+                return _client.Checkout.GetOrder(orderId).Result;
             }
             catch (ApiException e)
             {

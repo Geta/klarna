@@ -1,13 +1,13 @@
 ﻿using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 
 
 namespace Klarna.Checkout
 {
     public interface ICheckoutOrderDataBuilder
     {
-        CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration);
+        CheckoutOrder Build(CheckoutOrder checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration);
 
         AddressUpdateResponse Build(AddressUpdateResponse addressUpdateResponse, ICart cart, CheckoutConfiguration checkoutConfiguration);
 
