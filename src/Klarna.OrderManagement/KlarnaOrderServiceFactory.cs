@@ -5,8 +5,6 @@ using System.Text;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Common.Extensions;
-using Klarna.Rest;
-using Klarna.Rest.Transport;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
@@ -32,7 +30,8 @@ namespace Klarna.OrderManagement
 
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
-            var client = new Client(ConnectorFactory.Create(connectionConfiguration.Username, connectionConfiguration.Password, new Uri(connectionConfiguration.ApiUrl)));
+
+            var client = new Rest.Core.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
 
             var byteArray = Encoding.ASCII.GetBytes($"{connectionConfiguration.Username}:{connectionConfiguration.Password}");
             var httpClient = new HttpClient
