@@ -7,7 +7,8 @@ using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
+using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
@@ -79,7 +80,7 @@ namespace Klarna.Common.Extensions
                 Reference = lineItem.Code.Length > 64
                     ? lineItem.Code.Substring(0, (MaxOrderLineReference - 1))
                     : lineItem.Code, // can't use more then 64 characters for the order reference
-                Type = "physical"
+                Type = OrderLineType.physical
             };
 
             if (string.IsNullOrEmpty(orderLine.Name))

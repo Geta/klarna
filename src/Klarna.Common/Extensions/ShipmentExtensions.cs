@@ -3,6 +3,7 @@ using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
+using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce.Markets;
 
 namespace Klarna.Common.Extensions
@@ -49,7 +50,7 @@ namespace Klarna.Common.Extensions
                 TotalAmount = total,
                 TaxRate = taxRate,
                 TotalTaxAmount = totalTaxAmount,
-                Type = "shipping_fee"
+                Type = OrderLineType.shipping_fee
             };
             if (string.IsNullOrEmpty(shipmentOrderLine.Name))
             {
