@@ -13,7 +13,7 @@ using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Payments.Extensions;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
@@ -325,7 +325,7 @@ namespace Klarna.Payments
                 }
                 else if (request.ShippingAddress != null)
                 {
-                    request.BillingAddress = new Address()
+                    request.BillingAddress = new OrderManagementAddressInfo()
                     {
                         Email = request.ShippingAddress?.Email,
                         Phone = request.ShippingAddress?.Phone
