@@ -1,14 +1,14 @@
 ﻿using Klarna.Common.Helpers;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Customers;
 
 namespace Klarna.Common.Extensions
 {
     public static class CustomerAddressExtensions
     {
-        public static Address ToAddress(this CustomerAddress customerAddress)
+    public static CheckoutAddressInfo ToAddress(this CustomerAddress customerAddress)
         {
-            var address = new Address
+            var address = new CheckoutAddressInfo
             {
                 GivenName = customerAddress.FirstName,
                 FamilyName = customerAddress.LastName,
