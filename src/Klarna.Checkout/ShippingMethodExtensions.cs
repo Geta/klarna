@@ -13,7 +13,7 @@ namespace Klarna.Checkout
                 Id = method.ShippingMethodId.ToString(),
                 Name = method.DisplayName,
                 Price = AmountHelper.GetAmount(method.BasePrice),
-                PreSelected = method.IsDefault,
+                Preselected = method.IsDefault,
                 TaxAmount = 0,
                 TaxRate = 0,
                 Description = method.Description
