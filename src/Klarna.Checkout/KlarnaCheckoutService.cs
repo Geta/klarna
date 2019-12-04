@@ -84,8 +84,6 @@ namespace Klarna.Checkout
             {
                 var connectionConfiguration = GetCheckoutConfiguration(market);
 
-                //todo environment new Uri(connectionConfiguration.ApiUrl)
-
                 _client =  new Client(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
             }
             return _client;
@@ -546,16 +544,6 @@ namespace Klarna.Checkout
             var countries = CountryManager.GetCountries();
             return CountryCodeHelper.GetTwoLetterCountryCodes(countries.Country.Select(x => x.Code));
         }
-
-        //protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market)
-        //{
-        //    return CreateCheckoutOrder(market, client => client.Checkout.CreateOrder(new CheckoutOrder()));
-        //}
-
-        //protected virtual ICheckoutOrder CreateCheckoutOrder(string klarnaOrderId, IMarket market)
-        //{
-        //    return CreateCheckoutOrder(market, client => client.Checkout.CreateOrder());
-        //}
 
         protected virtual ICheckoutOrder CreateCheckoutOrder(IMarket market)
         {

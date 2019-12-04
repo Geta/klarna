@@ -115,7 +115,6 @@ namespace Klarna.OrderManagement
              _client.OrderManagement.ExtendAuthorizationTime(orderId);
         }
 
-        //todo check if necessary
         public void UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
         {
             _client.OrderManagement.UpdateCustomerAddresses(orderId, updateCustomerDetails);
