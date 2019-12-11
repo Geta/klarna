@@ -319,6 +319,29 @@ The KlarnaPaymentGateway save notes about payment updates at the order.
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
 
 </details>
+<details>
+  <summary>External Payment Methods & External Checkout (click to expand)</summary>
+  
+Klarna Checkout offers a wide variety of payment methods to cover the main needs of consumers in all markets, which all are included with a simple, single integration.
+ 
+[Here's the full documentation](https://developers.klarna.com/documentation/klarna-checkout/external-payment-methods/) including supported payment and checkouts - we recommend reading through it thoroughly and then coming back here.
+
+![Klarna Checkout External Payment Methods & External Checkouts](https://developers.klarna.com/static/KCO_external-payment-methods.png)
+
+The most important thing to note is that you need to implement the backend integration for the external payment/checkout yourself. So for instance if you wanted to add PayPal you would have to create a redirect URL that has the processing logic for PayPal. Example: klarna.geta.no/processpaypall.
+
+In your ICheckoutOrderDataBuilder implementation and the Build() method you would pass along the details of the payment method:
+
+```
+checkoutOrderData.ExternalPaymentMethods = new[]
+{
+    new ExternalPaymentMethod { Fee = 10, ImageUri = new Uri("https://klarna.geta.no/Styles/Images/paypal.png"), Name  = "PayPal", RedirectUri = new Uri("https://klarna.geta.no/processpaypall")}
+};
+```
+Name is case sensitiv so make sure to check the supported name in the documentation and the URLs all have to be https.
+
+You can find an [example in the demo site](https://github.com/Geta/Klarna/blob/aab444b0c2ce6c4319e808d4d2b203242ba3bbda/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/DemoCheckoutOrderDataBuilder.cs#L34).
+</details>
 
 ## Local development environment
 
