@@ -73,7 +73,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             // Get billling address info
             var billingAddress =
                 _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == billingAddressId)?
-                    .ToAddress();
+                    .ToOrderAddress();
             request.BillingAddress = billingAddress;
 
             return request;

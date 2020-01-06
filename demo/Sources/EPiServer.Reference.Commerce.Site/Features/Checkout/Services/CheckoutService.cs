@@ -17,7 +17,6 @@ using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Checkout;
 using Klarna.Common.Extensions;
 using Klarna.Payments.Models;
-using Klarna.Rest.Models;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Exceptions;
 using Mediachase.Commerce.Orders.Managers;
@@ -27,6 +26,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Klarna.Rest.Core.Model;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 {
@@ -240,7 +240,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             return new UrlBuilder(confirmationPage.LinkURL) { QueryCollection = queryCollection }.ToString();
         }
 
-        public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrderData order, ICart cart)
+        public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrder order, ICart cart)
         {
             var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
 
@@ -256,16 +256,16 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
             var billingAddress = new AddressModel
             {
-                Name = $"{order.BillingAddress.StreetAddress}{order.BillingAddress.StreetAddress2}{order.BillingAddress.City}",
-                FirstName = order.BillingAddress.GivenName,
-                LastName = order.BillingAddress.FamilyName,
-                Email = order.BillingAddress.Email,
-                DaytimePhoneNumber = order.BillingAddress.Phone,
-                Line1 = order.BillingAddress.StreetAddress,
-                Line2 = order.BillingAddress.StreetAddress2,
-                PostalCode = order.BillingAddress.PostalCode,
-                City = order.BillingAddress.City,
-                CountryName = order.BillingAddress.Country
+                Name = $"{order.BillingCheckoutAddress.StreetAddress}{order.BillingCheckoutAddress.StreetAddress2}{order.BillingCheckoutAddress.City}",
+                FirstName = order.BillingCheckoutAddress.GivenName,
+                LastName = order.BillingCheckoutAddress.FamilyName,
+                Email = order.BillingCheckoutAddress.Email,
+                DaytimePhoneNumber = order.BillingCheckoutAddress.Phone,
+                Line1 = order.BillingCheckoutAddress.StreetAddress,
+                Line2 = order.BillingCheckoutAddress.StreetAddress2,
+                PostalCode = order.BillingCheckoutAddress.PostalCode,
+                City = order.BillingCheckoutAddress.City,
+                CountryName = order.BillingCheckoutAddress.Country
             };
 
             payment.BillingAddress = _addressBookService.ConvertToAddress(billingAddress, cart);

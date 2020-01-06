@@ -14,7 +14,7 @@ using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Catalog;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout
@@ -26,7 +26,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
         private Injected<ReferenceConverter> _referenceConverter = default(Injected<ReferenceConverter>);
         private Injected<IRelationRepository> _relationRepository = default(Injected<IRelationRepository>);
 
-        public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
+        public CheckoutOrder Build(CheckoutOrder checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
         {
             if (checkoutConfiguration == null)
                 return checkoutOrderData;
@@ -39,10 +39,10 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             if (checkoutConfiguration.PrefillAddress)
             {
                 // Try to parse address into dutch address lines
-                if (checkoutOrderData.ShippingAddress != null && !string.IsNullOrEmpty(checkoutOrderData.ShippingAddress.Country) && checkoutOrderData.ShippingAddress.Country.Equals("NL"))
+                if (checkoutOrderData.ShippingCheckoutAddress != null && !string.IsNullOrEmpty(checkoutOrderData.ShippingCheckoutAddress.Country) && checkoutOrderData.ShippingCheckoutAddress.Country.Equals("NL"))
                 {
-                    var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingAddress);
-                    checkoutOrderData.ShippingAddress = dutchAddress;
+                    var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingCheckoutAddress);
+                    checkoutOrderData.ShippingCheckoutAddress = dutchAddress;
                 }
             }
             UpdateOrderLines(checkoutOrderData.OrderLines, checkoutConfiguration);
@@ -64,7 +64,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             return addressUpdateResponse;
         }
 
-        private void UpdateOrderLines(IList<OrderLine> orderLines, CheckoutConfiguration checkoutConfiguration)
+        private void UpdateOrderLines(ICollection<OrderLine> orderLines, CheckoutConfiguration checkoutConfiguration)
         {
             foreach (var lineItem in orderLines)
             {
@@ -89,7 +89,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                     var patchedOrderLine = (PatchedOrderLine)lineItem;
                     if (patchedOrderLine.ProductIdentifiers == null)
                     {
-                        patchedOrderLine.ProductIdentifiers = new PatchedProductIdentifiers();
+                        patchedOrderLine.ProductIdentifiers = new ProductIdentifiers();
                     }
 
 
@@ -108,7 +108,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
             }
         }
 
-        private Address ConvertToDutchAddress(Address address)
+        private CheckoutAddressInfo ConvertToDutchAddress(CheckoutAddressInfo address)
         {
             // Just an example, do not use
 

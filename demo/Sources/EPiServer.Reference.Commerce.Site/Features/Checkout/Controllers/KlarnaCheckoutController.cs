@@ -10,6 +10,7 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Markets;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -55,7 +56,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [AcceptVerbs("POST")]
         [HttpPost]
         [ResponseType(typeof(AddressUpdateResponse))]
-        public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]AddressUpdateRequest addressUpdateRequest)
+        public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]CallbackAddressUpdateRequest addressUpdateRequest)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
             var response = _klarnaCheckoutService.UpdateAddress(cart, addressUpdateRequest);
@@ -81,7 +82,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             // Validate billing address if necessary (this is just an example)
             // To return an error like this you need require_validate_callback_success set to true
-            if (checkoutData.BillingAddress.PostalCode.Equals("94108-2704"))
+            if (checkoutData.BillingCheckoutAddress.PostalCode.Equals("94108-2704"))
             {
                 var errorResult = new ErrorResult
                 {

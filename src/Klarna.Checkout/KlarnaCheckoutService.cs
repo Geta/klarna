@@ -230,7 +230,7 @@ namespace Klarna.Checkout
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = _checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(ContentLanguage.PreferredCulture.Name),
+                Locale = $"{_checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(ContentLanguage.PreferredCulture.Name)}-{marketCountry}",
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
@@ -527,15 +527,15 @@ namespace Klarna.Checkout
 
             return new CheckoutMerchantUrls
             {
-                Terms = ToFullSiteUrl(c => c.TermsUrl).AbsolutePath,
-                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToFullSiteUrl(c => c.CancellationTermsUrl).AbsolutePath : null,
-                Checkout = ToFullSiteUrl(c => c.CheckoutUrl).AbsolutePath,
-                Confirmation = ToFullSiteUrl(c => c.ConfirmationUrl).AbsolutePath,
-                Push = ToFullSiteUrl(c => c.PushUrl).AbsolutePath,
-                AddressUpdate = ToFullSiteUrl(c => c.AddressUpdateUrl).AbsolutePath,
-                ShippingOptionUpdate = ToFullSiteUrl(c => c.ShippingOptionUpdateUrl).AbsolutePath,
-                Notification = ToFullSiteUrl(c => c.NotificationUrl).AbsolutePath,
-                Validation = ToFullSiteUrl(c => c.OrderValidationUrl).AbsolutePath
+                Terms = ToFullSiteUrl(c => c.TermsUrl).ToString(),
+                CancellationTerms = !string.IsNullOrEmpty(configuration.CancellationTermsUrl) ? ToFullSiteUrl(c => c.CancellationTermsUrl).ToString() : null,
+                Checkout = ToFullSiteUrl(c => c.CheckoutUrl).ToString(),
+                Confirmation = ToFullSiteUrl(c => c.ConfirmationUrl).ToString(),
+                Push = ToFullSiteUrl(c => c.PushUrl).ToString(),
+                AddressUpdate = ToFullSiteUrl(c => c.AddressUpdateUrl).ToString(),
+                ShippingOptionUpdate = ToFullSiteUrl(c => c.ShippingOptionUpdateUrl).ToString(),
+                Notification = ToFullSiteUrl(c => c.NotificationUrl).ToString(),
+                Validation = ToFullSiteUrl(c => c.OrderValidationUrl).ToString()
             };
         }
 
