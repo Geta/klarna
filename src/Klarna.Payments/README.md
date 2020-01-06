@@ -213,8 +213,18 @@ Checkout flow:
 - Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'truth'), using this session and the authorization token we can create an order in Klarna.
   - If creating an order fails, the authorize request has been tampered with and the payment fails
 
-In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on 'jsCheckoutForm' submit.
+In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on `jsCheckoutForm` submit.
 
+### Finalizing
+The user may, in some cases, need to introduce data a second time (e.g. providing a legal authorization, or selecting a bank account). We call this the finalize step.
+
+By default, the SDK performs authorization and finalization automatically after each other, but you can request to perform these separately if the flow in your app requires it. If that’s the case, your listener will be notified with a `finalizeRequired` parameter set to `true`.
+
+If the session needs to be finalized, you’ll need to perform this last step to get an authorization token. The finalization should be done just before the purchase is completed, meaning the last step in a multi-step checkout.
+
+You can finalize the session by calling the view’s `finalize()` method.
+
+For more information please see: [Klarna Payments Step by Step](https://developers.klarna.com/documentation/in-app/overview/steps-klarna-payments/#finalizing).
 </details>
 
 <details>
