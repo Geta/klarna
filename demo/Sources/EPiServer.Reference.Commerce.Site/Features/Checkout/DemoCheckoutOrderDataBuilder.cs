@@ -33,7 +33,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
             checkoutOrderData.ExternalPaymentMethods = new[]
             {
-                new ExternalPaymentMethod { Fee = 10, ImageUri = new Uri("https://klarna.geta.no/Styles/Images/paypalpng"), Name  = "PayPal", RedirectUri = new Uri("https://klarna.geta.no")}
+                new PaymentProvider { Fee = 10, ImageUrl = "https://klarna.geta.no/Styles/Images/paypalpng", Name  = "PayPal", RedirectUrl = "https://klarna.geta.no"}
             };
 
             if (checkoutConfiguration.PrefillAddress)
@@ -95,7 +95,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
 
                     patchedOrderLine.ProductIdentifiers.Brand = product?.Brand;
                     patchedOrderLine.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
-                    patchedOrderLine.ProductIdentifiers.ManuFacturerPartNumber = "ManuFacturerPartNumber test";
+                    patchedOrderLine.ProductIdentifiers.ManufacturerPartNumber = "ManuFacturerPartNumber test";
                     patchedOrderLine.ProductIdentifiers.CategoryPath = "test / test";
 
                     if (checkoutConfiguration.SendProductAndImageUrl && entryContent != null)
