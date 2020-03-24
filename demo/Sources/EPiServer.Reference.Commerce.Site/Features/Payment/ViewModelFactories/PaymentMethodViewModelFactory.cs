@@ -9,6 +9,7 @@ using Mediachase.Commerce;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
 {
@@ -82,7 +83,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
                     IsDefault = x.IsDefault
                 }).ToList();
 
-            var startPage = _contentLoader.Get<StartPage>(ContentReference.StartPage);
+            var startPage = _contentLoader.GetStartPage();
 
             var methods = new List<PaymentMethodViewModel<IPaymentMethod>>();
 
@@ -90,14 +91,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories
             {
                 var method = foundMethods.FirstOrDefault(x =>
                     x.PaymentMethod.SystemKeyword == Klarna.Checkout.Constants.KlarnaCheckoutSystemKeyword);
-                if (method != null) methods.Add(method);
+                if (method != null)
+                {
+                    methods.Add(method);
+                }
             }
 
             if (startPage.KlarnaPaymentsEnabled)
             {
                 var method = foundMethods.FirstOrDefault(x =>
                     x.PaymentMethod.SystemKeyword == Klarna.Payments.Constants.KlarnaPaymentSystemKeyword);
-                if (method != null) methods.Add(method);
+                if (method != null)
+                {
+                    methods.Add(method);
+                }
             }
 
             if (startPage.OtherPaymentsEnabled)

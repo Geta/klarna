@@ -15,7 +15,7 @@ using Klarna.Payments.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Klarna.Payments;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Catalog;
 using Customer = Klarna.Payments.Models.Customer;
 
@@ -97,12 +97,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                         var patchedOrderLine = (PatchedOrderLine) lineItem;
                         if (patchedOrderLine.ProductIdentifiers == null)
                         {
-                            patchedOrderLine.ProductIdentifiers = new PatchedProductIdentifiers();
+                            patchedOrderLine.ProductIdentifiers = new ProductIdentifiers();
                         }
 
                         patchedOrderLine.ProductIdentifiers.Brand = product?.Brand;
                         patchedOrderLine.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
-                        patchedOrderLine.ProductIdentifiers.ManuFacturerPartNumber = "ManuFacturerPartNumber test";
+                        patchedOrderLine.ProductIdentifiers.ManufacturerPartNumber = "ManuFacturerPartNumber test";
                         patchedOrderLine.ProductIdentifiers.CategoryPath = "test / test";
 
                         if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)

@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
-using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.OrderManagement.Models;
-using Klarna.OrderManagement.Refunds;
-using Klarna.Rest;
-using Klarna.Rest.Models;
-using Klarna.Rest.Models.Requests;
-using Klarna.Rest.OrderManagement;
+using Klarna.Rest.Core.Model;
+using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
+using Client = Klarna.Rest.Core.Klarna;
 
 namespace Klarna.OrderManagement
 {
@@ -27,138 +24,101 @@ namespace Klarna.OrderManagement
             _klarnaOrderServiceApi = klarnaOrderServiceApi;
         }
 
-        public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        public async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
-            _client.NewOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).Acknowledge();
+            await _client.OrderManagement.AcknowledgeOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).ConfigureAwait(false);
         }
 
-        public void CancelOrder(string orderId)
+        public async Task CancelOrder(string orderId)
         {
-            var order = _client.NewOrder(orderId);
-            order.Cancel();
+            await _client.OrderManagement.CancelOrder(orderId).ConfigureAwait(false);
         }
 
-        public void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
+        public async Task UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
         {
-            var order = _client.NewOrder(orderId);
-
-            var updateMerchantReferences = new UpdateMerchantReferences
+            var updateMerchantReferences = new OrderManagementMerchantReferences
             {
                 MerchantReference1 = merchantReference1,
                 MerchantReference2 = merchantReference2
             };
-            order.UpdateMerchantReferences(updateMerchantReferences);
+
+            await _client.OrderManagement.UpdateMerchantReferences(orderId, updateMerchantReferences).ConfigureAwait(false);
         }
 
-        public CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
+        public async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
         {
-            var order = _client.NewOrder(orderId);
-            var capture = _client.NewCapture(order.Location);
-
             var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
-            var captureData = new CaptureData
+            var captureData = new OrderManagementCreateCapture
             {
                 CapturedAmount = amount,
                 Description = description,
                 OrderLines = lines
             };
-
-            if (ServiceLocator.Current.TryGetExistingInstance(out ICaptureBuilder captureBuilder))
-            {
-                captureData = captureBuilder.Build(captureData, orderGroup, orderForm, payment);
-            }
-            capture.Create(captureData);
-            return capture.Fetch();
+            return  await _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
+        public async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
         {
-            var order = _client.NewOrder(orderId);
-            var capture = _client.NewCapture(order.Location);
-
             if (shipment == null)
             {
                 throw new InvalidOperationException("Can't find correct shipment");
             }
             var lines = shipment.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
-            var shippingInfo = new ShippingInfo
+            var shippingInfo = new OrderManagementShippingInfo
             {
                 // TODO shipping info
-                ShippingMethod = "Own",
+                ShippingMethod = OrderManagementShippingMethod.Own,
                 TrackingNumber = shipment.ShipmentTrackingNumber
             };
 
-            var captureData = new CaptureData
+            var captureData = new OrderManagementCreateCapture
             {
                 CapturedAmount = amount,
                 Description = description,
                 OrderLines = lines,
-                ShippingInfo = new List<ShippingInfo>() { shippingInfo }
+                ShippingInfo = new List<OrderManagementShippingInfo>() { shippingInfo }
             };
 
-            if (ServiceLocator.Current.TryGetExistingInstance(out ICaptureBuilder captureBuilder))
-            {
-                captureData = captureBuilder.Build(captureData, orderGroup, orderForm, payment);
-            }
-
-            capture.Create(captureData);
-            return capture.Fetch();
+            return await _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
+        public async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
-            IOrder order = _client.NewOrder(orderId);
+            var lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
-            List<OrderLine> lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
-
-            Refund refund = new Refund()
+            var refund = new OrderManagementRefund
             {
                 RefundedAmount = GetAmount(payment.Amount),
                 Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
-
-            if (ServiceLocator.Current.TryGetExistingInstance(out IRefundBuilder refundBuilder))
-            {
-                refund = refundBuilder.Build(refund, orderGroup, orderForm, payment);
-            }
-
-            order.Refund(refund);
+            await _client.OrderManagement.CreateAndFetchRefund(orderId, refund).ConfigureAwait(false);
         }
 
-        public void ReleaseRemaininAuthorization(string orderId)
-        {
-            IOrder order = _client.NewOrder(orderId);
-
-            order.ReleaseRemainingAuthorization();
+        public async Task ReleaseRemainingAuthorization(string orderId)
+        { 
+            await _client.OrderManagement.ReleaseRemainingAuthorization(orderId).ConfigureAwait(false);
         }
 
-        public void TriggerSendOut(string orderId, string captureId)
+        public async Task TriggerSendOut(string orderId, string captureId)
         {
-            IOrder order = _client.NewOrder(orderId);
-            ICapture capture = _client.NewCapture(order.Location, captureId);
-
-            capture.TriggerSendOut();
+           await _client.OrderManagement.TriggerResendOfCustomerCommunication(orderId, captureId).ConfigureAwait(false);
         }
 
-        public Task<PatchedOrderData> GetOrder(string orderId)
+        public async Task<PatchedOrderData> GetOrder(string orderId)
         {
-            return _klarnaOrderServiceApi.GetOrder(orderId);
+            return await _klarnaOrderServiceApi.GetOrder(orderId).ConfigureAwait(false);
         }
 
-        public void ExtendAuthorizationTime(string orderId)
+        public async Task ExtendAuthorizationTime(string orderId)
         {
-            IOrder order = _client.NewOrder(orderId);
-
-            order.ExtendAuthorizationTime();
+             await _client.OrderManagement.ExtendAuthorizationTime(orderId).ConfigureAwait(false);
         }
 
-        public void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails)
+        public async Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
         {
-            IOrder order = _client.NewOrder(orderId);
-
-            order.UpdateCustomerDetails(updateCustomerDetails);
+            await _client.OrderManagement.UpdateCustomerAddresses(orderId, updateCustomerDetails).ConfigureAwait(false);
         }
 
         private int GetAmount(decimal money)
@@ -174,7 +134,7 @@ namespace Klarna.OrderManagement
         {
             var orderLine = new OrderLine
             {
-                Type = "physical",
+                Type = OrderLineType.physical,
                 Reference = item.Code,
                 Name = item.DisplayName,
                 Quantity = (int)item.ReturnQuantity,

@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models
 {
-    public class AdditionalCheckbox : Rest.Models.Model
+    public class AdditionalCheckbox
     {
         [JsonProperty("text")]
         public string Text { get; set; }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models

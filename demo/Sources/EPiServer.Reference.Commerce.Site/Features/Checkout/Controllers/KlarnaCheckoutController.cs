@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using EPiServer.Commerce.Order;
@@ -10,6 +11,7 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Markets;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -55,7 +57,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [AcceptVerbs("POST")]
         [HttpPost]
         [ResponseType(typeof(AddressUpdateResponse))]
-        public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]AddressUpdateRequest addressUpdateRequest)
+        public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]CallbackAddressUpdateRequest addressUpdateRequest)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
             var response = _klarnaCheckoutService.UpdateAddress(cart, addressUpdateRequest);
@@ -75,13 +77,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 // check validation issues and redirect to a page to display the error
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
+                httpResponseMessage.Headers.Location = new Uri("https://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
                 return ResponseMessage(httpResponseMessage);
             }
 
             // Validate billing address if necessary (this is just an example)
             // To return an error like this you need require_validate_callback_success set to true
-            if (checkoutData.BillingAddress.PostalCode.Equals("94108-2704"))
+            if (checkoutData.BillingCheckoutAddress.PostalCode.Equals("94108-2704"))
             {
                 var errorResult = new ErrorResult
                 {
@@ -95,7 +97,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
             {
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
+                httpResponseMessage.Headers.Location = new Uri("https://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
                 return ResponseMessage(httpResponseMessage);
             }
 
@@ -114,20 +116,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/push")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult Push(int orderGroupId, string klarna_order_id)
+        public async Task<IHttpActionResult> Push(int orderGroupId, string klarna_order_id)
         {
             if (klarna_order_id == null)
             {
                 return BadRequest();
             }
-            var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            var purchaseOrder = await GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id).ConfigureAwait(false);
             if (purchaseOrder == null)
             {
                 return NotFound();
             }
 
             // Update merchant reference
-            _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
+            await _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder).ConfigureAwait(false);
 
             // Acknowledge the order through the order management API
             _klarnaCheckoutService.AcknowledgeOrder(purchaseOrder);
@@ -135,7 +137,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
-        private IPurchaseOrder GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
+        private async Task<IPurchaseOrder> GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
         {
             // Check if the order has been created already
             var purchaseOrder = _klarnaCheckoutService.GetPurchaseOrderByKlarnaOrderId(klarnaOrderId);
@@ -153,7 +155,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
 
             var market = _marketService.GetMarket(cart.MarketId);
-            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId, market);
+            var order = await _klarnaCheckoutService.GetOrder(klarnaOrderId, market).ConfigureAwait(false);
             if (!order.Status.Equals("checkout_complete"))
             {
                 // Won't create order, Klarna checkout not complete

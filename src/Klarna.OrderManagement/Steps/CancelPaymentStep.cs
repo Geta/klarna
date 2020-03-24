@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
-using Klarna.Rest.Transport;
+using Klarna.Common.Models;
+using Klarna.Rest.Core.Communication;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 
@@ -17,8 +19,10 @@ namespace Klarna.OrderManagement.Steps
         {
         }
 
-        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
+        public override async Task<PaymentStepResult> Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment)
         {
+            var paymentStepResult = new PaymentStepResult();
+
             if (payment.TransactionType == TransactionType.Void.ToString())
             {
                 try
@@ -26,13 +30,13 @@ namespace Klarna.OrderManagement.Steps
                     var orderId = orderGroup.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
                     if (!string.IsNullOrEmpty(orderId))
                     {
-                        KlarnaOrderService.CancelOrder(orderId);
+                        await KlarnaOrderService.CancelOrder(orderId).ConfigureAwait(false);
 
                         payment.Status = PaymentStatus.Processed.ToString();
 
                         AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Order cancelled at Klarna");
 
-                        return true;
+                        paymentStepResult.Status = true;
                     }
                 }
                 catch (Exception ex) when (ex is ApiException || ex is WebException)
@@ -40,17 +44,18 @@ namespace Klarna.OrderManagement.Steps
                     var exceptionMessage = GetExceptionMessage(ex);
 
                     payment.Status = PaymentStatus.Failed.ToString();
-                    message = exceptionMessage;
                     AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {exceptionMessage}");
                     Logger.Error(exceptionMessage, ex);
-                    return false;
+
+                    paymentStepResult.Message = exceptionMessage;
                 }
             }
             else if (Successor != null)
             {
-                return Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
+                return await Successor.Process(payment, orderForm, orderGroup, shipment).ConfigureAwait(false);
             }
-            return false;
+
+            return paymentStepResult;
         }
     }
 }

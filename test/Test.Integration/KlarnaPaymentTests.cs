@@ -4,7 +4,7 @@ using System.Text;
 using Klarna.Common.Models;
 using Klarna.Payments;
 using Klarna.Payments.Models;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Refit;
 using Xunit;
 
@@ -82,8 +82,6 @@ namespace Test.Integration
             session.PurchaseCountry = "US";
             session.PurchaseCurrency = "USD";
             session.Locale = "en-ud";
-            session.BillingAddress = null;
-            session.ShippingAddress = null;
             session.OrderAmount = 1000;
             session.OrderTaxAmount = 0;
             session.OrderLines = new OrderLine[]

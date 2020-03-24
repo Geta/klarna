@@ -82,9 +82,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                                                            !string.IsNullOrEmpty(order.Properties[Klarna.Common.Constants.KlarnaOrderIdField]?.ToString())))
                 {
                     var market = _marketService.GetMarket(order.MarketId);
-                    var klarnaOrder =
-                        _klarnaCheckoutService.GetOrder(
-                            order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString(), market);
+                    var klarnaOrder = await _klarnaCheckoutService.GetOrder(
+                            order.Properties[Klarna.Common.Constants.KlarnaOrderIdField].ToString(), market).ConfigureAwait(false);
                     viewModel.KlarnaCheckoutHtmlSnippet = klarnaOrder.HtmlSnippet;
                     viewModel.IsKlarnaCheckout = true;
                 }

@@ -1,33 +1,32 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using EPiServer.Logging;
-using Klarna.Rest.Checkout;
-using Klarna.Rest.Models;
-using Klarna.Rest.Transport;
+using Klarna.Rest.Core.Communication;
+using Klarna.Rest.Core.Model;
 
 namespace Klarna.Checkout
 {
+    public interface ICheckoutOrder
+    {
+        Task<CheckoutOrder> Create(CheckoutOrder order);
+        Task<CheckoutOrder> Update(CheckoutOrder order);
+        Task<CheckoutOrder> Fetch(string orderId);
+    }
+
     public class LoggingCheckoutOrder : ICheckoutOrder
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(LoggingCheckoutOrder));
+        private readonly Rest.Core.Klarna _client;
 
-        private readonly ICheckoutOrder _inner;
-
-        public LoggingCheckoutOrder(ICheckoutOrder inner)
+        public LoggingCheckoutOrder(Rest.Core.Klarna client)
         {
-            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
+            _client = client;
         }
 
-        public Uri Location
-        {
-            get => _inner.Location;
-            set => _inner.Location = value;
-        }
-
-        public void Create(CheckoutOrderData checkoutOrderData)
+        public async Task<CheckoutOrder> Create(CheckoutOrder checkoutOrderData)
         {
             try
             {
-                _inner.Create(checkoutOrderData);
+                return await _client.Checkout.CreateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -36,11 +35,11 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData Update(CheckoutOrderData checkoutOrderData)
+        public async Task<CheckoutOrder> Update(CheckoutOrder checkoutOrderData)
         {
             try
             {
-                return _inner.Update(checkoutOrderData);
+                return await _client.Checkout.UpdateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -49,11 +48,12 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrderData Fetch()
+        public async Task<CheckoutOrder> Fetch(string orderId)
         {
             try
             {
-                return _inner.Fetch();
+
+                return await _client.Checkout.GetOrder(orderId).ConfigureAwait(false);
             }
             catch (ApiException e)
             {

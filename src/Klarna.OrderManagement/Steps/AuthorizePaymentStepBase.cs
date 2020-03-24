@@ -1,5 +1,7 @@
-﻿using EPiServer.Commerce.Order;
+﻿using System.Threading.Tasks;
+using EPiServer.Commerce.Order;
 using Klarna.Common.Extensions;
+using Klarna.Common.Models;
 using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
@@ -14,19 +16,22 @@ namespace Klarna.OrderManagement.Steps
         {
         }
 
-        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
+        public override async Task<PaymentStepResult> Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment)
         {
             if (payment.TransactionType != TransactionType.Authorization.ToString())
             {
-                return Successor != null && Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
+                var paymentStepResult = await Successor.Process(payment, orderForm, orderGroup, shipment).ConfigureAwait(false);
+                paymentStepResult.Status = Successor != null && paymentStepResult.Status;
+                
+                return paymentStepResult;
             }
 
             if (ShouldProcessFraudUpdate(payment, orderGroup))
             {
-                return ProcessFraudUpdate(payment, orderGroup, ref message);
+                return ProcessFraudUpdate(payment, orderGroup);
             }
 
-            return ProcessAuthorization(payment, orderGroup, ref message);
+            return await ProcessAuthorization(payment, orderGroup).ConfigureAwait(false);
         }
 
         private static bool ShouldProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup)
@@ -39,14 +44,17 @@ namespace Klarna.OrderManagement.Steps
             return isPending || isFraudStopped;
         }
 
-        private bool ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup, ref string message)
+        private PaymentStepResult ProcessFraudUpdate(IPayment payment, IOrderGroup orderGroup)
         {
+            var paymentStepResult = new PaymentStepResult();
+
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_ACCEPTED))
             {
                 payment.Status = PaymentStatus.Processed.ToString();
                 OrderStatusManager.ReleaseHoldOnOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk accepted");
-                return true;
+                paymentStepResult.Status = true;
+                return paymentStepResult;
             }
 
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_REJECTED))
@@ -54,7 +62,8 @@ namespace Klarna.OrderManagement.Steps
                 payment.Status = PaymentStatus.Failed.ToString();
                 OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk rejected");
-                return false;
+                paymentStepResult.Status = true;
+                return paymentStepResult;
             }
 
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_STOPPED))
@@ -62,13 +71,15 @@ namespace Klarna.OrderManagement.Steps
                 payment.Status = PaymentStatus.Failed.ToString();
                 OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk stopped");
-                return false;
+                paymentStepResult.Status = true;
+                return paymentStepResult;
             }
 
-            message = $"Can't process authorization. Unknown fraud notitication: {payment.Properties[Common.Constants.FraudStatusPaymentField]} or no fraud notifications received so far.";
-            return false;
+            paymentStepResult.Message = $"Can't process authorization. Unknown fraud notification: {payment.Properties[Common.Constants.FraudStatusPaymentField]} or no fraud notifications received so far.";
+            
+            return paymentStepResult;
         }
 
-        public abstract bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message);
+        public abstract Task<PaymentStepResult> ProcessAuthorization(IPayment payment, IOrderGroup orderGroup);
     }
 }

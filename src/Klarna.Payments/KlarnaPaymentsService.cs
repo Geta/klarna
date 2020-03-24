@@ -13,7 +13,7 @@ using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Payments.Extensions;
-using Klarna.Rest.Models;
+using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
@@ -95,7 +95,7 @@ namespace Klarna.Payments
 
         private Session CreateSessionRequest(ICart cart, SessionSettings settings)
         {
-// Check if we shared PI before, if so it allows us to share it again
+            // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
             var config = GetConfiguration(cart.MarketId);
 
@@ -325,7 +325,7 @@ namespace Klarna.Payments
                 }
                 else if (request.ShippingAddress != null)
                 {
-                    request.BillingAddress = new Address()
+                    request.BillingAddress = new OrderManagementAddressInfo()
                     {
                         Email = request.ShippingAddress?.Email,
                         Phone = request.ShippingAddress?.Phone

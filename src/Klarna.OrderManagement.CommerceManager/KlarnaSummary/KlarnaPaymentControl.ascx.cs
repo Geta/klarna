@@ -58,8 +58,8 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
                     KlarnaReferenceLabel.Text = orderData.KlarnaReference;
                     MerchantReference1Label.Text = orderData.MerchantReference1;
                     MerchantReference2Label.Text = orderData.MerchantReference2;
-                    ExpiresAtLabel.Text = orderData.ExpiresAt.ToLongDateString();
-                    StatusLabel.Text = orderData.Status;
+                    ExpiresAtLabel.Text = orderData.ExpiresAt;
+                    StatusLabel.Text = orderData.Status.ToString();
                     OrderAmountLabel.Text = GetAmount(orderData.OrderAmount);
                     CapturedAmountLabel.Text = GetAmount(orderData.CapturedAmount);
                     RefundedAmountLabel.Text = GetAmount(orderData.RefundedAmount);

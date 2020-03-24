@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.Common.Helpers;
-using Klarna.Rest.Transport;
+using Klarna.Common.Models;
+using Klarna.Rest.Core.Communication;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 
@@ -23,13 +25,15 @@ namespace Klarna.OrderManagement.Steps
         /// POST /ordermanagement/v1/orders/{order_id}/captures for the amount which needs to be captured.
         ///     If it's a partial capture the API call will be the same just for the
         /// amount that should be captured. Many captures can be made up to the whole amount authorized.
-        /// The shipment information can be added in this call or amended aftewards using the method
+        /// The shipment information can be added in this call or amended afterwards using the method
         /// "Add shipping info to a capture".
         ///     The amount captured never can be greater than the authorized.
-        /// When an order is Partally Captured the status of the order in Klarna is PART_CAPTURED
+        /// When an order is Partially Captured the status of the order in Klarna is PART_CAPTURED
         /// </summary>
-        public override bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message)
+        public override async Task<PaymentStepResult> Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment)
         {
+            var paymentStepResult = new PaymentStepResult();
+
             if (payment.TransactionType == TransactionType.Capture.ToString())
             {
                 var amount = AmountHelper.GetAmount(payment.Amount);
@@ -38,27 +42,29 @@ namespace Klarna.OrderManagement.Steps
                 {
                     try
                     {
-                        var captureData = KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment", orderGroup, orderForm, payment, shipment);
+                        var captureData = await KlarnaOrderService.CaptureOrder(orderId, amount, "Capture the payment", orderGroup, orderForm, payment, shipment).ConfigureAwait(false);
                         AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Captured {payment.Amount}, id {captureData.CaptureId}");
+                        paymentStepResult.Status = true;
                     }
                     catch (Exception ex) when (ex is ApiException || ex is WebException || ex is AggregateException)
                     {
                         var exceptionMessage = GetExceptionMessage(ex);
 
                         payment.Status = PaymentStatus.Failed.ToString();
-                        message = exceptionMessage;
+                        
                         AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {exceptionMessage}");
                         Logger.Error(exceptionMessage, ex);
-                        return false;
+
+                        paymentStepResult.Message = exceptionMessage;
                     }
                 }
-                return true;
             }
             else if (Successor != null)
             {
-                return Successor.Process(payment, orderForm, orderGroup, shipment, ref message);
+                return await Successor.Process(payment, orderForm, orderGroup, shipment).ConfigureAwait(false);
             }
-            return false;
+
+            return paymentStepResult;
         }
     }
 }

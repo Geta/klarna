@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
+using Klarna.Common;
+using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
 using Klarna.Payments.Steps;
@@ -42,8 +45,9 @@ namespace Klarna.Payments
         {
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
-            var message = string.Empty;
-            return ProcessPayment(payment, shipment, ref message)
+            var result = AsyncHelper.RunSync(() => ProcessPayment(payment, shipment));
+            var message = result.Message;
+            return result.Status
                 ? PaymentProcessingResult.CreateSuccessfulResult(message)
                 : PaymentProcessingResult.CreateUnsuccessfulResult(message);
         }
@@ -72,16 +76,22 @@ namespace Klarna.Payments
 
             _shipment = _orderForm.Shipments.FirstOrDefault();
 
-            return ProcessPayment(payment, _shipment, ref message);
+            var result = AsyncHelper.RunSync(() => ProcessPayment(payment, _shipment));
+            message = result.Message;
+
+            return result.Status;
         }
 
         public bool ProcessPayment(Payment payment, Shipment shipment, ref string message)
         {
-            return ProcessPayment(payment as IPayment, shipment, ref message);
+            var result = AsyncHelper.RunSync(() => ProcessPayment(payment as IPayment, shipment));
+            message = result.Message;
+            return result.Status;
         }
 
-        public bool ProcessPayment(IPayment payment, IShipment shipment, ref string message)
+        public async Task<PaymentStepResult> ProcessPayment(IPayment payment, IShipment shipment)
         {
+            var paymentStepResult = new PaymentStepResult();
             _shipment = shipment;
             
             if (_orderForm == null)
@@ -95,13 +105,13 @@ namespace Klarna.Payments
 
             if (OrderGroup == null)
             {
-                message = "OrderGroup is null";
-                throw new Exception(message);
+                paymentStepResult.Message = "OrderGroup is null";
+                throw new Exception(paymentStepResult.Message);
             }
 
             try
             {
-                Logger.Debug("Klarna checkout gateway. Processing Payment ....");
+                Logger.Debug("Klarna Payment gateway. Processing Payment ....");
 
                 var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, KlarnaPaymentsService);
                 var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
@@ -114,12 +124,12 @@ namespace Klarna.Payments
                 capturePaymentStep.SetSuccessor(creditPaymentStep);
                 creditPaymentStep.SetSuccessor(releaseRemainingPaymentStep);
 
-                return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, _shipment, ref message);
+                return await authorizePaymentStep.Process(payment, _orderForm, OrderGroup, _shipment).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 Logger.Error("Process payment failed with error: " + ex.Message, ex);
-                message = ex.Message;
+                paymentStepResult.Message = ex.Message;
                 throw;
             }
         }

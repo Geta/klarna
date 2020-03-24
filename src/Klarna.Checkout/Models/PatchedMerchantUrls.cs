@@ -1,12 +1,8 @@
-﻿using System;
-using Klarna.Rest.Models;
-using Newtonsoft.Json;
+﻿using Klarna.Rest.Core.Model;
 
 namespace Klarna.Checkout.Models
 {
-    public class PatchedMerchantUrls : MerchantUrls
+    public class PatchedMerchantUrls : CheckoutMerchantUrls
     {
-        [JsonProperty("cancellation_terms")]
-        public Uri CancellationTerms { get; set; }
     }
 }

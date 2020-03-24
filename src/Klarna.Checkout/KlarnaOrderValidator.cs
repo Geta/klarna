@@ -11,12 +11,12 @@ namespace Klarna.Checkout
         {
             return checkoutData.OrderAmount.Equals(otherCheckoutOrderData.OrderAmount) &&
                    checkoutData.OrderTaxAmount.Equals(otherCheckoutOrderData.OrderTaxAmount) &&
-                   checkoutData.ShippingAddress != null &&
-                   otherCheckoutOrderData.ShippingAddress != null &&
-                   checkoutData.ShippingAddress.PostalCode.Equals(otherCheckoutOrderData.ShippingAddress.PostalCode, StringComparison.InvariantCultureIgnoreCase) &&
-                   (checkoutData.ShippingAddress.Region == null && otherCheckoutOrderData.ShippingAddress.Region == null ||
-                   checkoutData.ShippingAddress.Region.Equals(otherCheckoutOrderData.ShippingAddress.Region, StringComparison.InvariantCultureIgnoreCase)) &&
-                   checkoutData.ShippingAddress.Country.Equals(otherCheckoutOrderData.ShippingAddress.Country, StringComparison.InvariantCultureIgnoreCase);
+                   checkoutData.ShippingCheckoutAddress != null &&
+                   otherCheckoutOrderData.ShippingCheckoutAddress != null &&
+                   checkoutData.ShippingCheckoutAddress.PostalCode.Equals(otherCheckoutOrderData.ShippingCheckoutAddress.PostalCode, StringComparison.InvariantCultureIgnoreCase) &&
+                   (checkoutData.ShippingCheckoutAddress.Region == null && otherCheckoutOrderData.ShippingCheckoutAddress.Region == null ||
+                   checkoutData.ShippingCheckoutAddress.Region.Equals(otherCheckoutOrderData.ShippingCheckoutAddress.Region, StringComparison.InvariantCultureIgnoreCase)) &&
+                   checkoutData.ShippingCheckoutAddress.Country.Equals(otherCheckoutOrderData.ShippingCheckoutAddress.Country, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
