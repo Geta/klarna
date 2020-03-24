@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
 using Klarna.Rest.Core.Communication;
@@ -21,15 +22,14 @@ namespace Klarna.Checkout.Steps
         {
         }
 
-        public override bool ProcessAuthorization(IPayment payment, IOrderGroup orderGroup, ref string message)
+        public override async Task<PaymentStepResult> ProcessAuthorization(IPayment payment, IOrderGroup orderGroup)
         {
+            var paymentStepResult = new PaymentStepResult();
             var orderId = orderGroup.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
 
             try
             {
-                var result = Task
-                    .Run(() => KlarnaOrderService.GetOrder(orderId))
-                    .Result;
+                var result = await KlarnaOrderService.GetOrder(orderId).ConfigureAwait(false);
 
                 if (result != null)
                 {
@@ -39,12 +39,12 @@ namespace Klarna.Checkout.Steps
 
                     if (result.FraudStatus == OrderManagementFraudStatus.REJECTED)
                     {
-                        message = "Klarna fraud status rejected";
+                        paymentStepResult.Message = "Klarna fraud status rejected";
                         payment.Status = PaymentStatus.Failed.ToString();
                     }
                     else
                     {
-                        return true;
+                        paymentStepResult.Status = true;
                     }
                 }
 
@@ -55,14 +55,12 @@ namespace Klarna.Checkout.Steps
                 var exceptionMessage = GetExceptionMessage(ex);
 
                 payment.Status = PaymentStatus.Failed.ToString();
-                message = exceptionMessage;
+                paymentStepResult.Message = exceptionMessage;
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, $"Error occurred {exceptionMessage}");
                 Logger.Error(exceptionMessage, ex);
-
-                return false;
             }
 
-            return true;
+            return paymentStepResult;
         }
     }
 }

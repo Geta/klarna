@@ -70,7 +70,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         {
             var request = _klarnaPaymentsService.GetPersonalInformationSession(cart);
 
-            // Get billling address info
+            // Get billing address info
             var billingAddress =
                 _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == billingAddressId)?
                     .ToOrderAddress();

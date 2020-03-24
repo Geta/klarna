@@ -95,7 +95,7 @@ namespace Klarna.Payments
 
         private Session CreateSessionRequest(ICart cart, SessionSettings settings)
         {
-// Check if we shared PI before, if so it allows us to share it again
+            // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
             var config = GetConfiguration(cart.MarketId);
 

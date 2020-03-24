@@ -10,8 +10,8 @@
     <iconUrl>https://cdn.geta.no/opensource/icons/Geta-logo-3.png</iconUrl>
     <projectUrl>https://github.com/Geta/Klarna/tree/master/src/Klarna.Checkout</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <copyright>Copyright 2018 Geta</copyright>
-    <tags>EPiServer Commerce 12</tags>
+    <copyright>Copyright 2020 Geta</copyright>
+    <tags>EPiServer Commerce 13</tags>
   </metadata>
   <files>
     <file src="readme.txt" target="" />

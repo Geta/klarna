@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using EPiServer.Commerce.Order;
@@ -115,20 +116,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/push")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult Push(int orderGroupId, string klarna_order_id)
+        public async Task<IHttpActionResult> Push(int orderGroupId, string klarna_order_id)
         {
             if (klarna_order_id == null)
             {
                 return BadRequest();
             }
-            var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            var purchaseOrder = await GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
             if (purchaseOrder == null)
             {
                 return NotFound();
             }
 
             // Update merchant reference
-            _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder);
+            await _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder).ConfigureAwait(false);
 
             // Acknowledge the order through the order management API
             _klarnaCheckoutService.AcknowledgeOrder(purchaseOrder);
@@ -136,7 +137,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             return Ok();
         }
 
-        private IPurchaseOrder GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
+        private async Task<IPurchaseOrder> GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
         {
             // Check if the order has been created already
             var purchaseOrder = _klarnaCheckoutService.GetPurchaseOrderByKlarnaOrderId(klarnaOrderId);
@@ -154,7 +155,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
 
             var market = _marketService.GetMarket(cart.MarketId);
-            var order = _klarnaCheckoutService.GetOrder(klarnaOrderId, market);
+            var order = await _klarnaCheckoutService.GetOrder(klarnaOrderId, market).ConfigureAwait(false);
             if (!order.Status.Equals("checkout_complete"))
             {
                 // Won't create order, Klarna checkout not complete

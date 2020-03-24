@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Threading.Tasks;
 using EPiServer.Logging;
 using Klarna.Rest.Core.Communication;
 using Klarna.Rest.Core.Model;
@@ -7,9 +7,9 @@ namespace Klarna.Checkout
 {
     public interface ICheckoutOrder
     {
-        void Create(CheckoutOrder order);
-        CheckoutOrder Update(CheckoutOrder order);
-        CheckoutOrder Fetch(string orderId);
+        Task<CheckoutOrder> Create(CheckoutOrder order);
+        Task<CheckoutOrder> Update(CheckoutOrder order);
+        Task<CheckoutOrder> Fetch(string orderId);
     }
 
     public class LoggingCheckoutOrder : ICheckoutOrder
@@ -22,18 +22,11 @@ namespace Klarna.Checkout
             _client = client;
         }
 
-        private readonly ICheckoutOrder _inner;
-
-        public LoggingCheckoutOrder(ICheckoutOrder inner)
-        {
-            _inner = inner ?? throw new ArgumentNullException(nameof(inner));
-        }
-
-        public void Create(CheckoutOrder checkoutOrderData)
+        public async Task<CheckoutOrder> Create(CheckoutOrder checkoutOrderData)
         {
             try
             {
-                _client.Checkout.CreateOrder(checkoutOrderData);
+                return await _client.Checkout.CreateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -42,11 +35,11 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrder Update(CheckoutOrder checkoutOrderData)
+        public async Task<CheckoutOrder> Update(CheckoutOrder checkoutOrderData)
         {
             try
             {
-                return _client.Checkout.UpdateOrder(checkoutOrderData).Result;
+                return await _client.Checkout.UpdateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -55,12 +48,12 @@ namespace Klarna.Checkout
             }
         }
 
-        public CheckoutOrder Fetch(string orderId)
+        public async Task<CheckoutOrder> Fetch(string orderId)
         {
             try
             {
 
-                return _client.Checkout.GetOrder(orderId).Result;
+                return await _client.Checkout.GetOrder(orderId).ConfigureAwait(false);
             }
             catch (ApiException e)
             {

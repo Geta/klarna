@@ -9,11 +9,11 @@ namespace Klarna.Checkout
 {
     public interface IKlarnaCheckoutService : IKlarnaService
     {
-        CheckoutOrder CreateOrUpdateOrder(ICart cart);
-        CheckoutOrder CreateOrder(ICart cart);
-        CheckoutOrder UpdateOrder(string orderId, ICart cart);
+        Task<CheckoutOrder> CreateOrUpdateOrder(ICart cart);
+        Task<CheckoutOrder> CreateOrder(ICart cart);
+        Task<CheckoutOrder> UpdateOrder(string orderId, ICart cart);
 
-        CheckoutOrder GetOrder(string klarnaOrderId, IMarket market);
+        Task<CheckoutOrder> GetOrder(string klarnaOrderId, IMarket market);
 
         ICart GetCartByKlarnaOrderId(int orderGroupId, string orderId);
 
@@ -25,7 +25,7 @@ namespace Klarna.Checkout
 
         bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData);
 
-        void UpdateMerchantReference1(IPurchaseOrder purchaseOrder);
+        Task UpdateMerchantReference1(IPurchaseOrder purchaseOrder);
         void AcknowledgeOrder(IPurchaseOrder purchaseOrder);
         CheckoutConfiguration GetConfiguration(IMarket market);
         CheckoutConfiguration GetConfiguration(MarketId marketId);

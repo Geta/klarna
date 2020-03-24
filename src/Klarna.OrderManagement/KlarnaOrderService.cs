@@ -24,27 +24,28 @@ namespace Klarna.OrderManagement
             _klarnaOrderServiceApi = klarnaOrderServiceApi;
         }
 
-        public void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        public async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
-            _client.OrderManagement.AcknowledgeOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString());
+            await _client.OrderManagement.AcknowledgeOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).ConfigureAwait(false);
         }
 
-        public void CancelOrder(string orderId)
+        public async Task CancelOrder(string orderId)
         {
-            _client.OrderManagement.CancelOrder(orderId);
+            await _client.OrderManagement.CancelOrder(orderId).ConfigureAwait(false);
         }
 
-        public void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
+        public async Task UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
         {
             var updateMerchantReferences = new OrderManagementMerchantReferences
             {
                 MerchantReference1 = merchantReference1,
                 MerchantReference2 = merchantReference2
             };
-            _client.OrderManagement.UpdateMerchantReferences(orderId, updateMerchantReferences);
+
+            await _client.OrderManagement.UpdateMerchantReferences(orderId, updateMerchantReferences).ConfigureAwait(false);
         }
 
-        public OrderManagementCapture CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
+        public async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
         {
             var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
@@ -54,10 +55,10 @@ namespace Klarna.OrderManagement
                 Description = description,
                 OrderLines = lines
             };
-            return  _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false).GetAwaiter().GetResult();
+            return  await _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public OrderManagementCapture CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
+        public async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
         {
             if (shipment == null)
             {
@@ -79,10 +80,10 @@ namespace Klarna.OrderManagement
                 ShippingInfo = new List<OrderManagementShippingInfo>() { shippingInfo }
             };
 
-            return _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false).GetAwaiter().GetResult();
+            return await _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
+        public async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
             var lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
@@ -92,32 +93,32 @@ namespace Klarna.OrderManagement
                 Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
-            var result = _client.OrderManagement.CreateAndFetchRefund(orderId, refund);
+            await _client.OrderManagement.CreateAndFetchRefund(orderId, refund).ConfigureAwait(false);
         }
 
-        public void ReleaseRemaininAuthorization(string orderId)
+        public async Task ReleaseRemainingAuthorization(string orderId)
         { 
-            _client.OrderManagement.ReleaseRemainingAuthorization(orderId);
+            await _client.OrderManagement.ReleaseRemainingAuthorization(orderId).ConfigureAwait(false);
         }
 
-        public void TriggerSendOut(string orderId, string captureId)
+        public async Task TriggerSendOut(string orderId, string captureId)
         {
-           _client.OrderManagement.TriggerResendOfCustomerCommunication(orderId, captureId);
+           await _client.OrderManagement.TriggerResendOfCustomerCommunication(orderId, captureId).ConfigureAwait(false);
         }
 
-        public Task<PatchedOrderData> GetOrder(string orderId)
+        public async Task<PatchedOrderData> GetOrder(string orderId)
         {
-            return _klarnaOrderServiceApi.GetOrder(orderId);
+            return await _klarnaOrderServiceApi.GetOrder(orderId).ConfigureAwait(false);
         }
 
-        public void ExtendAuthorizationTime(string orderId)
+        public async Task ExtendAuthorizationTime(string orderId)
         {
-             _client.OrderManagement.ExtendAuthorizationTime(orderId);
+             await _client.OrderManagement.ExtendAuthorizationTime(orderId).ConfigureAwait(false);
         }
 
-        public void UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
+        public async Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
         {
-            _client.OrderManagement.UpdateCustomerAddresses(orderId, updateCustomerDetails);
+            await _client.OrderManagement.UpdateCustomerAddresses(orderId, updateCustomerDetails).ConfigureAwait(false);
         }
 
         private int GetAmount(decimal money)

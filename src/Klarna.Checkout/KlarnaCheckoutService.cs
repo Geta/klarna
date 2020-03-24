@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
@@ -14,7 +15,6 @@ using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.OrderManagement;
 using Klarna.Payments.Models;
-using Klarna.Rest.Core.Common;
 using Klarna.Rest.Core.Communication;
 using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
@@ -89,20 +89,20 @@ namespace Klarna.Checkout
             return _client;
         }
 
-        public virtual CheckoutOrder CreateOrUpdateOrder(ICart cart)
+        public virtual async Task<CheckoutOrder> CreateOrUpdateOrder(ICart cart)
         {
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (string.IsNullOrWhiteSpace(orderId))
             {
-                return CreateOrder(cart);
+                return await CreateOrder(cart);
             }
             else
             {
-                return UpdateOrder(orderId, cart);
+                return await UpdateOrder(orderId, cart).ConfigureAwait(false);
             }
         }
 
-        public virtual CheckoutOrder CreateOrder(ICart cart)
+        public virtual async Task<CheckoutOrder> CreateOrder(ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
             var checkout = CreateCheckoutOrder(market);
@@ -134,7 +134,7 @@ namespace Klarna.Checkout
                     checkoutOrderDataBuilder.Build(orderData, cart, checkoutConfiguration);
                 }
 
-                checkout.Create(orderData);
+                orderData = await checkout.Create(orderData).ConfigureAwait(false);
 
                 UpdateCartWithOrderData(cart, orderData);
 
@@ -152,7 +152,7 @@ namespace Klarna.Checkout
             }
         }
 
-        public virtual CheckoutOrder UpdateOrder(string orderId, ICart cart)
+        public virtual async Task<CheckoutOrder> UpdateOrder(string orderId, ICart cart)
         {
             var market = _marketService.GetMarket(cart.MarketId);
             var checkout = CreateCheckoutOrder(market);
@@ -166,7 +166,7 @@ namespace Klarna.Checkout
                     checkoutOrderDataBuilder.Build(orderData, cart, checkoutConfiguration);
                 }
 
-                orderData = checkout.Update(orderData);
+                orderData = await checkout.Update(orderData).ConfigureAwait(false);
 
                 cart = UpdateCartWithOrderData(cart, orderData);
 
@@ -177,7 +177,7 @@ namespace Klarna.Checkout
                 // Create new session if current one is not found
                 if (ex.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return CreateOrder(cart);
+                    return await CreateOrder(cart).ConfigureAwait(false);
                 }
 
                 _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
@@ -188,7 +188,7 @@ namespace Klarna.Checkout
             {
                 if ((ex.Response as HttpWebResponse)?.StatusCode == HttpStatusCode.NotFound)
                 {
-                    return CreateOrder(cart);
+                    return await CreateOrder(cart).ConfigureAwait(false);
                 }
 
                 _logger.Error(ex.Message, ex);
@@ -307,10 +307,10 @@ namespace Klarna.Checkout
             return string.IsNullOrWhiteSpace(colorString) ? null : colorString;
         }
 
-        public virtual CheckoutOrder GetOrder(string klarnaOrderId, IMarket market)
+        public virtual async Task<CheckoutOrder> GetOrder(string klarnaOrderId, IMarket market)
         {
             var checkout = CreateCheckoutOrder(market);
-            return checkout.Fetch(klarnaOrderId);
+            return await checkout.Fetch(klarnaOrderId).ConfigureAwait(false);
         }
 
         public virtual ICart GetCartByKlarnaOrderId(int orderGroupdId, string orderId)
@@ -431,14 +431,14 @@ namespace Klarna.Checkout
             }
         }
 
-        public virtual void UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
+        public virtual async Task UpdateMerchantReference1(IPurchaseOrder purchaseOrder)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
 
             var orderId = purchaseOrder.Properties[Common.Constants.KlarnaOrderIdField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId) && purchaseOrder is PurchaseOrder)
             {
-                klarnaOrderService.UpdateMerchantReferences(orderId, ((PurchaseOrder)purchaseOrder).TrackingNumber, null);
+                await klarnaOrderService.UpdateMerchantReferences(orderId, ((PurchaseOrder)purchaseOrder).TrackingNumber, null).ConfigureAwait(false);
             }
         }
 

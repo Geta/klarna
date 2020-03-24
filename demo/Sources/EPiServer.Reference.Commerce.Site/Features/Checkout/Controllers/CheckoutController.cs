@@ -13,10 +13,11 @@ using EPiServer.Web;
 using EPiServer.Web.Mvc;
 using EPiServer.Web.Mvc.Html;
 using EPiServer.Web.Routing;
-using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using Klarna.Checkout;
 using Klarna.Payments;
 using Klarna.Payments.Models;
@@ -81,6 +82,12 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             }
 
             var viewModel = CreateCheckoutViewModel(currentPage);
+
+            var klarnaCheckoutMethod = viewModel.Payment as KlarnaCheckoutPaymentMethod;
+            if (klarnaCheckoutMethod != null)
+            {
+                 await klarnaCheckoutMethod.InitializeValuesAsync();
+            }
 
             Cart.Currency = _currencyService.GetCurrentCurrency();
 
@@ -212,13 +219,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         }
 
         [HttpGet]
-        public ActionResult KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
+        public async Task<ActionResult> KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
         {
             var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
             if (cart != null)
             {
                 var market = _marketService.GetMarket(cart.MarketId);
-                var order = _klarnaCheckoutService.GetOrder(klarna_order_id, market);
+                var order = await _klarnaCheckoutService.GetOrder(klarna_order_id, market).ConfigureAwait(false);
                 if (order.Status == "checkout_complete")
                 {
                     var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
@@ -229,11 +236,18 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
                         return RedirectToAction("Index");
                     }
 
-                    _checkoutService.SendConfirmation(new CheckoutViewModel
+                    var currentPage = _contentLoader.Get<CheckoutPage>(_contentLoader.GetStartPage().CheckoutPage);
+
+                    var address = new Shared.Models.AddressModel
                     {
-                        CurrentPage = _contentLoader.Get<CheckoutPage>(_contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage),
-                        BillingAddress = new Shared.Models.AddressModel { Email = purchaseOrder.GetFirstForm().Payments.FirstOrDefault()?.BillingAddress.Email }
-                    }, purchaseOrder);
+                        Email = purchaseOrder.GetFirstForm().Payments.FirstOrDefault()?.BillingAddress.Email
+                    };
+
+                _checkoutService.SendConfirmation(new CheckoutViewModel
+                    {
+                        CurrentPage = currentPage,
+                        BillingAddress = address
+                }, purchaseOrder);
 
                     return Redirect(_checkoutService.BuildRedirectionUrl(purchaseOrder));
                 }

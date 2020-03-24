@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common.Extensions;
+using Klarna.Common.Models;
 using Klarna.Rest.Core.Communication;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
@@ -35,7 +37,7 @@ namespace Klarna.OrderManagement.Steps
             this.Successor = successor;
         }
 
-        public abstract bool Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment, ref string message);
+        public abstract Task<PaymentStepResult> Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment);
 
         protected void AddNoteAndSaveChanges(IOrderGroup orderGroup, string transactionType, string noteMessage)
         {

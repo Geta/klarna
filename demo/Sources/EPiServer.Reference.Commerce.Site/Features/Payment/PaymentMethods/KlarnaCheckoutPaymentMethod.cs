@@ -3,10 +3,12 @@ using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using Klarna.Checkout;
 using Klarna.Payments.Models;
@@ -23,18 +25,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public override string SystemKeyword => Constants.KlarnaCheckoutSystemKeyword;
 
-        public KlarnaCheckoutPaymentMethod()
-            : this(
-                LocalizationService.Current,
-                ServiceLocator.Current.GetInstance<IOrderGroupFactory>(),
-                ServiceLocator.Current.GetInstance<LanguageService>(),
-                ServiceLocator.Current.GetInstance<IPaymentManagerFacade>(),
-                ServiceLocator.Current.GetInstance<ICartService>(),
-                ServiceLocator.Current.GetInstance<IContentLoader>(),
-                ServiceLocator.Current.GetInstance<IKlarnaCheckoutService>())
-        {
-        }
-
         public KlarnaCheckoutPaymentMethod(
             LocalizationService localizationService,
             IOrderGroupFactory orderGroupFactory,
@@ -49,17 +39,19 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             _cartService = cartService;
             _contentLoader = contentLoader;
             _klarnaCheckoutService = klarnaCheckoutService;
-
-            InitializeValues();
         }
 
-        public void InitializeValues()
+        public async Task InitializeValuesAsync()
         {
-            var startPage = _contentLoader.Get<StartPage>(ContentReference.StartPage);
-            if (!startPage.KlarnaCheckoutEnabled) return;
+            var startPage = _contentLoader.GetStartPage();
+            if (!startPage.KlarnaCheckoutEnabled)
+            {
+                return;
+            }
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
-            var orderData = _klarnaCheckoutService.CreateOrUpdateOrder(cart);
-            HtmlSnippet = orderData?.HtmlSnippet;
+            var orderData = await _klarnaCheckoutService.CreateOrUpdateOrder(cart).ConfigureAwait(false);
+
+            HtmlSnippet = orderData.HtmlSnippet;
         }
 
         public override IPayment CreatePayment(decimal amount, IOrderGroup orderGroup)

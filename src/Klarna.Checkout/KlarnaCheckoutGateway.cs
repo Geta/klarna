@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 using Klarna.Checkout.Steps;
+using Klarna.Common;
+using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
 
@@ -25,8 +28,9 @@ namespace Klarna.Checkout
         {
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
-            var message = string.Empty;
-            return ProcessPayment(payment, ref message)
+            var result = AsyncHelper.RunSync(() => ProcessPayment(payment));
+            var message = result.Message;
+            return result.Status
                 ? PaymentProcessingResult.CreateSuccessfulResult(message)
                 : PaymentProcessingResult.CreateUnsuccessfulResult(message);
         }
@@ -35,10 +39,13 @@ namespace Klarna.Checkout
         {
             OrderGroup = payment.Parent.Parent;
             _orderForm = payment.Parent;
-            return ProcessPayment(payment, ref message);
+            var result = AsyncHelper.RunSync(() => ProcessPayment(payment));
+            message = result.Message;
+
+            return result.Status;
         }
 
-        public bool ProcessPayment(IPayment payment, ref string message)
+        public async Task<PaymentStepResult> ProcessPayment(IPayment payment)
         {
             try
             {
@@ -58,13 +65,14 @@ namespace Klarna.Checkout
                 capturePaymentStep.SetSuccessor(creditPaymentStep);
                 creditPaymentStep.SetSuccessor(cancelPaymentStep);
 
-                return authorizePaymentStep.Process(payment, _orderForm, OrderGroup, OrderGroup.GetFirstShipment(), ref message);
+                return await authorizePaymentStep.Process(payment, _orderForm, OrderGroup, OrderGroup.GetFirstShipment()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 Logger.Error("Process checkout failed with error: " + ex.Message, ex);
-                message = ex.Message;
-                throw;
+
+                var paymentStepResult = new PaymentStepResult {Message = ex.Message};
+                return paymentStepResult;
             }
         }
     }

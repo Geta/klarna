@@ -194,12 +194,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
             };
 
-            var startpage = _contentRepository.Get<StartPage>(ContentReference.StartPage);
             var confirmationPage = _contentRepository.GetChildren<OrderConfirmationPage>(viewModel.CurrentPage.ContentLink).First();
 
             try
             {
-                _mailService.Send(startpage.OrderConfirmationMail, queryCollection, viewModel.BillingAddress.Email, confirmationPage.Language.Name);
+                _mailService.Send(_contentLoader.GetStartPage().OrderConfirmationMail, queryCollection, viewModel.BillingAddress.Email, confirmationPage.Language.Name);
             }
             catch (Exception e)
             {
@@ -235,7 +234,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
                 {"orderNumber", purchaseOrder.OrderLink.OrderGroupId.ToString(CultureInfo.CurrentCulture)}
             };
 
-            var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(_contentLoader.Get<StartPage>(ContentReference.StartPage).CheckoutPage);
+            var confirmationPage = _contentRepository.GetFirstChild<OrderConfirmationPage>(_contentLoader.GetStartPage().CheckoutPage);
 
             return new UrlBuilder(confirmationPage.LinkURL) { QueryCollection = queryCollection }.ToString();
         }
