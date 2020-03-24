@@ -77,7 +77,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 // check validation issues and redirect to a page to display the error
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
+                httpResponseMessage.Headers.Location = new Uri("https://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
                 return ResponseMessage(httpResponseMessage);
             }
 
@@ -97,7 +97,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
             {
                 var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-                httpResponseMessage.Headers.Location = new Uri("http://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
+                httpResponseMessage.Headers.Location = new Uri("https://klarna.geta.no/en/error-pages/checkout-something-went-wrong/");
                 return ResponseMessage(httpResponseMessage);
             }
 
@@ -122,7 +122,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             {
                 return BadRequest();
             }
-            var purchaseOrder = await GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
+            var purchaseOrder = await GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id).ConfigureAwait(false);
             if (purchaseOrder == null)
             {
                 return NotFound();
