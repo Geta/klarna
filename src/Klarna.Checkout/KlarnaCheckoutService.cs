@@ -84,7 +84,9 @@ namespace Klarna.Checkout
             {
                 var connectionConfiguration = GetCheckoutConfiguration(market);
 
-                _client =  new Client(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
+                string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.Checkout_{typeof(KlarnaCheckoutService).Assembly.GetName().Version}";
+
+                _client =  new Client(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl, userAgent);
             }
             return _client;
         }
