@@ -74,6 +74,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
             var billingAddress =
                 _customerContextFacade.CurrentContact.ContactAddresses.FirstOrDefault(x => x.Name == billingAddressId)?
                     .ToOrderAddress();
+
+            if (string.IsNullOrEmpty(billingAddress.Phone))
+            {
+                // KP needs a phone number - adding for testing purpose
+                billingAddress.Phone = "111 111 1111";
+            }
+
             request.BillingAddress = billingAddress;
 
             return request;
