@@ -2,11 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
-## [3.0.0]
+## [3.0.1]
 
-### Changed
+### Changed (breaking)
 
-- Upgraded to Episerver Commerce 13.
+- [All packages] Fixed #68 - Upgrade to Episerver Commerce 13
+- [All packages] Fixed #58 - Update deprecated package Klarna.Rest to Klarna.Rest.Core
+- [Klarna Checkout] KlarnaCheckoutService is now async
+- [Klarna Order management] KlarnaOrderService is now async
+
+### Added
+
+AsyncHelper has been added to help call async methods synchronize - this can be used to make the upgrade easier in your code. We do recommend making your controller async.
+
+```
+Klarna.Common.AsyncHelper.RunSync(() => MyAsyncMethod());
+```
 
 ## [2.0.13]
 
