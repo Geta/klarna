@@ -25,12 +25,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.Controllers
         {
             var viewModel = _paymentMethodViewModelFactory.CreatePaymentMethodSelectionViewModel(paymentMethodId);
 
-            var klarnaCheckoutMethod = viewModel.SelectedPaymentMethod.PaymentMethod as KlarnaCheckoutPaymentMethod;
-            if (klarnaCheckoutMethod != null)
-            {
-                await klarnaCheckoutMethod.InitializeValuesAsync().ConfigureAwait(false);
-            }
-
             return PartialView("_PaymentMethodSelection", viewModel);
         }
 

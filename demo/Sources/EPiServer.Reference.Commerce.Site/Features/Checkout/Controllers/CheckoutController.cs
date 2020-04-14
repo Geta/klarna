@@ -83,12 +83,6 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var viewModel = CreateCheckoutViewModel(currentPage);
 
-            var klarnaCheckoutMethod = viewModel.Payment as KlarnaCheckoutPaymentMethod;
-            if (klarnaCheckoutMethod != null)
-            {
-                 await klarnaCheckoutMethod.InitializeValuesAsync();
-            }
-
             Cart.Currency = _currencyService.GetCurrentCurrency();
 
             _checkoutService.UpdateShippingAddresses(Cart, viewModel);

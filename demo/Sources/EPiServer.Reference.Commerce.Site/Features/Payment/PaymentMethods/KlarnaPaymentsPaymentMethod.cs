@@ -8,11 +8,13 @@ using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using EPiServer.Web;
+using Klarna.Common;
 using Klarna.Payments;
 using Klarna.Payments.Extensions;
 using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Managers;
+using Constants = Klarna.Payments.Constants;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
@@ -61,7 +63,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         {
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             var siteUrl = SiteDefinition.Current.SiteUrl;
-            if (_klarnaPaymentsService.CreateOrUpdateSession(cart, new SessionSettings(siteUrl)).Result)
+            if (AsyncHelper.RunSync(() => _klarnaPaymentsService.CreateOrUpdateSession(cart, new SessionSettings(siteUrl))))
             {
                 ClientToken = cart.GetKlarnaClientToken();
                 PaymentMethodCategories = cart.GetKlarnaPaymentMethodCategories();

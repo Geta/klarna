@@ -3,15 +3,14 @@ using EPiServer.Framework.Localization;
 using EPiServer.ServiceLocation;
 using Mediachase.Commerce.Orders;
 using System.ComponentModel;
-using System.Threading.Tasks;
-using EPiServer.Core;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
-using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using Klarna.Checkout;
+using Klarna.Common;
 using Klarna.Payments.Models;
+using Constants = Klarna.Checkout.Constants;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 {
@@ -39,9 +38,11 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
             _cartService = cartService;
             _contentLoader = contentLoader;
             _klarnaCheckoutService = klarnaCheckoutService;
+
+            InitializeValues();
         }
 
-        public async Task InitializeValuesAsync()
+        public void InitializeValues()
         {
             var startPage = _contentLoader.GetStartPage();
             if (!startPage.KlarnaCheckoutEnabled)
@@ -49,7 +50,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                 return;
             }
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
-            var orderData = await _klarnaCheckoutService.CreateOrUpdateOrder(cart).ConfigureAwait(false);
+            var orderData = AsyncHelper.RunSync(() => _klarnaCheckoutService.CreateOrUpdateOrder(cart));
 
             HtmlSnippet = orderData.HtmlSnippet;
         }
