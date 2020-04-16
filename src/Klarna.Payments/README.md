@@ -213,10 +213,10 @@ Step 2: Placing order (personal information is shared)
 - Client side - When the user clicks on 'Place order' we use the Klarna javascript library to do an authorize call, providing the necessary PI. Best practice is to disable the place order button after the user clicks it to prevent subsequent calls.
   - If authorize succeeds we receive an authorization token, which we add to the checkout form and pass on to our server
   - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaPaymentsService - AllowedToSharePersonalInformation).
-- Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'truth'), using this session and the authorization token we can create an order in Klarna.
+- Server side - After authorize we take our cart and using this session and the authorization token we can create an order in Klarna.
   - If creating an order fails, the authorize request has been tampered with and the payment fails
 
-In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on `jsCheckoutForm` submit.
+In your own implementation you can use Klarna.Payments.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on `jsCheckoutForm` submit.
 
 ### Finalizing
 The user may, in some cases, need to introduce data a second time (e.g. providing a legal authorization, or selecting a bank account). We call this the finalize step.
