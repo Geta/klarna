@@ -174,23 +174,27 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
 ```
     public interface IKlarnaOrderService
     {
-        void CancelOrder(string orderId);
+        Task CancelOrder(string orderId);
 
-        void UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2);
+        Task UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2);
+	
+        Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment);
 
-        CaptureData CaptureOrder(string orderId, int? amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment);
+        Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment);
 
-        void Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
+        Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
 
-        void ReleaseRemaininAuthorization(string orderId);
+        Task ReleaseRemainingAuthorization(string orderId);
 
-        void TriggerSendOut(string orderId, string captureId);
+        Task TriggerSendOut(string orderId, string captureId);
 
-        OrderData GetOrder(string orderId);
+        Task<PatchedOrderData> GetOrder(string orderId);
 
-        void ExtendAuthorizationTime(string orderId);
+        Task ExtendAuthorizationTime(string orderId);
 
-        void UpdateCustomerInformation(string orderId, UpdateCustomerDetails updateCustomerDetails);
+        Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails);
+	
+        Task AcknowledgeOrder(IPurchaseOrder purchaseOrder);
     }
 ```
 </details>

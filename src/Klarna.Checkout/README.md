@@ -118,21 +118,21 @@ Every time the user visits the checkout page or changes his/her order, an api ca
 ```csharp
 public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
 {
-    public CheckoutOrderData Build(CheckoutOrderData checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
+    public CheckoutOrder Build(CheckoutOrder checkoutOrderData, ICart cart, CheckoutConfiguration checkoutConfiguration)
     {
         if (checkoutConfiguration.PrefillAddress)
         {
             // Try to parse address into dutch address lines
-            if (checkoutOrderData.ShippingAddress.Country.Equals("NL"))
+            if (checkoutOrderData.ShippingCheckoutAddress.Country.Equals("NL"))
             {
-                var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingAddress);
-                checkoutOrderData.ShippingAddress = dutchAddress;
+                var dutchAddress = ConvertToDutchAddress(checkoutOrderData.ShippingCheckoutAddress);
+                checkoutOrderData.ShippingCheckoutAddress = dutchAddress;
             }
         }
         return checkoutOrderData;
     }
 
-    private Address ConvertToDutchAddress(Address address)
+    private CheckoutAddressInfo ConvertToDutchAddress(CheckoutAddressInfo address)
     {
         // Just an example, do not use
 
@@ -188,7 +188,7 @@ Read more about callback functionality in the next section. In the demo site, yo
 
 **Process payment - QuickSilver**
 
-- Call `IKlarnaCheckoutService.CreateOrUpdateOrder` to create or update a new checkout order. In QuickSilver this is called in the CheckoutController and CartController.
+- Call `IKlarnaCheckoutService.CreateOrUpdateOrder` to create or update a new checkout order. In QuickSilver this is called in the CheckoutController and CartController. This is an async method that requires your controller to be async, you can also use AsyncHelper.RunSync() to call it synchronize.
 - `KlarnaCheckoutConfirmation` in CheckoutController is called when visitor clicks the purchase button in the Klarna widget and order was successfully created. See Commerce Manager setup how to configure this URL. In this action, the purchase order in Episerver is created.
 
 </details>
@@ -246,26 +246,23 @@ public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedChec
     var cart = _orderRepository.Load<ICart>(orderGroupId);
 
     // Validate cart lineitems
-    var validationIssues = new Dictionary<ILineItem, ValidationIssue>();
-    cart.ValidateOrRemoveLineItems((lineItem, validationIssue) =>
-    {
-        validationIssues.Add(lineItem, validationIssue);
-    }, _lineItemValidator);
-
+    var validationIssues = _cartService.ValidateCart(cart);
     if (validationIssues.Any())
     {
+        // check validation issues and redirect to a page to display the error
         var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-        httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+        httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me/en/error-pages/checkout-something-went-wrong/");
         return ResponseMessage(httpResponseMessage);
     }
 
     // Validate billing address if necessary (this is just an example)
-    if (checkoutData.BillingAddress.PostalCode.Equals("94108-2704"))
+    // To return an error like this you need require_validate_callback_success set to true
+    if (checkoutData.BillingCheckoutAddress.PostalCode.Equals("94108-2704"))
     {
         var errorResult = new ErrorResult
         {
             ErrorType = ErrorType.address_error,
-            ErrorText = "We don't allow postalcode 94108-2704"
+            ErrorText = "Can't ship to postalcode 94108-2704"
         };
         return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResult));
     }
@@ -274,7 +271,7 @@ public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedChec
     if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
     {
         var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-        httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me?redirect");
+        httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me/en/error-pages/checkout-something-went-wrong/");
         return ResponseMessage(httpResponseMessage);
     }
 
@@ -286,24 +283,13 @@ public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedChec
 
 In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
 
-```
-[Route("cart/{orderGroupId}/fraud")]
+```csharp
+[Route("fraud")]
 [AcceptVerbs("POST")]
 [HttpPost]
-public IHttpActionResult FraudNotification(int orderGroupId, string klarna_order_id)
+public IHttpActionResult FraudNotification(NotificationModel notification)
 {
-    var purchaseOrder = GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id);
-    if (purchaseOrder == null)
-    {
-        return NotFound();
-    }
-
-    var requestParams = Request.Content.ReadAsStringAsync().Result;
-    if (!string.IsNullOrEmpty(requestParams))
-    {
-        var notification = JsonConvert.DeserializeObject<NotificationModel>(requestParams);
-        _klarnaCheckoutService.FraudUpdate(notification);
-    }
+    _klarnaCheckoutService.FraudUpdate(notification);
     return Ok();
 }
 ```
@@ -315,7 +301,7 @@ When a payment needs an additional review, the payment in EPiServer is set to th
 <details>
 <summary>Order notes (click to expand)</summary>
 
-The KlarnaPaymentGateway save notes about payment updates at the order.
+The KlarnaPaymentGateway adds notes about payment updates to the order.
 ![Order notes](/docs/screenshots/order-notes.PNG?raw=true "Order notes")
 
 </details>
@@ -332,10 +318,10 @@ The most important thing to note is that you need to implement the backend integ
 
 In your ICheckoutOrderDataBuilder implementation and the Build() method you would pass along the details of the payment method:
 
-```
+```csharp
 checkoutOrderData.ExternalPaymentMethods = new[]
 {
-    new ExternalPaymentMethod { Fee = 10, ImageUri = new Uri("https://klarna.geta.no/Styles/Images/paypal.png"), Name  = "PayPal", RedirectUri = new Uri("https://klarna.geta.no/processpaypall")}
+    new PaymentProvider { Fee = 10, ImageUrl = "https://klarna.geta.no/Styles/Images/paypalpng", Name  = "PayPal", RedirectUrl = "https://klarna.geta.no"}
 };
 ```
 Name is case sensitiv so make sure to check the supported name in the documentation and the URLs all have to be https.

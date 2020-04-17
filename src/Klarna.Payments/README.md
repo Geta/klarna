@@ -118,7 +118,7 @@ A session at Klarna should be created when the visitor is on the checkout page. 
 await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
 ```
 
-It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information on the last step of the payment process. Below an example implementation of a DemoSessionBuilder.
+It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://developers.klarna.com/documentation/klarna-payments/legal-privacy/). Below an example implementation of a DemoSessionBuilder.
 
 ```
 public class DemoSessionBuilder : ISessionBuilder
@@ -201,19 +201,22 @@ Ways to retrieve personal information (PI):
 - Anonymous user
   - In this case we expect that no information exists server side. We retrieve personal information from form fields and use that to populate the object with personal information.
 
-If anything goes wrong it could be that the Klarna widget will display a pop-up, allowing the user to recover from any errors. In case of non-recoverable error(s); the widget should be hidden and we should inform the user to select a different payment method. The happy flow (no errors) would mean that we will retrieve an authorization token from Klarna and can continue with the checkout process.
+If anything goes wrong it could be that the Klarna widget will display a pop-up, allowing the user to recover from any errors. In case of non-recoverable error(s); the widget should be hidden and we should inform the user to select a different payment method. If the authorization is not approved, also check the show_form value returned, if it is false, then do not show the Klarna payment method anymore to the user in that user session. The happy flow (no errors) would mean that we will retrieve an authorization token from Klarna and can continue with the checkout process.
 Receiving an authorization token means that the risk assessment succeeded and we're able to complete the order. The authorization token is provided during the form post to Epi (purchase). This authorization token is important because it allows us to make sure no changes were made client side (as you can change the cart items in the authorization call as well).
 
-Checkout flow:
+**Checkout flow:**
 
+Step 1: Showing checkout page (by default no personal information is shared)
 - Server side - During checkout we use the CreateOrUpdateSession to update the session at Klarna (this does not contain any PI)
-- Client side - When the user clicks on 'Place order' we use the Klarna javascript library to do an authorize call, providing the necessary PI.
+
+Step 2: Placing order (personal information is shared)
+- Client side - When the user clicks on 'Place order' we use the Klarna javascript library to do an authorize call, providing the necessary customer information. Best practice is to disable the place order button after the user clicks it to prevent subsequent calls.
   - If authorize succeeds we receive an authorization token, which we add to the checkout form and pass on to our server
   - If authorize fails, for example if there are no offers based on the user's personal info, we flip a boolean on the user's cart server side. That boolean will allow the CreateOrUpdateSession to send PI to Klarna in any subsequent call (IKlarnaPaymentsService - AllowedToSharePersonalInformation).
-- Server side - After authorize we take our cart and create another 'clean' session based on the information we have (which is our 'truth'), using this session and the authorization token we can create an order in Klarna.
+- Server side - After authorize we take our cart and using this session and the authorization token we can create an order in Klarna.
   - If creating an order fails, the authorize request has been tampered with and the payment fails
 
-In your own implementation you can use Checkout.Klarna.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on `jsCheckoutForm` submit.
+In your own implementation you can use Klarna.Payments.js as a reference implementation. The existing Checkout.js has been modified slightly in order to 1. (re-)load the Klarna widget after updating the order summary and 2. do an authorization call to epi on `jsCheckoutForm` submit.
 
 ### Finalizing
 The user may, in some cases, need to introduce data a second time (e.g. providing a legal authorization, or selecting a bank account). We call this the finalize step.
