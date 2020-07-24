@@ -7,6 +7,7 @@ using EPiServer.Logging;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
+using Klarna.Payments.Models;
 using Klarna.Rest.Core.Model;
 using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce.Markets;
@@ -38,14 +39,40 @@ namespace Klarna.Common
         public void FraudUpdate(NotificationModel notification)
         {
             var order = GetPurchaseOrderByKlarnaOrderId(notification.OrderId);
+
             if (order == null) return;
 
             var orderForm = order.GetFirstForm();
             var payment = orderForm.Payments.FirstOrDefault();
             if (payment == null) return;
 
+            // Get payment method used and the configuration data
+            var paymentMethodDto = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
+            var connectionConfiguration = paymentMethodDto.GetConnectionConfiguration(order.MarketId);
+
+            var client = new Rest.Core.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
+
+            // Make sure the order exists in Klarna
+            var klarnaOrder = AsyncHelper.RunSync(() => client.OrderManagement.GetOrder(notification.OrderId));
+
+            if (klarnaOrder == null) return;
+
+            // Compare fraud status of notification with Klarna order fraud status and stop process if it's still pending or doesn't match
+            switch (klarnaOrder.FraudStatus)
+            {
+                case OrderManagementFraudStatus.ACCEPTED:
+                    if (notification.Status != NotificationFraudStatus.FRAUD_RISK_ACCEPTED) return;
+                    break;
+                case OrderManagementFraudStatus.REJECTED:
+                    if (notification.Status != NotificationFraudStatus.FRAUD_RISK_REJECTED) return;
+                    break;
+                case OrderManagementFraudStatus.PENDING:
+                    return;
+            }
+
             payment.Status = PaymentStatus.Pending.ToString();
-            payment.Properties[Constants.FraudStatusPaymentField] = notification.Status.ToString();
+
+            payment.Properties[Constants.FraudStatusPaymentField] = notification.Status;
 
             try
             {
