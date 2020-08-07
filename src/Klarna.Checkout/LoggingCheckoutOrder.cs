@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Logging;
-using Klarna.Rest.Core.Communication;
-using Klarna.Rest.Core.Model;
+using Klarna.Common.Models;
 
 namespace Klarna.Checkout
 {
@@ -15,9 +14,9 @@ namespace Klarna.Checkout
     public class LoggingCheckoutOrder : ICheckoutOrder
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(LoggingCheckoutOrder));
-        private readonly Rest.Core.Klarna _client;
+        private readonly Common.Klarna _client;
 
-        public LoggingCheckoutOrder(Rest.Core.Klarna client)
+        public LoggingCheckoutOrder(Common.Klarna client)
         {
             _client = client;
         }

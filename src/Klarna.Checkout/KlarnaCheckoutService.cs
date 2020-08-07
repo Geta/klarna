@@ -13,10 +13,9 @@ using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
+using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.Payments.Models;
-using Klarna.Rest.Core.Communication;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Markets;
@@ -24,7 +23,7 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using ConfigurationException = EPiServer.Business.Commerce.Exception.ConfigurationException;
-using Client = Klarna.Rest.Core.Klarna;
+using Client = Klarna.Common.Klarna;
 
 namespace Klarna.Checkout
 {
@@ -294,7 +293,7 @@ namespace Klarna.Checkout
             var additionalCheckboxText = configuration.AdditionalCheckboxText;
             if (!string.IsNullOrEmpty(additionalCheckboxText))
             {
-                options.AdditionalCheckbox = new Rest.Core.Model.AdditionalCheckbox
+                options.AdditionalCheckbox = new AdditionalCheckbox
                 {
                     Text = additionalCheckboxText,
                     Checked = configuration.AdditionalCheckboxDefaultChecked,
@@ -552,6 +551,5 @@ namespace Klarna.Checkout
             var client = GetClient(market);
             return new LoggingCheckoutOrder(client);
         }
-
     }
 }

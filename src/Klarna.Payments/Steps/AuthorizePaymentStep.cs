@@ -9,7 +9,7 @@ using Klarna.OrderManagement.Steps;
 using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Refit;
+using ApiException = Refit.ApiException;
 
 namespace Klarna.Payments.Steps
 {

@@ -1,7 +1,8 @@
-﻿
+﻿using Klarna.Common.Models;
+
 namespace Klarna.Checkout.Models
 {
-    public class PatchedCheckoutOptions : Rest.Core.Model.CheckoutOptions
+    public class PatchedCheckoutOptions : CheckoutOptions
     {
     }
 }

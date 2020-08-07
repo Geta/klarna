@@ -1,4 +1,4 @@
-﻿using Klarna.Rest.Core.Model;
+﻿using Klarna.Common.Models;
 
 namespace Klarna.Checkout.Models
 {

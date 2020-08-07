@@ -12,14 +12,14 @@ using EPiServer.Logging;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
+using Klarna.Common.Models;
 using Klarna.Payments.Extensions;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
-using Refit;
+using ApiException = Refit.ApiException;
 using Options = Klarna.Payments.Models.Options;
 
 namespace Klarna.Payments

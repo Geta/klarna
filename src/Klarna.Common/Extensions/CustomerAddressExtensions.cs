@@ -1,5 +1,5 @@
 ﻿using Klarna.Common.Helpers;
-using Klarna.Rest.Core.Model;
+using Klarna.Common.Models;
 using Mediachase.Commerce.Customers;
 
 namespace Klarna.Common.Extensions

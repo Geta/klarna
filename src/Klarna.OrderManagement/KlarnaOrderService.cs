@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
+using Klarna.Common.Models;
 using Klarna.OrderManagement.Models;
-using Klarna.Rest.Core.Model;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Client = Klarna.Rest.Core.Klarna;
+using Client = Klarna.Common.Klarna;
 
 namespace Klarna.OrderManagement
 {

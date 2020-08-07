@@ -9,13 +9,12 @@ using EPiServer.Reference.Commerce.Site.Features.Product.Models;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
+using Klarna.Checkout.Models;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Payments.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Klarna.Payments;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Catalog;
 using Customer = Klarna.Payments.Models.Customer;
 

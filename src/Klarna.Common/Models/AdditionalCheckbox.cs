@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Klarna.Checkout.Models
+namespace Klarna.Common.Models
 {
     public class AdditionalCheckbox
     {

@@ -31,7 +31,7 @@ namespace Klarna.OrderManagement
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
 
-            var client = new Rest.Core.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
+            var client = new Common.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
 
             var byteArray = Encoding.ASCII.GetBytes($"{connectionConfiguration.Username}:{connectionConfiguration.Password}");
             var httpClient = new HttpClient

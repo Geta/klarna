@@ -7,8 +7,6 @@ using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Model;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;

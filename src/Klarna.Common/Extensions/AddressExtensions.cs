@@ -2,7 +2,7 @@ using System;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
-using Klarna.Rest.Core.Model;
+using Klarna.Common.Models;
 
 namespace Klarna.Common.Extensions
 {

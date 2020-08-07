@@ -3,11 +3,6 @@ using EPiServer.Reference.Commerce.Site.Features.Payment.ViewModelFactories;
 using System;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
-using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
-using EPiServer.ServiceLocation;
-using Klarna.Checkout;
-using Klarna.Rest.Core.Model;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Payment.Controllers
 {

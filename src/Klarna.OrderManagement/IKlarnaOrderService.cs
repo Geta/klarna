@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
+using Klarna.Common.Models;
 using Klarna.OrderManagement.Models;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement

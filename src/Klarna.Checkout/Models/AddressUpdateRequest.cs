@@ -1,7 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using AuthorizeNet;
-using Klarna.Rest.Core.Model;
+using Klarna.Common.Models;
 using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models

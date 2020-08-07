@@ -11,7 +11,6 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Markets;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers

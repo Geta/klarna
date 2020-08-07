@@ -4,7 +4,6 @@ using System.Text;
 using Klarna.Common.Models;
 using Klarna.Payments;
 using Klarna.Payments.Models;
-using Klarna.Rest.Core.Model;
 using Refit;
 using Xunit;
 

@@ -8,8 +8,6 @@ using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Payments.Models;
-using Klarna.Rest.Core.Model;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
@@ -50,7 +48,7 @@ namespace Klarna.Common
             var paymentMethodDto = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
             var connectionConfiguration = paymentMethodDto.GetConnectionConfiguration(order.MarketId);
 
-            var client = new Rest.Core.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
+            var client = new Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
 
             // Make sure the order exists in Klarna
             var klarnaOrder = AsyncHelper.RunSync(() => client.OrderManagement.GetOrder(notification.OrderId));

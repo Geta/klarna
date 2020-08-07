@@ -3,7 +3,6 @@ using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce.Markets;
 
 namespace Klarna.Common.Extensions
