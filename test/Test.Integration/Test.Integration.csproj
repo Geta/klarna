@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="KlarnaPaymentTests.cs" />
+    <Compile Include="KlarnaTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

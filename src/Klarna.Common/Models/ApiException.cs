@@ -11,12 +11,12 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Gets the API response status code.
         /// </summary>
-        public HttpStatusCode StatusCode { get; internal set; }
+        public HttpStatusCode StatusCode { get; }
 
         /// <summary>
         /// Gets the API error response model.
         /// </summary>
-        public ErrorMessage ErrorMessage { get; internal set; }
+        public ErrorMessage ErrorMessage { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiException" /> class.

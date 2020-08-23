@@ -1,4 +1,4 @@
-﻿namespace Klarna.Common.Models
+﻿namespace Klarna.Payments.Models
 {
     public enum PaymentCustomerOrganizationEntityType
     {

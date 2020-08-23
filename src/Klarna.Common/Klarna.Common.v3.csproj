@@ -281,19 +281,6 @@
     <Compile Include="Models\OrderManagementShippingOptionLocation.cs" />
     <Compile Include="Models\OrderManagementShippingOptionLocationAddress.cs" />
     <Compile Include="Models\OrderManagementShippingOptionTimeslot.cs" />
-    <Compile Include="Models\PaymentAddressInfo.cs" />
-    <Compile Include="Models\PaymentCreditSession.cs" />
-    <Compile Include="Models\PaymentCreditSessionResponse.cs" />
-    <Compile Include="Models\PaymentCustomer.cs" />
-    <Compile Include="Models\PaymentCustomerOrganizationEntityType.cs" />
-    <Compile Include="Models\PaymentGenerateConsumerTokenRequest.cs" />
-    <Compile Include="Models\PaymentGenerateConsumerTokenResponse.cs" />
-    <Compile Include="Models\PaymentMerchantUrls.cs" />
-    <Compile Include="Models\PaymentMethodCategory.cs" />
-    <Compile Include="Models\PaymentMethodCategoryAssetUrls.cs" />
-    <Compile Include="Models\PaymentOptions.cs" />
-    <Compile Include="Models\PaymentOrder.cs" />
-    <Compile Include="Models\PaymentOrderResponse.cs" />
     <Compile Include="Models\PaymentProvider.cs" />
     <Compile Include="Models\PaymentStepResult.cs" />
     <Compile Include="Models\Prices.cs" />
@@ -321,7 +308,6 @@
     <Compile Include="Models\ShippingOptionPickupLocation.cs" />
     <Compile Include="Models\ShippingOptionTimeslot.cs" />
     <Compile Include="OrderManagementStore.cs" />
-    <Compile Include="PaymentStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Ref.cs" />
   </ItemGroup>

@@ -18,16 +18,6 @@ namespace Klarna.Common
         public CheckoutStore Checkout { get; }
 
         /// <summary>
-        /// Payments API
-        /// The payments API is used to create a session to offer Klarna's payment methods as part of your checkout.
-        /// As soon as the purchase is completed the order should be read and handled using the Order Management API.
-        /// <a href="https://developers.klarna.com/api/#payments-api">
-        ///     https://developers.klarna.com/api/#payments-api
-        /// </a>
-        /// </summary>
-        public PaymentStore Payment { get; }
-
-        /// <summary>
         /// Order Management API
         /// The Order Management API is used for handling an order after the customer has completed the purchase.
         /// It is used for updating, capturing and refunding an order as well as to see the history of events that have
@@ -147,7 +137,6 @@ namespace Klarna.Common
             }
 
             Checkout = new CheckoutStore(apiSession, jsonSerializer);
-            Payment = new PaymentStore(apiSession, jsonSerializer);
             OrderManagement = new OrderManagementStore(apiSession, jsonSerializer);
             ApiSession = apiSession;
         }
