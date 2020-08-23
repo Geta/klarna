@@ -99,35 +99,11 @@ namespace Klarna.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "customer_payment_method_ids")]
         public ICollection<string> CustomPaymentMethodIds { get; set; }
-        /// <summary>
-        /// The current status of the session. Possible values: 'complete', 'incomplete' where 'complete' is set when the order has been placed.
-        /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        [JsonProperty(PropertyName = "status")]
-        public CreditSessionStatus Status { get; set; }
-        /// <summary>
-        /// Token to be passed to the JS client
-        /// </summary>
-        /// <remarks>Read only</remarks>
-        [JsonProperty(PropertyName = "client_token")]
-        public string ClientToken { get; set; }
-        /// <summary>
-        /// Session expiration date
-        /// </summary>
-        /// <remarks>Read only</remarks>
-        [JsonProperty(PropertyName = "expires_at")]
-        //public ExpiresAt ExpiresAt { get; set; }
-        public DateTime ExpiresAt { get; set; }
+
         /// <summary>
         /// Type of acquiring channel
         /// </summary>
         [JsonProperty(PropertyName = "acquiring_channel")]
         public string AcquiringChannel { get; set; }
-        /// <summary>
-        /// Available payment method categories
-        /// </summary>
-        /// <remarks>Read only</remarks>
-        [JsonProperty(PropertyName = "payment_method_categories")]
-        public ICollection<PaymentMethodCategory> PaymentMethodCategories { get; set; }
     }
 }

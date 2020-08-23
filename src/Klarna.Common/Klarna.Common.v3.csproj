@@ -247,7 +247,7 @@
     <Compile Include="Models\CheckoutMerchantUrls.cs" />
     <Compile Include="Models\CheckoutOptions.cs" />
     <Compile Include="Models\CheckoutOrder.cs" />
-    <Compile Include="Models\CreditSessionStatus.cs" />
+    <Compile Include="Models\DeliveryDetails.cs" />
     <Compile Include="Models\Dimensions.cs" />
     <Compile Include="Models\ErrorMessage.cs" />
     <Compile Include="Models\Gui.cs" />
@@ -274,6 +274,13 @@
     <Compile Include="Models\OrderManagementSetNewOrderAmountAndLines.cs" />
     <Compile Include="Models\OrderManagementShippingInfo.cs" />
     <Compile Include="Models\OrderManagementShippingMethod.cs" />
+    <Compile Include="Models\OrderManagementShippingOption.cs" />
+    <Compile Include="Models\OrderManagementShippingOptionAddons.cs" />
+    <Compile Include="Models\OrderManagementShippingOptionCarrierProduct.cs" />
+    <Compile Include="Models\ShippingOptionCarrierProduct.cs" />
+    <Compile Include="Models\OrderManagementShippingOptionLocation.cs" />
+    <Compile Include="Models\OrderManagementShippingOptionLocationAddress.cs" />
+    <Compile Include="Models\OrderManagementShippingOptionTimeslot.cs" />
     <Compile Include="Models\PaymentAddressInfo.cs" />
     <Compile Include="Models\PaymentCreditSession.cs" />
     <Compile Include="Models\PaymentCreditSessionResponse.cs" />
@@ -311,6 +318,8 @@
     <Compile Include="Models\ShippingAttributes.cs" />
     <Compile Include="Models\ShippingMethod.cs" />
     <Compile Include="Models\ShippingOption.cs" />
+    <Compile Include="Models\ShippingOptionPickupLocation.cs" />
+    <Compile Include="Models\ShippingOptionTimeslot.cs" />
     <Compile Include="OrderManagementStore.cs" />
     <Compile Include="PaymentStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -319,9 +328,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Steps\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

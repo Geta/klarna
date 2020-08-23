@@ -163,8 +163,10 @@ namespace Klarna.Common
             {
                 case KlarnaEnvironment.LiveEurope: return Constants.ProdUrlEurope;
                 case KlarnaEnvironment.LiveNorthAmerica: return Constants.ProdUrlNorthAmerica;
+                case KlarnaEnvironment.LiveOceania: return Constants.ProdUrlOceania;
                 case KlarnaEnvironment.TestingEurope: return Constants.TestUrlEurope;
                 case KlarnaEnvironment.TestingNorthAmerica: return Constants.TestUrlNorthAmerica;
+                case KlarnaEnvironment.TestingOceania: return Constants.TestUrlOceania;
                 default: return string.Empty;
             }
         }

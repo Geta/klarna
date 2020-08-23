@@ -4,7 +4,8 @@
     {
         INVOICE,
         FIXED_AMOUNT,
-        FIXED_AMOUNT_BY_CARD,
+        FIXED_AMOUNT_BY_CARD, // (non Australia region)
+        PAY_LATER_IN_PARTS, // (Australia region)
         ACCOUNT,
         DIRECT_DEBIT,
         CARD,
@@ -12,6 +13,9 @@
         PAY_IN_X,
         INVOICE_BUSINESS,
         DEFERRED_INTEREST,
+        FIXED_SUM_CREDIT,
+        PAY_LATER_BY_CARD,
+        MOBILEPAY,
         OTHER
     }
 }

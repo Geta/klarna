@@ -37,5 +37,12 @@ namespace Klarna.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "countries")]
         public ICollection<string> Countries { get; set; }
+        /// <summary>
+        /// Controls label of buy button:
+        ///  * continue
+        ///  * complete
+        /// </summary>
+        [JsonProperty(PropertyName = "label")]
+        public string Label { get; set; }
     }
 }

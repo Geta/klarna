@@ -106,5 +106,15 @@ namespace Klarna.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "vat_excluded")]
         public bool VatExcluded { get; set; }
+        /// <summary>
+        /// Enable verification of National Identification Numbers in Sweden and Norway. This option also make the national identification number mandatory.
+        /// </summary>
+        [JsonProperty(PropertyName = "verify_national_identification_number")]
+        public bool VerifyNationalIdentificationNumber { get; set; }
+        /// <summary>
+        /// If true, a optional VAT registration number field will be shown in the address form. Only applies for b2b orders.
+        /// </summary>
+        [JsonProperty(PropertyName = "show_vat_registration_number_field")]
+        public bool ShowVatRegistrationNumberField { get; set; }
     }
 }

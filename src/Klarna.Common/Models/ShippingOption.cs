@@ -56,5 +56,17 @@ namespace Klarna.Common.Models
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty(PropertyName = "shipping_method")]
         public ShippingMethod ShippingMethod { get; set; }
+        
+        /// <summary>
+        /// The delivery details for this shipping option. 
+        /// </summary>
+        [JsonProperty(PropertyName = "delivery_details")]
+        public DeliveryDetails DeliveryDetails { get; set; }
+        
+        /// <summary>
+        /// TMS reference. Required to map completed orders to shipments reserved in TMS.
+        /// </summary>
+        [JsonProperty(PropertyName = "tms_reference")]
+        public string TmsReference { get; set; }
     }
 }

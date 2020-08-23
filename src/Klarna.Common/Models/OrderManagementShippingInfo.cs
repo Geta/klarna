@@ -11,7 +11,7 @@ namespace Klarna.Common.Models
         [JsonProperty(PropertyName = "shipping_company")]
         public string ShippingCompany { get; set; }
         /// <summary>
-        /// Shipping method. Allowed values matches (PickUpStore|Home|BoxReg|BoxUnreg|PickUpPoint|Own)
+        /// Shipping method. Allowed values matches (PickUpStore|Home|BoxReg|BoxUnreg|PickUpPoint|Own|Postal|DHLPackstation|Digital)
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty(PropertyName = "shipping_method")]

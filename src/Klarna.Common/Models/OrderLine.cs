@@ -82,12 +82,5 @@ namespace Klarna.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "product_identifiers")]
         public ProductIdentifiers ProductIdentifiers { get; set; }
-
-        /// <summary>
-        /// Shipping attributes of an item
-        /// </summary>
-        /// <value>Shipping attributes of an item</value>
-        [JsonProperty(PropertyName = "shipping_attributes")]
-        public ShippingAttributes ShippingAttributes { get; set; }
     }
 }

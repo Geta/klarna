@@ -16,5 +16,11 @@ namespace Klarna.Common.Models
         /// </summary>
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }
+
+        /// <summary>
+        /// The number of installments (if applicable).
+        /// </summary>
+        [JsonProperty(PropertyName = "number_of_installments")]
+        public int NumberOfInstallments { get; set; }
     }
 }

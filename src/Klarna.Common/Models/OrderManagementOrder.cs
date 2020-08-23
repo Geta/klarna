@@ -175,5 +175,12 @@ namespace Klarna.Common.Models
         /// <value>Initial payment method for this order</value>
         [JsonProperty(PropertyName = "initial_payment_method")]
         public OrderManagementInitialPaymentMethod InitialPaymentMethod { get; set; }
+        
+        /// <summary>
+        /// Current shipping options selected by the customer.
+        /// </summary>
+        /// <value>Current shipping options selected by the customer.</value>
+        [JsonProperty(PropertyName = "selected_shipping_option")]
+        public OrderManagementShippingOption SelectedShippingOption { get; set; }
     }
 }

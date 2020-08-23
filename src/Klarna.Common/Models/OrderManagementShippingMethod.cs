@@ -7,6 +7,9 @@
         BoxReg,
         BoxUnreg,
         PickUpPoint,
-        Own
+        Own,
+        Postal,
+        DHLPackstation,
+        Digital
     }
 }

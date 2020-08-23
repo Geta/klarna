@@ -15,6 +15,10 @@
         /// </summary>
         LiveNorthAmerica,
         /// <summary>
+        /// The API for Oceania live environment (https://api-oc.klarna.com/)
+        /// </summary>
+        LiveOceania,
+        /// <summary>
         /// The API for the European testing environment (https://api.playground.klarna.com/)
         /// </summary>
         TestingEurope,
@@ -22,5 +26,9 @@
         /// The API for the U.S. testing environment (https://api-na.playground.klarna.com/)
         /// </summary>
         TestingNorthAmerica,
+        /// <summary>
+        /// The API for Oceania testing environment (https://api-oc.playground.klarna.com/)
+        /// </summary>
+        TestingOceania,
     }
 }
