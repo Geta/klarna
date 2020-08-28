@@ -218,12 +218,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CartExtensions.cs" />
     <Compile Include="CheckoutConfiguration.cs" />
+    <Compile Include="CheckoutStore.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DefaultCheckoutConfigurationLoader.cs" />
     <Compile Include="DefaultCheckoutLanguageIdConverter.cs" />
     <Compile Include="DefaultKlarnaCartValidator.cs" />
+    <Compile Include="Extensions\AddressExtensions.cs" />
+    <Compile Include="Extensions\CartExtensions.cs" />
+    <Compile Include="Extensions\CustomerAddressExtensions.cs" />
+    <Compile Include="Extensions\ShippingMethodExtensions.cs" />
     <Compile Include="ICheckoutConfigurationLoader.cs" />
     <Compile Include="ICheckoutLanguageIdConverter.cs" />
     <Compile Include="IKlarnaCartValidator.cs" />
@@ -234,19 +238,35 @@
     <Compile Include="KlarnaCheckoutService.cs" />
     <Compile Include="KlarnaOrderValidator.cs" />
     <Compile Include="LoggingCheckoutOrder.cs" />
+    <Compile Include="Models\AdditionalCheckbox.cs" />
+    <Compile Include="Models\AdditionalCheckboxV2.cs" />
     <Compile Include="Models\AddressUpdateResponse.cs" />
     <Compile Include="Models\AddressUpdateRequest.cs" />
     <Compile Include="Models\CallbackAddressUpdateRequest.cs" />
+    <Compile Include="Models\CheckoutAddressInfo.cs" />
+    <Compile Include="Models\CheckoutCustomer.cs" />
+    <Compile Include="Models\CheckoutMerchantUrls.cs" />
+    <Compile Include="Models\CheckoutOptions.cs" />
+    <Compile Include="Models\CheckoutOrder.cs" />
+    <Compile Include="Models\DeliveryDetails.cs" />
+    <Compile Include="Models\Dimensions.cs" />
     <Compile Include="Models\ErrorResult.cs" />
     <Compile Include="Models\ErrorType.cs" />
     <Compile Include="Models\KlarnaAddressExtensions.cs" />
+    <Compile Include="Models\MerchantRequested.cs" />
+    <Compile Include="Models\MerchantRequestedAdditionalCheckbox.cs" />
     <Compile Include="Models\PatchedCheckoutOptions.cs" />
     <Compile Include="Models\PatchedCheckoutOrderData.cs" />
     <Compile Include="Models\PatchedMerchantUrls.cs" />
+    <Compile Include="Models\ShippingAttributes.cs" />
+    <Compile Include="Models\ShippingMethod.cs" />
+    <Compile Include="Models\ShippingOption.cs" />
+    <Compile Include="Models\ShippingOptionCarrierProduct.cs" />
+    <Compile Include="Models\ShippingOptionPickupLocation.cs" />
+    <Compile Include="Models\ShippingOptionTimeslot.cs" />
     <Compile Include="Models\ShippingOptionUpdateRequest.cs" />
     <Compile Include="Models\ShippingOptionUpdateResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ShippingMethodExtensions.cs" />
     <Compile Include="Steps\AuthorizePaymentStep.cs" />
   </ItemGroup>
   <ItemGroup>

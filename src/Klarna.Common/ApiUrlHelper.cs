@@ -6,7 +6,7 @@ namespace Klarna.Common
     /// <summary>
     /// Helper util. Contains small tools to work with URL and query strings.
     /// </summary>
-    internal static class ApiUrlHelper
+    public static class ApiUrlHelper
     {
         /// <summary>
         /// Builds the API URL based on the Klarna environment, controller and extra 

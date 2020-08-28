@@ -9,6 +9,7 @@ using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
+using Klarna.Checkout.Extensions;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
@@ -40,7 +41,7 @@ namespace Klarna.Checkout
         private readonly ICheckoutLanguageIdConverter _checkoutLanguageIdConverter;
         private readonly IKlarnaCartValidator _klarnaCartValidator;
 
-        private Client _client;
+        private CheckoutStore _client;
         private PaymentMethodDto _paymentMethodDto;
         private CheckoutConfiguration _checkoutConfiguration;
 
@@ -77,15 +78,24 @@ namespace Klarna.Checkout
             return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market.MarketId));
         }
 
-        public virtual Client GetClient(IMarket market)
+        public virtual CheckoutStore GetClient(IMarket market)
         {
             if (PaymentMethodDto != null)
             {
                 var connectionConfiguration = GetCheckoutConfiguration(market);
 
                 string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.Checkout_{typeof(KlarnaCheckoutService).Assembly.GetName().Version}";
-
-                _client =  new Client(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl, userAgent);
+                
+                _client =  new CheckoutStore(new ApiSession
+                {
+                    ApiUrl = connectionConfiguration.ApiUrl,
+                    UserAgent = userAgent,
+                    Credentials = new ApiCredentials
+                    {
+                        Username = connectionConfiguration.Username,
+                        Password = connectionConfiguration.Password
+                    }
+                }, new JsonSerializer());
             }
             return _client;
         }

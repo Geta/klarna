@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Klarna.Common.Models
+namespace Klarna.Checkout.Models
 {
     public class ShippingOption
     {

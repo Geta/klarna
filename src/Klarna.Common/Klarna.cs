@@ -8,16 +8,6 @@ namespace Klarna.Common
     public class Klarna
     {
         /// <summary>
-        /// Checkout API
-        /// The checkout API is used to create a checkout with Klarna and update the checkout order during the purchase.
-        /// As soon as the purchase is completed the order should be read and handled using the Order Management API.
-        /// <a href="https://developers.klarna.com/api/#checkout-api">
-        ///     https://developers.klarna.com/api/#checkout-api
-        /// </a>
-        /// </summary>
-        public CheckoutStore Checkout { get; }
-
-        /// <summary>
         /// Order Management API
         /// The Order Management API is used for handling an order after the customer has completed the purchase.
         /// It is used for updating, capturing and refunding an order as well as to see the history of events that have
@@ -136,7 +126,6 @@ namespace Klarna.Common
                 apiSession.UserAgent = GetDefaultUserAgent();
             }
 
-            Checkout = new CheckoutStore(apiSession, jsonSerializer);
             OrderManagement = new OrderManagementStore(apiSession, jsonSerializer);
             ApiSession = apiSession;
         }

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Klarna.Common.Models;
 using Newtonsoft.Json;
 
-namespace Klarna.Common.Models
+namespace Klarna.Checkout.Models
 {
     public class CheckoutOrder
     {

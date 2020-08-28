@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Klarna.Common.Models
+namespace Klarna.Checkout.Models
 {
     /// <summary>
     /// Represents shipping attributes of an order item

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Logging;
+using Klarna.Checkout.Models;
 using Klarna.Common.Models;
 
 namespace Klarna.Checkout
@@ -14,9 +15,9 @@ namespace Klarna.Checkout
     public class LoggingCheckoutOrder : ICheckoutOrder
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(LoggingCheckoutOrder));
-        private readonly Common.Klarna _client;
+        private readonly CheckoutStore _client;
 
-        public LoggingCheckoutOrder(Common.Klarna client)
+        public LoggingCheckoutOrder(CheckoutStore client)
         {
             _client = client;
         }
@@ -25,7 +26,7 @@ namespace Klarna.Checkout
         {
             try
             {
-                return await _client.Checkout.CreateOrder(checkoutOrderData).ConfigureAwait(false);
+                return await _client.CreateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -38,7 +39,7 @@ namespace Klarna.Checkout
         {
             try
             {
-                return await _client.Checkout.UpdateOrder(checkoutOrderData).ConfigureAwait(false);
+                return await _client.UpdateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -52,7 +53,7 @@ namespace Klarna.Checkout
             try
             {
 
-                return await _client.Checkout.GetOrder(orderId).ConfigureAwait(false);
+                return await _client.GetOrder(orderId).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -65,7 +66,7 @@ namespace Klarna.Checkout
         {
             var messages = string.Join(" ", e.ErrorMessage.ErrorMessages);
             Logger.Error(
-                $"Error Code: '{e.ErrorMessage.ErrorCode}'; CorelationId: '{e.ErrorMessage.CorrelationId}'; Messages: '{messages}'",
+                $"Error Code: '{e.ErrorMessage.ErrorCode}'; CorrelationId: '{e.ErrorMessage.CorrelationId}'; Messages: '{messages}'",
                 e);
         }
     }

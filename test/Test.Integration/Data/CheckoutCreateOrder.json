@@ -1,0 +1,242 @@
+﻿{
+  "order_id": "26511e7d-2c08-4374-8c18-ea7701a4f76c",
+  "name": null,
+  "purchase_country": "us",
+  "purchase_currency": "USD",
+  "locale": "en-US",
+  "status": "checkout_complete",
+  "billing_address": {
+    "organization_name": null,
+    "reference": null,
+    "attention": null,
+    "given_name": "Frederik",
+    "family_name": "Vig",
+    "email": "frederik@getadigital.com",
+    "title": null,
+    "street_address": "379 W Broadway",
+    "street_address2": null,
+    "street_name": null,
+    "street_number": null,
+    "house_extension": null,
+    "postal_code": "10012-5121",
+    "city": "New York",
+    "region": "NY",
+    "phone": "+1 347-261-7408",
+    "country": "us",
+    "care_of": null
+  },
+  "shipping_address": {
+    "organization_name": null,
+    "reference": null,
+    "attention": null,
+    "given_name": "Frederik",
+    "family_name": "Vig",
+    "email": "frederik@getadigital.com",
+    "title": null,
+    "street_address": "379 W Broadway",
+    "street_address2": null,
+    "street_name": null,
+    "street_number": null,
+    "house_extension": null,
+    "postal_code": "10012-5121",
+    "city": "New York",
+    "region": "NY",
+    "phone": "+1 347-261-7408",
+    "country": "us",
+    "care_of": null
+  },
+  "order_amount": 19720,
+  "order_tax_amount": 0,
+  "order_lines": [
+    {
+      "type": "physical",
+      "reference": "SKU-36127195",
+      "name": "Faded Glory Mens Canvas Twin Gore Slip-On Shoe",
+      "quantity": 17,
+      "quantity_unit": null,
+      "unit_price": 1450,
+      "tax_rate": 0,
+      "total_amount": 19720,
+      "total_discount_amount": 4930,
+      "total_tax_amount": 0,
+      "merchant_data": null,
+      "product_url": null,
+      "image_url": null,
+      "product_identifiers": null
+    }
+  ],
+  "customer": {
+    "date_of_birth": "1985-11-25",
+    "type": null,
+    "organization_registration_id": null
+  },
+  "merchant_urls": {
+    "terms": "https://594499f27022.ngrok.io/",
+    "cancellation_terms": "https://594499f27022.ngrok.io/",
+    "checkout": "https://594499f27022.ngrok.io/en/checkout",
+    "confirmation": "https://594499f27022.ngrok.io/checkout/KlarnaCheckoutConfirmation?orderGroupId=3431&klarna_order_id={checkout.order.id}",
+    "push": "https://594499f27022.ngrok.io/klarnacheckout/cart/3431/push?klarna_order_id={checkout.order.id}",
+    "validation": "https://594499f27022.ngrok.io/klarnacheckout/cart/3431/ordervalidation",
+    "shipping_option_update": "https://594499f27022.ngrok.io/klarnacheckout/cart/3431/shippingoptionupdate",
+    "address_update": "https://594499f27022.ngrok.io/klarnacheckout/cart/3431/addressupdate",
+    "notification": "https://594499f27022.ngrok.io/klarnacheckout/fraud",
+    "country_change": null
+  },
+  "html_snippet": "<div id=\"klarna-checkout-container\" style=\"overflow-x: hidden;\">\n  <div id=\"klarna-unsupported-page\">\n  <style type=\"text/css\">\n  @-webkit-keyframes klarnaFadeIn{from{opacity:0}to{opacity:1}}@-moz-keyframes klarnaFadeIn{from{opacity:0}to{opacity:1}}@keyframes klarnaFadeIn{from{opacity:0}to{opacity:1}}#klarna-unsupported-page{opacity:0;opacity:1\\9;-webkit-animation:klarnaFadeIn ease-in 1;-moz-animation:klarnaFadeIn ease-in 1;animation:klarnaFadeIn ease-in 1;-webkit-animation-fill-mode:forwards;-moz-animation-fill-mode:forwards;animation-fill-mode:forwards;-webkit-animation-duration:.1s;-moz-animation-duration:.1s;animation-duration:.1s;-webkit-animation-delay:5s;-moz-animation-delay:5s;animation-delay:5s;text-align:center;padding-top:64px}#klarna-unsupported-page .heading{font-family:Source Sans Pro,Helvetica,Arial,sans-serif;line-height:48px;font-weight:200;color:#303030;font-size:42px;margin:24px 0}#klarna-unsupported-page .subheading{font-family:Source Sans Pro,Helvetica,Arial,sans-serif;line-height:28px;font-weight:400;color:rgba(0,0,0,.7);font-size:19px;max-width:560px;margin:10px auto}#klarna-unsupported-page .subheading a{text-decoration:none;background-color:transparent;border:0;color:rgba(0,0,0,.7);font-weight:600}\n  </style>\n  <h1 class=\"heading\">Oops.</h1>\n    <p class=\"subheading\">It looks like an important part of the checkout experience failed to load and we are unable to offer you a way to pay right now.</p>\n    <p class=\"subheading\">Please refresh the page to try again. If this isn't the first time you've seen this message then there may be a more permanent error and you should contact customer service at Klarna.com.</p>\n  </div>\n  <script type=\"text/javascript\">\n  /* <![CDATA[ */\n  (function(w,k,i,d,n,c,l){\n    w[k]=w[k]||function(){(w[k].q=w[k].q||[]).push(arguments)};\n    l=w[k].config={\n      container:w.document.getElementById(i),\n      ORDER_URL:'https://js.playground.klarna.com/na/kco/checkout/orders/26511e7d-2c08-4374-8c18-ea7701a4f76c',\n      AUTH_HEADER:'KlarnaCheckout 8wo9ex7tf2obysv912tj',\n      LOCALE:'en-US',\n      ORDER_STATUS:'checkout_complete',\n      MERCHANT_TAC_URI:'https://594499f27022.ngrok.io/',\n      MERCHANT_NAME:'EpiGeta Test Store',\n      HASHED_MERCHANT_ID:'d1d2844f6d65db18ee1640cb3e3a6ea6',\n      GUI_OPTIONS:[],\n      ALLOW_SEPARATE_SHIPPING_ADDRESS:true,\n      PURCHASE_COUNTRY:'usa',\n      PURCHASE_CURRENCY:'USD',\n      TESTDRIVE:true,\n      CHECKOUT_DOMAIN:'https://checkout-na.playground.klarna.com',\n      BOOTSTRAP_SRC:'https://js.playground.klarna.com/kcoc/200820-a74cc7f/checkout.bootstrap.js',\n      DEVICE_RECOGNITION_URL:'https://js.playground.klarna.com/na/kco/checkout/orders/26511e7d-2c08-4374-8c18-ea7701a4f76c/device_recognition',\n      DEVICE_RECOGNITION_TYPE1:true,\n      DEVICE_RECOGNITION_TYPE3_ORG_ID:'87rxrdob',\n      DEVICE_RECOGNITION_TYPE3_REF:'KLRNA_87rxrdob_26511e7d-2c08-4374-8c18-ea7701a4f76c',\n      CLIENT_EVENT_HOST:'https://na.playground.klarnaevt.com',\n      LIQUORICE_ENABLED:false,\n      CONDENSED_ENABLED:false\n    };\n    n=d.createElement('script');\n    c=d.getElementById(i);\n    n.async=!0;\n    n.src=l.BOOTSTRAP_SRC;\n    c.appendChild(n);\n    try{\n      ((w.Image && (new w.Image))||(d.createElement && d.createElement('img'))||{}).src =\n        l.CLIENT_EVENT_HOST + '/v1/checkout/snippet/load' +\n        '?sid=' + l.ORDER_URL.split('/').slice(-1) +\n        '&order_status=' + w.encodeURIComponent(l.ORDER_STATUS) +\n        '&timestamp=' + (new Date).getTime();\n    }catch(e){}\n  })(this,'_klarnaCheckout','klarna-checkout-container',document);\n  /* ]]> */\n  </script>\n  <noscript>\nPlease <a href=\"http://enable-javascript.com\">enable JavaScript</a>.\n  </noscript>\n</div>",
+  "merchant_reference1": null,
+  "merchant_reference2": null,
+  "started_at": "2020-08-23T20:31:05Z",
+  "completed_at": "2020-08-23T20:31:25Z",
+  "last_modified_at": "2020-08-23T20:31:25Z",
+  "options": {
+    "acquiring_channel": null,
+    "allow_separate_shipping_address": true,
+    "color_button": "#000000",
+    "color_button_text": "#FFFFFF",
+    "color_checkbox": "#000000",
+    "color_checkbox_checkmark": "#889229",
+    "colorheader": null,
+    "color_link": "#774332",
+    "date_of_birth_mandatory": true,
+    "shipping_details": "shipping details US",
+    "title_mandatory": true,
+    "additional_checkbox": null,
+    "national_identification_number_mandatory": false,
+    "additional_merchant_terms": null,
+    "radius_border": "2",
+    "allowed_customer_types": null,
+    "show_subtotal_detail": true,
+    "additional_checkboxes": null,
+    "require_validate_callback_success": false,
+    "vat_excluded": false,
+    "verify_national_identification_number": false,
+    "show_vat_registration_number_field": false
+  },
+  "attachment": null,
+  "external_payment_methods": [
+    {
+      "name": "PayPal",
+      "redirect_url": "https://klarna.geta.no",
+      "image_url": "https://klarna.geta.no/Styles/Images/paypalpng",
+      "fee": 10,
+      "description": null,
+      "countries": null,
+      "label": null
+    }
+  ],
+  "external_checkouts": [],
+  "shipping_countries": null,
+  "shipping_options": [
+    {
+      "id": "6ab22204-c6a4-4334-a0bd-d742dbb5850a",
+      "name": "Free Shipping",
+      "description": "Free Shipping",
+      "promo": null,
+      "price": 0,
+      "tax_amount": 0,
+      "tax_rate": 0,
+      "preselected": true,
+      "shipping_method": "PickupStore",
+      "delivery_details": {
+        "carrier": null,
+        "class": null,
+        "product": null,
+        "pickup_location": null,
+        "timeslot": null
+      },
+      "tms_reference": null
+    },
+    {
+      "id": "eb79e207-b74f-46c6-99d9-2cb458334ab8",
+      "name": "Express USD (1 day)(en)",
+      "description": "",
+      "promo": null,
+      "price": 2000,
+      "tax_amount": 0,
+      "tax_rate": 0,
+      "preselected": false,
+      "shipping_method": "PickupStore",
+      "delivery_details": {
+        "carrier": null,
+        "class": null,
+        "product": null,
+        "pickup_location": null,
+        "timeslot": null
+      },
+      "tms_reference": null
+    },
+    {
+      "id": "7e2c5651-4c1a-4bdd-94a4-9d522d604940",
+      "name": "Fast USD (2-3 days)(en)",
+      "description": "",
+      "promo": null,
+      "price": 1500,
+      "tax_amount": 0,
+      "tax_rate": 0,
+      "preselected": false,
+      "shipping_method": "PickupStore",
+      "delivery_details": {
+        "carrier": null,
+        "class": null,
+        "product": null,
+        "pickup_location": null,
+        "timeslot": null
+      },
+      "tms_reference": null
+    },
+    {
+      "id": "d8bdd59e-0b6e-4815-8792-f7c99e8df4f4",
+      "name": "Regular USD (4-7 days)(en)",
+      "description": "",
+      "promo": null,
+      "price": 500,
+      "tax_amount": 0,
+      "tax_rate": 0,
+      "preselected": false,
+      "shipping_method": "PickupStore",
+      "delivery_details": {
+        "carrier": null,
+        "class": null,
+        "product": null,
+        "pickup_location": null,
+        "timeslot": null
+      },
+      "tms_reference": null
+    }
+  ],
+  "merchant_data": null,
+  "gui": null,
+  "merchant_requested": {
+    "additional_checkbox": false,
+    "additional_checkboxes": [
+      {
+        "id": "additional_privacy_checkbox",
+        "checked": true
+      }
+    ]
+  },
+  "selected_shipping_option": {
+    "id": "6ab22204-c6a4-4334-a0bd-d742dbb5850a",
+    "name": "Free Shipping",
+    "description": "Free Shipping",
+    "promo": null,
+    "price": 0,
+    "tax_amount": 0,
+    "tax_rate": 0,
+    "preselected": true,
+    "shipping_method": "PickupStore",
+    "delivery_details": {
+      "carrier": null,
+      "class": null,
+      "product": null,
+      "pickup_location": null,
+      "timeslot": null
+    },
+    "tms_reference": null
+  },
+  "recurring": false,
+  "recurring_token": null,
+  "recurring_description": null,
+  "billing_countries": null,
+  "tags": null
+}

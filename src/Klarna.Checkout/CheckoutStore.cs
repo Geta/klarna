@@ -1,16 +1,19 @@
 ﻿using System.Threading.Tasks;
+using Klarna.Checkout.Models;
+using Klarna.Common;
 using Klarna.Common.Models;
 
-namespace Klarna.Common
+namespace Klarna.Checkout
 {
     /// <summary>
     /// The checkout API is used to create a checkout with Klarna and update the checkout order during the purchase.
     /// As soon as the purchase is completed the order should be read and handled using the Order Management API.
+    /// Endpoint for https://developers.klarna.com/api/#checkout-api-create-a-new-order
     /// </summary>
     public class CheckoutStore : BaseStore
     {
-        internal CheckoutStore(ApiSession apiSession, IJsonSerializer jsonSerializer) :
-            base(apiSession, ApiControllers.Checkout, jsonSerializer)
+        public CheckoutStore(ApiSession apiSession, IJsonSerializer jsonSerializer) :
+            base(apiSession, "checkout/v3/orders", jsonSerializer)
         { }
 
         /// <summary>

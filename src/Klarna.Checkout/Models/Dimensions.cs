@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Klarna.Common.Models
+namespace Klarna.Checkout.Models
 {
     /// <summary>
     /// Represents a product's dimensions

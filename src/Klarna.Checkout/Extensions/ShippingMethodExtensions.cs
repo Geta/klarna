@@ -1,8 +1,8 @@
+using Klarna.Checkout.Models;
 using Klarna.Common.Helpers;
-using Klarna.Common.Models;
 using Mediachase.Commerce.Orders.Dto;
 
-namespace Klarna.Checkout
+namespace Klarna.Checkout.Extensions
 {
     public static class ShippingMethodExtensions
     {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Klarna.Common.Models
+namespace Klarna.Checkout.Models
 {
     public class ShippingOptionPickupLocation
     {

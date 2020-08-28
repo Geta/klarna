@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using EPiServer.Commerce.Order;
 
-namespace Klarna.Checkout
+namespace Klarna.Checkout.Extensions
 {
     public static class CartExtensions
     {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -85,75 +84,6 @@ namespace Klarna.Common
         }
 
         /// <summary>
-        /// Handles HTTP DELETE calls
-        /// </summary>
-        /// <param name="url">The URL to call</param>
-        /// <param name="data">The data to send</param>
-        /// <param name="headers">The HTTP headers to send when performing a request</param>
-        /// <param name="outResponse">Ref to raw HttpResponseMessage message</param>
-        /// <returns></returns>
-        protected Task Delete(string url,
-            object data = null,
-            IDictionary<string, string> headers = null,
-            Ref<HttpResponseMessage> outResponse = null)
-        {
-            return MakeRequest(HttpMethod.Delete, url, data, headers, outResponse);
-        }
-
-        /// <summary>
-        /// Handles HTTP PATCH calls
-        /// </summary>
-        /// <param name="url">The URL to call</param>
-        /// <param name="data">The data to send</param>
-        /// <param name="headers">The HTTP headers to send when performing a request</param>
-        /// <param name="outResponse">Ref to raw HttpResponseMessage message</param>
-        /// <typeparam name="T">Type to convert response message to</typeparam>
-        /// <returns>HTTP response deserialized to T type</returns>
-        protected async Task<T> Delete<T>(string url,
-            object data = null,
-            IDictionary<string, string> headers = null,
-            Ref<HttpResponseMessage> outResponse = null)
-        {
-            var result = await MakeRequest(HttpMethod.Delete, url, data, headers, outResponse).ConfigureAwait(false);
-            return await DeserializeOrDefault<T>(result).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Handles HTTP PUT calls
-        /// </summary>
-        /// <param name="url">The URL to call</param>
-        /// <param name="data">The data to send</param>
-        /// <param name="headers">The HTTP headers to send when performing a request</param>
-        /// <param name="outResponse">Ref to raw HttpResponseMessage message</param>
-        /// <typeparam name="T">Type to convert response message to</typeparam>
-        /// <returns>HTTP response deserialized to T type</returns>
-        protected async Task<T> Put<T>(string url,
-            object data = null,
-            IDictionary<string, string> headers = null,
-            Ref<HttpResponseMessage> outResponse = null)
-        {
-
-            var result = await MakeRequest(HttpMethod.Put, url, data, headers, outResponse).ConfigureAwait(false);
-            return await DeserializeOrDefault<T>(result).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Handles HTTP PUT calls
-        /// </summary>
-        /// <param name="url">The URL to call</param>
-        /// <param name="data">The data to send</param>
-        /// <param name="headers">The HTTP headers to send when performing a request</param>
-        /// <param name="outResponse">Ref to raw HttpResponseMessage message</param>
-        /// <returns></returns>
-        protected Task Put(string url,
-            object data = null,
-            IDictionary<string, string> headers = null,
-            Ref<HttpResponseMessage> outResponse = null)
-        {
-            return MakeRequest(HttpMethod.Put, url, data, headers, outResponse);
-        }
-
-        /// <summary>
         /// Handles HTTP GET calls
         /// </summary>
         /// <param name="url">The URL to call</param>
@@ -167,39 +97,6 @@ namespace Klarna.Common
         {
             var result = await MakeRequest(HttpMethod.Get, url, null, headers, outResponse).ConfigureAwait(false);
             return await DeserializeOrDefault<T>(result).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Handles HTTP GET calls
-        /// </summary>
-        /// <param name="url">The URL to call</param>
-        /// <param name="headers">The HTTP headers to send when performing a request</param>
-        /// <param name="response">Ref to raw HttpResponseMessage message</param>
-        /// <returns></returns>
-        protected Task Get(string url,
-            IDictionary<string, string> headers = null,
-            Ref<HttpResponseMessage> response = null)
-        {
-            return MakeRequest(HttpMethod.Get, url, null, headers, response);
-        }
-
-        /// <summary>
-        /// Performs an HTTP call and returns result as a binary stream.
-        /// Used to download binary/text files, like CSVs and PDFs.
-        /// </summary>
-        /// <param name="url">Stream endpoint</param>
-        /// <returns>Stream</returns>
-        protected async Task<Stream> GetStream(string url)
-        {
-            using (var client = GetClient())
-            {
-                var result = await client.SendAsync(GetHttpMessage(HttpMethod.Get, url)).
-                    ConfigureAwait(false);
-
-                await ThrowIfError(result).ConfigureAwait(false);
-
-                return await result.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            }
         }
 
         /// <summary>

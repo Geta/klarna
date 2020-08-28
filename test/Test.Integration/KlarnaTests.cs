@@ -48,13 +48,6 @@ namespace Test.Integration
         }
 
         [Fact]
-        public void Client_CheckoutStoreInitiated()
-        {
-            var client = new Klarna.Common.Klarna(string.Empty, string.Empty, KlarnaEnvironment.TestingNorthAmerica);
-            Assert.NotNull(client.Checkout);
-        }
-
-        [Fact]
         public void Client_OrderManagementStoreInitiated()
         {
             var client = new Klarna.Common.Klarna(string.Empty, string.Empty, KlarnaEnvironment.TestingNorthAmerica);

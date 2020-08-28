@@ -1,42 +1,14 @@
 using System;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
+using Klarna.Checkout.Models;
 using Klarna.Common.Helpers;
-using Klarna.Common.Models;
 
-namespace Klarna.Common.Extensions
+namespace Klarna.Checkout.Extensions
 {
     public static class AddressExtensions
     {
         private static Injected<IOrderGroupFactory> _orderGroupFactory;
-
-        public static OrderManagementAddressInfo ToAddress(this IOrderAddress orderAddress)
-        {
-            var address = new OrderManagementAddressInfo();
-            address.GivenName = orderAddress.FirstName;
-            address.FamilyName = orderAddress.LastName;
-            address.StreetAddress = orderAddress.Line1;
-            address.StreetAddress2 = orderAddress.Line2;
-            address.PostalCode = orderAddress.PostalCode;
-            address.City = orderAddress.City;
-            address.Country = CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode);
-            if (orderAddress.CountryCode != null && address.Country.Equals("us", StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(orderAddress.RegionName))
-            {
-                address.Region =
-                    CountryCodeHelper.GetStateCode(CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode),
-                        orderAddress.RegionName);
-            }
-            else
-            {
-                address.Region = orderAddress.RegionName;
-            }
-
-            address.Email = orderAddress.Email;
-            address.Phone = orderAddress.DaytimePhoneNumber ?? orderAddress.EveningPhoneNumber;
-
-            return address;
-        }
-
 
         public static CheckoutAddressInfo ToCheckoutAddress(this IOrderAddress orderAddress)
         {
@@ -64,7 +36,6 @@ namespace Klarna.Common.Extensions
 
             return address;
         }
-
 
         public static IOrderAddress ToOrderAddress(this CheckoutAddressInfo address, ICart cart)
         {
