@@ -14,7 +14,7 @@ namespace Klarna.Common.Extensions
         private static Injected<IMarketService> _marketService;
 #pragma warning restore 649
 
-        public static PatchedOrderLine GetOrderLine(this IShipment shipment, ICart cart, OrderGroupTotals totals, bool includeTaxes)
+        public static OrderLine GetOrderLine(this IShipment shipment, ICart cart, OrderGroupTotals totals, bool includeTaxes)
         {
             var total = AmountHelper.GetAmount(totals.ShippingTotal);
             var totalTaxAmount = 0;
@@ -41,7 +41,7 @@ namespace Klarna.Common.Extensions
                 }
             }
 
-            var shipmentOrderLine = new PatchedOrderLine
+            var shipmentOrderLine = new OrderLine
             {
                 Name = shipment.ShippingMethodName,
                 Quantity = 1,

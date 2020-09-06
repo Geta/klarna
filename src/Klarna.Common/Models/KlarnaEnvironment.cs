@@ -1,4 +1,4 @@
-﻿namespace Klarna.Common.Models
+﻿﻿namespace Klarna.Common.Models
 {
     /// <summary>
     /// The API is accessible through a few different URLS. There are different URLs for testing and for making

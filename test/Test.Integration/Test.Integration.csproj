@@ -175,7 +175,6 @@
   <ItemGroup>
     <Compile Include="CheckoutStoreTests.cs" />
     <Compile Include="KlarnaPaymentTests.cs" />
-    <Compile Include="KlarnaTests.cs" />
     <Compile Include="OrderManagementStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

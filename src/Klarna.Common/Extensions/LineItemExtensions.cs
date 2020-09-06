@@ -71,7 +71,7 @@ namespace Klarna.Common.Extensions
             int totalTaxAmount,
             int taxRate)
         {
-            var orderLine = new PatchedOrderLine
+            var orderLine = new OrderLine
             {
                 Quantity = (int)lineItem.Quantity,
                 Name = lineItem.DisplayName,
@@ -102,7 +102,7 @@ namespace Klarna.Common.Extensions
                 if (!ContentReference.IsNullOrEmpty(contentLink))
                 {
                     orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink).ToAbsoluteUrl();
-                    orderLine.ProductImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
+                    orderLine.ImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
                 }
             }
             return orderLine;

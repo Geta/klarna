@@ -55,12 +55,6 @@ namespace Klarna.OrderManagement.Steps
                         string.Join("; ", aggregateException.InnerExceptions.Select(GetExceptionMessage));
                     exceptionMessage = $"{innerMessages}";
                     break;
-                case Refit.ApiException refitException:
-                    exceptionMessage =
-                        $"{refitException.StatusCode} " +
-                        $"{refitException.Message}" +
-                        $"{refitException.Content}";
-                    break;
                 case ApiException apiException:
                     exceptionMessage =
                         $"{apiException.ErrorMessage.CorrelationId} " +

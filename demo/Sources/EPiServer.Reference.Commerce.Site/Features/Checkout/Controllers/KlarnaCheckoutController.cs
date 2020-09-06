@@ -66,7 +66,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/ordervalidation")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+        public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]CheckoutOrder checkoutData)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 

@@ -93,22 +93,20 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout
                             }
                         }
 
-                        var patchedOrderLine = (PatchedOrderLine) lineItem;
-                        if (patchedOrderLine.ProductIdentifiers == null)
+                        if (lineItem.ProductIdentifiers == null)
                         {
-                            patchedOrderLine.ProductIdentifiers = new ProductIdentifiers();
+                            lineItem.ProductIdentifiers = new ProductIdentifiers();
                         }
 
-                        patchedOrderLine.ProductIdentifiers.Brand = product?.Brand;
-                        patchedOrderLine.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
-                        patchedOrderLine.ProductIdentifiers.ManufacturerPartNumber = "ManuFacturerPartNumber test";
-                        patchedOrderLine.ProductIdentifiers.CategoryPath = "test / test";
+                        lineItem.ProductIdentifiers.Brand = product?.Brand;
+                        lineItem.ProductIdentifiers.GlobalTradeItemNumber = "GlobalTradeItemNumber test";
+                        lineItem.ProductIdentifiers.ManufacturerPartNumber = "ManuFacturerPartNumber test";
+                        lineItem.ProductIdentifiers.CategoryPath = "test / test";
 
                         if (paymentsConfiguration.SendProductAndImageUrlField && entryContent != null)
                         {
-                            ((PatchedOrderLine) lineItem).ProductUrl = SiteUrlHelper.GetAbsoluteUrl()
+                            lineItem.ProductUrl = SiteUrlHelper.GetAbsoluteUrl()
                                                                        + entryContent.GetUrl(_relationRepository.Service, _urlResolver.Service);
-
                         }
                     }
                 }

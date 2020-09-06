@@ -233,7 +233,6 @@
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
     <Compile Include="IJsonSerializer.cs" />
     <Compile Include="JsonSerializer.cs" />
-    <Compile Include="Klarna.cs" />
     <Compile Include="Models\ApiCredentials.cs" />
     <Compile Include="Models\ApiException.cs" />
     <Compile Include="Models\ApiSession.cs" />
@@ -281,9 +280,7 @@
     <Compile Include="KlarnaService.cs" />
     <Compile Include="Models\FraudStatus.cs" />
     <Compile Include="Models\NotificationModel.cs" />
-    <Compile Include="Models\PatchedOrderLine.cs" />
     <Compile Include="Extensions\PaymentExtensions.cs" />
-    <Compile Include="Models\PatchedProductIdentifiers.cs" />
     <Compile Include="Models\ProductIdentifiers.cs" />
     <Compile Include="OrderManagementStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -83,9 +83,9 @@ namespace Test.Integration
             session.Locale = "en-ud";
             session.OrderAmount = 1000;
             session.OrderTaxAmount = 0;
-            session.OrderLines = new OrderLine[]
+            session.OrderLines = new []
             {
-                new PatchedOrderLine { Name = "Product a", Quantity = 1, TotalAmount = 1000, UnitPrice = 1000 }
+                new OrderLine { Name = "Product a", Quantity = 1, TotalAmount = 1000, UnitPrice = 1000 }
             };
             session.Customer = null;
             session.MerchantUrl = new MerchantUrl

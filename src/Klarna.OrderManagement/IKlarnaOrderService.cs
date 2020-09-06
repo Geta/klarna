@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common.Models;
-using Klarna.OrderManagement.Models;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement
@@ -21,7 +20,7 @@ namespace Klarna.OrderManagement
 
         Task TriggerSendOut(string orderId, string captureId);
 
-        Task<PatchedOrderData> GetOrder(string orderId);
+        Task<OrderManagementOrder> GetOrder(string orderId);
 
         Task ExtendAuthorizationTime(string orderId);
 

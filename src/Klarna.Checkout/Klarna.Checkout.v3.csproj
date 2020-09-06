@@ -255,9 +255,6 @@
     <Compile Include="Models\KlarnaAddressExtensions.cs" />
     <Compile Include="Models\MerchantRequested.cs" />
     <Compile Include="Models\MerchantRequestedAdditionalCheckbox.cs" />
-    <Compile Include="Models\PatchedCheckoutOptions.cs" />
-    <Compile Include="Models\PatchedCheckoutOrderData.cs" />
-    <Compile Include="Models\PatchedMerchantUrls.cs" />
     <Compile Include="Models\ShippingAttributes.cs" />
     <Compile Include="Models\ShippingMethod.cs" />
     <Compile Include="Models\ShippingOption.cs" />

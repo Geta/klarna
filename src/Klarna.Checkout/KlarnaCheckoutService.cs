@@ -24,7 +24,6 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using ConfigurationException = EPiServer.Business.Commerce.Exception.ConfigurationException;
-using Client = Klarna.Common.Klarna;
 
 namespace Klarna.Checkout
 {
@@ -237,7 +236,7 @@ namespace Klarna.Checkout
             }
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
-            var orderData = new PatchedCheckoutOrderData
+            var orderData = new CheckoutOrder
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
@@ -283,7 +282,7 @@ namespace Klarna.Checkout
         protected virtual CheckoutOptions GetOptions(MarketId marketId)
         {
             var configuration = GetConfiguration(marketId);
-            var options = new PatchedCheckoutOptions
+            var options = new CheckoutOptions
             {
                 RequireValidateCallbackSuccess = configuration.RequireValidateCallbackSuccess,
                 AllowSeparateShippingAddress = configuration.AllowSeparateShippingAddress,
@@ -405,11 +404,11 @@ namespace Klarna.Checkout
             return result;
         }
 
-        public virtual bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
+        public virtual bool ValidateOrder(ICart cart, CheckoutOrder checkoutData)
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
             var market = _marketService.GetMarket(cart.MarketId);
-            var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, market, PaymentMethodDto);
+            var localCheckoutOrderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
             localCheckoutOrderData.ShippingCheckoutAddress = cart.GetFirstShipment().ShippingAddress.ToCheckoutAddress();
             
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
@@ -422,7 +421,7 @@ namespace Klarna.Checkout
             _orderRepository.Save(cart);
 
             // Create new default cart
-            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, "Default");
+            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, Cart.DefaultName);
             _orderRepository.Save(newCart);
 
             return true;

@@ -1,14 +1,10 @@
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Common.Extensions;
+using Klarna.Common.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
-using Refit;
 
 namespace Klarna.OrderManagement
 {
@@ -30,20 +26,20 @@ namespace Klarna.OrderManagement
 
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
-
-            var client = new Common.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
-
-            var byteArray = Encoding.ASCII.GetBytes($"{connectionConfiguration.Username}:{connectionConfiguration.Password}");
-            var httpClient = new HttpClient
+            string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.OrderManagement_{typeof(KlarnaOrderService).Assembly.GetName().Version}";
+                
+            var client =  new OrderManagementStore(new ApiSession
             {
-                BaseAddress = new Uri(connectionConfiguration.ApiUrl)
-            };
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Platform", $"Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version}"));
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("Module", $"Klarna.OrderManagement_{typeof(KlarnaOrderService).Assembly.GetName().Version}"));
-
-            return new KlarnaOrderService(client, RestService.For<IKlarnaOrderServiceApi>(httpClient));
+                ApiUrl = connectionConfiguration.ApiUrl,
+                UserAgent = userAgent,
+                Credentials = new ApiCredentials
+                {
+                    Username = connectionConfiguration.Username,
+                    Password = connectionConfiguration.Password
+                }
+            }, new JsonSerializer());
+            
+            return new KlarnaOrderService(client);
         }
     }
 }
