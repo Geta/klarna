@@ -11,7 +11,6 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Services;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce.Markets;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
@@ -67,7 +66,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         [Route("cart/{orderGroupId}/ordervalidation")]
         [AcceptVerbs("POST")]
         [HttpPost]
-        public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+        public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]CheckoutOrder checkoutData)
         {
             var cart = _orderRepository.Load<ICart>(orderGroupId);
 

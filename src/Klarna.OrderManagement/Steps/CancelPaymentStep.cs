@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Communication;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 

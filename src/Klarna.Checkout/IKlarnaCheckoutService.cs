@@ -2,7 +2,7 @@
 using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
 using Klarna.Common;
-using Klarna.Rest.Core.Model;
+using Klarna.Common.Models;
 using Mediachase.Commerce;
 
 namespace Klarna.Checkout
@@ -23,7 +23,7 @@ namespace Klarna.Checkout
 
         void CancelOrder(ICart cart);
 
-        bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData);
+        bool ValidateOrder(ICart cart, CheckoutOrder checkoutData);
 
         Task UpdateMerchantReference1(IPurchaseOrder purchaseOrder);
         void AcknowledgeOrder(IPurchaseOrder purchaseOrder);

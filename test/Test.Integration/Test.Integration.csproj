@@ -41,9 +41,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Klarna.Rest.Core, Version=3.1.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Klarna.Rest.Core.3.1.12\lib\netstandard2.0\Klarna.Rest.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.AspNetCore.WebUtilities, Version=2.0.1.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNetCore.WebUtilities.2.0.1\lib\netstandard2.0\Microsoft.AspNetCore.WebUtilities.dll</HintPath>
     </Reference>
@@ -76,6 +73,7 @@
       <HintPath>..\..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Console, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Console.4.3.0\lib\net46\System.Console.dll</HintPath>
       <Private>True</Private>
@@ -175,7 +173,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CheckoutStoreTests.cs" />
     <Compile Include="KlarnaPaymentTests.cs" />
+    <Compile Include="OrderManagementStoreTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -183,6 +183,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Klarna.Checkout\Klarna.Checkout.v3.csproj">
+      <Project>{dfe6ab6e-4a39-4ec6-afa7-d5364a5fdeeb}</Project>
+      <Name>Klarna.Checkout.v3</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Klarna.Common\Klarna.Common.v3.csproj">
       <Project>{C5B383DF-10B4-4330-A000-F981DB51DA89}</Project>
       <Name>Klarna.Common.v3</Name>
@@ -194,6 +198,9 @@
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\..\packages\xunit.analyzers.0.9.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Data\CheckoutCreateOrder.json" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

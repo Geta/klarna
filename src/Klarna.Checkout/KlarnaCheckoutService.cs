@@ -9,14 +9,14 @@ using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
+using Klarna.Checkout.Extensions;
 using Klarna.Checkout.Models;
 using Klarna.Common;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
+using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.Payments.Models;
-using Klarna.Rest.Core.Communication;
-using Klarna.Rest.Core.Model;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Markets;
@@ -24,7 +24,6 @@ using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
 using ConfigurationException = EPiServer.Business.Commerce.Exception.ConfigurationException;
-using Client = Klarna.Rest.Core.Klarna;
 
 namespace Klarna.Checkout
 {
@@ -41,7 +40,7 @@ namespace Klarna.Checkout
         private readonly ICheckoutLanguageIdConverter _checkoutLanguageIdConverter;
         private readonly IKlarnaCartValidator _klarnaCartValidator;
 
-        private Client _client;
+        private CheckoutStore _client;
         private PaymentMethodDto _paymentMethodDto;
         private CheckoutConfiguration _checkoutConfiguration;
 
@@ -78,15 +77,24 @@ namespace Klarna.Checkout
             return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market.MarketId));
         }
 
-        public virtual Client GetClient(IMarket market)
+        public virtual CheckoutStore GetClient(IMarket market)
         {
             if (PaymentMethodDto != null)
             {
                 var connectionConfiguration = GetCheckoutConfiguration(market);
 
                 string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.Checkout_{typeof(KlarnaCheckoutService).Assembly.GetName().Version}";
-
-                _client =  new Client(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl, userAgent);
+                
+                _client =  new CheckoutStore(new ApiSession
+                {
+                    ApiUrl = connectionConfiguration.ApiUrl,
+                    UserAgent = userAgent,
+                    Credentials = new ApiCredentials
+                    {
+                        Username = connectionConfiguration.Username,
+                        Password = connectionConfiguration.Password
+                    }
+                }, new JsonSerializer());
             }
             return _client;
         }
@@ -228,7 +236,7 @@ namespace Klarna.Checkout
             }
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
-            var orderData = new PatchedCheckoutOrderData
+            var orderData = new CheckoutOrder
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
@@ -274,7 +282,7 @@ namespace Klarna.Checkout
         protected virtual CheckoutOptions GetOptions(MarketId marketId)
         {
             var configuration = GetConfiguration(marketId);
-            var options = new PatchedCheckoutOptions
+            var options = new CheckoutOptions
             {
                 RequireValidateCallbackSuccess = configuration.RequireValidateCallbackSuccess,
                 AllowSeparateShippingAddress = configuration.AllowSeparateShippingAddress,
@@ -294,7 +302,7 @@ namespace Klarna.Checkout
             var additionalCheckboxText = configuration.AdditionalCheckboxText;
             if (!string.IsNullOrEmpty(additionalCheckboxText))
             {
-                options.AdditionalCheckbox = new Rest.Core.Model.AdditionalCheckbox
+                options.AdditionalCheckbox = new AdditionalCheckbox
                 {
                     Text = additionalCheckboxText,
                     Checked = configuration.AdditionalCheckboxDefaultChecked,
@@ -396,11 +404,11 @@ namespace Klarna.Checkout
             return result;
         }
 
-        public virtual bool ValidateOrder(ICart cart, PatchedCheckoutOrderData checkoutData)
+        public virtual bool ValidateOrder(ICart cart, CheckoutOrder checkoutData)
         {
             // Compare the current cart state to the Klarna order state (totals, shipping selection, discounts, and gift cards). If they don't match there is an issue.
             var market = _marketService.GetMarket(cart.MarketId);
-            var localCheckoutOrderData = (PatchedCheckoutOrderData)GetCheckoutOrderData(cart, market, PaymentMethodDto);
+            var localCheckoutOrderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
             localCheckoutOrderData.ShippingCheckoutAddress = cart.GetFirstShipment().ShippingAddress.ToCheckoutAddress();
             
             if (!_klarnaOrderValidator.Compare(checkoutData, localCheckoutOrderData))
@@ -413,7 +421,7 @@ namespace Klarna.Checkout
             _orderRepository.Save(cart);
 
             // Create new default cart
-            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, "Default");
+            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, Cart.DefaultName);
             _orderRepository.Save(newCart);
 
             return true;
@@ -552,6 +560,5 @@ namespace Klarna.Checkout
             var client = GetClient(market);
             return new LoggingCheckoutOrder(client);
         }
-
     }
 }

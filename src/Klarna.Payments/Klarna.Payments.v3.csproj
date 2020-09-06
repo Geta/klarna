@@ -104,9 +104,6 @@
     <Reference Include="ISO3166, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ISO3166.1.0.1\lib\net20\ISO3166.dll</HintPath>
     </Reference>
-    <Reference Include="Klarna.Rest.Core, Version=3.1.12.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Klarna.Rest.Core.3.1.12\lib\netstandard2.0\Klarna.Rest.Core.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
     </Reference>
@@ -236,6 +233,7 @@
   <ItemGroup>
     <Compile Include="Extensions\CartExtensions.cs" />
     <Compile Include="KlarnaServiceApiFactory.cs" />
+    <Compile Include="Models\PaymentCustomerOrganizationEntityType.cs" />
     <Compile Include="Models\SessionSettings.cs" />
     <Compile Include="Models\CompletionResult.cs" />
     <Compile Include="Models\PaymentMethodCategory.cs" />

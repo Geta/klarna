@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common.Extensions;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Communication;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
@@ -55,12 +54,6 @@ namespace Klarna.OrderManagement.Steps
                     var innerMessages =
                         string.Join("; ", aggregateException.InnerExceptions.Select(GetExceptionMessage));
                     exceptionMessage = $"{innerMessages}";
-                    break;
-                case Refit.ApiException refitException:
-                    exceptionMessage =
-                        $"{refitException.StatusCode} " +
-                        $"{refitException.Message}" +
-                        $"{refitException.Content}";
                     break;
                 case ApiException apiException:
                     exceptionMessage =

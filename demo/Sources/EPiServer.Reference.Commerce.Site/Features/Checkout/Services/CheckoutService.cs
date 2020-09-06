@@ -1,6 +1,4 @@
-﻿using EPiServer.Commerce.Marketing;
-using EPiServer.Commerce.Order;
-using EPiServer.Core;
+﻿using EPiServer.Commerce.Order;
 using EPiServer.Framework.Localization;
 using EPiServer.Globalization;
 using EPiServer.Logging;
@@ -12,7 +10,6 @@ using EPiServer.Reference.Commerce.Site.Features.Checkout.Pages;
 using EPiServer.Reference.Commerce.Site.Features.Checkout.ViewModels;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Models;
-using EPiServer.Reference.Commerce.Site.Features.Start.Pages;
 using EPiServer.Reference.Commerce.Site.Infrastructure.Facades;
 using Klarna.Checkout;
 using Klarna.Common.Extensions;
@@ -26,7 +23,8 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
-using Klarna.Rest.Core.Model;
+using Klarna.Checkout.Models;
+using Klarna.Common.Models;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 {

@@ -6,8 +6,6 @@ using EPiServer.Logging;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
-using Klarna.Rest.Core.Communication;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 

@@ -7,8 +7,6 @@ using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Rest.Core.Model;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Catalog;
 using Mediachase.Commerce.Orders;
@@ -73,7 +71,7 @@ namespace Klarna.Common.Extensions
             int totalTaxAmount,
             int taxRate)
         {
-            var orderLine = new PatchedOrderLine
+            var orderLine = new OrderLine
             {
                 Quantity = (int)lineItem.Quantity,
                 Name = lineItem.DisplayName,
@@ -104,7 +102,7 @@ namespace Klarna.Common.Extensions
                 if (!ContentReference.IsNullOrEmpty(contentLink))
                 {
                     orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink).ToAbsoluteUrl();
-                    orderLine.ProductImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
+                    orderLine.ImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
                 }
             }
             return orderLine;

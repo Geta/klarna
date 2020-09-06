@@ -8,8 +8,6 @@ using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.Payments.Models;
-using Klarna.Rest.Core.Model;
-using Klarna.Rest.Core.Model.Enum;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
@@ -49,11 +47,21 @@ namespace Klarna.Common
             // Get payment method used and the configuration data
             var paymentMethodDto = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
             var connectionConfiguration = paymentMethodDto.GetConnectionConfiguration(order.MarketId);
+            string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.Common_{typeof(KlarnaService).Assembly.GetName().Version}";
 
-            var client = new Rest.Core.Klarna(connectionConfiguration.Username, connectionConfiguration.Password, connectionConfiguration.ApiUrl);
-
+            var client =  new OrderManagementStore(new ApiSession
+            {
+                ApiUrl = connectionConfiguration.ApiUrl,
+                UserAgent = userAgent,
+                Credentials = new ApiCredentials
+                {
+                    Username = connectionConfiguration.Username,
+                    Password = connectionConfiguration.Password
+                }
+            }, new JsonSerializer());
+            
             // Make sure the order exists in Klarna
-            var klarnaOrder = AsyncHelper.RunSync(() => client.OrderManagement.GetOrder(notification.OrderId));
+            var klarnaOrder = AsyncHelper.RunSync(() => client.GetOrder(notification.OrderId));
 
             if (klarnaOrder == null) return;
 
@@ -124,7 +132,7 @@ namespace Klarna.Common
             }
 
             // Sales tax
-            orderLines.Add(new PatchedOrderLine()
+            orderLines.Add(new OrderLine()
             {
                 Type = OrderLineType.sales_tax,
                 Name = "Sales Tax",
@@ -141,7 +149,7 @@ namespace Klarna.Common
             var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
             if (totalDiscount > 0)
             {
-                orderLines.Add(new PatchedOrderLine()
+                orderLines.Add(new OrderLine()
                 {
                     Type = OrderLineType.discount,
                     Name = "Discount",
@@ -194,7 +202,7 @@ namespace Klarna.Common
                 var discountTax = totalTaxAmountWithoutDiscount - totalTaxAmountWithDiscount;
                 var taxRate = discountTax * 100 / (orderLevelDiscountIncludingTax - discountTax);
 
-                orderLines.Add(new PatchedOrderLine()
+                orderLines.Add(new OrderLine()
                 {
                     Type = OrderLineType.discount,
                     Name = "Discount",

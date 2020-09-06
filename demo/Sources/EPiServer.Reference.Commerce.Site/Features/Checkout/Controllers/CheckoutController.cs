@@ -83,6 +83,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
 
             var viewModel = CreateCheckoutViewModel(currentPage);
 
+            // To allow sharing of Personal Information for demo purposes
+            Cart.Properties[Klarna.Payments.Constants.KlarnaAllowSharingOfPersonalInformationCartField] = true;
             Cart.Currency = _currencyService.GetCurrentCurrency();
 
             _checkoutService.UpdateShippingAddresses(Cart, viewModel);

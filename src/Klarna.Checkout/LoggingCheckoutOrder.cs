@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Logging;
-using Klarna.Rest.Core.Communication;
-using Klarna.Rest.Core.Model;
+using Klarna.Checkout.Models;
+using Klarna.Common.Models;
 
 namespace Klarna.Checkout
 {
@@ -15,9 +15,9 @@ namespace Klarna.Checkout
     public class LoggingCheckoutOrder : ICheckoutOrder
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(LoggingCheckoutOrder));
-        private readonly Rest.Core.Klarna _client;
+        private readonly CheckoutStore _client;
 
-        public LoggingCheckoutOrder(Rest.Core.Klarna client)
+        public LoggingCheckoutOrder(CheckoutStore client)
         {
             _client = client;
         }
@@ -26,7 +26,7 @@ namespace Klarna.Checkout
         {
             try
             {
-                return await _client.Checkout.CreateOrder(checkoutOrderData).ConfigureAwait(false);
+                return await _client.CreateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -39,7 +39,7 @@ namespace Klarna.Checkout
         {
             try
             {
-                return await _client.Checkout.UpdateOrder(checkoutOrderData).ConfigureAwait(false);
+                return await _client.UpdateOrder(checkoutOrderData).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -53,7 +53,7 @@ namespace Klarna.Checkout
             try
             {
 
-                return await _client.Checkout.GetOrder(orderId).ConfigureAwait(false);
+                return await _client.GetOrder(orderId).ConfigureAwait(false);
             }
             catch (ApiException e)
             {
@@ -66,7 +66,7 @@ namespace Klarna.Checkout
         {
             var messages = string.Join(" ", e.ErrorMessage.ErrorMessages);
             Logger.Error(
-                $"Error Code: '{e.ErrorMessage.ErrorCode}'; CorelationId: '{e.ErrorMessage.CorrelationId}'; Messages: '{messages}'",
+                $"Error Code: '{e.ErrorMessage.ErrorCode}'; CorrelationId: '{e.ErrorMessage.CorrelationId}'; Messages: '{messages}'",
                 e);
         }
     }

@@ -4,37 +4,32 @@ using System.Linq;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
-using Klarna.OrderManagement.Models;
-using Klarna.Rest.Core.Model;
-using Klarna.Rest.Core.Model.Enum;
+using Klarna.Common.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Client = Klarna.Rest.Core.Klarna;
 
 namespace Klarna.OrderManagement
 {
     public class KlarnaOrderService : IKlarnaOrderService
     {
-        private readonly Client _client;
-        private readonly IKlarnaOrderServiceApi _klarnaOrderServiceApi;
+        private readonly OrderManagementStore _client;
 
-        internal KlarnaOrderService(Client client, IKlarnaOrderServiceApi klarnaOrderServiceApi)
+        internal KlarnaOrderService(OrderManagementStore client)
         {
             _client = client;
-            _klarnaOrderServiceApi = klarnaOrderServiceApi;
         }
 
-        public async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        public virtual async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
-            await _client.OrderManagement.AcknowledgeOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).ConfigureAwait(false);
+            await _client.AcknowledgeOrder(purchaseOrder.Properties[Constants.KlarnaOrderIdField]?.ToString()).ConfigureAwait(false);
         }
 
-        public async Task CancelOrder(string orderId)
+        public virtual async Task CancelOrder(string orderId)
         {
-            await _client.OrderManagement.CancelOrder(orderId).ConfigureAwait(false);
+            await _client.CancelOrder(orderId).ConfigureAwait(false);
         }
 
-        public async Task UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
+        public virtual async Task UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2)
         {
             var updateMerchantReferences = new OrderManagementMerchantReferences
             {
@@ -42,10 +37,10 @@ namespace Klarna.OrderManagement
                 MerchantReference2 = merchantReference2
             };
 
-            await _client.OrderManagement.UpdateMerchantReferences(orderId, updateMerchantReferences).ConfigureAwait(false);
+            await _client.UpdateMerchantReferences(orderId, updateMerchantReferences).ConfigureAwait(false);
         }
 
-        public async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
+        public virtual async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
         {
             var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
@@ -55,10 +50,10 @@ namespace Klarna.OrderManagement
                 Description = description,
                 OrderLines = lines
             };
-            return  await _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
+            return  await _client.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
+        public virtual async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment)
         {
             if (shipment == null)
             {
@@ -80,10 +75,10 @@ namespace Klarna.OrderManagement
                 ShippingInfo = new List<OrderManagementShippingInfo>() { shippingInfo }
             };
 
-            return await _client.OrderManagement.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
+            return await _client.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
+        public virtual async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
             var lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
 
@@ -93,32 +88,32 @@ namespace Klarna.OrderManagement
                 Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
-            await _client.OrderManagement.CreateAndFetchRefund(orderId, refund).ConfigureAwait(false);
+            await _client.CreateAndFetchRefund(orderId, refund).ConfigureAwait(false);
         }
 
-        public async Task ReleaseRemainingAuthorization(string orderId)
+        public virtual async Task ReleaseRemainingAuthorization(string orderId)
         { 
-            await _client.OrderManagement.ReleaseRemainingAuthorization(orderId).ConfigureAwait(false);
+            await _client.ReleaseRemainingAuthorization(orderId).ConfigureAwait(false);
         }
 
-        public async Task TriggerSendOut(string orderId, string captureId)
+        public virtual async Task TriggerSendOut(string orderId, string captureId)
         {
-           await _client.OrderManagement.TriggerResendOfCustomerCommunication(orderId, captureId).ConfigureAwait(false);
+           await _client.TriggerResendOfCustomerCommunication(orderId, captureId).ConfigureAwait(false);
         }
 
-        public async Task<PatchedOrderData> GetOrder(string orderId)
+        public virtual async Task<OrderManagementOrder> GetOrder(string orderId)
         {
-            return await _klarnaOrderServiceApi.GetOrder(orderId).ConfigureAwait(false);
+            return await _client.GetOrder(orderId).ConfigureAwait(false);
         }
 
-        public async Task ExtendAuthorizationTime(string orderId)
+        public virtual async Task ExtendAuthorizationTime(string orderId)
         {
-             await _client.OrderManagement.ExtendAuthorizationTime(orderId).ConfigureAwait(false);
+             await _client.ExtendAuthorizationTime(orderId).ConfigureAwait(false);
         }
 
-        public async Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
+        public virtual async Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
         {
-            await _client.OrderManagement.UpdateCustomerAddresses(orderId, updateCustomerDetails).ConfigureAwait(false);
+            await _client.UpdateCustomerAddresses(orderId, updateCustomerDetails).ConfigureAwait(false);
         }
 
         private int GetAmount(decimal money)

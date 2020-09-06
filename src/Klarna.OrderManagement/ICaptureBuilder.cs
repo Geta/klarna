@@ -1,5 +1,5 @@
 ﻿using EPiServer.Commerce.Order;
-using Klarna.Rest.Core.Model;
+using Klarna.Common.Models;
 
 namespace Klarna.OrderManagement
 {

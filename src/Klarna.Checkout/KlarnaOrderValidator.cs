@@ -7,7 +7,7 @@ namespace Klarna.Checkout
     [ServiceConfiguration(typeof(IKlarnaOrderValidator))]
     public class KlarnaOrderValidator : IKlarnaOrderValidator
     {
-        public bool Compare(PatchedCheckoutOrderData checkoutData, PatchedCheckoutOrderData otherCheckoutOrderData)
+        public bool Compare(CheckoutOrder checkoutData, CheckoutOrder otherCheckoutOrderData)
         {
             return checkoutData.OrderAmount.Equals(otherCheckoutOrderData.OrderAmount) &&
                    checkoutData.OrderTaxAmount.Equals(otherCheckoutOrderData.OrderTaxAmount) &&
