@@ -52,7 +52,7 @@ namespace Klarna.OrderManagement.CommerceManager.KlarnaSummary
 
                 try
                 {
-                    var orderData = klarnaOrderService.GetOrder(orderId).Result;
+                    var orderData = AsyncHelper.RunSync(() => klarnaOrderService.GetOrder(orderId));
 
                     OrderIdLabel.Text = orderData.OrderId;
                     KlarnaReferenceLabel.Text = orderData.KlarnaReference;
