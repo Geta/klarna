@@ -19,6 +19,7 @@ using System.Web.Mvc;
 using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using Klarna.Checkout;
+using Klarna.Common;
 using Klarna.Payments;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Markets;
@@ -136,7 +137,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Controllers
         {
             var viewModel = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(Cart);
 
-            var success = _klarnaPaymentsService.CreateOrUpdateSession(Cart, new SessionSettings(SiteDefinition.Current.SiteUrl)).Result;
+            var success = AsyncHelper.RunSync(() => _klarnaPaymentsService.CreateOrUpdateSession(Cart, new SessionSettings(SiteDefinition.Current.SiteUrl)));
 
             return PartialView(viewModel);
         }
