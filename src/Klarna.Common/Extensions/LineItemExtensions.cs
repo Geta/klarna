@@ -1,8 +1,10 @@
 ﻿using System.Linq;
+using System.Threading;
 using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
+using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
@@ -101,7 +103,7 @@ namespace Klarna.Common.Extensions
                 var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Code);
                 if (!ContentReference.IsNullOrEmpty(contentLink))
                 {
-                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink).ToAbsoluteUrl();
+                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink, ContentLanguage.PreferredCulture.Name, new VirtualPathArguments { ValidateTemplate = false }).ToAbsoluteUrl();
                     orderLine.ImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
                 }
             }
