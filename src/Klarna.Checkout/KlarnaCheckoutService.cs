@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
@@ -240,7 +241,7 @@ namespace Klarna.Checkout
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = _checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(ContentLanguage.PreferredCulture.Name),
+                Locale = _checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(Thread.CurrentThread.CurrentCulture.Name),
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
