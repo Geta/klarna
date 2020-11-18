@@ -118,7 +118,11 @@ A session at Klarna should be created when the visitor is on the checkout page. 
 await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
 ```
 
-It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. MerchantReference1 is used for the PO number from Episerver, MerchantReference2 can be used for additional data for that order which the merchant can then use to search and locate that particular order in the Klarna Portal (example below in DemoSessionBuilder). The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://developers.klarna.com/documentation/klarna-payments/legal-privacy/). Below an example implementation of a DemoSessionBuilder.
+It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. MerchantReference1 is used for the PO number from Episerver, MerchantReference2 can be used for additional data for that order which the merchant can then use to search and locate that particular order in the Klarna Portal (example below in DemoSessionBuilder). The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://developers.klarna.com/documentation/klarna-payments/legal-privacy/). 
+
+You can add additional merchant data like customer data, subscription, event, reservation details etc when UseAttachments is set to true (configured in Commerce Manager for the Klarna Payments method). Here's a list of all the different supported parameters: https://developers.klarna.com/api/#payments-api-create-a-new-credit-session. 
+
+Below an example implementation of a DemoSessionBuilder.
 
 ```
 public class DemoSessionBuilder : ISessionBuilder
@@ -136,34 +140,36 @@ public class DemoSessionBuilder : ISessionBuilder
         }
         session.MerchantReference2 = "12345";
 
-        if (configuration.UseAttachments)
-        {
-            var converter = new IsoDateTimeConverter
-            {
-                DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
-            };
+        if (paymentsConfiguration.UseAttachments && PrincipalInfo.CurrentPrincipal.Identity.IsAuthenticated)
+		{
+			var converter = new IsoDateTimeConverter
+			{
+				DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss'Z'"
+			};
 
-            var customerAccountInfos = new List<Dictionary<string, object>>
-            {
-                new Dictionary<string, object>
-                {
-                    { "unique_account_identifier",  "Test Testperson" },
-                    { "account_registration_date", DateTime.Now },
-                    { "account_last_modified", DateTime.Now }
-                }
-            };
+			var customerContact = PrincipalInfo.CurrentPrincipal.GetCustomerContact();
 
-            var emd = new Dictionary<string, object>
-            {
-                { "customer_account_info", customerAccountInfos}
-            };
+			var customerAccountInfos = new List<Dictionary<string, object>>
+				{
+					new Dictionary<string, object>
+					{
+						{ "unique_account_identifier",  PrincipalInfo.CurrentPrincipal.GetContactId() },
+						{ "account_registration_date", customerContact.Created },
+						{ "account_last_modified", customerContact.Modified }
+					}
+				};
 
-            session.Attachment = new Attachment
-            {
-                ContentType = "application/vnd.klarna.internal.emd-v2+json",
-                Body = JsonConvert.SerializeObject(emd, converter)
-            };
-        }
+			var emd = new Dictionary<string, object>
+				{
+					{ "customer_account_info", customerAccountInfos}
+				};
+
+			session.Attachment = new Attachment
+			{
+				ContentType = "application/vnd.klarna.internal.emd-v2+json",
+				Body = JsonConvert.SerializeObject(emd, converter)
+			};
+		}
         return session;
     }
 }
