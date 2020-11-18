@@ -1,6 +1,5 @@
 ﻿using EPiServer.Commerce.Order;
 using EPiServer.Framework.Localization;
-using EPiServer.Globalization;
 using EPiServer.Logging;
 using EPiServer.Reference.Commerce.Shared.Services;
 using EPiServer.Reference.Commerce.Site.Features.AddressBook.Services;
@@ -24,7 +23,8 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using Klarna.Checkout.Models;
-using Klarna.Common.Models;
+using Klarna.Common;
+using Constants = Klarna.Checkout.Constants;
 
 namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 {
@@ -43,7 +43,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         private readonly ILogger _log = LogManager.GetLogger(typeof(CheckoutService));
         private readonly ICartService _cartService;
-
+        private readonly ILanguageService _languageService;
         public AuthenticatedPurchaseValidation AuthenticatedPurchaseValidation { get; }
         public AnonymousPurchaseValidation AnonymousPurchaseValidation { get; }
         public CheckoutAddressHandling CheckoutAddressHandling { get; }
@@ -60,7 +60,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             IMailService mailService,
             IContentLoader contentLoader,
             IKlarnaCheckoutService klarnaCheckoutService,
-            ICartService cartService)
+            ICartService cartService,
+            ILanguageService languageService)
         {
             _addressBookService = addressBookService;
             _orderGroupFactory = orderGroupFactory;
@@ -74,6 +75,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
             _contentLoader = contentLoader;
             _klarnaCheckoutService = klarnaCheckoutService;
             _cartService = cartService;
+            _languageService = languageService;
 
             AuthenticatedPurchaseValidation = new AuthenticatedPurchaseValidation(_localizationService);
             AnonymousPurchaseValidation = new AnonymousPurchaseValidation(_localizationService);
@@ -239,7 +241,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Checkout.Services
 
         public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrder order, ICart cart)
         {
-            var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name).PaymentMethod.FirstOrDefault();
+            var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name).PaymentMethod.FirstOrDefault();
 
             var payment = cart.CreatePayment(_orderGroupFactory);
             payment.PaymentType = PaymentType.Other;

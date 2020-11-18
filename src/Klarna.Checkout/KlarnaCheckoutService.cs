@@ -38,7 +38,7 @@ namespace Klarna.Checkout
         private readonly ICheckoutConfigurationLoader _checkoutConfigurationLoader;
         private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
-        private readonly ICheckoutLanguageIdConverter _checkoutLanguageIdConverter;
+        private readonly ILanguageService _languageService;
         private readonly IKlarnaCartValidator _klarnaCartValidator;
 
         private CheckoutStore _client;
@@ -53,7 +53,7 @@ namespace Klarna.Checkout
             IMarketService marketService,
             ICheckoutConfigurationLoader checkoutConfigurationLoader,
             KlarnaOrderServiceFactory klarnaOrderServiceFactory,
-            ICheckoutLanguageIdConverter checkoutLanguageIdConverter,
+            ILanguageService languageService,
             IKlarnaCartValidator klarnaCartValidator)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
@@ -63,7 +63,7 @@ namespace Klarna.Checkout
             _marketService = marketService;
             _checkoutConfigurationLoader = checkoutConfigurationLoader;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
-            _checkoutLanguageIdConverter = checkoutLanguageIdConverter;
+            _languageService = languageService;
             _klarnaCartValidator = klarnaCartValidator;
         }
 
@@ -71,7 +71,7 @@ namespace Klarna.Checkout
             _paymentMethodDto
             ?? (_paymentMethodDto =
                 PaymentManager.GetPaymentMethodBySystemName(
-                    Constants.KlarnaCheckoutSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true));
+                    Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true));
 
         public virtual CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
         {
@@ -105,7 +105,7 @@ namespace Klarna.Checkout
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (string.IsNullOrWhiteSpace(orderId))
             {
-                return await CreateOrder(cart);
+                return await CreateOrder(cart).ConfigureAwait(false);
             }
             else
             {
@@ -241,7 +241,7 @@ namespace Klarna.Checkout
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = _checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(Thread.CurrentThread.CurrentCulture.Name),
+                Locale = _languageService.ConvertToLocale(Thread.CurrentThread.CurrentCulture.Name),
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
@@ -260,7 +260,7 @@ namespace Klarna.Checkout
             {
                 if (checkoutConfiguration.ShippingOptionsInIFrame)
                 {
-                    orderData.ShippingOptions = GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture).ToList();
+                    orderData.ShippingOptions = GetShippingOptions(cart, cart.Currency).ToList();
                 }
                 else
                 {
@@ -354,7 +354,7 @@ namespace Klarna.Checkout
                 OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 ShippingOptions = configuration.ShippingOptionsInIFrame 
-                    ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture)
+                    ? GetShippingOptions(cart, cart.Currency)
                     : Enumerable.Empty<ShippingOption>(),
                 ValidationIssues = validationIssues,
                 RewardDescriptions = rewardDescriptions
@@ -391,7 +391,7 @@ namespace Klarna.Checkout
                 OrderLines = GetOrderLines(cart, totals, configuration.SendProductAndImageUrl),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 ShippingOptions = configuration.ShippingOptionsInIFrame
-                    ? GetShippingOptions(cart, cart.Currency, ContentLanguage.PreferredCulture)
+                    ? GetShippingOptions(cart, cart.Currency)
                     : Enumerable.Empty<ShippingOption>(),
                 ValidationIssues = validationIssues,
                 RewardDescriptions = rewardDescriptions
@@ -489,10 +489,10 @@ namespace Klarna.Checkout
             }
         }
 
-        protected virtual IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency, CultureInfo preferredCulture)
+        protected virtual IEnumerable<ShippingOption> GetShippingOptions(ICart cart, Currency currency)
         {
             var methods = ShippingManager.GetShippingMethodsByMarket(cart.MarketId.Value, false);
-            var currentLanguage = preferredCulture.Name;
+            var currentLanguage = _languageService.GetPreferredCulture().Name;
 
             var shippingOptions = methods.ShippingMethod
                 .Where(shippingMethodRow => currentLanguage.Equals(shippingMethodRow.LanguageId,

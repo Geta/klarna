@@ -222,14 +222,12 @@
     <Compile Include="CheckoutStore.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DefaultCheckoutConfigurationLoader.cs" />
-    <Compile Include="DefaultCheckoutLanguageIdConverter.cs" />
     <Compile Include="DefaultKlarnaCartValidator.cs" />
     <Compile Include="Extensions\AddressExtensions.cs" />
     <Compile Include="Extensions\CartExtensions.cs" />
     <Compile Include="Extensions\CustomerAddressExtensions.cs" />
     <Compile Include="Extensions\ShippingMethodExtensions.cs" />
     <Compile Include="ICheckoutConfigurationLoader.cs" />
-    <Compile Include="ICheckoutLanguageIdConverter.cs" />
     <Compile Include="IKlarnaCartValidator.cs" />
     <Compile Include="IKlarnaCheckoutService.cs" />
     <Compile Include="IKlarnaOrderValidator.cs" />

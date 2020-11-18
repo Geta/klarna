@@ -25,6 +25,7 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
+using Klarna.Common;
 using Xunit;
 
 namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
@@ -406,6 +407,7 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
                 .Returns(new Dictionary<ILineItem, IList<ValidationIssue>>());
 
             var klarnaCheckoutServiceMock = new Mock<IKlarnaCheckoutService>();
+            var klarnaLanguageServiceMock = new Mock<ILanguageService>();
 
             var contentLoaderMock = new Mock<IContentLoader>();
 
@@ -421,7 +423,8 @@ namespace EPiServer.Reference.Commerce.Site.Tests.Features.Checkout.Services
               _mailServiceMock.Object,
               contentLoaderMock.Object,
               klarnaCheckoutServiceMock.Object,
-              _cartServiceMock.Object);
+              _cartServiceMock.Object,
+              klarnaLanguageServiceMock.Object);
         }
     }
 }

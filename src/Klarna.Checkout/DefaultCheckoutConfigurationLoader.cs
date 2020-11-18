@@ -1,6 +1,7 @@
 ﻿using System;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
+using Klarna.Common;
 using Klarna.Common.Extensions;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Dto;
@@ -12,6 +13,13 @@ namespace Klarna.Checkout
     [ServiceConfiguration(typeof(ICheckoutConfigurationLoader))]
     public class DefaultCheckoutConfigurationLoader : ICheckoutConfigurationLoader
     {
+        private ILanguageService _languageService;
+
+        public DefaultCheckoutConfigurationLoader(ILanguageService languageService)
+        {
+            _languageService = languageService;
+        }
+
         public CheckoutConfiguration GetConfiguration(MarketId marketId, string languageId)
         {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
@@ -19,14 +27,14 @@ namespace Klarna.Checkout
             if (paymentMethod == null)
             {
                 throw new Exception(
-                    $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
+                    $"PaymentMethod {Constants.KlarnaCheckoutSystemKeyword} is not configured for market {marketId} and language {languageId}");
             }
             return GetKlarnaCheckoutConfiguration(paymentMethod, marketId);
         }
 
         public CheckoutConfiguration GetConfiguration(MarketId marketId)
         {
-            return GetConfiguration(marketId, ContentLanguage.PreferredCulture.Name);
+            return GetConfiguration(marketId, _languageService.GetPreferredCulture().Name);
         }
 
         private static CheckoutConfiguration GetKlarnaCheckoutConfiguration(
