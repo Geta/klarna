@@ -240,7 +240,7 @@ namespace Klarna.Checkout
             {
                 PurchaseCountry = marketCountry,
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = $"{_checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(ContentLanguage.PreferredCulture.Name)}-{marketCountry}",
+                Locale = _checkoutLanguageIdConverter.ConvertToCheckoutLanguageId(ContentLanguage.PreferredCulture.Name),
                 // Non-negative, minor units. Total amount of the order, including tax and any discounts.
                 OrderAmount = AmountHelper.GetAmount(totals.Total),
                 // Non-negative, minor units. The total tax amount of the order.
