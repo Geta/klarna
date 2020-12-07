@@ -5,7 +5,6 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using EPiServer.Commerce.Order;
-using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Payments.Models;
 using EPiServer.Logging;
@@ -33,6 +32,7 @@ namespace Klarna.Payments
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly KlarnaServiceApiFactory _klarnaServiceApiFactory;
+        private readonly ILanguageService _languageService;
 
         public KlarnaPaymentsService(
             IOrderRepository orderRepository,
@@ -40,7 +40,8 @@ namespace Klarna.Payments
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
             IMarketService marketService,
-            KlarnaServiceApiFactory klarnaServiceApiFactory)
+            KlarnaServiceApiFactory klarnaServiceApiFactory,
+            ILanguageService languageService)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
             _orderGroupCalculator = orderGroupCalculator;
@@ -48,6 +49,7 @@ namespace Klarna.Payments
             _orderRepository = orderRepository;
             _orderNumberGenerator = orderNumberGenerator;
             _klarnaServiceApiFactory = klarnaServiceApiFactory;
+            _languageService = languageService;
         }
 
         public async Task<bool> CreateOrUpdateSession(ICart cart, SessionSettings settings)
@@ -294,12 +296,12 @@ namespace Klarna.Payments
                 // Non-negative, minor units. The total tax amount of the order.
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
-                Locale = ContentLanguage.PreferredCulture.Name,
+                Locale = _languageService.GetPreferredCulture().Name,
                 OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrlField).ToArray()
             };
 
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
-                Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
+                Constants.KlarnaPaymentSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true);
             if (paymentMethod != null)
             {
                 request.MerchantUrl = new MerchantUrl
@@ -408,11 +410,11 @@ namespace Klarna.Payments
         public PaymentsConfiguration GetConfiguration(MarketId marketId)
         {
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
-                Constants.KlarnaPaymentSystemKeyword, ContentLanguage.PreferredCulture.Name, returnInactive: true);
+                Constants.KlarnaPaymentSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true);
             if (paymentMethod == null)
             {
                 throw new Exception(
-                    $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {ContentLanguage.PreferredCulture.Name}");
+                    $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {_languageService.GetPreferredCulture().Name}");
             }
             return paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
         }

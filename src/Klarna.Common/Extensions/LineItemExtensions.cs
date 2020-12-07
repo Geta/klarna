@@ -1,10 +1,8 @@
 ﻿using System.Linq;
-using System.Threading;
 using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
-using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Klarna.Common.Helpers;
@@ -24,6 +22,7 @@ namespace Klarna.Common.Extensions
         private static Injected<ILineItemTaxCalculator> _lineItemTaxCalculator;
         private static readonly int MaxOrderLineReference = 64;
         private static Injected<ITaxCalculator> _taxCalculator;
+        private static Injected<ILanguageService> _languageService;
 #pragma warning restore 649
 
         private static string GetVariantImage(ContentReference contentReference)
@@ -43,7 +42,7 @@ namespace Klarna.Common.Extensions
                 includeProductAndImageUrl,
                 AmountHelper.GetAmount(lineItem.PlacedPrice),
                 AmountHelper.GetAmount(lineItem.PlacedPrice * lineItem.Quantity),
-                0, 0, 0);
+                AmountHelper.GetAmount(lineItem.GetEntryDiscount()), 0, 0);
         }
 
         public static OrderLine GetOrderLineWithTax(
@@ -103,7 +102,7 @@ namespace Klarna.Common.Extensions
                 var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Code);
                 if (!ContentReference.IsNullOrEmpty(contentLink))
                 {
-                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink, ContentLanguage.PreferredCulture.Name, new VirtualPathArguments { ValidateTemplate = false }).ToAbsoluteUrl();
+                    orderLine.ProductUrl = _urlResolver.Service.GetUrl(contentLink, _languageService.Service.GetPreferredCulture().Name, new VirtualPathArguments { ValidateTemplate = false }).ToAbsoluteUrl();
                     orderLine.ImageUrl = GetVariantImage(contentLink).ToAbsoluteUrl();
                 }
             }

@@ -145,8 +145,9 @@ namespace Klarna.Common
 
             // Order level discounts
             var orderDiscount = cart.GetOrderDiscountTotal();
-            var entryLevelDiscount = cart.GetAllLineItems().Sum(x => x.GetEntryDiscount());
-            var totalDiscount = orderDiscount.Amount + entryLevelDiscount;
+
+            var totalDiscount = orderDiscount.Amount;
+
             if (totalDiscount > 0)
             {
                 orderLines.Add(new OrderLine()

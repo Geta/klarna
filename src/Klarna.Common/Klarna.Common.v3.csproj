@@ -232,7 +232,9 @@
     <Compile Include="Extensions\OrderAddressExtensions.cs" />
     <Compile Include="Extensions\OrderGroupExtensions.cs" />
     <Compile Include="IJsonSerializer.cs" />
+    <Compile Include="ILanguageService.cs" />
     <Compile Include="JsonSerializer.cs" />
+    <Compile Include="DefaultLanguageService.cs" />
     <Compile Include="Models\ApiCredentials.cs" />
     <Compile Include="Models\ApiException.cs" />
     <Compile Include="Models\ApiSession.cs" />

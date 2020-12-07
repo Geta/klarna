@@ -55,7 +55,7 @@ namespace Klarna.Checkout.Models
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         [JsonProperty(PropertyName = "shipping_method")]
-        public ShippingMethod ShippingMethod { get; set; }
+        public ShippingMethod? ShippingMethod { get; set; }
         
         /// <summary>
         /// The delivery details for this shipping option. 
