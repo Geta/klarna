@@ -129,8 +129,9 @@ namespace Klarna.Payments
             catch (Exception ex)
             {
                 Logger.Error("Process payment failed with error: " + ex.Message, ex);
+                
                 paymentStepResult.Message = ex.Message;
-                throw;
+                return paymentStepResult;
             }
         }
     }

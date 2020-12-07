@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Plugins.Payment;
@@ -28,7 +27,7 @@ namespace Klarna.Checkout
         {
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
-            var result = AsyncHelper.RunSync(() => ProcessPayment(payment));
+            var result = ProcessPayment(payment);
             var message = result.Message;
             return result.Status
                 ? PaymentProcessingResult.CreateSuccessfulResult(message)
@@ -39,13 +38,13 @@ namespace Klarna.Checkout
         {
             OrderGroup = payment.Parent.Parent;
             _orderForm = payment.Parent;
-            var result = AsyncHelper.RunSync(() => ProcessPayment(payment));
+            var result = ProcessPayment(payment);
             message = result.Message;
 
             return result.Status;
         }
 
-        public async Task<PaymentStepResult> ProcessPayment(IPayment payment)
+        public PaymentStepResult ProcessPayment(IPayment payment)
         {
             try
             {
@@ -65,7 +64,7 @@ namespace Klarna.Checkout
                 capturePaymentStep.SetSuccessor(creditPaymentStep);
                 creditPaymentStep.SetSuccessor(cancelPaymentStep);
 
-                return await authorizePaymentStep.Process(payment, _orderForm, OrderGroup, OrderGroup.GetFirstShipment()).ConfigureAwait(false);
+                return AsyncHelper.RunSync(() => authorizePaymentStep.Process(payment, _orderForm, OrderGroup, OrderGroup.GetFirstShipment()));
             }
             catch (Exception ex)
             {
