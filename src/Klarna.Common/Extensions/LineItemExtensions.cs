@@ -42,7 +42,7 @@ namespace Klarna.Common.Extensions
                 includeProductAndImageUrl,
                 AmountHelper.GetAmount(lineItem.PlacedPrice),
                 AmountHelper.GetAmount(lineItem.PlacedPrice * lineItem.Quantity),
-                0, 0, 0);
+                AmountHelper.GetAmount(lineItem.GetEntryDiscount()), 0, 0);
         }
 
         public static OrderLine GetOrderLineWithTax(
