@@ -41,7 +41,7 @@ namespace Klarna.Common.Extensions
                 lineItem,
                 includeProductAndImageUrl,
                 AmountHelper.GetAmount(lineItem.PlacedPrice),
-                AmountHelper.GetAmount(lineItem.PlacedPrice * lineItem.Quantity),
+                AmountHelper.GetAmount(lineItem.PlacedPrice * lineItem.Quantity) - AmountHelper.GetAmount(lineItem.GetEntryDiscount()),
                 AmountHelper.GetAmount(lineItem.GetEntryDiscount()), 0, 0);
         }
 
