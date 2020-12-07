@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using EPiServer.DataAbstraction;
@@ -39,14 +40,13 @@ namespace Klarna.Common
         /// </summary>
         public string ConvertToLocale(string languageId)
         {
-            if (languageId.StartsWith("de"))
-            {
-                return "de";
-            }
+            var supportedLanguages = new[] {"de", "nl", "fi", "it", "pl", "pt", "es"};
 
-            if (languageId.StartsWith("nl"))
+            var languageCode = languageId.Substring(0, 2);
+
+            if (supportedLanguages.Contains(languageCode))
             {
-                return "nl";
+                return languageCode;
             }
 
             if (languageId.StartsWith("no"))
@@ -54,9 +54,9 @@ namespace Klarna.Common
                 return "nb";
             }
 
-            if (languageId.StartsWith("pt"))
+            if (languageId.StartsWith("sv") && !languageId.Equals("sv-FI", StringComparison.InvariantCultureIgnoreCase))
             {
-                return "pt";
+                return "sv";
             }
 
             return languageId;
