@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using EPiServer.Logging;
@@ -45,7 +44,7 @@ namespace Klarna.Payments
         {
             OrderGroup = orderGroup;
             _orderForm = orderGroup.GetFirstForm();
-            var result = AsyncHelper.RunSync(() => ProcessPayment(payment, shipment));
+            var result = ProcessPayment(payment, shipment);
             var message = result.Message;
             return result.Status
                 ? PaymentProcessingResult.CreateSuccessfulResult(message)
@@ -76,7 +75,7 @@ namespace Klarna.Payments
 
             _shipment = _orderForm.Shipments.FirstOrDefault();
 
-            var result = AsyncHelper.RunSync(() => ProcessPayment(payment, _shipment));
+            var result = ProcessPayment(payment, _shipment);
             message = result.Message;
 
             return result.Status;
@@ -84,12 +83,12 @@ namespace Klarna.Payments
 
         public bool ProcessPayment(Payment payment, Shipment shipment, ref string message)
         {
-            var result = AsyncHelper.RunSync(() => ProcessPayment(payment as IPayment, shipment));
+            var result = ProcessPayment(payment, shipment);
             message = result.Message;
             return result.Status;
         }
 
-        public async Task<PaymentStepResult> ProcessPayment(IPayment payment, IShipment shipment)
+        public PaymentStepResult ProcessPayment(IPayment payment, IShipment shipment)
         {
             var paymentStepResult = new PaymentStepResult();
             _shipment = shipment;
@@ -124,7 +123,7 @@ namespace Klarna.Payments
                 capturePaymentStep.SetSuccessor(creditPaymentStep);
                 creditPaymentStep.SetSuccessor(releaseRemainingPaymentStep);
 
-                return await authorizePaymentStep.Process(payment, _orderForm, OrderGroup, _shipment).ConfigureAwait(false);
+                return AsyncHelper.RunSync(() => authorizePaymentStep.Process(payment, _orderForm, OrderGroup, _shipment));
             }
             catch (Exception ex)
             {
