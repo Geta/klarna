@@ -119,25 +119,7 @@ namespace Klarna.Checkout
             var checkout = CreateCheckoutOrder(market);
             var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
             var checkoutConfiguration = GetCheckoutConfiguration(market);
-
-            if (checkoutConfiguration.PrefillAddress)
-            {
-                // KCO_4: In case of signed in user the email address and default address details will be prepopulated by data from Merchant system.
-                var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
-                if (customerContact?.PreferredBillingAddress != null)
-                {
-                    orderData.BillingCheckoutAddress = customerContact.PreferredBillingAddress.ToAddress();
-                }
-
-                if (orderData.CheckoutOptions.AllowSeparateShippingAddress)
-                {
-                    var shipment = cart.GetFirstShipment();
-                    if (shipment.ShippingAddress != null)
-                    {
-                        orderData.ShippingCheckoutAddress = shipment.ShippingAddress.ToCheckoutAddress();
-                    }
-                }
-            }
+            
             try
             {
                 if (ServiceLocator.Current.TryGetExistingInstance(out ICheckoutOrderDataBuilder checkoutOrderDataBuilder))
@@ -277,6 +259,30 @@ namespace Klarna.Checkout
             {
                 orderData.CheckoutOptions = GetOptions(cart.MarketId);
             }
+
+            if (checkoutConfiguration.PrefillAddress)
+            {
+                // KCO_4: In case of signed in user the email address and default address details will be prepopulated by data from Merchant system.
+                var customerContact = CustomerContext.Current.GetContactById(cart.CustomerId);
+                if (customerContact?.PreferredBillingAddress != null)
+                {
+                    orderData.BillingCheckoutAddress = customerContact.PreferredBillingAddress.ToAddress();
+                }
+
+                if (orderData.CheckoutOptions.AllowSeparateShippingAddress)
+                {
+                    if (customerContact?.PreferredShippingAddress != null)
+                    {
+                        orderData.ShippingCheckoutAddress = customerContact.PreferredShippingAddress.ToAddress();
+                    }
+
+                    if (shipment?.ShippingAddress != null)
+                    {
+                        orderData.ShippingCheckoutAddress = shipment.ShippingAddress.ToCheckoutAddress();
+                    }
+                }
+            }
+
             return orderData;
         }
 
