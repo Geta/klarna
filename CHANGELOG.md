@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.0]
+
+### Changed (breaking)
+
+- [All packages] Fixed #84 - Removed Klarna.Rest.Core dependency
+- [All packages] Updated - Local logic for detecting country and language
+
 ## [3.0.1]
 
 ### Changed (breaking)
