@@ -191,7 +191,7 @@
         }
 
         <div class="row section-box">
-            <div class="col-xs-12">
+            <div class="col-xs-12" id="orderSummaryContainer">
                 @{ Html.RenderAction("OrderSummary"); }
                 @if (!(bool)ViewData["IsReadOnly"])
                 {

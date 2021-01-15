@@ -16,7 +16,6 @@ using EPiServer.Web.Routing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods;
 using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using Klarna.Checkout;
 using Klarna.Common;

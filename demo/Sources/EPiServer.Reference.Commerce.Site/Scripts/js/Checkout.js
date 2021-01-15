@@ -178,6 +178,7 @@
             url: $(this).data('url'),
             beforeSend: function () {
                 Checkout.disableCheckoutSubmit();
+                Checkout.showAll();
             },
             success: function (result) {
                 $('.jsPaymentMethod').replaceWith($(result).find('.jsPaymentMethod'));
@@ -188,6 +189,10 @@
 
                 if (selectedPaymentMethod !== 'KlarnaPayments' && selectedPaymentMethod !== 'KlarnaCheckout') {
                     Checkout.enableCheckoutSubmit();
+                }
+
+                if (selectedPaymentMethod === 'KlarnaCheckout') {
+                    $('#billingAddressContainer, #orderSummaryContainer, #shippingAddressContainer').hide();
                 }
             }
         });
@@ -296,5 +301,8 @@
     },
     hideLoadingOverlay: function () {
         $('#loading-overlay').fadeOut();
+    },
+    showAll: function() {
+        $('#billingAddressContainer, #orderSummaryContainer, #shippingAddressContainer').show();
     }
 };
