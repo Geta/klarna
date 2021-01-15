@@ -183,6 +183,12 @@
                 $('.jsPaymentMethod').replaceWith($(result).find('.jsPaymentMethod'));
                 Checkout.updateOrderSummary();
                 Misc.updateValidation('jsCheckoutForm');
+
+                var selectedPaymentMethod = $(".jsChangePayment:checked").val();
+
+                if (selectedPaymentMethod !== 'KlarnaPayments' && selectedPaymentMethod !== 'KlarnaCheckout') {
+                    Checkout.enableCheckoutSubmit();
+                }
             }
         });
     },
