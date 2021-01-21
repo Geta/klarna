@@ -46,7 +46,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         {
             var startPage = _contentLoader.GetStartPage();
 
-            if (!startPage.KlarnaCheckoutEnabled && !IsActive)
+            if (!startPage.KlarnaCheckoutEnabled || !IsActive)
             {
                 return;
             }
