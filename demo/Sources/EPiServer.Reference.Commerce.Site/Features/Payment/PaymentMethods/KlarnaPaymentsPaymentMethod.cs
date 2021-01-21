@@ -7,6 +7,7 @@ using System.ComponentModel;
 using EPiServer.Reference.Commerce.Site.Features.Cart.Services;
 using EPiServer.Reference.Commerce.Site.Features.Market.Services;
 using EPiServer.Reference.Commerce.Site.Features.Payment.Services;
+using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.Web;
 using Klarna.Common;
 using Klarna.Payments;
@@ -24,6 +25,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
         private string _klarnaLogoUrl;
         private readonly IOrderGroupFactory _orderGroupFactory;
         private readonly ICartService _cartService;
+        private readonly IContentLoader _contentLoader;
         private readonly ICurrentMarket _currentMarket;
         private readonly IKlarnaPaymentsService _klarnaPaymentsService;
 
@@ -36,6 +38,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                 ServiceLocator.Current.GetInstance<LanguageService>(),
                 ServiceLocator.Current.GetInstance<IPaymentManagerFacade>(),
                 ServiceLocator.Current.GetInstance<ICartService>(),
+                ServiceLocator.Current.GetInstance<IContentLoader>(),
                 ServiceLocator.Current.GetInstance<ICurrentMarket>(),
                 ServiceLocator.Current.GetInstance<IKlarnaPaymentsService>())
         {
@@ -47,12 +50,14 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                 LanguageService languageService,
                 IPaymentManagerFacade paymentManager,
                 ICartService cartService,
+                IContentLoader contentLoader,
                 ICurrentMarket currentMarket,
                 IKlarnaPaymentsService klarnaPaymentsService)
             : base(localizationService, orderGroupFactory, languageService, paymentManager)
         {
             _orderGroupFactory = orderGroupFactory;
             _cartService = cartService;
+            _contentLoader = contentLoader;
             _currentMarket = currentMarket;
             _klarnaPaymentsService = klarnaPaymentsService;
 
@@ -61,6 +66,13 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public void InitializeValues()
         {
+            var startPage = _contentLoader.GetStartPage();
+
+            if (!startPage.KlarnaPaymentsEnabled && !IsActive)
+            {
+                return;
+            }
+
             var cart = _cartService.LoadCart(_cartService.DefaultCartName);
             var siteUrl = SiteDefinition.Current.SiteUrl;
             if (AsyncHelper.RunSync(() => _klarnaPaymentsService.CreateOrUpdateSession(cart, new SessionSettings(siteUrl))))

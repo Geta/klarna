@@ -20,6 +20,8 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
 
         public string Description { get; }
 
+        public bool IsActive { get; }
+
         protected PaymentMethodBase(LocalizationService localizationService,
             IOrderGroupFactory orderGroupFactory,
             LanguageService languageService,
@@ -38,6 +40,7 @@ namespace EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods
                     PaymentMethodId = paymentMethod.PaymentMethodId;
                     Name = paymentMethod.Name;
                     Description = paymentMethod.Description;
+                    IsActive = paymentMethod.IsActive;
                 }
             }
         }
