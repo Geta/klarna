@@ -12,6 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright 2020 Geta</copyright>
     <tags>EPiServer Commerce 13</tags>
+    <repository type="git" url="URL" branch="BRANCH_NAME" commit="COMMIT" />
   </metadata>
   <files>
     <file src="readme.txt" target="" />
