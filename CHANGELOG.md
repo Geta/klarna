@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.1]
+
+### Changed
+
+- [All packages] Fixed #93 - Language comparison - Contributed by: [Vincent](https://github.com/javafun)
+
 ## [3.5.0]
 
 ### Changed (breaking)
