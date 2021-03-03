@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
-using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using EPiServer.Logging;
 using Klarna.Checkout.Extensions;
@@ -150,6 +148,12 @@ namespace Klarna.Checkout
             var market = _marketService.GetMarket(cart.MarketId);
             var checkout = CreateCheckoutOrder(market);
             var orderData = GetCheckoutOrderData(cart, market, PaymentMethodDto);
+
+            if (!string.IsNullOrEmpty(orderId))
+            {
+                orderData.OrderId = orderId;
+            }
+
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
             try
