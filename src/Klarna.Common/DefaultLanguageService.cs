@@ -23,11 +23,11 @@ namespace Klarna.Common
             var languages = _languageBranchRepository.ListEnabled();
             var currentLanguage = ContentLanguage.PreferredCulture;
 
-            if (languages.Any(x => x.Name == Thread.CurrentThread.CurrentCulture.Name))
+            if (languages.Any(x => x.Culture.Name == Thread.CurrentThread.CurrentCulture.Name))
             {
                 currentLanguage = Thread.CurrentThread.CurrentCulture;
             }
-            else if (languages.Any(x => x.Name == Thread.CurrentThread.CurrentCulture.Parent.Name))
+            else if (languages.Any(x => x.Culture.Name == Thread.CurrentThread.CurrentCulture.Parent.Name))
             {
                 currentLanguage = Thread.CurrentThread.CurrentCulture.Parent;
             }
