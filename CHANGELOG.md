@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.2]
+
+### Changed
+
+- [Klarna Checkout] Fixed #92 - Missing orderId on updates
+
 ## [3.5.1]
 
 ### Changed
