@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.3]
+
+### Changed
+
+- [Klarna Payments] Added AutoCapture (default: false, configurable in Commerce Manager), AcquiringChannel and CustomPaymentMethodIds to the Session
+
 ## [3.5.2]
 
 ### Changed
