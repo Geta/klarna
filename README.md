@@ -1,7 +1,6 @@
-# Klarna Payments
-
-* Master<br>
 ![](http://tc.geta.no/app/rest/builds/buildType:(id:Demo_Klarna_00ci),branch:master/statusIcon)
+
+# Klarna Payments
 
 [Go to documentation](src/Klarna.Payments/README.md)
 
