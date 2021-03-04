@@ -184,6 +184,12 @@
                         <asp:CheckBox runat="server" ID="PreAssesmentCheckBox" />
                     </td>
                 </tr>
+				<tr>
+                <td class="FormLabelCell">Auto Capture:</td>
+                <td class="FormFieldCell">
+                    <asp:CheckBox runat="server" ID="AutoCaptureCheckBox" />
+                </td>
+            </tr>
             </tbody>
         </table>
         </div>

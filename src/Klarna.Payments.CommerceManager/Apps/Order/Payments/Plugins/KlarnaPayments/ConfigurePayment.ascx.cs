@@ -74,6 +74,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             SendProductAndImageUrlCheckBox.Checked = paymentsConfiguration.SendProductAndImageUrlField;
             UseAttachmentsCheckBox.Checked = paymentsConfiguration.UseAttachments;
             PreAssesmentCheckBox.Checked = paymentsConfiguration.CustomerPreAssessment;
+            AutoCaptureCheckBox.Checked = paymentsConfiguration.AutoCapture;
         }
 
         public void SaveChanges(object dto)
@@ -116,6 +117,7 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
             configuration.SendProductAndImageUrlField = SendProductAndImageUrlCheckBox.Checked;
             configuration.UseAttachments = UseAttachmentsCheckBox.Checked;
             configuration.CustomerPreAssessment = PreAssesmentCheckBox.Checked;
+            configuration.AutoCapture = AutoCaptureCheckBox.Checked;
 
             paymentMethod.SetParameter($"{currentMarket}_{Common.Constants.KlarnaSerializedMarketOptions}", Newtonsoft.Json.JsonConvert.SerializeObject(configuration));
         }

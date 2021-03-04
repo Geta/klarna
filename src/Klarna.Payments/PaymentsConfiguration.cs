@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Klarna.Common;
+﻿using Klarna.Common;
 
 namespace Klarna.Payments
 {
@@ -9,6 +8,7 @@ namespace Klarna.Payments
         public bool IsProduction { get; set; }
         public bool SendProductAndImageUrlField { get; set; }
         public bool UseAttachments { get; set; }
+        public bool AutoCapture { get; set; }
 
         public string LogoUrl { get; set; }
         public string WidgetButtonColor { get; set; }

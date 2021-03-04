@@ -362,5 +362,14 @@ namespace Klarna.Payments.CommerceManager.Apps.Order.Payments.Plugins.KlarnaPaym
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.CheckBox PreAssesmentCheckBox;
+
+        // <summary>
+        /// AutoCaptureCheckBox control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox AutoCaptureCheckBox;
     }
 }

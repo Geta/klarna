@@ -310,6 +310,8 @@ namespace Klarna.Payments
                     Notification = ToFullSiteUrl(siteUrl, config.NotificationUrl),
                 };
                 request.Options = GetWidgetOptions(paymentMethod, cart.MarketId);
+                request.AutoCapture = config.AutoCapture;
+
             }
 
             if (includePersonalInformation)

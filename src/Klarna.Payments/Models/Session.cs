@@ -1,4 +1,5 @@
-﻿using Klarna.Common.Models;
+﻿using System.Collections.Generic;
+using Klarna.Common.Models;
 using Newtonsoft.Json;
 
 namespace Klarna.Payments.Models
@@ -7,32 +8,53 @@ namespace Klarna.Payments.Models
     {
         [JsonProperty("design")]
         public string Design { get; set; }
+
         [JsonProperty("purchase_country")]
         public string PurchaseCountry { get; set; }
+
         [JsonProperty("purchase_currency")]
         public string PurchaseCurrency { get; set; }
+
         [JsonProperty("locale")]
         public string Locale { get; set; }
+
         [JsonProperty("order_amount")]
         public int OrderAmount { get; set; }
+
         [JsonProperty("order_tax_amount")]
         public int OrderTaxAmount { get; set; }
+
         [JsonProperty("order_lines")]
         public OrderLine[] OrderLines { get; set; }
+
         [JsonProperty("merchant_urls")]
         public MerchantUrl MerchantUrl { get; set; }
+
         [JsonProperty("merchant_reference1")]
         public string MerchantReference1 { get; set; }
+
         [JsonProperty("merchant_reference2")]
         public string MerchantReference2 { get; set; }
+
         [JsonProperty("merchant_data")]
         public string MerchantData { get; set; }
 
         [JsonProperty("body")]
         public string Body { get; set; }
+
         [JsonProperty("options")]
         public Options Options { get; set; }
+
         [JsonProperty("attachment")]
         public Attachment Attachment { get; set; }
+
+        [JsonProperty(PropertyName = "acquiring_channel")]
+        public string AcquiringChannel { get; set; }
+
+        [JsonProperty(PropertyName = "auto_capture")]
+        public bool AutoCapture { get; set; }
+
+        [JsonProperty(PropertyName = "customer_payment_method_ids")]
+        public ICollection<string> CustomPaymentMethodIds { get; set; }
     }
 }
