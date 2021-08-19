@@ -16,6 +16,7 @@
         FIXED_SUM_CREDIT,
         PAY_LATER_BY_CARD,
         MOBILEPAY,
-        OTHER
+        OTHER,
+        SWISH
     }
 }
