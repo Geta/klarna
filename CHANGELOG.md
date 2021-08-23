@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.4]
+
+### Changed
+
+- [Klarna Order Management] Fixed #99 - Missing payment type SWISH - Contributed by: [Sebbe](https://github.com/sebbe)
+
 ## [3.5.3]
 
 ### Changed
@@ -29,7 +35,7 @@ All notable changes to this project will be documented in this file.
 - [All packages] Fixed #68 - Upgrade to Episerver Commerce 13
 - [All packages] Fixed #58 - Update deprecated package Klarna.Rest to Klarna.Rest.Core
 - [Klarna Checkout] KlarnaCheckoutService is now async
-- [Klarna Order management] KlarnaOrderService is now async
+- [Klarna Order Management] KlarnaOrderService is now async
 
 ### Added
 
