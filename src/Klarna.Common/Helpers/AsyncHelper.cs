@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Klarna.Common
+namespace Klarna.Common.Helpers
 {
     public static class AsyncHelper
     {

@@ -6,7 +6,6 @@ using EPiServer.Logging;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
-using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
 using ApiException = Refit.ApiException;

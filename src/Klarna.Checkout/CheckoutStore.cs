@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Klarna.Checkout.Models;
 using Klarna.Common;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 
 namespace Klarna.Checkout

@@ -1,6 +1,5 @@
 ﻿
 using System.Collections.Generic;
-using AuthorizeNet;
 using Klarna.Common.Models;
 using Newtonsoft.Json;
 
@@ -18,10 +17,10 @@ namespace Klarna.Checkout.Models
         public IList<OrderLine> OrderLines { get; set; }
 
         [JsonProperty("billing_address")]
-        public Address BillingAddress { get; set; }
+        public CheckoutAddressInfo BillingAddress { get; set; }
 
         [JsonProperty("shipping_address")]
-        public Address ShippingAddress { get; set; }
+        public CheckoutAddressInfo ShippingAddress { get; set; }
 
         [JsonProperty("selected_shipping_option")]
         public ShippingOption SelectedShippingOption { get; set; }

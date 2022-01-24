@@ -15,7 +15,6 @@ using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
-using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Markets;

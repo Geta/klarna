@@ -1,5 +1,4 @@
 ﻿using System;
-using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Extensions;

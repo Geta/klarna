@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Payments.Models;
@@ -15,9 +14,9 @@ using Klarna.Common.Models;
 using Klarna.Payments.Extensions;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
-using Mediachase.Commerce.Orders;
 using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
+using Microsoft.AspNetCore.Http;
 using ApiException = Refit.ApiException;
 using Options = Klarna.Payments.Models.Options;
 
@@ -33,6 +32,8 @@ namespace Klarna.Payments
         private readonly IOrderNumberGenerator _orderNumberGenerator;
         private readonly KlarnaServiceApiFactory _klarnaServiceApiFactory;
         private readonly ILanguageService _languageService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IPurchaseOrderProcessor _purchaseOrderProcessor;
 
         public KlarnaPaymentsService(
             IOrderRepository orderRepository,
@@ -41,7 +42,9 @@ namespace Klarna.Payments
             IOrderGroupCalculator orderGroupCalculator,
             IMarketService marketService,
             KlarnaServiceApiFactory klarnaServiceApiFactory,
-            ILanguageService languageService)
+            ILanguageService languageService,
+            IHttpContextAccessor httpContextAccessor,
+            IPurchaseOrderProcessor purchaseOrderProcessor)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
         {
             _orderGroupCalculator = orderGroupCalculator;
@@ -50,6 +53,8 @@ namespace Klarna.Payments
             _orderNumberGenerator = orderNumberGenerator;
             _klarnaServiceApiFactory = klarnaServiceApiFactory;
             _languageService = languageService;
+            _httpContextAccessor = httpContextAccessor;
+            _purchaseOrderProcessor = purchaseOrderProcessor;
         }
 
         public async Task<bool> CreateOrUpdateSession(ICart cart, SessionSettings settings)
@@ -185,7 +190,7 @@ namespace Klarna.Payments
             var result = Complete(purchaseOrder);
             if (result.IsRedirect)
             {
-                HttpContext.Current.Response.Redirect(result.RedirectUrl);
+                _httpContextAccessor.HttpContext.Response.Redirect(result.RedirectUrl);
             }
         }
 
@@ -280,7 +285,7 @@ namespace Klarna.Payments
         {
             if (payment.HasFraudStatus(FraudStatus.PENDING))
             {
-                OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
+                _purchaseOrderProcessor.HoldOrder(purchaseOrder);
                 _orderRepository.Save(purchaseOrder);
             }
         }

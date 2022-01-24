@@ -1,5 +1,4 @@
-﻿using Klarna.Payments.Models;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace Klarna.Common.Models

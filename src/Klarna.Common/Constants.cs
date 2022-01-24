@@ -19,11 +19,6 @@
         public const string FraudStatusPaymentField = "FraudStatusPayment";
 
         /// <summary>
-        /// TODO The current version of .NET SDK library for Klarna Services
-        /// </summary>
-        public const string Version = "3.1.12";
-
-        /// <summary>
         /// The API for the European live environment
         /// </summary>
         public const string ProdUrlEurope = "https://api.klarna.com/";

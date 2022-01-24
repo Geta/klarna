@@ -6,7 +6,7 @@ using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 using Klarna.Checkout.Steps;
-using Klarna.Common;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;

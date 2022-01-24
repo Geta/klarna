@@ -1,5 +1,5 @@
 using EPiServer.Commerce.Order;
-using Klarna.Payments.Models;
+using Klarna.Common.Models;
 
 namespace Klarna.Common.Extensions
 {

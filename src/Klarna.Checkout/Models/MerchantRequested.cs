@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Klarna.Common.Models;
 using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models

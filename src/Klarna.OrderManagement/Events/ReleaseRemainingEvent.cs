@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
-using Klarna.Common;
 using Klarna.Common.Extensions;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;

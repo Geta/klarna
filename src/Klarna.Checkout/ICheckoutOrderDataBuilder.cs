@@ -1,6 +1,5 @@
 ﻿using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
-using Klarna.Common.Models;
 
 namespace Klarna.Checkout
 {

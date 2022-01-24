@@ -5,7 +5,7 @@ using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
-using Klarna.Common;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
