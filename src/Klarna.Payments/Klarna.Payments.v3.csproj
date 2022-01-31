@@ -3,7 +3,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Klarna.Payments</RootNamespace>
     <RestorePackages>true</RestorePackages>
-    <RepositoryUrl>URL</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Geta/Klarna</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Klarna.OrderManagement</RootNamespace>
-    <RepositoryUrl>URL</RepositoryUrl>
+    <RepositoryUrl>https://github.com/Geta/Klarna</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
