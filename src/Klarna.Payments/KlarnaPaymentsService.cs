@@ -302,7 +302,7 @@ namespace Klarna.Payments
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = _languageService.GetPreferredCulture().Name,
-                OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrlField).ToArray()
+                OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrl).ToArray()
             };
 
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
@@ -313,10 +313,11 @@ namespace Klarna.Payments
                 {
                     Confirmation = ToFullSiteUrl(siteUrl, config.ConfirmationUrl),
                     Notification = ToFullSiteUrl(siteUrl, config.NotificationUrl),
+                    Push = ToFullSiteUrl(siteUrl, config.PushUrl),
                 };
                 request.Options = GetWidgetOptions(paymentMethod, cart.MarketId);
                 request.AutoCapture = config.AutoCapture;
-
+                request.Design = config.Design;
             }
 
             if (includePersonalInformation)
