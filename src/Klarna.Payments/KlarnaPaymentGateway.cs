@@ -20,8 +20,8 @@ namespace Klarna.Payments
         private IOrderForm _orderForm;
         private IShipment _shipment;
 
-        internal Injected<KlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
-        private KlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
+        internal Injected<IKlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
+        private IKlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
 
         internal Injected<IKlarnaPaymentsService> InjectedKlarnaPaymentsService { get; set; }
         private IKlarnaPaymentsService KlarnaPaymentsService => InjectedKlarnaPaymentsService.Service;

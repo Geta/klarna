@@ -33,7 +33,7 @@ namespace Klarna.Checkout
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
         private readonly IMarketService _marketService;
         private readonly ICheckoutConfigurationLoader _checkoutConfigurationLoader;
-        private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
+        private readonly IKlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
         private readonly ILanguageService _languageService;
         private readonly IKlarnaCartValidator _klarnaCartValidator;
@@ -49,7 +49,7 @@ namespace Klarna.Checkout
             IKlarnaOrderValidator klarnaOrderValidator,
             IMarketService marketService,
             ICheckoutConfigurationLoader checkoutConfigurationLoader,
-            KlarnaOrderServiceFactory klarnaOrderServiceFactory,
+            IKlarnaOrderServiceFactory klarnaOrderServiceFactory,
             ILanguageService languageService,
             IKlarnaCartValidator klarnaCartValidator)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
@@ -218,7 +218,7 @@ namespace Klarna.Checkout
             var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(market.Countries.FirstOrDefault());
             if (string.IsNullOrWhiteSpace(marketCountry))
             {
-                throw new ConfigurationException($"Please select a country in CM for market {cart.MarketId}");
+                throw new ConfigurationException($"Please select a country in Commerce Admin for market {cart.MarketId}");
             }
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
@@ -536,7 +536,7 @@ namespace Klarna.Checkout
 
             Uri ToFullSiteUrl(Func<CheckoutConfiguration, string> fieldSelector)
             {
-                var url = fieldSelector(configuration).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString());
+                var url = fieldSelector(configuration)?.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString());
                 if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
                 {
                     return uri;

@@ -13,7 +13,7 @@ namespace Klarna.OrderManagement.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(ReleaseRemainingPaymentStep));
 
-        public ReleaseRemainingPaymentStep(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+        public ReleaseRemainingPaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
             : base(payment, marketId, klarnaOrderServiceFactory)
         {
         }

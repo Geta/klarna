@@ -20,7 +20,7 @@ namespace Klarna.OrderManagement.Steps
 
         protected IKlarnaOrderService KlarnaOrderService;
 
-        protected PaymentStep(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+        protected PaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
         {
             MarketId = marketId;
 

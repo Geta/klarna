@@ -19,7 +19,7 @@ namespace Klarna.Payments.Steps
         private readonly IKlarnaPaymentsService _klarnaPaymentService;
 
         public AuthorizePaymentStep(
-            IPayment payment, MarketId marketMarketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory, IKlarnaPaymentsService klarnaPaymentService)
+            IPayment payment, MarketId marketMarketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IKlarnaPaymentsService klarnaPaymentService)
             : base(payment, marketMarketId, klarnaOrderServiceFactory)
         {
             _klarnaPaymentService = klarnaPaymentService;

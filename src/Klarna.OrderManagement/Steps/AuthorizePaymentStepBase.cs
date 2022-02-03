@@ -10,7 +10,7 @@ namespace Klarna.OrderManagement.Steps
 {
     public abstract class AuthorizePaymentStepBase : PaymentStep
     {
-        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
             : base(payment, marketId, klarnaOrderServiceFactory)
         {
         }

@@ -20,8 +20,8 @@ namespace Klarna.Checkout
 
         public IOrderGroup OrderGroup { get; set; }
 
-        internal Injected<KlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
-        private KlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
+        internal Injected<IKlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
+        private IKlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
 
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
         {

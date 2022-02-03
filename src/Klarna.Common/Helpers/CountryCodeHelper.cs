@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using EPiServer.Personalization;
 using EPiServer.ServiceLocation;
+using ISO3166;
 
 namespace Klarna.Common.Helpers
 {
-    /// <summary>
-    /// TODO write tests for GetTwoLetterCountryCode and GetThreeLetterCountryCode
-    /// </summary>
     public static class CountryCodeHelper
     {
         private static Injected<IGeolocationProvider> GeoLocationProvider { get; set; }
@@ -17,24 +14,14 @@ namespace Klarna.Common.Helpers
 
         public static string GetTwoLetterCountryCode(string countryCode)
         {
-            return CultureInfo.GetCultures(CultureTypes.SpecificCultures).FirstOrDefault(x =>
-                           x.ThreeLetterISOLanguageName.Equals(countryCode,
-                               StringComparison.InvariantCultureIgnoreCase))
-                       ?.TwoLetterISOLanguageName
-                   ?? CultureInfo.GetCultures(CultureTypes.SpecificCultures).FirstOrDefault(x =>
-                           x.TwoLetterISOLanguageName.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))
-                       ?.TwoLetterISOLanguageName;
+            return Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode
+                   ?? Country.List.FirstOrDefault(x => x.TwoLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.TwoLetterCode;
         }
 
         public static string GetThreeLetterCountryCode(string countryCode)
         {
-            return CultureInfo.GetCultures(CultureTypes.SpecificCultures).FirstOrDefault(x =>
-                           x.ThreeLetterISOLanguageName.Equals(countryCode,
-                               StringComparison.InvariantCultureIgnoreCase))
-                       ?.ThreeLetterISOLanguageName
-                   ?? CultureInfo.GetCultures(CultureTypes.SpecificCultures).FirstOrDefault(x =>
-                           x.TwoLetterISOLanguageName.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))
-                       ?.ThreeLetterISOLanguageName;
+            return Country.List.FirstOrDefault(x => x.TwoLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.ThreeLetterCode
+                   ?? Country.List.FirstOrDefault(x => x.ThreeLetterCode.Equals(countryCode, StringComparison.InvariantCultureIgnoreCase))?.ThreeLetterCode;
         }
 
         public static IEnumerable<string> GetTwoLetterCountryCodes(IEnumerable<string> threeLetterCodes)
