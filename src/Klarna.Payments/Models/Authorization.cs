@@ -1,35 +1,35 @@
-﻿using Klarna.Common.Models;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using Klarna.Common.Models;
 
 namespace Klarna.Payments.Models
 {
     public class Authorization
     {
-        [JsonProperty("purchase_country")]
+        [JsonPropertyName("purchase_country")]
         public string PurchaseCountry { get; set; }
-        [JsonProperty("purchase_currency")]
+        [JsonPropertyName("purchase_currency")]
         public string PurchaseCurrency { get; set; }
-        [JsonProperty("locale")]
+        [JsonPropertyName("locale")]
         public string Locale { get; set; }
-        [JsonProperty("billing_address")]
+        [JsonPropertyName("billing_address")]
         public OrderManagementAddressInfo BillingAddress { get; set; }
-        [JsonProperty("shipping_address")]
+        [JsonPropertyName("shipping_address")]
         public OrderManagementAddressInfo ShippingAddress { get; set; }
-        [JsonProperty("order_amount")]
+        [JsonPropertyName("order_amount")]
         public int OrderAmount { get; set; }
-        [JsonProperty("order_tax_amount")]
+        [JsonPropertyName("order_tax_amount")]
         public int OrderTaxAmount { get; set; }
-        [JsonProperty("order_lines")]
+        [JsonPropertyName("order_lines")]
         public OrderLine[] OrderLines { get; set; }
-        [JsonProperty("customer")]
+        [JsonPropertyName("customer")]
         public Customer Customer { get; set; }
-        [JsonProperty("merchant_reference1")]
+        [JsonPropertyName("merchant_reference1")]
         public string MerchantReference1 { get; set; }
-        [JsonProperty("merchant_reference2")]
+        [JsonPropertyName("merchant_reference2")]
         public string MerchantReference2 { get; set; }
-        [JsonProperty("merchant_data")]
+        [JsonPropertyName("merchant_data")]
         public string MerchantData { get; set; }
-        [JsonProperty("body")]
+        [JsonPropertyName("body")]
         public string Body { get; set; }
     }
 }

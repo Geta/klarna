@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
@@ -7,19 +7,19 @@ namespace Klarna.Checkout.Models
         /// <summary>
         /// Id.
         /// </summary>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
         
         /// <summary>
         /// Name of the location.
         /// </summary>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
         
         /// <summary>
         /// Location address.
         /// </summary>
-        [JsonProperty(PropertyName = "address")]
+        [JsonPropertyName("address")]
         public CheckoutAddressInfo Address { get; set; }
     }
 }

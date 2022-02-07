@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -7,12 +7,12 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Name of carrier product.
         /// </summary>
-        [JsonProperty(PropertyName = "name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
         /// <summary>
         /// Id of carrier product.
         /// </summary>
-        [JsonProperty(PropertyName = "identifier")]
+        [JsonPropertyName("identifier")]
         public string Id { get; set; }
     }
 }

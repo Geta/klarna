@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -7,31 +7,31 @@ namespace Klarna.Common.Models
         /// <summary>
         /// The timeslot id.
         /// </summary>
-        [JsonProperty(PropertyName = "id")]
+        [JsonPropertyName("id")]
         public string Id { get; set; }
         
         /// <summary>
         /// Start of the timeslot.
         /// </summary>
-        [JsonProperty(PropertyName = "start")]
+        [JsonPropertyName("start")]
         public string Start { get; set; }
         
         /// <summary>
         /// End of the timeslot.
         /// </summary>
-        [JsonProperty(PropertyName = "end")]
+        [JsonPropertyName("end")]
         public string End { get; set; }
         
         /// <summary>
         /// Cutoff time for delivery.
         /// </summary>
-        [JsonProperty(PropertyName = "cutoff")]
+        [JsonPropertyName("cutoff")]
         public string Cutoff { get; set; }
         
         /// <summary>
         /// Price.
         /// </summary>
-        [JsonProperty(PropertyName = "price")]
+        [JsonPropertyName("price")]
         public int Price { get; set; }
     }
 }

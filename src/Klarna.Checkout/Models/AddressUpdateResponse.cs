@@ -1,35 +1,35 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
 using Klarna.Common.Models;
-using Newtonsoft.Json;
 
 namespace Klarna.Checkout.Models
 {
     public class AddressUpdateResponse
     {
-        [JsonProperty("order_amount")]
+        [JsonPropertyName("order_amount")]
         public int? OrderAmount { get; set; }
 
-        [JsonProperty("order_tax_amount")]
+        [JsonPropertyName("order_tax_amount")]
         public int? OrderTaxAmount { get; set; }
 
-        [JsonProperty("merchant_data")]
+        [JsonPropertyName("merchant_data")]
         public string MerchantData { get; private set; }
 
-        [JsonProperty("order_lines")]
+        [JsonPropertyName("order_lines")]
         public IList<OrderLine> OrderLines { get; set; }
 
-        [JsonProperty("shipping_options")]
+        [JsonPropertyName("shipping_options")]
         public IEnumerable<ShippingOption> ShippingOptions { get; set; }
 
-        [JsonProperty("attachment")]
+        [JsonPropertyName("attachment")]
         public Attachment Attachment { get; set; }
 
-        [JsonProperty("purchase_currency")]
+        [JsonPropertyName("purchase_currency")]
         public string PurchaseCurrency { get; set; }
 
-        [JsonProperty("locale")]
+        [JsonPropertyName("locale")]
         public string Locale { get; set; }
 
         [JsonIgnore]

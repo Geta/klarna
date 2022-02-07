@@ -1,4 +1,5 @@
-﻿using Klarna.Common.Models;
+﻿using System.Text.Json.Serialization;
+using Klarna.Common.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -6,14 +7,14 @@ namespace Klarna.Payments.Models
 {
     public class CreateOrderResponse
     {
-        [JsonProperty("order_id")]
+        [JsonPropertyName("order_id")]
         public string OrderId { get; set; }
 
-        [JsonProperty("redirect_url")]
+        [JsonPropertyName("redirect_url")]
         public string RedirectUrl { get; set; }
 
-        [JsonProperty("fraud_status")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("fraud_status")]
+        [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
         public FraudStatus FraudStatus { get; set; }
     }
 }

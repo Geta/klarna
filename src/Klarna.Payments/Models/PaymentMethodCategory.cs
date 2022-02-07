@@ -1,22 +1,25 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Payments.Models
 {
     public class PaymentMethodCategory
     {
-        [JsonProperty("identifier")]
+        [JsonPropertyName("identifier")]
         public string Identifier { get; set; }
-        [JsonProperty("name")]
+
+        [JsonPropertyName("name")]
         public string Name { get; set; }
-        [JsonProperty("asset_urls")]
+
+        [JsonPropertyName("asset_urls")]
         public AssetUrls AssetUrls { get; set; }
     }
 
     public class AssetUrls
     {
-        [JsonProperty("descriptive")]
+        [JsonPropertyName("descriptive")]
         public string Descriptive { get; set; }
-        [JsonProperty("standard")]
+
+        [JsonPropertyName("standard")]
         public string Standard { get; set; }
     }
 }

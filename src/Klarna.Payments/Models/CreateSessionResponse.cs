@@ -1,14 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Payments.Models
 {
     public class CreateSessionResponse
     {
-        [JsonProperty("session_id")]
+        [JsonPropertyName("session_id")]
         public string SessionId { get; set; }
-        [JsonProperty("client_token")]
+
+        [JsonPropertyName("client_token")]
         public string ClientToken { get; set; }
-        [JsonProperty("payment_method_categories")]
+
+        [JsonPropertyName("payment_method_categories")]
         public PaymentMethodCategory[] PaymentMethodCategories { get; set; }
     }
 }

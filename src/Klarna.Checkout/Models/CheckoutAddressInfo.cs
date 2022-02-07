@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
@@ -7,37 +7,37 @@ namespace Klarna.Checkout.Models
         /// <summary>
         /// Gets organization name
         /// </summary>
-        [JsonProperty(PropertyName = "organization_name")]
+        [JsonPropertyName("organization_name")]
         public string OrganizationName { get; set; }
 
         /// <summary>
         /// Gets Shipping Reference
         /// </summary>
-        [JsonProperty(PropertyName = "reference")]
+        [JsonPropertyName("reference")]
         public string Reference { get; set; }
 
         /// <summary>
         /// Gets attention
         /// </summary>
-        [JsonProperty(PropertyName = "attention")]
+        [JsonPropertyName("attention")]
         public string Attention { get; set; }
 
         /// <summary>
         /// Gets firstname
         /// </summary>
-        [JsonProperty(PropertyName = "given_name")]
+        [JsonPropertyName("given_name")]
         public string GivenName { get; set; }
 
         /// <summary>
         /// Gets lastname
         /// </summary>
-        [JsonProperty(PropertyName = "family_name")]
+        [JsonPropertyName("family_name")]
         public string FamilyName { get; set; }
 
         /// <summary>
         /// Gets e-mail
         /// </summary>
-        [JsonProperty(PropertyName = "email")]
+        [JsonPropertyName("email")]
         public string Email { get; set; }
 
         /// <summary>
@@ -54,62 +54,62 @@ namespace Klarna.Checkout.Models
         ///   Dhr.
         ///   Mevr.
         /// </summary>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
         /// <summary>
         /// Street address, first line.
         /// </summary>
-        [JsonProperty(PropertyName = "street_address")]
+        [JsonPropertyName("street_address")]
         public string StreetAddress { get; set; }
         /// <summary>
         /// Street address, second line.
         /// </summary>
-        [JsonProperty(PropertyName = "street_address2")]
+        [JsonPropertyName("street_address2")]
         public string StreetAddress2 { get; set; }
         /// <summary>
         /// Street name. Only applicable in DE/AT/NL. Do not combine with street_address. See streetNumber.
         /// </summary>
-        [JsonProperty(PropertyName = "street_name")]
+        [JsonPropertyName("street_name")]
         public string StreetName { get; set; }
         /// <summary>
         /// Street number. Only applicable in DE/AT/NL. Do not combine with street_address. See streetName.
         /// </summary>
-        [JsonProperty(PropertyName = "street_number")]
+        [JsonPropertyName("street_number")]
         public string StreetNumber { get; set; }
 
         /// <summary>
         /// House extension. Only applicable in NL
         /// </summary>
-        [JsonProperty(PropertyName = "house_extension")]
+        [JsonPropertyName("house_extension")]
         public string HouseExtension { get; set; }
 
         /// <summary>
         /// Postal/post code.
         /// </summary>
-        [JsonProperty(PropertyName = "postal_code")]
+        [JsonPropertyName("postal_code")]
         public string PostalCode { get; set; }
 
-        [JsonProperty(PropertyName = "city")]
+        [JsonPropertyName("city")]
         public string City { get; set; }
         /// <summary>
         /// State or Region.
         /// </summary>
-        [JsonProperty(PropertyName = "region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; }
         /// <summary>
         /// Phone number.
         /// </summary>
-        [JsonProperty(PropertyName = "phone")]
+        [JsonPropertyName("phone")]
         public string Phone { get; set; }
         /// <summary>
         /// ISO 3166 alpha-2 Country.
         /// </summary>
-        [JsonProperty(PropertyName = "country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; }
         /// <summary>
         /// Care of.
         /// </summary>
-        [JsonProperty(PropertyName = "care_of")]
+        [JsonPropertyName("care_of")]
         public string CareOf { get; set; }
     }
 }

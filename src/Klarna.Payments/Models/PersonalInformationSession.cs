@@ -1,15 +1,17 @@
+using System.Text.Json.Serialization;
 using Klarna.Common.Models;
-using Newtonsoft.Json;
 
 namespace Klarna.Payments.Models
 {
     public class PersonalInformationSession
     {
-        [JsonProperty("billing_address")]
+        [JsonPropertyName("billing_address")]
         public OrderManagementAddressInfo BillingAddress { get; set; }
-        [JsonProperty("shipping_address")]
+        
+        [JsonPropertyName("shipping_address")]
         public OrderManagementAddressInfo ShippingAddress { get; set; }
-        [JsonProperty("customer")]
+        
+        [JsonPropertyName("customer")]
         public Customer Customer { get; set; }
     }
 }

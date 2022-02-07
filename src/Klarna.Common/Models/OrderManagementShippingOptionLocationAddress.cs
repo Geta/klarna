@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -8,33 +8,33 @@ namespace Klarna.Common.Models
         /// The street address.
         /// </summary>
         /// <remarks>Required</remarks>
-        [JsonProperty(PropertyName = "street_address")]
+        [JsonPropertyName("street_address")]
         public string StreetAddress { get; set; }
         /// <summary>
         /// Additional street address.
         /// </summary>
-        [JsonProperty(PropertyName = "street_address__2")]
+        [JsonPropertyName("street_address__2")]
         public string StreetAddress2 { get; set; }
         /// <summary>
         /// Postal code.
         /// </summary>
-        [JsonProperty(PropertyName = "postal_code")]
+        [JsonPropertyName("postal_code")]
         public string PostalCode { get; set; }
         /// <summary>
         /// City.
         /// </summary>
-        [JsonProperty(PropertyName = "city")]
+        [JsonPropertyName("city")]
         public string City { get; set; }
         /// <summary>
         /// Region.
         /// </summary>
-        [JsonProperty(PropertyName = "region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; }
         /// <summary>
         /// Country.
         /// </summary>
         /// <remarks>Required</remarks>
-        [JsonProperty(PropertyName = "country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; }
     }
 }

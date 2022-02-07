@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -7,57 +7,57 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Given name. Maximum 100 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "given_name")]
+        [JsonPropertyName("given_name")]
         public string GivenName { get; set; }
         /// <summary>
         /// Family name. Maximum 100 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "family_name")]
+        [JsonPropertyName("family_name")]
         public string FamilyName { get; set; }
         /// <summary>
         /// Title. Between 0 and 20 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "title")]
+        [JsonPropertyName("title")]
         public string Title { get; set; }
         /// <summary>
         /// First line of street address. Maximum 100 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "street_address")]
+        [JsonPropertyName("street_address")]
         public string StreetAddress { get; set; }
         /// <summary>
         /// Second line of street address. Maximum 100 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "street_address2")]
+        [JsonPropertyName("street_address2")]
         public string StreetAddress2 { get; set; }
         /// <summary>
         /// Postcode. Maximum 10 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "postal_code")]
+        [JsonPropertyName("postal_code")]
         public string PostalCode { get; set; }
         /// <summary>
         /// City. Maximum 200 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "city")]
+        [JsonPropertyName("city")]
         public string City { get; set; }
         /// <summary>
         /// State/Region. Required for some countries. Maximum 200 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "region")]
+        [JsonPropertyName("region")]
         public string Region { get; set; }
         /// <summary>
         /// Country. ISO 3166 alpha-2.
         /// </summary>
-        [JsonProperty(PropertyName = "country")]
+        [JsonPropertyName("country")]
         public string Country { get; set; }
         /// <summary>
         /// E-mail address. Maximum 100 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "email")]
+        [JsonPropertyName("email")]
         public string Email { get; set; }
         /// <summary>
         /// Phone number. Maximum 100 characters.
         /// </summary>
-        [JsonProperty(PropertyName = "phone")]
+        [JsonPropertyName("phone")]
         public string Phone { get; set; }
     }
 }

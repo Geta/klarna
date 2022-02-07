@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -7,12 +7,12 @@ namespace Klarna.Common.Models
         /// <summary>
         /// The customer date of birth. ISO 8601.
         /// </summary>
-        [JsonProperty(PropertyName = "date_of_birth")]
+        [JsonPropertyName("date_of_birth")]
         public string DateOfBirth { get; set; }
         /// <summary>
         /// The customer national identification number.
         /// </summary>
-        [JsonProperty(PropertyName = "national_identification_number")]
+        [JsonPropertyName("national_identification_number")]
         public string NationalIdentificationNumber { get; set; }
     }
 }

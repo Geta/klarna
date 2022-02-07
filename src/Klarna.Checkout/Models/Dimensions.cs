@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
@@ -10,19 +10,19 @@ namespace Klarna.Checkout.Models
         /// <summary>
         /// The product's height as used in the merchant's webshop. Non-negative. Measured in millimeters.
         /// </summary>
-        [JsonProperty(PropertyName = "height")]
+        [JsonPropertyName("height")]
         public long Height { get; set; }
 
         /// <summary>
         /// The product's width as used in the merchant's webshop. Non-negative. Measured in millimeters.
         /// </summary>
-        [JsonProperty(PropertyName = "width")]
+        [JsonPropertyName("width")]
         public long Width { get; set; }
 
         /// <summary>
         /// The product's length as used in the merchant's webshop. Non-negative. Measured in millimeters.
         /// </summary>
-        [JsonProperty(PropertyName = "length")]
+        [JsonPropertyName("length")]
         public long Length { get; set; }
     }
 }
