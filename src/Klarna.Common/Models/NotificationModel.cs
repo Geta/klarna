@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Common.Models
 {
@@ -8,7 +7,7 @@ namespace Klarna.Common.Models
         [JsonPropertyName("order_id")]
         public string OrderId { get; set; }
         [JsonPropertyName("event_type")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public NotificationFraudStatus Status { get; set; }
     }
 }

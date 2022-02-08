@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Klarna.Common
 {
@@ -12,31 +11,28 @@ namespace Klarna.Common
     public class JsonSerializer : IJsonSerializer
     {
         /// <summary>
-        /// Default json serialization settings for the Klarna API
+        /// Default json serialization options for the Klarna API
         /// </summary>
-        protected JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        protected JsonSerializerOptions SerializerOptions = new JsonSerializerOptions
         {
-            NullValueHandling = NullValueHandling.Ignore,
-            DefaultValueHandling = DefaultValueHandling.Include,
-            Converters = new List<JsonConverter>()
+            IgnoreNullValues = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.Never,
+            Converters =
             {
-                new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.fff'Z'"
-                }
+                new JsonStringEnumConverter(),
             }
         };
 
         /// <inheritdoc/>
         public string Serialize(object item)
         {
-            return JsonConvert.SerializeObject(item, Formatting.Indented, SerializerSettings);
+            return System.Text.Json.JsonSerializer.Serialize(item, SerializerOptions);
         }
 
         /// <inheritdoc/>
         public T Deserialize<T>(string json)
         {
-            return JsonConvert.DeserializeObject<T>(json);
+            return System.Text.Json.JsonSerializer.Deserialize<T>(json, SerializerOptions);
         }
     }
 }

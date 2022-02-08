@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Common.Models
 {
@@ -8,7 +7,7 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Order line type.
         /// </summary>
-        [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
+        [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("type")]
         public OrderLineType Type { get; set; }
         /// <summary>

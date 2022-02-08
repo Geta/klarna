@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Checkout.Models
 {
@@ -53,7 +52,7 @@ namespace Klarna.Checkout.Models
         /// <summary>
         /// Shipping method. 
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("shipping_method")]
         public ShippingMethod? ShippingMethod { get; set; }
         

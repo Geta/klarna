@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Common.Models
 {
@@ -8,7 +7,7 @@ namespace Klarna.Common.Models
         /// <summary>
         /// The type of the initial payment method.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("type")]
         public OrderManagementInitialPaymentMethodType Type { get; set; }
         /// <summary>

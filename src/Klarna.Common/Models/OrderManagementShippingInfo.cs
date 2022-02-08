@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Common.Models
 {
@@ -13,7 +12,7 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Shipping method. Allowed values matches (PickUpStore|Home|BoxReg|BoxUnreg|PickUpPoint|Own|Postal|DHLPackstation|Digital)
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("shipping_method")]
         public OrderManagementShippingMethod ShippingMethod { get; set; }
         /// <summary>

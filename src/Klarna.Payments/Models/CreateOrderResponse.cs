@@ -1,7 +1,5 @@
 ﻿using System.Text.Json.Serialization;
 using Klarna.Common.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Payments.Models
 {
@@ -14,7 +12,7 @@ namespace Klarna.Payments.Models
         public string RedirectUrl { get; set; }
 
         [JsonPropertyName("fraud_status")]
-        [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
+        [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
         public FraudStatus FraudStatus { get; set; }
     }
 }

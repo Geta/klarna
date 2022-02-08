@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json.Converters;
 
 namespace Klarna.Common.Models
 {
@@ -17,7 +16,7 @@ namespace Klarna.Common.Models
         /// The order status.
         /// </summary>
         /// <value>The order status.</value>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("status")]
         public OrderManagementOrderStatus Status { get; set; }
 
@@ -25,7 +24,7 @@ namespace Klarna.Common.Models
         /// Fraud status for the order. Either ACCEPTED, PENDING or REJECTED.
         /// </summary>
         /// <value>Fraud status for the order. Either ACCEPTED, PENDING or REJECTED.</value>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("fraud_status")]
         public OrderManagementFraudStatus FraudStatus { get; set; }
 
