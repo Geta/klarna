@@ -12,7 +12,7 @@ namespace Klarna.Payments.Models
         public string RedirectUrl { get; set; }
 
         [JsonPropertyName("fraud_status")]
-        [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public FraudStatus FraudStatus { get; set; }
     }
 }

@@ -12,5 +12,8 @@ namespace Klarna.Payments.Models
 
         [JsonPropertyName("payment_method_categories")]
         public PaymentMethodCategory[] PaymentMethodCategories { get; set; }
+
+        [JsonPropertyName("descriptor")]
+        public Descriptor Descriptor { get; set; }
     }
 }

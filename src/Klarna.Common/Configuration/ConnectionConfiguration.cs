@@ -1,4 +1,4 @@
-﻿namespace Klarna.Common
+﻿namespace Klarna.Common.Configuration
 {
     public class ConnectionConfiguration
     {

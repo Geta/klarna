@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using EPiServer.Commerce.Order;
 using Klarna.Common.Helpers;
 using Klarna.Payments.Models;
-using Newtonsoft.Json;
 
 namespace Klarna.Payments.Extensions
 {
@@ -30,17 +30,29 @@ namespace Klarna.Payments.Extensions
             cart.Properties[Constants.KlarnaClientTokenCartField] = clientToken;
         }
 
+        public static Descriptor GetKlarnaPaymentsDescriptor(this ICart cart)
+        {
+            var value = cart.Properties[Constants.KlarnaPaymentsDescriptorCartField]?.ToString() ?? string.Empty;
+            return JsonSerializer.Deserialize<Descriptor>(value);
+        }
+
+        public static void SetKlarnaPaymentsDescriptor(this ICart cart, Descriptor descriptor)
+        {
+            var serialized = JsonSerializer.Serialize(descriptor);
+            cart.Properties[Constants.KlarnaPaymentsDescriptorCartField] = serialized;
+        }
+
         public static IEnumerable<PaymentMethodCategory> GetKlarnaPaymentMethodCategories(this ICart cart)
         {
             var value = cart.Properties[Constants.KlarnaPaymentMethodCategoriesCartField]?.ToString() ?? string.Empty;
-            return JsonConvert.DeserializeObject<PaymentMethodCategory[]>(value);
+            return JsonSerializer.Deserialize<PaymentMethodCategory[]>(value);
         }
 
         public static void SetKlarnaPaymentMethodCategories(
             this ICart cart,
             IEnumerable<PaymentMethodCategory> paymentMethodCategories)
         {
-            var serialized = JsonConvert.SerializeObject(paymentMethodCategories.ToArray());
+            var serialized = JsonSerializer.Serialize(paymentMethodCategories.ToArray());
             cart.Properties[Constants.KlarnaPaymentMethodCategoriesCartField] = serialized;
         }
 

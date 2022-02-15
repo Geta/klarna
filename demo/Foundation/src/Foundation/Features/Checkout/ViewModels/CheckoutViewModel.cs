@@ -77,6 +77,11 @@ namespace Foundation.Features.Checkout.ViewModels
 
         public string SelectedPayment { get; set; }
 
+        /// <summary>
+        /// Used by Klarna Payments
+        /// </summary>
+        public string AuthorizationToken { get; set; }
+
         public OrderSummaryViewModel OrderSummary { get; set; }
 
         /// <summary>

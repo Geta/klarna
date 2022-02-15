@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using EPiServer.Commerce.Order;
+using Klarna.Common.Configuration;
 using Klarna.Payments.Models;
 
 namespace Klarna.Payments

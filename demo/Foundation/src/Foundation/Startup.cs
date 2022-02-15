@@ -6,7 +6,6 @@ using EPiServer.ContentManagementApi;
 using EPiServer.Data;
 using EPiServer.Framework.Web.Resources;
 using EPiServer.OpenIDConnect;
-using EPiServer.ServiceLocation;
 using EPiServer.Shell.Modules;
 using EPiServer.Web;
 using EPiServer.Web.Routing;
@@ -29,6 +28,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
+using Klarna.Common.Configuration;
 
 namespace Foundation
 {
@@ -84,6 +84,11 @@ namespace Foundation
             //site specific
             services.AddEmbeddedLocalization<Startup>();
             services.Configure<OrderOptions>(o => o.DisableOrderDataLocalization = true);
+
+            services.Configure<PaymentsConfiguration>("US", _configuration.GetSection("Klarna:Payments:US"));
+            services.Configure<CheckoutConfiguration>("US", _configuration.GetSection("Klarna:Checkout:US"));
+            services.Configure<CheckoutConfiguration>("UK", _configuration.GetSection("Klarna:Checkout:UK"));
+            services.Configure<CheckoutConfiguration>("SWE", _configuration.GetSection("Klarna:Checkout:SWE"));
 
             services.ConfigureContentApiOptions(o =>
             {

@@ -11,6 +11,7 @@ using EPiServer.Logging;
 using Klarna.Checkout.Extensions;
 using Klarna.Checkout.Models;
 using Klarna.Common;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
@@ -32,11 +33,12 @@ namespace Klarna.Checkout
         private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
         private readonly IMarketService _marketService;
-        private readonly ICheckoutConfigurationLoader _checkoutConfigurationLoader;
+        private readonly IConfigurationLoader _configurationLoader;
         private readonly IKlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
         private readonly ILanguageService _languageService;
         private readonly IKlarnaCartValidator _klarnaCartValidator;
+        private readonly IPurchaseOrderProcessor _purchaseOrderProcessor;
 
         private CheckoutStore _client;
         private PaymentMethodDto _paymentMethodDto;
@@ -48,20 +50,22 @@ namespace Klarna.Checkout
             IOrderGroupCalculator orderGroupCalculator,
             IKlarnaOrderValidator klarnaOrderValidator,
             IMarketService marketService,
-            ICheckoutConfigurationLoader checkoutConfigurationLoader,
+            IConfigurationLoader configurationLoader,
             IKlarnaOrderServiceFactory klarnaOrderServiceFactory,
             ILanguageService languageService,
-            IKlarnaCartValidator klarnaCartValidator)
-            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
+            IKlarnaCartValidator klarnaCartValidator,
+            IPurchaseOrderProcessor purchaseOrderProcessor)
+            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService, configurationLoader)
         {
             _orderGroupCalculator = orderGroupCalculator;
             _orderRepository = orderRepository;
             _klarnaOrderValidator = klarnaOrderValidator;
             _marketService = marketService;
-            _checkoutConfigurationLoader = checkoutConfigurationLoader;
+            _configurationLoader = configurationLoader;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
             _languageService = languageService;
             _klarnaCartValidator = klarnaCartValidator;
+            _purchaseOrderProcessor = purchaseOrderProcessor;
         }
 
         public virtual PaymentMethodDto PaymentMethodDto =>
@@ -426,14 +430,6 @@ namespace Klarna.Checkout
                 return false;
             }
 
-            // Order is valid, create on hold cart in epi
-            cart.Name = OrderStatus.OnHold.ToString();
-            _orderRepository.Save(cart);
-
-            // Create new default cart
-            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, Cart.DefaultName);
-            _orderRepository.Save(newCart);
-
             return true;
         }
 
@@ -475,7 +471,7 @@ namespace Klarna.Checkout
 
         public virtual CheckoutConfiguration GetConfiguration(MarketId marketId)
         {
-            return _checkoutConfigurationLoader.GetConfiguration(marketId);
+            return _configurationLoader.GetCheckoutConfiguration(marketId);
         }
 
         public virtual void Complete(IPurchaseOrder purchaseOrder)
@@ -493,7 +489,8 @@ namespace Klarna.Checkout
 
             if (payment.HasFraudStatus(FraudStatus.PENDING))
             {
-                OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
+                _purchaseOrderProcessor.HoldOrder(purchaseOrder);
+
                 _orderRepository.Save(purchaseOrder);
             }
         }

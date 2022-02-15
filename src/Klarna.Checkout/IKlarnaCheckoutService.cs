@@ -2,6 +2,7 @@
 using EPiServer.Commerce.Order;
 using Klarna.Checkout.Models;
 using Klarna.Common;
+using Klarna.Common.Configuration;
 using Mediachase.Commerce;
 
 namespace Klarna.Checkout

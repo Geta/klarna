@@ -23,11 +23,14 @@ using Mediachase.Commerce;
 using Mediachase.Commerce.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc.Routing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Foundation.Infrastructure.Helpers;
+using Klarna.Checkout;
+using Klarna.Payments;
+using Mediachase.Commerce.Markets;
 
 namespace Foundation.Features.Checkout
 {
@@ -54,6 +57,9 @@ namespace Foundation.Features.Checkout
         private readonly ShipmentViewModelFactory _shipmentViewModelFactory;
         private readonly IGiftCardService _giftCardService;
         private readonly ISettingsService _settingsService;
+        private readonly  IKlarnaPaymentsService _klarnaPaymentsService;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+        private readonly IMarketService _marketService;
 
         public CheckoutController(IPageRouteHelper pageRouteHelper,
             IOrderRepository orderRepository,
@@ -74,7 +80,10 @@ namespace Foundation.Features.Checkout
             IOrganizationService organizationService,
             ShipmentViewModelFactory shipmentViewModelFactory,
             IGiftCardService giftCardService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IKlarnaPaymentsService klarnaPaymentsService,
+            IKlarnaCheckoutService klarnaCheckoutService,
+            IMarketService marketService)
         {
             _pageRouteHelper = pageRouteHelper;
             _orderRepository = orderRepository;
@@ -96,12 +105,20 @@ namespace Foundation.Features.Checkout
             _shipmentViewModelFactory = shipmentViewModelFactory;
             _giftCardService = giftCardService;
             _settingsService = settingsService;
+            _klarnaPaymentsService = klarnaPaymentsService;
+            _klarnaCheckoutService = klarnaCheckoutService;
+            _marketService = marketService;
         }
 
         [HttpGet]
         //[OutputCache(Duration = 0, NoStore = true)]
         public IActionResult Index(CheckoutPage currentPage, int? isGuest)
         {
+            if (currentPage == null)
+            {
+                currentPage = _contentLoader.Get<CheckoutPage>(_settingsService.GetSiteSettings<ReferencePageSettings>().CheckoutPage);
+            }
+
             if (CartIsNullOrEmpty())
             {
                 return View("EmptyCart", new CheckoutMethodViewModel(currentPage));
@@ -123,7 +140,7 @@ namespace Foundation.Features.Checkout
             viewModel.BillingAddress = _addressBookService.ConvertToModel(CartWithValidationIssues.Cart.GetFirstForm()?.Payments.FirstOrDefault()?.BillingAddress);
             _addressBookService.LoadAddress(viewModel.BillingAddress);
 
-            var shipmentBillingTypes = TempData["ShipmentBillingTypes"] as List<KeyValuePair<string, int>>;
+            var shipmentBillingTypes = TempData.Get<List<KeyValuePair<string, int>>>("ShipmentBillingTypes");
 
             if (shipmentBillingTypes != null && shipmentBillingTypes.Any(x => x.Key == "Billing"))
             {
@@ -170,7 +187,7 @@ namespace Foundation.Features.Checkout
                 ViewBag.ErrorMessages = (string)TempData[Constant.ErrorMessages];
             }
 
-            var tempDataState = TempData["ModelState"] as List<KeyValuePair<string, string>>;
+            var tempDataState = TempData.Get<List<KeyValuePair<string, string>>>("ModelState");
             if (tempDataState != null)
             {
                 foreach (var e in tempDataState)
@@ -186,6 +203,11 @@ namespace Foundation.Features.Checkout
         //[OutputCache(Duration = 0, NoStore = true)]
         public IActionResult CheckoutMethod(CheckoutPage currentPage)
         {
+            if (currentPage == null)
+            {
+                currentPage = _contentLoader.Get<CheckoutPage>(_settingsService.GetSiteSettings<ReferencePageSettings>().CheckoutPage);
+            }
+
             var viewModel = new CheckoutMethodViewModel(currentPage, _urlHelper.Action("Index", "Checkout"));
             return View("CheckoutMethod", viewModel);
         }
@@ -495,8 +517,8 @@ namespace Foundation.Features.Checkout
             {
                 var stateValues = new List<KeyValuePair<string, string>>();
                 stateValues.AddRange(ModelState.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.Errors.FirstOrDefault().ErrorMessage)));
-                TempData["ModelState"] = stateValues;
-                TempData["ShipmentBillingTypes"] = errorTypes;
+                TempData.Set("ModelState", stateValues);
+                TempData.Set("ShipmentBillingTypes", errorTypes);
                 return RedirectToAction("Index");
             }
 
@@ -505,7 +527,7 @@ namespace Foundation.Features.Checkout
                 var purchaseOrder = _checkoutService.PlaceOrder(CartWithValidationIssues.Cart, ModelState, checkoutViewModel);
                 if (purchaseOrder == null)
                 {
-                    TempData[Constant.ErrorMessages] = "There is no payment was processed";
+                    TempData[Constant.ErrorMessages] = "No payment was processed";
                     return RedirectToAction("Index");
                 }
 
@@ -534,6 +556,13 @@ namespace Foundation.Features.Checkout
                         _orderRepository.Save(purchaseOrder);
                     }
                 }
+
+                var result = _klarnaPaymentsService.Complete(purchaseOrder);
+                if (result.IsRedirect)
+                {
+                    return Redirect(result.RedirectUrl);
+                }
+
                 checkoutViewModel.CurrentContent = currentPage;
                 var confirmationSentSuccessfully = await _checkoutService.SendConfirmation(checkoutViewModel, purchaseOrder);
                 //await _checkoutService.CreateOrUpdateBoughtProductsProfileStore(CartWithValidationIssues.Cart);
@@ -549,12 +578,54 @@ namespace Foundation.Features.Checkout
             }
         }
 
+        [HttpGet]
+        public async Task<ActionResult> KlarnaCheckoutConfirmation(int orderGroupId, string klarna_order_id)
+        {
+            var cart = _klarnaCheckoutService.GetCartByKlarnaOrderId(orderGroupId, klarna_order_id);
+            if (cart != null)
+            {
+                var market = _marketService.GetMarket(cart.MarketId);
+                var order = await _klarnaCheckoutService.GetOrder(klarna_order_id, market).ConfigureAwait(false);
+                if (order.Status == "checkout_complete")
+                {
+                    var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
+                    if (purchaseOrder == null)
+                    {
+                        ModelState.AddModelError("", "Error occurred while creating a purchase order");
+
+                        return RedirectToAction("Index");
+                    }
+
+                    // Logic for sending confirmation email etc
+
+                    return Redirect(_checkoutService.BuildRedirectionUrl(null, purchaseOrder, true));
+                }
+                else
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            return NotFound();
+        }
+
         [HttpPost]
         public IActionResult UpdatePaymentOption(CheckoutPage currentPage, [FromBody]IPaymentMethod paymentOption)
         {
             ModelState.Clear();
 
             var viewModel = CreateCheckoutViewModel(currentPage, paymentOption);
+
+            if (paymentOption is KlarnaCheckoutPaymentOption)
+            {
+                ((KlarnaCheckoutPaymentOption)viewModel.Payment).Initialize();
+            }
+
+            if (paymentOption is KlarnaPaymentsPaymentOption)
+            {
+                ((KlarnaPaymentsPaymentOption)viewModel.Payment).Initialize();
+            }
+
             var partialView = string.Format("_{0}PaymentMethod", paymentOption.SystemKeyword);
 
             return PartialView(partialView, viewModel.Payment);

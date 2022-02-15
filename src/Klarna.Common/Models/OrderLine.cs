@@ -7,7 +7,7 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Order line type.
         /// </summary>
-        [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("type")]
         public OrderLineType Type { get; set; }
         /// <summary>

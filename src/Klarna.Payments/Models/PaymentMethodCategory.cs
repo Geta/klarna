@@ -13,13 +13,4 @@ namespace Klarna.Payments.Models
         [JsonPropertyName("asset_urls")]
         public AssetUrls AssetUrls { get; set; }
     }
-
-    public class AssetUrls
-    {
-        [JsonPropertyName("descriptive")]
-        public string Descriptive { get; set; }
-
-        [JsonPropertyName("standard")]
-        public string Standard { get; set; }
-    }
 }

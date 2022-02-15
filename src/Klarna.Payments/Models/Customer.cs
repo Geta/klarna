@@ -45,7 +45,7 @@ namespace Klarna.Payments.Models
         [JsonPropertyName("organization_registration_id")]
         public string OrganizationRegistrationId { get; set; }
 
-        [Newtonsoft.Json.JsonConverter(typeof(JsonStringEnumConverter))]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         [JsonPropertyName("organization_entity_type")]
         public PaymentCustomerOrganizationEntityType OrganizationEntityType { get; set; }
     }

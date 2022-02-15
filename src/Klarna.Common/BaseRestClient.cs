@@ -6,7 +6,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Klarna.Common.Models;
-using Newtonsoft.Json;
 
 namespace Klarna.Common
 {
@@ -247,7 +246,7 @@ namespace Klarna.Common
 
                 try
                 {
-                    errorMessage = JsonConvert.DeserializeObject<ErrorMessage>(content);
+                    errorMessage = System.Text.Json.JsonSerializer.Deserialize<ErrorMessage>(content);
                 }
                 catch (Exception)
                 {

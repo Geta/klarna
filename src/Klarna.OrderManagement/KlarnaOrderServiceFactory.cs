@@ -1,11 +1,7 @@
-using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
-using Klarna.Common.Extensions;
+using Klarna.Common.Configuration;
 using Klarna.Common.Models;
-using Mediachase.Commerce;
-using Mediachase.Commerce.Orders.Dto;
-using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.OrderManagement
 {
@@ -16,16 +12,6 @@ namespace Klarna.OrderManagement
     [ServiceConfiguration(typeof(IKlarnaOrderServiceFactory))]
     public class KlarnaOrderServiceFactory : IKlarnaOrderServiceFactory
     {
-        public virtual IKlarnaOrderService Create(IPayment payment, IMarket market)
-        {
-            return Create(PaymentManager.GetPaymentMethod(payment.PaymentMethodId), market.MarketId);
-        }
-
-        public virtual IKlarnaOrderService Create(PaymentMethodDto paymentMethodDto, MarketId marketMarketId)
-        {
-            return Create(paymentMethodDto.GetConnectionConfiguration(marketMarketId));
-        }
-
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
             string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.OrderManagement_{typeof(KlarnaOrderService).Assembly.GetName().Version}";

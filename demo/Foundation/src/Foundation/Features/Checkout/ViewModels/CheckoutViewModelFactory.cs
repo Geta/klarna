@@ -213,6 +213,16 @@ namespace Foundation.Features.Checkout.ViewModels
                 viewModel.SelectedPayment +=
                     $" - ({creditCardPayment.CreditCardNumber.Substring(creditCardPayment.CreditCardNumber.Length - 4)})";
             }
+
+            if (payment is KlarnaCheckoutPaymentOption)
+            {
+                ((KlarnaCheckoutPaymentOption)viewModel.Payment).Initialize();
+            }
+
+            if (payment is KlarnaPaymentsPaymentOption)
+            {
+                ((KlarnaPaymentsPaymentOption)viewModel.Payment).Initialize();
+            }
         }
 
         private AddressModel CreateBillingAddressModel(string currentBillingAdressId)

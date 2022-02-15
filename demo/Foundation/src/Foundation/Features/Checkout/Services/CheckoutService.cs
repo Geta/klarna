@@ -25,6 +25,12 @@ using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Klarna.Checkout;
+using Klarna.Checkout.Models;
+using Klarna.Common;
+using Klarna.Common.Extensions;
+using Klarna.Common.Models;
+using Constants = Klarna.Checkout.Constants;
 
 namespace Foundation.Features.Checkout.Services
 {
@@ -43,6 +49,9 @@ namespace Foundation.Features.Checkout.Services
         private readonly ILogger _log = LogManager.GetLogger(typeof(CheckoutService));
         private readonly ILoyaltyService _loyaltyService;
         private readonly ISettingsService _settingsService;
+        private readonly ILanguageService _languageService;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+        private readonly ICartService _cartService;
 
         public AuthenticatedPurchaseValidation AuthenticatedPurchaseValidation { get; private set; }
         public AnonymousPurchaseValidation AnonymousPurchaseValidation { get; private set; }
@@ -59,7 +68,10 @@ namespace Foundation.Features.Checkout.Services
             IMailService mailService,
             IPromotionEngine promotionEngine,
             ILoyaltyService loyaltyService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ILanguageService languageService,
+            IKlarnaCheckoutService klarnaCheckoutService,
+            ICartService cartService)
         {
             _addressBookService = addressBookService;
             _orderGroupFactory = orderGroupFactory;
@@ -77,6 +89,9 @@ namespace Foundation.Features.Checkout.Services
             AnonymousPurchaseValidation = new AnonymousPurchaseValidation(_localizationService);
             CheckoutAddressHandling = new CheckoutAddressHandling(_addressBookService);
             _settingsService = settingsService;
+            _languageService = languageService;
+            _klarnaCheckoutService = klarnaCheckoutService;
+            _cartService = cartService;
         }
 
         public virtual void UpdateShippingMethods(ICart cart, IList<ShipmentViewModel> shipmentViewModels)
@@ -144,9 +159,16 @@ namespace Foundation.Features.Checkout.Services
             }
 
             var payment = cart.GetFirstForm().Payments.FirstOrDefault(x => x.PaymentMethodId == paymentMethod.PaymentMethodId);
+
             if (payment == null)
             {
                 payment = paymentMethod.CreatePayment(total, cart);
+
+                if (payment.PaymentMethodName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
+                {
+                    payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentField] = viewModel.AuthorizationToken;
+                }
+
                 cart.AddPayment(payment, _orderGroupFactory);
             }
             else
@@ -237,6 +259,72 @@ namespace Foundation.Features.Checkout.Services
             }
 
             return null;
+        }
+
+        public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrder order, ICart cart)
+        {
+            var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name).PaymentMethod.FirstOrDefault();
+
+            var payment = cart.CreatePayment(_orderGroupFactory);
+            payment.PaymentType = PaymentType.Other;
+            payment.PaymentMethodId = paymentRow.PaymentMethodId;
+            payment.PaymentMethodName = Constants.KlarnaCheckoutSystemKeyword;
+            payment.Amount = cart.GetTotal(_orderGroupCalculator).Amount;
+            payment.Status = PaymentStatus.Pending.ToString();
+            payment.TransactionType = TransactionType.Authorization.ToString();
+            payment.ProviderTransactionID = klarnaOrderId;
+
+            cart.AddPayment(payment, _orderGroupFactory);
+
+            var billingAddress = new AddressModel
+            {
+                Name = $"{order.BillingCheckoutAddress.StreetAddress}{order.BillingCheckoutAddress.StreetAddress2}{order.BillingCheckoutAddress.City}",
+                FirstName = order.BillingCheckoutAddress.GivenName,
+                LastName = order.BillingCheckoutAddress.FamilyName,
+                Email = order.BillingCheckoutAddress.Email,
+                DaytimePhoneNumber = order.BillingCheckoutAddress.Phone,
+                Line1 = order.BillingCheckoutAddress.StreetAddress,
+                Line2 = order.BillingCheckoutAddress.StreetAddress2,
+                PostalCode = order.BillingCheckoutAddress.PostalCode,
+                City = order.BillingCheckoutAddress.City,
+                CountryName = order.BillingCheckoutAddress.Country
+            };
+
+            payment.BillingAddress = _addressBookService.ConvertToAddress(billingAddress, cart);
+
+            cart.ProcessPayments(_paymentProcessor, _orderGroupCalculator);
+
+            var totalProcessedAmount = cart.GetFirstForm().Payments.Where(x => x.Status.Equals(PaymentStatus.Processed.ToString())).Sum(x => x.Amount);
+            if (totalProcessedAmount != cart.GetTotal(_orderGroupCalculator).Amount)
+            {
+                throw new InvalidOperationException("Wrong amount");
+            }
+
+            if (payment.HasFraudStatus(FraudStatus.PENDING))
+            {
+                payment.Status = PaymentStatus.Pending.ToString();
+            }
+
+            _cartService.RequestInventory(cart);
+
+            var orderReference = _orderRepository.SaveAsPurchaseOrder(cart);
+            var purchaseOrder = _orderRepository.Load<IPurchaseOrder>(orderReference.OrderGroupId);
+            _orderRepository.Delete(cart.OrderLink);
+
+            if (purchaseOrder == null)
+            {
+                _klarnaCheckoutService.CancelOrder(cart);
+
+                return null;
+            }
+            else
+            {
+                _klarnaCheckoutService.Complete(purchaseOrder);
+                purchaseOrder.Properties[Klarna.Common.Constants.KlarnaOrderIdField] = klarnaOrderId;
+
+                _orderRepository.Save(purchaseOrder);
+                return purchaseOrder;
+            }
         }
 
         public virtual async Task<bool> SendConfirmation(CheckoutViewModel viewModel, IPurchaseOrder purchaseOrder)

@@ -35,5 +35,7 @@ namespace Foundation.Features.Checkout.ViewModels
         public List<Dictionary<string, string>> FileUrls { get; set; }
         public List<Dictionary<string, string>> Keys { get; set; }
         public string ElevatedRole { get; set; }
+        public string KlarnaCheckoutHtmlSnippet { get; set; }
+        public bool IsKlarnaCheckout { get; set; }
     }
 }

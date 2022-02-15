@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.Common.Configuration;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Mediachase.Commerce;
@@ -14,8 +15,8 @@ namespace Klarna.OrderManagement.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(CapturePaymentStep));
 
-        public CapturePaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
-            : base(payment, marketId, klarnaOrderServiceFactory)
+        public CapturePaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader)
+            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader)
         {
         }
 

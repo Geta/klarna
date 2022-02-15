@@ -1,6 +1,4 @@
-using Klarna.Common;
-
-namespace Klarna.Checkout
+namespace Klarna.Common.Configuration
 {
     public class CheckoutConfiguration : ConnectionConfiguration
     {

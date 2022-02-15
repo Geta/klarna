@@ -1,0 +1,12 @@
+﻿@using Foundation.Features.Checkout.Payments
+
+@model KlarnaCheckoutPaymentOption
+
+@Html.HiddenFor(model => model.PaymentMethodId)
+
+<br />
+<div class="row">
+    <div class="col-12">
+        @Html.Raw(Model.HtmlSnippet)
+    </div>
+</div>

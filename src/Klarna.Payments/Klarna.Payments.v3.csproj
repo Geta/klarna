@@ -11,7 +11,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EPiServer.Commerce.Core" Version="14.0.2" />
-    <PackageReference Include="Refit" Version="6.0.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Klarna.Common\Klarna.Common.v3.csproj" />

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Models;
 using Mediachase.Commerce;
@@ -10,8 +11,8 @@ namespace Klarna.OrderManagement.Steps
 {
     public abstract class AuthorizePaymentStepBase : PaymentStep
     {
-        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
-            : base(payment, marketId, klarnaOrderServiceFactory)
+        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader)
+            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader)
         {
         }
 

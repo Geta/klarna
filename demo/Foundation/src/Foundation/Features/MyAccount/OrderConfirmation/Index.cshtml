@@ -36,6 +36,11 @@
 
         @if (Model.HasOrder)
         {
+            if (Model.IsKlarnaCheckout)
+            {
+                await Html.RenderPartialAsync("_KlarnaCheckoutConfirmation", Model.KlarnaCheckoutHtmlSnippet);
+            }
+
             if (Model.FileUrls.Any())
             {
                 <br />
@@ -191,14 +196,15 @@
                         @await Html.PartialAsync("_Address", shippingAddress)
                     }
                 </div>
-                <div class="col-md-6">
-
-                    @foreach (var payment in Model.Payments)
-                    {
-                        await Html.RenderPartialAsync("_" + payment.PaymentMethodName + "Confirmation", payment);
-                    }
-
-                </div>
+                @if (!Model.IsKlarnaCheckout)
+                {
+                    <div class="col-md-6">
+                        @foreach (var payment in Model.Payments)
+                        {
+                            await Html.RenderPartialAsync("_" + payment.PaymentMethodName + "Confirmation", payment);
+                        }
+                    </div>
+                }
             </div>
             <hr>
             <div class="row">
