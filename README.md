@@ -12,6 +12,10 @@
 
 [Go to documentation](src/Klarna.OrderManagement/README.md)
 
+# On-site messaging
+
+[Go to documentation](docs/onsite-messaging.md)
+
 ## Cloudflare
 
 If you're using Cloudflare/Episerver DXC you need to make sure that the WAF is turned off for the klarnacheckoutapi URLs otherwise Cloudflare might block traffic to it and challenge with a captcha.

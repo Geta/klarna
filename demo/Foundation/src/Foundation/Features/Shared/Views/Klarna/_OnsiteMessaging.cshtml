@@ -1,0 +1,19 @@
+﻿@using EPiServer.ServiceLocation
+@using Mediachase.Commerce
+@{
+    var currentMarketService = ServiceLocator.Current.GetInstance<ICurrentMarket>();
+    var currentMarket = currentMarketService.GetCurrentMarket();
+}
+
+@if (currentMarket.MarketId.Equals("US"))
+{
+<script async
+        src="https://na-library.playground.klarnaservices.com/lib.js"
+        data-client-id="07ca3b12-93bd-5bdb-8a63-d5c90757004f"></script>
+}
+else
+{
+    <script async
+            src="https://eu-library.playground.klarnaservices.com/lib.js"
+            data-client-id="291c9a83-df54-56bc-ab9a-1e6e87daa609"></script>
+}
