@@ -1,6 +1,8 @@
-﻿@model Tuple<string, int, bool>
+﻿@using Foundation.Features.Blocks.KlarnaBlock
+@model Tuple<string, int, bool>
 
 <div class="row product-detail__buy">
+    <klarna-placement data-key="credit-promotion-badge" data-locale="@KlarnaHelper.GetLocale()" data-purchase-amount="@KlarnaHelper.GetPurchasePrice(Model.Item1)"></klarna-placement>
     <div class="col-3 col-md-5 col-lg-4">
         <div class="row">
             <div class="col-12">
@@ -48,6 +50,5 @@
                 </button>
             }
         }
-
     </div>
 </div>

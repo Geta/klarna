@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using EPiServer.DataAnnotations;
-using EPiServer.Globalization;
 using EPiServer.Shell.ObjectEditing;
 using Foundation.Features.Shared;
 using Foundation.Infrastructure;
@@ -18,17 +16,5 @@ namespace Foundation.Features.Blocks.KlarnaBlock
         [SelectOne(SelectionFactoryType = typeof(KlarnaPlacementsSelectionFactory))]
         [Display(Name = "Placements", Order = 5)]
         public virtual string Placements { get; set; }
-
-        public string GetLocale()
-        {
-            var culture = ContentLanguage.PreferredCulture;
-
-            if (culture.Name.Equals("en", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return "en-US";
-            }
-
-            return culture.Name;
-        }
     }
 }

@@ -6,5 +6,5 @@
 
 <div style="background-color: @Model.CurrentBlock.BackgroundColor; opacity: @Model.CurrentBlock.BlockOpacity;" class="klarna-block @(Model.CurrentBlock.Padding + " " + Model.CurrentBlock.Margin)">
     <klarna-placement data-key="@Model.CurrentBlock.Placements"
-                      data-locale="@Model.CurrentBlock.GetLocale()"></klarna-placement>
+                      data-locale="@KlarnaHelper.GetLocale()"></klarna-placement>
 </div>
