@@ -64,10 +64,20 @@ namespace Klarna.Checkout
 
         private static void Log(ApiException e)
         {
-            var messages = string.Join(" ", e.ErrorMessage.ErrorMessages);
-            Logger.Error(
-                $"Error Code: '{e.ErrorMessage.ErrorCode}'; CorrelationId: '{e.ErrorMessage.CorrelationId}'; Messages: '{messages}'",
-                e);
+            if (e.ErrorMessage == null)
+            {
+                Logger.Error("ApiException", e);
+                return;
+            }
+
+            var messages = string.Empty;
+
+            if (e.ErrorMessage.ErrorMessages != null)
+            {
+                messages = string.Join(" ", e.ErrorMessage.ErrorMessages);
+            }
+
+            Logger.Error($"Error Code: '{e.ErrorMessage.ErrorCode}'; CorrelationId: '{e.ErrorMessage.CorrelationId}'; Messages: '{messages}'", e);
         }
     }
 }
