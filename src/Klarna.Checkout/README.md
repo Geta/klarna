@@ -27,13 +27,13 @@ This library consists of two assemblies. Both are mandatory for a creating an in
   - Callback url's are called for updating information in EPiServer.
     - These also return data to Klarna in order to update order/lineitem totals and available shipping options
 - **Visitor clicks 'Place order' button**
-  - The [order validation](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/render-the-checkout/validate-order) url is called in order to execute the last checks before finalizing the order. For example check stock, validate order totals and addresses to make sure all data is valid. If the data is not valid the user can be redirected or can be shown an error (still on the checkout page)
+  - The [order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/) url is called in order to execute the last checks before finalizing the order. For example check stock, validate order totals and addresses to make sure all data is valid. If the data is not valid the user can be redirected or can be shown an error (still on the checkout page)
 - **The order is created at Klarna**
 - **Visitor is redirected to confirmation callback url**
   - Purchase order is created in EPiServer
 - **Visitor is redirected to confirmation page**
 - **optional - Klarna - fraud status notification** - When the Klarna order is pending, then a fraud status notification is sent to the configured notification URL (configured in Commerce Manager)
-- **delayed - Receive a [push callback](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/confirm-purchase/) from Klarna** - This notifies Epi that the order has been created in Klarna Order Management (usually within a few seconds). We check if a PurchaseOrder has been made in Epi, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
+- **delayed - Receive a [push callback](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/best-practices/#push) from Klarna** - This notifies Epi that the order has been created in Klarna Order Management (usually within a few seconds). We check if a PurchaseOrder has been made in Epi, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
 
 More information about the Klarna Checkout flow: https://developers.klarna.com/documentation/klarna-checkout/.
 
@@ -78,8 +78,8 @@ Click OK in order to save the Payment for the first time. After saving, return t
   - ApiUrl(\*) - provided by Klarna
     - See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls. Klarna API requires HTTPS.
 - **Widget settings**
-  - [Some widget styling settings](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/render-the-checkout/extra-features)
-  - Shipping details, see [same link](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/render-the-checkout/extra-features)
+  - [Some widget styling settings](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkout-customization/)
+  - Shipping details, see [same link](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkout-customization/)
   - Select shipping option in Klarna Checkout iFrame - Unless you want to have your own shipping options selector, set this to true
   - Allow separate shipping address - If true, the consumer can enter different billing and shipping addresses. Default: false
   - Date of birth mandatory - If true, the consumer cannot skip date of birth. Default: false
@@ -89,7 +89,7 @@ Click OK in order to save the Payment for the first time. After saving, return t
   - Prefill addresses - send address information on order creation in Klarna (preferred shipping/billing address)
   - Send shipping options prior to filling addresses - send in available shipping options even if address is unknown
 - **Klarna Widget additional checkbox**
-  - [Another extra feature](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/render-the-checkout/extra-features) which enables you to add a checkbox within the Klarna checkout iFrame
+  - [Another extra feature](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkboxes/) which enables you to add a checkbox within the Klarna checkout iFrame
 - **Merchant/callback URLs**
   - Checkout url (\*) - URL of merchant checkout page. Should be different than terms, confirmation and push URLs.
   - Terms url (\*) - URL of merchant terms and conditions. Should be different than checkout, confirmation and push URLs
@@ -174,7 +174,7 @@ The following properties are set by default (read from current cart and payment 
 
 Read more about the different parameters: https://developers.klarna.com/api/#checkout-api-create-a-new-order.
 **Remark:**
-The demo site implementation only supports selecting the shipping address in the Klarna Checkout iFrame. By default the first available shipping option will be selected. If you want to support switching shipping options you can look at what happens upon updating the cart (and check out [Suspend and Resume here](https://developers.klarna.com/documentation/klarna-checkout/javascript-api/)).
+The demo site implementation only supports selecting the shipping address in the Klarna Checkout iFrame. By default the first available shipping option will be selected. If you want to support switching shipping options you can look at what happens upon updating the cart (and check out [Suspend and Resume here](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/client-side-events/)).
 
 **API controller - Callback communication**
 
@@ -198,7 +198,7 @@ Read more about callback functionality in the next section. In the demo site, yo
 
 During the checkout process Klarna trigger one of the following callbacks.
 
-#### [Shipping optionupdate](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/render-the-checkout/tax-shipping/)
+#### [Shipping optionupdate](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/server-side-callbacks/#how-its-done-shipping-option-update)
 
 If shipping options are available in the iFrame, after selecting a new shipping option Klarna will send information to this callback url. The information can be used to recalculate shipping costs/order totals.
 
@@ -215,7 +215,7 @@ public IHttpActionResult ShippingOptionUpdate(int orderGroupId, [FromBody]Shippi
 }
 ```
 
-#### [Address update](https://developers.klarna.com/api/#checkout-api-callbacks-address-update)
+#### [Address update](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/server-side-callbacks/#how-its-done-address-update)
 
 If an address has been updated in the iFrame, new address will be sent to the address update callback url. The information can be used to supply new shipping options and order totals.
 
@@ -232,7 +232,7 @@ public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]AddressUpdate
 }
 ```
 
-#### [Order validation](https://developers.klarna.com/documentation/klarna-checkout/integration-guide/render-the-checkout/validate-order)
+#### [Order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/)
 
 Klarna will do a request to the [order validation callback url](https://developers.klarna.com/api/#checkout-api-callbacks-order-validation). Here you can check if a purchase order can be made. Think of checking stock, checking billing and shipping addresses and comparing the epi cart with the provided data from Klarna.
 If **Require validate callback success** is set to **true** Klarna will only create an order if they receive an HTTP status 200 OK response.
@@ -310,7 +310,7 @@ The KlarnaPaymentGateway adds notes about payment updates to the order.
   
 Klarna Checkout offers a wide variety of payment methods to cover the main needs of consumers in all markets, which all are included with a simple, single integration.
  
-[Here's the full documentation](https://developers.klarna.com/documentation/klarna-checkout/external-payment-methods/) including supported payment and checkouts - we recommend reading through it thoroughly and then coming back here.
+[Here's the full documentation](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/external-payment-methods/) including supported payment and checkouts - we recommend reading through it thoroughly and then coming back here.
 
 ![Klarna Checkout External Payment Methods & External Checkouts](https://developers.klarna.com/static/KCO_external-payment-methods.png)
 
@@ -339,7 +339,7 @@ https://kco-klarna.geta.no
 
 ## Package maintainer
 
-[Brian Weeteling](https://github.com/brianweet)
+[Frederik Vig](https://github.com/frederikvig)
 
 ## Changelog
 
