@@ -18,7 +18,7 @@ If you're using Cloudflare/Episerver DXC you need to make sure that the WAF is t
 
 ## Klarna test/dev account
 
-In order to start development, request a test account [here](https://developers.klarna.com/documentation/test-credentials/)
+In order to start development, request a test account [here](https://docs.klarna.com/resources/test-environment/)
 
 ## Changelog
 
