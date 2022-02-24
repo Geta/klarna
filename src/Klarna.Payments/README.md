@@ -87,7 +87,7 @@ if (result.IsRedirect)
 
 In Quicksilver the order confirmation page URL would look something like this: '/en/checkout/order-confirmation'.
 
-[Notification url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__notification) is called by Klarna for fraud updates. See further in the documentation for an example implementation or in the [demo site](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L63) and would be '/klarnaapi/fraud'. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more explanation: https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data.
+[Notification url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__notification) is called by Klarna for fraud updates. See further in the documentation for an example implementation or in the [demo site](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/Controllers/KlarnaPaymentController.cs#L63) and would be '/klarnaapi/fraud'. The 'Send product and image URL' checkbox indicates if the product (in cart) page and image URL should be sent to Klarna. When the 'Use attachment' checkbox is checked the developer should send extra information to Klarna. See the Klarna documentation for more information: https://developers.klarna.com/api/#payments-api__create-a-new-credit-session__attachment.
 
 The 'Pre-assesment' field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This option is only available in the U.S. market and will be ignored for all other markets. Below a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder is explained later in this document.
 
@@ -118,7 +118,7 @@ A session at Klarna should be created when the visitor is on the checkout page. 
 await _klarnaPaymentsService.CreateOrUpdateSession(Cart);
 ```
 
-It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. MerchantReference1 is used for the PO number from Episerver, MerchantReference2 can be used for additional data for that order which the merchant can then use to search and locate that particular order in the Klarna Portal (example below in DemoSessionBuilder). The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://developers.klarna.com/documentation/klarna-payments/legal-privacy/). 
+It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way the developer is able to override values or set missing values. MerchantReference1 is used for the PO number from Episerver, MerchantReference2 can be used for additional data for that order which the merchant can then use to search and locate that particular order in the Klarna Portal (example below in DemoSessionBuilder). The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://docs.klarna.com/klarna-payments/legal-and-privacy/). 
 
 You can add additional merchant data like customer data, subscription, event, reservation details etc when UseAttachments is set to true (configured in Commerce Manager for the Klarna Payments method). Here's a list of all the different supported parameters: https://developers.klarna.com/api/#payments-api-create-a-new-credit-session. 
 
@@ -190,14 +190,14 @@ The following properties are set by default (read from current cart and payment 
 
 Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-credit-session.
 
-When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. Full documentation about this topic can be found here: https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data.
+When the 'Use attachment' checkbox is checked extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. Full documentation about this topic can be found here: https://developers.klarna.com/api/#payments-api__create-a-new-credit-session__attachment.
 
 </details>
 
 <details>
   <summary>Authorize payment client-side (click to expand)</summary>
 
-The last step just before creating an order is to do an [authorization call](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/). In this call we will provide Klarna with any missing personal information (which might be missing due to legislation). Up until now no personal information might have been synced to Klarna, which makes risk assessment quite hard to accomplish. During the authorize call we provide Klarna with the required personal information (billing-/shipping address, customer info). Klarna will conduct a full risk assessment after which it will provide immediate feedback, which is described on the previously linked [docs](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/).
+The last step just before creating an order is to do an [authorization call](https://docs.klarna.com/klarna-payments/api-call-descriptions/authorize-the-purchase/). In this call we will provide Klarna with any missing personal information (which might be missing due to legislation). Up until now no personal information might have been synced to Klarna, which makes risk assessment quite hard to accomplish. During the authorize call we provide Klarna with the required personal information (billing-/shipping address, customer info). Klarna will conduct a full risk assessment after which it will provide immediate feedback, which is described on the previously linked [docs](https://docs.klarna.com/klarna-payments/api-call-descriptions/authorize-the-purchase/).
 As Quicksilver supports both authenticated and anonymous checkout, we have multiple ways to retrieve personal information for the current customer.
 
 Ways to retrieve personal information (PI):
@@ -233,7 +233,7 @@ If the session needs to be finalized, you’ll need to perform this last step to
 
 You can finalize the session by calling the view’s `finalize()` method.
 
-For more information please see: [Klarna Payments Step by Step](https://developers.klarna.com/documentation/in-app/overview/steps-klarna-payments/#finalizing).
+For more information please see: [Klarna Payments Finalize the authorization](https://docs.klarna.com/klarna-payments/api-call-descriptions/authorize-the-purchase/#finalize-the-authorization).
 </details>
 
 <details>
@@ -303,7 +303,7 @@ Load the Klarna API Javascript.
 There are a few frontend changes that are required.
 
 - Load and initialize (define settings) the Klarna Payments widget
-- Authorize payment when visitor clicks the purchase button. The authorize action can be used to send some additional personal. Some countries (EU) we can only send personal information in the last (authorize) step. See more info about the [authorize step here](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/)
+- Authorize payment when visitor clicks the purchase button. The authorize action can be used to send some additional personal. Some countries (EU) we can only send personal information in the last (authorize) step. See more info about the [authorize step here](https://docs.klarna.com/klarna-payments/api-call-descriptions/authorize-the-purchase/)
 
 Example implementation: [Klarna.Payments.js](/demo/Sources/EPiServer.Reference.Commerce.Site/Scripts/js/Klarna.Payments.js)
 
@@ -347,7 +347,7 @@ https://kp-klarna.geta.no
 
 ## Package maintainer
 
-https://github.com/patkleef
+https://github.com/frederikvig
 
 ## Changelog
 
