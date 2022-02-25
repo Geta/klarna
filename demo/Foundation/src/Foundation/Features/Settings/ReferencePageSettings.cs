@@ -116,6 +116,16 @@ namespace Foundation.Features.Settings
         public virtual ContentReference CheckoutPage { get; set; }
 
         [CultureSpecific]
+        [AllowedTypes(typeof(KlarnaCheckoutPage))]
+        [Display(Name = "Karna Checkout page", GroupName = TabNames.SiteStructure, Order = 171)]
+        public virtual ContentReference KlarnaCheckoutPage { get; set; }
+
+        [CultureSpecific]
+        [AllowedTypes(typeof(KlarnaPaymentsPage))]
+        [Display(Name = "Klarna Payments page", GroupName = TabNames.SiteStructure, Order = 172)]
+        public virtual ContentReference KlarnaPaymentsPage { get; set; }
+
+        [CultureSpecific]
         [Display(Name = "Resource not found page", GroupName = TabNames.SiteStructure, Order = 180)]
         public virtual ContentReference PageNotFound { get; set; }
 

@@ -41,11 +41,24 @@ namespace Foundation.Features.MyAccount.AddressBook
         }
 
         [HttpGet]
-        public IActionResult Index(AddressBookPage currentPage) => View(GetAddressBookViewModel(currentPage));
+        public IActionResult Index(AddressBookPage currentPage)
+        {
+            if (currentPage == null)
+            {
+                currentPage = _contentLoader.Get<AddressBookPage>(_settingsService.GetSiteSettings<ReferencePageSettings>().AddressBookPage);
+            }
+
+            return View(GetAddressBookViewModel(currentPage));
+        }
 
         [HttpGet]
         public IActionResult EditForm(AddressBookPage currentPage, string addressId)
         {
+            if (currentPage == null)
+            {
+                currentPage = _contentLoader.Get<AddressBookPage>(_settingsService.GetSiteSettings<ReferencePageSettings>().AddressBookPage);
+            }
+
             var viewModel = new AddressViewModel(currentPage)
             {
                 Address = new AddressModel

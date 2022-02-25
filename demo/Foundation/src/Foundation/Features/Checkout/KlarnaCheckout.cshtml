@@ -1,0 +1,90 @@
+﻿@using Foundation.Features.CatalogContent.Variation
+@using Foundation.Features.Checkout.Payments
+@using Foundation.Features.Checkout.ViewModels
+
+@model CheckoutViewModel
+@{ 
+    var errorMessages = ViewBag.ErrorMessages != null ? (string)ViewBag.ErrorMessages : string.Empty;
+    var shipmentIndex = 1;
+}
+
+<div class="col-12">
+    <h3 class="checkout-title">SECURE KLARNA CHECKOUT</h3>
+</div>
+
+@if (!string.IsNullOrEmpty(errorMessages))
+{
+    <div class="col-12 error">
+        <p>@errorMessages</p>
+    </div>
+}
+
+<div class="card items border-radius-none jsShipmentRow">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-xs-12 col-md-8">
+                <div class="row">
+                    <div class="col-12">
+                                        @foreach (var cartItem in Model.Shipments[shipmentIndex - 1].CartItems)
+                                        {
+                                            var variant = cartItem.Entry as GenericVariant;
+                                            var viewData = new ViewDataDictionary(this.ViewData);
+                                            viewData.Add(new KeyValuePair<string, object>("IsReadOnly", true));
+                        <div class="checkout__cart-item jsCartItem">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <picture class="items__img">
+                                        <source data-srcset="@cartItem.ImageUrl?format=webp" type="image/webp">
+                                        <img data-src="@cartItem.ImageUrl" class="items__img lazyload" alt="@cartItem.DisplayName" title="@cartItem.DisplayName" />
+                                    </picture>
+                                </div>
+                                <div class="col-md-9">
+                                    <h5 class="items__item">
+                                        <a href="@cartItem.Url">@cartItem.DisplayName</a>
+                                    </h5>
+                                    @if (variant != null)
+                                    {
+                <p class="items__item-meta">
+                    Size: @(string.IsNullOrEmpty(variant.Size) ? "N/A" : variant.Size), Color: @(string.IsNullOrEmpty(variant.Color) ? "N/A" : variant.Color)
+                </p>}
+                                    @if (cartItem.IsDynamicProduct)
+                                    {
+                <div>
+                    <label class="title">Base Price: </label>
+                    <span class="price__discount">@cartItem.BasePrice.ToString()</span>
+                </div>
+                                        <div>
+                                            <label class="title">Option Price: </label>
+                                            <span class="price__discount">@cartItem.OptionPrice.ToString()</span>
+                                        </div>}
+                                    <p>
+                                        Price:
+                                        @if (cartItem.DiscountedUnitPrice.HasValue)
+                                        {
+                                            <span class="price__old">@cartItem.PlacedPrice.ToString()</span>
+                                            <span class="price__discount">@cartItem.DiscountedUnitPrice.ToString()</span> }
+                                        else
+                                        {
+                                            <span class="price__discount">@cartItem.PlacedPrice.ToString()</span>}
+                                    </p>
+                                    <div class="items__quantity-row">
+                                        <span class="items__quantity">
+                                            Quantity
+                                        </span>
+                                        @((int)cartItem.Quantity)
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                        </div>}
+                                    </div>
+                                </div>
+                            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-12">
+    <br />
+    @await Html.PartialAsync("_KlarnaCheckoutPaymentMethod", (KlarnaCheckoutPaymentOption)Model.Payment)
+</div>

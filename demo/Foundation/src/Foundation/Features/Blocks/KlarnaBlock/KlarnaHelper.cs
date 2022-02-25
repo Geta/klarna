@@ -1,7 +1,9 @@
 ﻿using System;
+using EPiServer.Commerce.Order;
 using EPiServer.Globalization;
 using EPiServer.ServiceLocation;
 using Foundation.Features.CatalogContent.Services;
+using Foundation.Features.Checkout.Services;
 using Foundation.Infrastructure.Commerce.Markets;
 using Klarna.Common.Helpers;
 using Mediachase.Commerce;
@@ -20,6 +22,12 @@ namespace Foundation.Features.Blocks.KlarnaBlock
 
         private static readonly Lazy<IPromotionService> PromotionService =
             new Lazy<IPromotionService>(() => ServiceLocator.Current.GetInstance<IPromotionService>());
+
+        private static readonly Lazy<ICartService> CartService =
+            new Lazy<ICartService>(() => ServiceLocator.Current.GetInstance<ICartService>());
+
+        private static readonly Lazy<IOrderGroupCalculator> OrderGroupCalculator =
+            new Lazy<IOrderGroupCalculator>(() => ServiceLocator.Current.GetInstance<IOrderGroupCalculator>());
 
         public static string GetLocale()
         {
@@ -51,6 +59,20 @@ namespace Foundation.Features.Blocks.KlarnaBlock
             }
 
             return AmountHelper.GetAmount(discountPrice.UnitPrice.Amount);
+        }
+
+        public static int GetCartTotal()
+        {
+            var cart = CartService.Value.LoadCart(CartService.Value.DefaultCartName, false);
+
+            if (cart?.Cart == null)
+            {
+                return 0;
+            }
+
+            var totals = OrderGroupCalculator.Value.GetOrderGroupTotals(cart.Cart);
+
+            return AmountHelper.GetAmount(totals.Total.Amount);
         }
     }
 }

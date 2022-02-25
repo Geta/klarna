@@ -52,7 +52,7 @@ namespace Foundation.Features.MyAccount.AddressBook
         public CountryRegionViewModel CountryRegion { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/Email")]
-        [LocalizedEmail("/Shared/Address/Form/Error/InvalidEmail")]
+        //[LocalizedEmail("/Shared/Address/Form/Error/InvalidEmail")] Causing problems with frederik+us@example.com email addresses
         public string Email { get; set; }
 
         [LocalizedDisplay("/Shared/Address/Form/Label/ShippingAddress")]

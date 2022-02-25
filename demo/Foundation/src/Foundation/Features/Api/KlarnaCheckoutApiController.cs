@@ -8,10 +8,10 @@ using Klarna.Common.Models;
 using Mediachase.Commerce.Markets;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Foundation.Features.Checkout
+namespace Foundation.Features.Api
 {
     [Route("klarnacheckout")]
-    public class KlarnaCheckoutController : Controller
+    public class KlarnaCheckoutApiController : Controller
     {
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         private readonly IOrderRepository _orderRepository;
@@ -20,7 +20,7 @@ namespace Foundation.Features.Checkout
         private readonly IMarketService _marketService;
 
 
-        public KlarnaCheckoutController(
+        public KlarnaCheckoutApiController(
             IKlarnaCheckoutService klarnaCheckoutService,
             IOrderRepository orderRepository,
             ICartService cartService,
