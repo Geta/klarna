@@ -136,7 +136,7 @@ namespace Klarna.Payments
 
             sessionRequest.MerchantUrl = new MerchantUrl
             {
-                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?orderNumber={sessionRequest.MerchantReference1}&contactId={cart.CustomerId}",
+                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?orderNumber={sessionRequest.MerchantReference1}&contactId={cart.CustomerId}&orderGroupId={cart.OrderLink.OrderGroupId}",
             };
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
