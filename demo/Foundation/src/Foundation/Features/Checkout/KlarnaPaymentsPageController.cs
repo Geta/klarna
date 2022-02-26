@@ -82,7 +82,7 @@ namespace Foundation.Features.Checkout
                 form.Payments.Clear();
             }
 
-            var payment = checkoutViewModel.Payment.CreatePayment(checkoutViewModel.OrderSummary.PaymentTotal, CartWithValidationIssues.Cart);
+            var payment = checkoutViewModel.Payment.CreatePayment(checkoutViewModel.OrderSummary.CartTotal, CartWithValidationIssues.Cart);
 
             CartWithValidationIssues.Cart.AddPayment(payment, _orderGroupFactory);
 

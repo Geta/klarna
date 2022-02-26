@@ -59,10 +59,11 @@ namespace Klarna.OrderManagement
             {
                 throw new InvalidOperationException("Can't find correct shipment");
             }
+
             var lines = shipment.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
             var shippingInfo = new OrderManagementShippingInfo
             {
-                // TODO shipping info
+                ShippingCompany = shipment.ShippingMethodName,
                 ShippingMethod = OrderManagementShippingMethod.Own,
                 TrackingNumber = shipment.ShipmentTrackingNumber
             };
@@ -88,6 +89,7 @@ namespace Klarna.OrderManagement
                 Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
+
             await _client.CreateAndFetchRefund(orderId, refund).ConfigureAwait(false);
         }
 

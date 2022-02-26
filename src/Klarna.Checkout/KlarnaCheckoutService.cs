@@ -69,14 +69,12 @@ namespace Klarna.Checkout
         }
 
         public virtual PaymentMethodDto PaymentMethodDto =>
-            _paymentMethodDto
-            ?? (_paymentMethodDto =
-                PaymentManager.GetPaymentMethodBySystemName(
-                    Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true));
+            _paymentMethodDto ??= PaymentManager.GetPaymentMethodBySystemName(
+                Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true);
 
         public virtual CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
         {
-            return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market.MarketId));
+            return _checkoutConfiguration ??= GetConfiguration(market.MarketId);
         }
 
         public virtual CheckoutStore GetClient(IMarket market)
@@ -433,14 +431,14 @@ namespace Klarna.Checkout
             return true;
         }
 
-        public virtual void CancelOrder(ICart cart)
+        public virtual async Task CancelOrder(ICart cart)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(cart.MarketId));
 
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId))
             {
-                klarnaOrderService.CancelOrder(orderId);
+                await klarnaOrderService.CancelOrder(orderId).ConfigureAwait(false);
 
                 cart.Properties[Constants.KlarnaCheckoutOrderIdCartField] = null;
                 _orderRepository.Save(cart);
@@ -458,10 +456,10 @@ namespace Klarna.Checkout
             }
         }
 
-        public virtual void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        public virtual async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
-            klarnaOrderService.AcknowledgeOrder(purchaseOrder);
+            await klarnaOrderService.AcknowledgeOrder(purchaseOrder).ConfigureAwait(false);
         }
 
         public virtual CheckoutConfiguration GetConfiguration(IMarket market)

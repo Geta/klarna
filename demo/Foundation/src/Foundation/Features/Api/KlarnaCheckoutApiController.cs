@@ -112,6 +112,7 @@ namespace Foundation.Features.Api
             {
                 return BadRequest();
             }
+
             var purchaseOrder = await GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id).ConfigureAwait(false);
             if (purchaseOrder == null)
             {
@@ -122,7 +123,7 @@ namespace Foundation.Features.Api
             await _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder).ConfigureAwait(false);
 
             // Acknowledge the order through the order management API
-            _klarnaCheckoutService.AcknowledgeOrder(purchaseOrder);
+            await _klarnaCheckoutService.AcknowledgeOrder(purchaseOrder);
 
             return Ok();
         }
@@ -151,7 +152,7 @@ namespace Foundation.Features.Api
                 // Won't create order, Klarna checkout not complete
                 return null;
             }
-            purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarnaOrderId, order, cart);
+            purchaseOrder = await _checkoutService.CreatePurchaseOrderForKlarna(klarnaOrderId, order, cart).ConfigureAwait(false);
             return purchaseOrder;
         }
     }

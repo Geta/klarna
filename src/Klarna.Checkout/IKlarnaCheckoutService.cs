@@ -21,12 +21,12 @@ namespace Klarna.Checkout
 
         AddressUpdateResponse UpdateAddress(ICart cart, CallbackAddressUpdateRequest addressUpdateRequest);
 
-        void CancelOrder(ICart cart);
+        Task CancelOrder(ICart cart);
 
         bool ValidateOrder(ICart cart, CheckoutOrder checkoutData);
 
         Task UpdateMerchantReference1(IPurchaseOrder purchaseOrder);
-        void AcknowledgeOrder(IPurchaseOrder purchaseOrder);
+        Task AcknowledgeOrder(IPurchaseOrder purchaseOrder);
         CheckoutConfiguration GetConfiguration(IMarket market);
         CheckoutConfiguration GetConfiguration(MarketId marketId);
 

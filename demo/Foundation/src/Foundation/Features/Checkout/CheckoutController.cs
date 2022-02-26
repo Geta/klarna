@@ -27,10 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EPiServer.Web;
 using Foundation.Infrastructure.Helpers;
 using Klarna.Checkout;
 using Klarna.Payments;
+using Klarna.Payments.Models;
 using Mediachase.Commerce.Markets;
+using Mediachase.Commerce.Orders;
 
 namespace Foundation.Features.Checkout
 {
@@ -240,7 +243,7 @@ namespace Foundation.Features.Checkout
         }
 
         [HttpPost]
-        public IActionResult Update(CheckoutPage currentPage, [FromBody]UpdateShippingMethodViewModel shipmentViewModel)
+        public async Task<IActionResult> Update(CheckoutPage currentPage, [FromBody]UpdateShippingMethodViewModel shipmentViewModel)
         {
             ModelState.Clear();
 
@@ -250,12 +253,13 @@ namespace Foundation.Features.Checkout
 
             var paymentOption = shipmentViewModel.SystemKeyword.GetPaymentMethod();
             var viewModel = CreateCheckoutViewModel(currentPage, paymentOption);
+            await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
 
             return PartialView("Partial", viewModel);
         }
 
         [HttpPost]
-        public IActionResult ChangeAddress(CheckoutPage currentPage, UpdateAddressViewModel addressViewModel)
+        public async Task<IActionResult> ChangeAddress(CheckoutPage currentPage, UpdateAddressViewModel addressViewModel)
         {
             ModelState.Clear();
             try
@@ -266,6 +270,9 @@ namespace Foundation.Features.Checkout
                 _checkoutService.CheckoutAddressHandling.ChangeAddress(viewModel, addressViewModel);
                 _checkoutService.ChangeAddress(CartWithValidationIssues.Cart, viewModel, addressViewModel);
                 _orderRepository.Save(CartWithValidationIssues.Cart);
+
+                await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
+
                 return Json(new { Status = true });
             }
             catch (Exception e)
@@ -307,15 +314,18 @@ namespace Foundation.Features.Checkout
         }
 
         [AcceptVerbs(new string[] { "GET", "POST" })]
-        public IActionResult OrderSummary()
+        public async Task<IActionResult> OrderSummary()
         {
             var viewModel = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
+
+            await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
+
             return PartialView(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AddCouponCode(CheckoutPage currentPage, string couponCode)
+        public async Task<IActionResult> AddCouponCode(CheckoutPage currentPage, string couponCode)
         {
             if (_cartService.AddCouponCode(CartWithValidationIssues.Cart, couponCode))
             {
@@ -332,6 +342,9 @@ namespace Foundation.Features.Checkout
                 _orderRepository.Save(CartWithValidationIssues.Cart);
                 model = CreateCheckoutViewModel(currentPage);
                 model.OrderSummary = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
+
+                await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
+
                 return PartialView("_AddPayment", model);
             }
             else
@@ -342,7 +355,7 @@ namespace Foundation.Features.Checkout
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RemoveCouponCode(CheckoutPage currentPage, string couponCode)
+        public async Task<IActionResult> RemoveCouponCode(CheckoutPage currentPage, string couponCode)
         {
             _cartService.RemoveCouponCode(CartWithValidationIssues.Cart, couponCode);
             var model = CreateCheckoutViewModel(currentPage);
@@ -358,6 +371,9 @@ namespace Foundation.Features.Checkout
             _orderRepository.Save(CartWithValidationIssues.Cart);
             model = CreateCheckoutViewModel(currentPage);
             model.OrderSummary = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
+
+            await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
+
             return PartialView("_AddPayment", model);
         }
 
@@ -471,7 +487,7 @@ namespace Foundation.Features.Checkout
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateShippingMethods(CheckoutPage currentPage, [FromForm] CheckoutViewModel viewModel)
+        public async Task<IActionResult> UpdateShippingMethods(CheckoutPage currentPage, [FromForm] CheckoutViewModel viewModel)
         {
             _checkoutService.UpdateShippingMethods(CartWithValidationIssues.Cart, viewModel.Shipments);
             _checkoutService.ApplyDiscounts(CartWithValidationIssues.Cart);
@@ -490,6 +506,9 @@ namespace Foundation.Features.Checkout
             _orderRepository.Save(CartWithValidationIssues.Cart);
             model = CreateCheckoutViewModel(currentPage);
             model.OrderSummary = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
+
+            await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
+
             return PartialView("_AddPayment", model);
         }
 
@@ -588,7 +607,7 @@ namespace Foundation.Features.Checkout
                 var order = await _klarnaCheckoutService.GetOrder(klarna_order_id, market).ConfigureAwait(false);
                 if (order.Status == "checkout_complete")
                 {
-                    var purchaseOrder = _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
+                    var purchaseOrder = await _checkoutService.CreatePurchaseOrderForKlarna(klarna_order_id, order, cart);
                     if (purchaseOrder == null)
                     {
                         ModelState.AddModelError("", "Error occurred while creating a purchase order");
@@ -632,7 +651,7 @@ namespace Foundation.Features.Checkout
         }
 
         [HttpPost]
-        public IActionResult UpdatePayment(CheckoutPage currentPage, [FromForm] CheckoutViewModel viewModel)
+        public async Task<IActionResult> UpdatePayment(CheckoutPage currentPage, [FromForm] CheckoutViewModel viewModel)
         {
 
             var paymentOption = viewModel.SystemKeyword.GetPaymentMethod();
@@ -654,6 +673,8 @@ namespace Foundation.Features.Checkout
             viewModel.Payment = paymentOption;
             _checkoutService.CreateAndAddPaymentToCart(CartWithValidationIssues.Cart, viewModel);
             _orderRepository.Save(CartWithValidationIssues.Cart);
+
+            await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
 
             var model = CreateCheckoutViewModel(currentPage);
             model.OrderSummary = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
@@ -832,7 +853,7 @@ namespace Foundation.Features.Checkout
             return Json(new { link = _urlResolver.GetUrl(referenceSettings?.CheckoutPage ?? ContentReference.StartPage) });
         }
 
-        public IActionResult ChangeCartItem(CheckoutPage currentPage, string code, int quantity, int shipmentId = -1)
+        public async Task<IActionResult> ChangeCartItem(CheckoutPage currentPage, string code, int quantity, int shipmentId = -1)
         {
             var result = _cartService.ChangeQuantity(CartWithValidationIssues.Cart, shipmentId, code, quantity);
             var model = CreateCheckoutViewModel(currentPage);
@@ -848,11 +869,14 @@ namespace Foundation.Features.Checkout
             _orderRepository.Save(CartWithValidationIssues.Cart);
             model = CreateCheckoutViewModel(currentPage);
             model.OrderSummary = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
+
+            await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
+
             return PartialView("_AddPayment", model);
         }
 
         [HttpPost]
-        public IActionResult SeparateShipment(CheckoutPage currentPage, RequestParamsToCart param)
+        public async Task<IActionResult> SeparateShipment(CheckoutPage currentPage, RequestParamsToCart param)
         {
             var result = _cartService.SeparateShipment(CartWithValidationIssues.Cart, param.Code, (int)param.Quantity, param.ShipmentId, param.ToShipmentId, param.DeliveryMethodId, param.SelectedStore);
 
@@ -868,6 +892,8 @@ namespace Foundation.Features.Checkout
                     _checkoutService.RemovePaymentFromCart(CartWithValidationIssues.Cart, paymentViewmodel);
                 }
                 _orderRepository.Save(CartWithValidationIssues.Cart);
+
+                await _klarnaPaymentsService.CreateOrUpdateSession(CartWithValidationIssues.Cart, new SessionSettings(SiteDefinition.Current.SiteUrl));
 
                 return Json(new { Status = true, RedirectUrl = Url.Action("Index") });
             }
