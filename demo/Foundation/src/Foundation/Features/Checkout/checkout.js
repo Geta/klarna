@@ -210,12 +210,7 @@ export default class Checkout {
             }
 
             inst.removeCouponCode($('.jsRemoveCoupon[data-couponcode=' + couponCode + ']'));
-            $('.jsCouponReplaceHtml').html(r.data);
-            $('.jsOrderSummary').html($('.jsOrderSummaryInPayment').html());
-            feather.replace();
-            if ($(e).hasClass('jsInCheckout')) {
-              inst.initPayment();
-            }
+            inst.updateOrderSummary(r);
             form.find('.jsCouponCode').val("");
             $('.jsCouponErrorMess').hide();
           } else {
@@ -254,12 +249,8 @@ export default class Checkout {
           if (coupons.length == 0) {
             $('.jsCouponLabel').addClass('hidden');
           }
-          $('.jsCouponReplaceHtml').html(r.data);
-          $('.jsOrderSummary').html($('.jsOrderSummaryInPayment').html());
-          if ($(e).hasClass('jsInCheckout')) {
-            feather.replace();
-            inst.initPayment();
-          }
+
+          inst.updateOrderSummary(r);
 
           $('.jsCouponErrorMess').hide();
         })
@@ -293,10 +284,7 @@ export default class Checkout {
 
         axios.post(url, data)
           .then(function (r) {
-            $('.jsCouponReplaceHtml').html(r.data);
-            $('.jsOrderSummary').html($('.jsOrderSummaryInPayment').html());
-            feather.replace();
-            inst.initPayment();
+              inst.updateOrderSummary(r);
           })
           .catch(function (e) {
             notification.error(e);
@@ -307,6 +295,19 @@ export default class Checkout {
       });
     });
   }
+
+    updateOrderSummary(r) {
+        let inst = this;
+
+    $('.jsCouponReplaceHtml').html(r.data);
+    $('.jsOrderSummary').html($('.jsOrderSummaryInPayment').html());
+    feather.replace();
+    inst.initPayment();
+
+    KlarnaPayments.load(null, function () {
+        Checkout.enableCheckoutSubmit();
+    });
+}
 
   changeCartItem() {
     let inst = this;
@@ -346,11 +347,8 @@ export default class Checkout {
               btn.removeClass('jsSeparateBtn');
             }
 
-            $('.jsCouponReplaceHtml').html(r.data);
-            $('.jsOrderSummary').html($('.jsOrderSummaryInPayment').html());
+            inst.updateOrderSummary(r);
             cartHelper.setCartReload($('.jsTotalQuantityCheckout').val());
-            feather.replace();
-            inst.initPayment();
           })
           .catch(function (e) {
             notification.error(e);
