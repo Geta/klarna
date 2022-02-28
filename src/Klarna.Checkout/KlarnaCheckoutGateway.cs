@@ -27,6 +27,9 @@ namespace Klarna.Checkout
         internal Injected<IConfigurationLoader> InjectedConfigurationLoader { get; set; }
         private IConfigurationLoader ConfigurationLoader => InjectedConfigurationLoader.Service;
 
+        internal Injected<IPurchaseOrderProcessor> InjectedPurchaseOrderProcessor { get; set; }
+        private IPurchaseOrderProcessor PurchaseOrderProcessor => InjectedPurchaseOrderProcessor.Service;
+
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
         {
             OrderGroup = orderGroup;
@@ -59,7 +62,7 @@ namespace Klarna.Checkout
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
 
-                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
+                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader, PurchaseOrderProcessor);
                 var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
                 var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
                 var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);

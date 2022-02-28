@@ -30,6 +30,9 @@ namespace Klarna.Payments
         internal Injected<IConfigurationLoader> InjectedConfigurationLoader { get; set; }
         private IConfigurationLoader ConfigurationLoader => InjectedConfigurationLoader.Service;
 
+        internal Injected<IPurchaseOrderProcessor> InjectedPurchaseOrderProcessor { get; set; }
+        private IPurchaseOrderProcessor PurchaseOrderProcessor => InjectedPurchaseOrderProcessor.Service;
+
         public IOrderGroup OrderGroup { get; set; }
 
         /// <summary>
@@ -116,7 +119,7 @@ namespace Klarna.Payments
             {
                 Logger.Debug("Klarna Payment gateway. Processing Payment ....");
 
-                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, KlarnaPaymentsService, ConfigurationLoader);
+                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, KlarnaPaymentsService, ConfigurationLoader, PurchaseOrderProcessor);
                 var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
                 var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
                 var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);

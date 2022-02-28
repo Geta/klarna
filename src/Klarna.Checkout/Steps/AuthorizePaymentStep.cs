@@ -16,8 +16,8 @@ namespace Klarna.Checkout.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStep));
 
-        public AuthorizePaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader)
-            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader)
+        public AuthorizePaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader, IPurchaseOrderProcessor purchaseOrderProcessor)
+            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader, purchaseOrderProcessor)
         {
         }
 
