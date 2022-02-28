@@ -1,0 +1,28 @@
+﻿@model Foundation.Features.NamedCarts.DefaultCart.KlarnaExpressButtonViewModel
+
+<script src='https://x.klarnacdn.net/express-button/v1/lib.js'
+        data-id='@Model.Mid'
+        data-environment='playground'
+        async></script>
+
+<div class="row">
+    <div class="col-12">
+        <klarna-express-button data-locale="@Model.Locale" data-theme="@Model.Theme" />
+    </div>
+</div>
+
+<script>
+    window.klarnaExpressButtonAsyncCallback = function () {
+        Klarna.ExpressButton.on('user-authenticated', function (callbackData) {
+            // ... implement pre-fill logic here
+            // callbackData (see schema below) can be used to map user properties
+            // to already existing fields/forms in your checkout flow
+
+            var klarnaAuthenticatedPromise = $.ajax({
+                type: 'POST',
+                url: '/klarnaapi/express/authenticated',
+                data: callbackData
+            }).then(function (data) { return data; });
+        });
+    }
+</script>
