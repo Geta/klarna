@@ -160,20 +160,20 @@ namespace Foundation.Features.Checkout.Services
 
             var payment = cart.GetFirstForm().Payments.FirstOrDefault(x => x.PaymentMethodId == paymentMethod.PaymentMethodId);
 
-            if (payment == null)
+            if (payment == null) 
             {
                 payment = paymentMethod.CreatePayment(total, cart);
-
-                if (payment.PaymentMethodName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
-                {
-                    payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentField] = viewModel.AuthorizationToken;
-                }
 
                 cart.AddPayment(payment, _orderGroupFactory);
             }
             else
             {
                 payment.Amount = viewModel.OrderSummary.PaymentTotal;
+            }
+
+            if (payment.PaymentMethodName.Equals(Klarna.Payments.Constants.KlarnaPaymentSystemKeyword))
+            {
+                payment.Properties[Klarna.Payments.Constants.AuthorizationTokenPaymentField] = viewModel.AuthorizationToken;
             }
         }
 
@@ -261,7 +261,7 @@ namespace Foundation.Features.Checkout.Services
             return null;
         }
 
-        public IPurchaseOrder CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrder order, ICart cart)
+        public async Task<IPurchaseOrder> CreatePurchaseOrderForKlarna(string klarnaOrderId, CheckoutOrder order, ICart cart)
         {
             var paymentRow = PaymentManager.GetPaymentMethodBySystemName(Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name).PaymentMethod.FirstOrDefault();
 
@@ -313,7 +313,7 @@ namespace Foundation.Features.Checkout.Services
 
             if (purchaseOrder == null)
             {
-                _klarnaCheckoutService.CancelOrder(cart);
+                await _klarnaCheckoutService.CancelOrder(cart).ConfigureAwait(false);
 
                 return null;
             }
