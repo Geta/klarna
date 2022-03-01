@@ -117,29 +117,29 @@ namespace Foundation
                 // Accept anonymous calls
                 c.DisableScopeValidation = true;
             });
-            services.AddOpenIDConnect<SiteUser>(options =>
-            {
-                //options.RequireHttps = !_webHostingEnvironment.IsDevelopment();
-                var application = new OpenIDConnectApplication()
-                {
-                    ClientId = "postman-client",
-                    ClientSecret = "postman",
-                    Scopes =
-                    {
-                        ContentDeliveryApiOptionsDefaults.Scope,
-                        ContentManagementApiOptionsDefaults.Scope,
-                        ContentDefinitionsApiOptionsDefaults.Scope,
-                    }
-                };
+            //services.AddOpenIDConnect<SiteUser>(options =>
+            //{
+            //    //options.RequireHttps = !_webHostingEnvironment.IsDevelopment();
+            //    var application = new OpenIDConnectApplication()
+            //    {
+            //        ClientId = "postman-client",
+            //        ClientSecret = "postman",
+            //        Scopes =
+            //        {
+            //            ContentDeliveryApiOptionsDefaults.Scope,
+            //            ContentManagementApiOptionsDefaults.Scope,
+            //            ContentDefinitionsApiOptionsDefaults.Scope,
+            //        }
+            //    };
 
-                // Using Postman for testing purpose.
-                // The authorization code is sent to postman after successful authentication.
-                application.RedirectUris.Add(new Uri("https://oauth.pstmn.io/v1/callback"));
-                options.Applications.Add(application);
-                options.AllowResourceOwnerPasswordFlow = true;
-            });
+            //    // Using Postman for testing purpose.
+            //    // The authorization code is sent to postman after successful authentication.
+            //    application.RedirectUris.Add(new Uri("https://oauth.pstmn.io/v1/callback"));
+            //    options.Applications.Add(application);
+            //    options.AllowResourceOwnerPasswordFlow = true;
+            //});
             
-            services.AddOpenIDConnectUI();
+            //services.AddOpenIDConnectUI();
 
             services.ConfigureContentDeliveryApiSerializer(settings => settings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore);
 
