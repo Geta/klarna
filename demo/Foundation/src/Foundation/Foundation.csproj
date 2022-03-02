@@ -40,9 +40,16 @@
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 	</ItemGroup>
 	<ItemGroup>
+	  <ProjectReference Include="..\..\..\..\src\Klarna.Checkout\Klarna.Checkout.v3.csproj" />
+	  <ProjectReference Include="..\..\..\..\src\Klarna.Common\Klarna.Common.v3.csproj" />
+	  <ProjectReference Include="..\..\..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj" />
+	  <ProjectReference Include="..\..\..\..\src\Klarna.Payments\Klarna.Payments.v3.csproj" />
+	</ItemGroup>
+	<ItemGroup>
 		<EmbeddedResource Include="lang\**\*" />
 		<None Update="App_Data\**" CopyToOutputDirectory="PreserveNewest" />
 		<None Update="modules\_protected\Foundation\**" CopyToOutputDirectory="PreserveNewest" />
+		<None Update="modules\_protected\Jhoose.Security\**" CopyToOutputDirectory="PreserveNewest" />
 	</ItemGroup>
 	<ItemGroup>
 		<Compile Remove="Features\Blocks\CommentsBlock\**" />
@@ -121,11 +128,5 @@
 		<Folder Include="wwwroot\" />
 		<None Include="Features\Shared\Components\Dropdown\Default.cshtml" />
 		<None Include="Features\Shared\Components\Money\Default.cshtml" />
-	</ItemGroup>
-	<ItemGroup>
-	  <ProjectReference Include="..\..\..\..\src\Klarna.Checkout\Klarna.Checkout.v3.csproj" />
-	  <ProjectReference Include="..\..\..\..\src\Klarna.Common\Klarna.Common.v3.csproj" />
-	  <ProjectReference Include="..\..\..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj" />
-	  <ProjectReference Include="..\..\..\..\src\Klarna.Payments\Klarna.Payments.v3.csproj" />
 	</ItemGroup>
 </Project>
