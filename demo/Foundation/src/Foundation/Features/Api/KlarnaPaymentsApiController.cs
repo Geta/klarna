@@ -1,6 +1,8 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using EPiServer.Commerce.Order;
 using Foundation.Features.Checkout.Services;
+using Foundation.Features.MyAccount.AddressBook;
 using Klarna.Common.Extensions;
 using Klarna.Common.Models;
 using Klarna.Payments;
@@ -22,19 +24,25 @@ namespace Foundation.Features.Api
         private readonly ICartService _cartService;
         private readonly CheckoutService _checkoutService;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
+        private readonly IAddressBookService _addressBookService;
+        private readonly IOrderRepository _orderRepository;
 
         public KlarnaPaymentsApiController(
             CustomerContext customerContext,
             IKlarnaPaymentsService klarnaPaymentsService,
             ICartService cartService,
             CheckoutService checkoutService,
-            IPurchaseOrderRepository purchaseOrderRepository)
+            IPurchaseOrderRepository purchaseOrderRepository,
+            IAddressBookService addressBookService,
+            IOrderRepository orderRepository)
         {
             _klarnaPaymentsService = klarnaPaymentsService;
             _customerContext = customerContext;
             _cartService = cartService;
             _checkoutService = checkoutService;
             _purchaseOrderRepository = purchaseOrderRepository;
+            _addressBookService = addressBookService;
+            _orderRepository = orderRepository;
         }
 
         [Route("personal")]
@@ -85,21 +93,45 @@ namespace Foundation.Features.Api
         [HttpPost]
         public ActionResult ExpressButtonAuthenticated([FromBody] ExpressButtonAddressInfo addressInfo)
         {
-            // TODO Update cart address
+            if (addressInfo == null || string.IsNullOrEmpty(addressInfo.GivenName) || string.IsNullOrEmpty(addressInfo.FamilyName))
+            {
+                return BadRequest();
+            }
+
             var cart = _cartService.LoadCart(_cartService.DefaultCartName, false);
             var shipment = cart.Cart.GetFirstShipment();
             var payment = cart.Cart.GetFirstForm()?.Payments.FirstOrDefault();
 
-            if (shipment != null && shipment.ShippingAddress != null)
+            var addressModel = new AddressModel
             {
-                //request.ShippingAddress = shipment.ShippingAddress.ToAddress();
-            }
-            if (payment != null && payment.BillingAddress != null)
+                Name = $"{addressInfo.GivenName} {addressInfo.FamilyName} {DateTime.Now}",
+                FirstName = addressInfo.GivenName,
+                LastName = addressInfo.FamilyName,
+                Line1 = addressInfo.StreetAddress,
+                Line2 = addressInfo.StreetAddress2,
+                City = addressInfo.City,
+                PostalCode = addressInfo.PostalCode,
+                CountryRegion = new CountryRegionViewModel {Region = addressInfo.Region},
+                CountryCode = addressInfo.Country,
+                Email = addressInfo.Email,
+                DaytimePhoneNumber = addressInfo.Phone
+            };
+
+            var orderAddress = _addressBookService.ConvertToAddress(addressModel, cart.Cart);
+
+            if (shipment != null)
             {
-                //request.BillingAddress = payment.BillingAddress.ToAddress();
+                shipment.ShippingAddress = orderAddress;
             }
 
-            // Redirect to KP checkout page
+            if (payment != null)
+            {
+                payment.BillingAddress = orderAddress;
+            }
+
+            _orderRepository.Save(cart.Cart);
+
+            // Redirect to Klarna Payments checkout page
             return Redirect("/kp");
         }
 

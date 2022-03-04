@@ -48,5 +48,7 @@ namespace Foundation.Features.Header
         public string Message { get; set; }
 
         public bool ShowRecommendations { get; set; }
+        public bool ShowKlarnaExpressButton { get; set; }
+        public KlarnaExpressButtonViewModel KlarnaExpressButton { get; set; }
     }
 }

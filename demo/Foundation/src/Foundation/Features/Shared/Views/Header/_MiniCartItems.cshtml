@@ -54,4 +54,10 @@
             View details
         </button>
     </div>
+    @if (Model.ShowKlarnaExpressButton)
+    {
+        <div class="cart__actions">
+            @{await Html.RenderPartialAsync("Klarna/_ExpressButton", Model.KlarnaExpressButton);}
+        </div>
+    }
 </div>

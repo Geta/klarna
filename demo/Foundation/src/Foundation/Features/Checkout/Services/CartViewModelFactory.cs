@@ -19,6 +19,8 @@ using Mediachase.Commerce.Security;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
+using Foundation.Features.Blocks.KlarnaBlock;
+using Klarna.Common.Configuration;
 
 namespace Foundation.Features.Checkout.Services
 {
@@ -33,6 +35,8 @@ namespace Foundation.Features.Checkout.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAddressBookService _addressBookService;
         private readonly ISettingsService _settingsService;
+        private readonly IConfigurationLoader _configurationLoader;
+        private readonly ICurrentMarket _currentMarket;
 
         public CartViewModelFactory(
             IContentLoader contentLoader,
@@ -43,7 +47,9 @@ namespace Foundation.Features.Checkout.Services
             UrlResolver urlResolver,
             IHttpContextAccessor httpContextAccessor,
             IAddressBookService addressBookService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            IConfigurationLoader configurationLoader,
+            ICurrentMarket currentMarket)
         {
             _contentLoader = contentLoader;
             _currencyService = currencyService;
@@ -54,6 +60,8 @@ namespace Foundation.Features.Checkout.Services
             _httpContextAccessor = httpContextAccessor;
             _addressBookService = addressBookService;
             _settingsService = settingsService;
+            _configurationLoader = configurationLoader;
+            _currentMarket = currentMarket;
         }
 
         public virtual MiniCartViewModel CreateMiniCartViewModel(ICart cart, bool isSharedCart = false)
@@ -74,6 +82,20 @@ namespace Foundation.Features.Checkout.Services
                 };
             }
 
+            var cartPage = _contentLoader.Get<CartPage>(pageSettings?.CartPage);
+
+            var klarnaExpressButton = new KlarnaExpressButtonViewModel();
+
+            if (cartPage.ShowKlarnaExpressButton)
+            {
+                var paymentsConfiguration = _configurationLoader.GetPaymentsConfiguration(_currentMarket.GetCurrentMarket().MarketId);
+
+                if (paymentsConfiguration != null)
+                {
+                    klarnaExpressButton = new KlarnaExpressButtonViewModel { Mid = paymentsConfiguration.Mid, Locale = KlarnaHelper.GetLocale(), Theme = "light" };
+                }
+            }
+
             return new MiniCartViewModel
             {
                 ItemCount = GetLineItemsTotalQuantity(cart),
@@ -82,7 +104,9 @@ namespace Foundation.Features.Checkout.Services
                 Label = isSharedCart ? labelSettings?.SharedCartLabel : labelSettings?.CartLabel,
                 Shipments = _shipmentViewModelFactory.CreateShipmentsViewModel(cart),
                 Total = _orderGroupCalculator.GetSubTotal(cart),
-                IsSharedCart = isSharedCart
+                IsSharedCart = isSharedCart,
+                ShowKlarnaExpressButton = cartPage.ShowKlarnaExpressButton,
+                KlarnaExpressButton = klarnaExpressButton
             };
         }
 
@@ -164,8 +188,19 @@ namespace Foundation.Features.Checkout.Services
                 //MultiShipmentPage = checkoutPage.MultiShipmentPage,
                 AppliedCouponCodes = cart.GetFirstForm().CouponCodes.Distinct(),
                 HasOrganization = contact?.OwnerId != null,
-                ShowRecommendations = cartPage != null ? cartPage.ShowRecommendations : true
+                ShowRecommendations = cartPage?.ShowRecommendations ?? true,
+                ShowKlarnaExpressButton = cartPage?.ShowKlarnaExpressButton ?? true,
             };
+
+            if (model.ShowKlarnaExpressButton)
+            {
+                var paymentsConfiguration = _configurationLoader.GetPaymentsConfiguration(_currentMarket.GetCurrentMarket().MarketId);
+
+                if (paymentsConfiguration != null)
+                {
+                    model.KlarnaExpressButton = new KlarnaExpressButtonViewModel { Mid = paymentsConfiguration.Mid, Locale = KlarnaHelper.GetLocale(), Theme = "dark" };
+                }
+            }
 
             var shipment = model.Shipments.FirstOrDefault();
             addressModel = shipment?.Address ?? new AddressModel();

@@ -14,15 +14,13 @@
 <script>
     window.klarnaExpressButtonAsyncCallback = function () {
         Klarna.ExpressButton.on('user-authenticated', function (callbackData) {
-            // ... implement pre-fill logic here
-            // callbackData (see schema below) can be used to map user properties
-            // to already existing fields/forms in your checkout flow
+            console.log(callbackData);
 
             var klarnaAuthenticatedPromise = $.ajax({
                 type: 'POST',
                 url: '/klarnaapi/express/authenticated',
                 data: callbackData
-            }).then(function (data) { return data; });
+            }).then(function (data) { console.log(data); return data; });
         });
     }
 </script>

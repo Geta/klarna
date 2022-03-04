@@ -2,6 +2,7 @@ using EPiServer.Core;
 using Foundation.Features.Checkout.ViewModels;
 using Mediachase.Commerce;
 using System.Collections.Generic;
+using Foundation.Features.NamedCarts.DefaultCart;
 
 namespace Foundation.Features.Header
 {
@@ -25,6 +26,8 @@ namespace Foundation.Features.Header
         public string Label { get; set; }
 
         public bool IsSharedCart { get; set; }
+        public bool ShowKlarnaExpressButton { get; set; }
+        public KlarnaExpressButtonViewModel KlarnaExpressButton { get; set; }
     }
 
     public class MiniWishlistViewModel
