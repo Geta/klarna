@@ -91,7 +91,7 @@ namespace Foundation.Features.Api
 
         [Route("express/authenticated")]
         [HttpPost]
-        public ActionResult ExpressButtonAuthenticated([FromBody] ExpressButtonAddressInfo addressInfo)
+        public ActionResult ExpressButtonAuthenticated([FromBody] OrderManagementAddressInfo addressInfo)
         {
             if (addressInfo == null || string.IsNullOrEmpty(addressInfo.GivenName) || string.IsNullOrEmpty(addressInfo.FamilyName))
             {
@@ -131,8 +131,7 @@ namespace Foundation.Features.Api
 
             _orderRepository.Save(cart.Cart);
 
-            // Redirect to Klarna Payments checkout page
-            return Redirect("/kp");
+            return Ok();
         }
 
         [Route("fraud")]
