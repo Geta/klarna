@@ -18,11 +18,8 @@ We've included a sample block below that uses the default placement options. Not
 
 KlarnaBlock.cs
 ```
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using EPiServer.DataAnnotations;
-using EPiServer.Globalization;
 using EPiServer.Shell.ObjectEditing;
 using Foundation.Features.Shared;
 using Foundation.Infrastructure;
@@ -39,39 +36,27 @@ namespace Foundation.Features.Blocks.KlarnaBlock
         [SelectOne(SelectionFactoryType = typeof(KlarnaPlacementsSelectionFactory))]
         [Display(Name = "Placements", Order = 5)]
         public virtual string Placements { get; set; }
-
-        public string GetLocale()
-        {
-            var culture = ContentLanguage.PreferredCulture;
-
-            if (culture.Name.Equals("en", StringComparison.InvariantCultureIgnoreCase))
-            {
-                return "en-US";
-            }
-
-            return culture.Name;
-        }
     }
+}
 	
-	public class KlarnaPlacementsSelectionFactory : ISelectionFactory
-    {
-        public virtual IEnumerable<ISelectItem> GetSelections(ExtendedMetadata metadata)
-        {
-            return new ISelectItem[]
-            {
-                new SelectItem { Text = "footer-promotion-auto-size", Value = "footer-promotion-auto-size" },
-                new SelectItem { Text = "credit-promotion-auto-size", Value = "credit-promotion-auto-size" },
-                new SelectItem { Text = "sidebar-promotion-auto-size", Value = "sidebar-promotion-auto-size" },
-                new SelectItem { Text = "top-strip-promotion-auto-size", Value = "top-strip-promotion-auto-size" },
-                new SelectItem { Text = "credit-promotion-badge", Value = "credit-promotion-badge" },
-                new SelectItem { Text = "info-page", Value = "info-page" },
-                new SelectItem { Text = "top-strip-promotion-badge", Value = "top-strip-promotion-badge" },
-                new SelectItem { Text = "homepage-promotion-tall", Value = "homepage-promotion-tall" },
-                new SelectItem { Text = "homepage-promotion-wide", Value = "homepage-promotion-wide" },
-                new SelectItem { Text = "homepage-promotion-box", Value = "homepage-promotion-box" },
-            };
-        }
-    }
+public class KlarnaPlacementsSelectionFactory : ISelectionFactory
+{
+	public virtual IEnumerable<ISelectItem> GetSelections(ExtendedMetadata metadata)
+	{
+		return new ISelectItem[]
+		{
+			new SelectItem { Text = "footer-promotion-auto-size", Value = "footer-promotion-auto-size" },
+			new SelectItem { Text = "credit-promotion-auto-size", Value = "credit-promotion-auto-size" },
+			new SelectItem { Text = "sidebar-promotion-auto-size", Value = "sidebar-promotion-auto-size" },
+			new SelectItem { Text = "top-strip-promotion-auto-size", Value = "top-strip-promotion-auto-size" },
+			new SelectItem { Text = "credit-promotion-badge", Value = "credit-promotion-badge" },
+			new SelectItem { Text = "info-page", Value = "info-page" },
+			new SelectItem { Text = "top-strip-promotion-badge", Value = "top-strip-promotion-badge" },
+			new SelectItem { Text = "homepage-promotion-tall", Value = "homepage-promotion-tall" },
+			new SelectItem { Text = "homepage-promotion-wide", Value = "homepage-promotion-wide" },
+			new SelectItem { Text = "homepage-promotion-box", Value = "homepage-promotion-box" },
+		};
+	}
 }
 ```
 
@@ -85,6 +70,111 @@ KlarnaBlock.cshtml
 
 <div style="background-color: @Model.CurrentBlock.BackgroundColor; opacity: @Model.CurrentBlock.BlockOpacity;" class="klarna-block @(Model.CurrentBlock.Padding + " " + Model.CurrentBlock.Margin)">
     <klarna-placement data-key="@Model.CurrentBlock.Placements"
-                      data-locale="@Model.CurrentBlock.GetLocale()"></klarna-placement>
+                      data-locale="@KlarnaHelper.GetLocale()"
+                      data-purchase-amount="@KlarnaHelper.GetCartTotal()"></klarna-placement>
 </div>
+```
+
+KlarnaHelper.cs
+```
+using System;
+using EPiServer.Commerce.Order;
+using EPiServer.Globalization;
+using EPiServer.ServiceLocation;
+using Foundation.Features.CatalogContent.Services;
+using Foundation.Features.Checkout.Services;
+using Foundation.Infrastructure.Commerce.Markets;
+using Klarna.Common.Helpers;
+using Mediachase.Commerce;
+using Mediachase.Commerce.Catalog;
+using PriceCalculationService = Foundation.Features.Checkout.PriceCalculationService;
+
+namespace Foundation.Features.Blocks.KlarnaBlock
+{
+    public static class KlarnaHelper
+    {
+        private static readonly Lazy<ICurrentMarket> CurrentMarket =
+            new Lazy<ICurrentMarket>(() => ServiceLocator.Current.GetInstance<ICurrentMarket>());
+
+        private static readonly Lazy<ICurrencyService> CurrencyService =
+            new Lazy<ICurrencyService>(() => ServiceLocator.Current.GetInstance<ICurrencyService>());
+
+        private static readonly Lazy<IPromotionService> PromotionService =
+            new Lazy<IPromotionService>(() => ServiceLocator.Current.GetInstance<IPromotionService>());
+
+        private static readonly Lazy<ICartService> CartService =
+            new Lazy<ICartService>(() => ServiceLocator.Current.GetInstance<ICartService>());
+
+        private static readonly Lazy<IOrderGroupCalculator> OrderGroupCalculator =
+            new Lazy<IOrderGroupCalculator>(() => ServiceLocator.Current.GetInstance<IOrderGroupCalculator>());
+
+        public static string GetLocale()
+        {
+            var culture = ContentLanguage.PreferredCulture;
+
+            if (culture.Name.Equals("en", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return "en-US";
+            }
+
+            return culture.Name;
+        }
+
+        public static int GetPurchasePrice(string code)
+        {
+            var market = CurrentMarket.Value.GetCurrentMarket();
+            var currency = CurrencyService.Value.GetCurrentCurrency();
+
+            var price = PriceCalculationService.GetSalePrice(code, market.MarketId, currency);
+            if (price == null)
+            {
+                return 0;
+            }
+
+            var discountPrice = price;
+            if (price.UnitPrice.Amount > 0 && !string.IsNullOrEmpty(code))
+            {
+                discountPrice = PromotionService.Value.GetDiscountPrice(new CatalogKey(code), market.MarketId, currency);
+            }
+
+            return AmountHelper.GetAmount(discountPrice.UnitPrice.Amount);
+        }
+
+        public static int GetCartTotal()
+        {
+            var cart = CartService.Value.LoadCart(CartService.Value.DefaultCartName, false);
+
+            if (cart?.Cart == null)
+            {
+                return 0;
+            }
+
+            var totals = OrderGroupCalculator.Value.GetOrderGroupTotals(cart.Cart);
+
+            return AmountHelper.GetAmount(totals.Total.Amount);
+        }
+    }
+}
+```
+
+In Features/NamedCart/Cart.js we've added some sample code that shows how to update the purchase amount when the cart changes.
+```
+changeInfoCart(result) {
+    $('.largecart-Subtotal').html("$" + result.data.SubTotal.Amount);
+    $('.largecart-TotalDiscount').html("$" + result.data.TotalDiscount.Amount);
+    $('.largecart-TaxTotal').html("$" + result.data.TaxTotal.Amount);
+    $('.largecart-ShippingTotal').html("$" + result.data.ShippingTotal.Amount);
+    $('.largecart-Total').html("$" + result.data.Total.Amount);
+      console.log(result.data);
+
+      // Update purchase amount in all Klarna Placement elements
+      document.querySelectorAll('klarna-placement').forEach((klarnaPlacement) => {
+          klarnaPlacement.dataset.purchaseAmount = result.data.Total.Amount * 100;
+      });
+
+      window.KlarnaOnsiteService = window.KlarnaOnsiteService || [];
+      window.KlarnaOnsiteService.push({ eventName: 'refresh-placements' });
+
+      cartHelper.setCartReload(result.data.CountItems);
+  }
 ```

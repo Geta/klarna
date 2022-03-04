@@ -6,6 +6,14 @@
     $('.largecart-ShippingTotal').html("$" + result.data.ShippingTotal.Amount);
     $('.largecart-Total').html("$" + result.data.Total.Amount);
 
+    // Update purchase amount in all Klarna Placement elements
+    document.querySelectorAll('klarna-placement').forEach((klarnaPlacement) => {
+      klarnaPlacement.dataset.purchaseAmount = result.data.Total.Amount * 100;
+    });
+
+    window.KlarnaOnsiteService = window.KlarnaOnsiteService || [];
+    window.KlarnaOnsiteService.push({ eventName: 'refresh-placements' });
+
     cartHelper.setCartReload(result.data.CountItems);
   }
 
@@ -318,7 +326,7 @@
 
 export class CartHelper {
   setCartReload(totalItem) {
-    if (totalItem != undefined) {
+      if (totalItem != undefined) {
       $('.jsCartBtn').each(function (i, e) {
         $(e).find('.icon-menu__badge').first().html(totalItem);
         $(e).attr('reload', 1);
