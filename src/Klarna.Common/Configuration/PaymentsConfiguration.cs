@@ -2,6 +2,7 @@
 {
     public class PaymentsConfiguration : ConnectionConfiguration
     {
+        public string Mid { get; set; }
         public bool CustomerPreAssessment { get; set; }
         public bool SendProductAndImageUrl { get; set; }
         public bool AutoCapture { get; set; }
