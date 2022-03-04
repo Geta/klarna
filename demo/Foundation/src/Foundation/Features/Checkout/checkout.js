@@ -305,7 +305,6 @@ export default class Checkout {
     inst.initPayment();
 
     KlarnaPayments.load(null, function () {
-        Checkout.enableCheckoutSubmit();
     });
 }
 
@@ -540,8 +539,9 @@ export default class Checkout {
         let fields = $(b).find('.jsRequired');
 
         fields.each((i, e) => {
-          let tE = $(e);
-          if (tE.html() == "") {
+            let tE = $(e);
+
+          if (tE.val() == "") {
             isValid = false;
             let parent = tE.parent();
             if (parent.children(".field-validation-error").length == 0) {
