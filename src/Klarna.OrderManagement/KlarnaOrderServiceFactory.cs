@@ -1,7 +1,9 @@
+using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Configuration;
 using Klarna.Common.Models;
+using Mediachase.Commerce.Markets;
 
 namespace Klarna.OrderManagement
 {
@@ -12,6 +14,22 @@ namespace Klarna.OrderManagement
     [ServiceConfiguration(typeof(IKlarnaOrderServiceFactory))]
     public class KlarnaOrderServiceFactory : IKlarnaOrderServiceFactory
     {
+        private readonly IOrderRepository _orderRepository;
+        private readonly IPaymentProcessor _paymentProcessor;
+        private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly IMarketService _marketService;
+        private readonly IConfigurationLoader _configurationLoader;
+
+        public KlarnaOrderServiceFactory(IOrderRepository orderRepository, IPaymentProcessor paymentProcessor, IOrderGroupCalculator orderGroupCalculator,
+            IMarketService marketService, IConfigurationLoader configurationLoader)
+        {
+            _orderRepository = orderRepository;
+            _paymentProcessor = paymentProcessor;
+            _orderGroupCalculator = orderGroupCalculator;
+            _marketService = marketService;
+            _configurationLoader = configurationLoader;
+        }
+
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
         {
             string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.OrderManagement_{typeof(KlarnaOrderService).Assembly.GetName().Version}";
@@ -27,7 +45,7 @@ namespace Klarna.OrderManagement
                 }
             }, new JsonSerializer());
             
-            return new KlarnaOrderService(client);
+            return new KlarnaOrderService(client, _orderRepository, _paymentProcessor, _orderGroupCalculator, _marketService, _configurationLoader);
         }
     }
 }

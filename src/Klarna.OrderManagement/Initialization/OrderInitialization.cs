@@ -33,8 +33,8 @@ namespace Klarna.OrderManagement.Initialization
             // multi shipment scenario. Call payment gateway to release remaining authorization
             if (IsReleaseRemaining(orderBeforeSave, orderAfterSave))
             {
-                var reseaseRemainingEventHandler = _locator.GetInstance<ReleaseRemainingEventHandler>();
-                reseaseRemainingEventHandler.Handle(new ReleaseRemainingEvent(orderAfterSave));
+                var releaseRemainingEventHandler = _locator.GetInstance<ReleaseRemainingEventHandler>();
+                releaseRemainingEventHandler.Handle(new ReleaseRemainingEvent(orderAfterSave));
             }
 
             if (orderAfterSave.OrderStatus == OrderStatus.Cancelled)

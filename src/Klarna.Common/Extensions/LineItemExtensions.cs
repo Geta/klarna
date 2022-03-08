@@ -140,8 +140,6 @@ namespace Klarna.Common.Extensions
             // Includes tax and discount. Must match (quantity * unit_price) - total_discount_amount within quantity. (max value: 100000000)
             var totalAmount = AmountHelper.GetAmount(PriceIncludingTaxAmount(discountedPrice, salesTax.Amount, market));
 
-
-
             // Non-negative. In percent, two implicit decimals. I.e 2500 = 25%.
             // TODO test with separate controller in Foundation
             int taxRate;

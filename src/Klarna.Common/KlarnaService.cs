@@ -99,23 +99,27 @@ namespace Klarna.Common
             _orderRepository.Save(order);
         }
 
-        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField)
+        public List<OrderLine> GetOrderLines(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField, IShipment shipment = null)
         {
             var market = _marketService.GetMarket(cart.MarketId);
 
-            return GetOrderLines(cart, orderGroupTotals, market.PricesIncludeTax, sendProductAndImageUrlField);
+            return GetOrderLines(cart, orderGroupTotals, market.PricesIncludeTax, sendProductAndImageUrlField, shipment);
         }
 
-        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems, bool sendProductAndImageUrl)
+        public List<OrderLine> GetOrderLines(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems, bool sendProductAndImageUrl, IShipment shipment = null)
         {
             return includeTaxOnLineItems
                 ? GetOrderLinesWithTax(cart, orderGroupTotals, sendProductAndImageUrl)
                 : GetOrderLinesWithoutTax(cart, orderGroupTotals, sendProductAndImageUrl);
         }
 
-        private List<OrderLine> GetOrderLinesWithoutTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
+        private List<OrderLine> GetOrderLinesWithoutTax(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl, IShipment shipment = null)
         {
-            var shipment = cart.GetFirstShipment();
+            if (shipment == null)
+            {
+                shipment = cart.GetFirstShipment();
+            }
+
             var orderLines = new List<OrderLine>();
 
             // Line items
@@ -165,9 +169,13 @@ namespace Klarna.Common
             return orderLines;
         }
 
-        private List<OrderLine> GetOrderLinesWithTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
+        private List<OrderLine> GetOrderLinesWithTax(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl, IShipment shipment = null)
         {
-            var shipment = cart.GetFirstShipment();
+            if (shipment == null)
+            {
+                shipment = cart.GetFirstShipment();
+            }
+
             var orderLines = new List<OrderLine>();
             var market = _marketService.GetMarket(cart.MarketId);
 

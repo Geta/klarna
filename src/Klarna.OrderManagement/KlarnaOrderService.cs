@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
+using Klarna.Common.Configuration;
 using Klarna.Common.Models;
-using Mediachase.Commerce;
+using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.OrderManagement
 {
-    public class KlarnaOrderService : IKlarnaOrderService
+    public class KlarnaOrderService : KlarnaService, IKlarnaOrderService
     {
         private readonly OrderManagementStore _client;
+        private readonly IOrderGroupCalculator _orderGroupCalculator;
 
-        internal KlarnaOrderService(OrderManagementStore client)
+        public KlarnaOrderService(OrderManagementStore client, IOrderRepository orderRepository, IPaymentProcessor paymentProcessor, IOrderGroupCalculator orderGroupCalculator, 
+            IMarketService marketService, IConfigurationLoader configurationLoader) : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService, configurationLoader)
         {
             _client = client;
+            _orderGroupCalculator = orderGroupCalculator;
         }
 
         public virtual async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
@@ -42,7 +45,7 @@ namespace Klarna.OrderManagement
 
         public virtual async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
         {
-            var lines = orderForm.GetAllLineItems().Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false);
 
             var captureData = new OrderManagementCreateCapture
             {
@@ -60,7 +63,8 @@ namespace Klarna.OrderManagement
                 throw new InvalidOperationException("Can't find correct shipment");
             }
 
-            var lines = shipment.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false, shipment);
+
             var shippingInfo = new OrderManagementShippingInfo
             {
                 ShippingCompany = shipment.ShippingMethodName,
@@ -81,7 +85,7 @@ namespace Klarna.OrderManagement
 
         public virtual async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
         {
-            var lines = orderForm.LineItems.Select(l => FromLineItem(l, orderGroup.Currency)).ToList();
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false);
 
             var refund = new OrderManagementRefund
             {
@@ -125,21 +129,6 @@ namespace Klarna.OrderManagement
                 return (int)(money * 100);
             }
             return 0;
-        }
-
-        private OrderLine FromLineItem(ILineItem item, Currency currency)
-        {
-            var orderLine = new OrderLine
-            {
-                Type = OrderLineType.physical,
-                Reference = item.Code,
-                Name = item.DisplayName,
-                Quantity = (int)item.ReturnQuantity,
-                UnitPrice = GetAmount(item.PlacedPrice),
-                TotalAmount = GetAmount(item.GetExtendedPrice(currency).Amount),
-                TotalDiscountAmount = GetAmount(item.GetEntryDiscount())
-            };
-            return orderLine;
         }
     }
 }
