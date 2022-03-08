@@ -35,7 +35,7 @@ namespace Klarna.OrderManagement.Steps
                         var purchaseOrder = orderGroup as IPurchaseOrder;
                         if (purchaseOrder != null)
                         {
-                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault(x=> ((OrderForm)x).Status == ReturnFormStatus.Complete.ToString() && ((OrderForm)x).ObjectState == MetaObjectState.Modified);
+                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault(x=> ((OrderForm)x).Status == ReturnFormStatus.AwaitingCompletion.ToString());
 
                             if (returnForm != null)
                             {
