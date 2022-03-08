@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
 using Klarna.Common.Extensions;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
@@ -17,6 +18,7 @@ namespace Klarna.OrderManagement.Events
         public IPurchaseOrder PurchaseOrder { get; }
     }
 
+    [ServiceConfiguration(typeof(ReleaseRemainingEventHandler))]
     public class ReleaseRemainingEventHandler
     {
         private IPurchaseOrder _order;

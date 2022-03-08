@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
+using EPiServer.ServiceLocation;
 using Klarna.Common.Extensions;
 using Mediachase.Commerce.Orders;
 
@@ -16,6 +17,7 @@ namespace Klarna.OrderManagement.Events
         public IPurchaseOrder PurchaseOrder { get; }
     }
 
+    [ServiceConfiguration(typeof(OrderCancelledEventHandler))]
     public class OrderCancelledEventHandler
     {
         private readonly IPaymentProcessor _paymentProcessor;
