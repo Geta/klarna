@@ -280,7 +280,10 @@ export default class Checkout {
 
         let url = $(e).attr('url');
         let data = $('.jsCheckoutForm').serialize();
-        $('.loading-box').show();
+          $('.loading-box').show();
+          window._klarnaCheckout(function (api) {
+              api.suspend();
+          });
 
         axios.post(url, data)
           .then(function (r) {
@@ -304,7 +307,13 @@ export default class Checkout {
     feather.replace();
     inst.initPayment();
 
-    KlarnaPayments.load(null, function () {
+    if (window.KlarnaPayments) {
+        KlarnaPayments.load(null, function () {});
+    }
+
+    // Resuming the checkout
+    window._klarnaCheckout(function (api) {
+        api.resume();
     });
 }
 

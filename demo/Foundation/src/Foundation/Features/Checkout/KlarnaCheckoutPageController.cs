@@ -1,4 +1,6 @@
-﻿using EPiServer;
+﻿using System.Threading.Tasks;
+using EPiServer;
+using EPiServer.Commerce.Order;
 using EPiServer.Web.Mvc;
 using Foundation.Features.Checkout.Payments;
 using Foundation.Features.Checkout.Services;
@@ -16,14 +18,19 @@ namespace Foundation.Features.Checkout
         private readonly CheckoutViewModelFactory _checkoutViewModelFactory;
         private readonly ISettingsService _settingsService;
         private readonly IContentLoader _contentLoader;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IKlarnaCheckoutService _klarnaCheckoutService;
+        private readonly CheckoutService _checkoutService;
 
-
-        public KlarnaCheckoutPageController(ICartService cartService, CheckoutViewModelFactory checkoutViewModelFactory, ISettingsService settingsService, IContentLoader contentLoader)
+        public KlarnaCheckoutPageController(ICartService cartService, CheckoutViewModelFactory checkoutViewModelFactory, ISettingsService settingsService, IContentLoader contentLoader, IOrderRepository orderRepository, IKlarnaCheckoutService klarnaCheckoutService, CheckoutService checkoutService)
         {
             _cartService = cartService;
             _checkoutViewModelFactory = checkoutViewModelFactory;
             _contentLoader = contentLoader;
             _settingsService = settingsService;
+            _orderRepository = orderRepository;
+            _klarnaCheckoutService = klarnaCheckoutService;
+            _checkoutService = checkoutService;
         }
 
         public IActionResult Index(KlarnaCheckoutPage currentPage)
@@ -40,6 +47,21 @@ namespace Foundation.Features.Checkout
             ((KlarnaCheckoutPaymentOption)viewModel.Payment).Initialize();
 
             return View("KlarnaCheckout", viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateShippingMethods([FromForm] CheckoutViewModel viewModel)
+        {
+            var cartWithValidation = _cartService.LoadCart(_cartService.DefaultCartName, true);
+
+            _checkoutService.UpdateShippingMethods(cartWithValidation.Cart, viewModel.Shipments);
+            _checkoutService.ApplyDiscounts(cartWithValidation.Cart);
+            _orderRepository.Save(cartWithValidation.Cart);
+
+            await _klarnaCheckoutService.CreateOrUpdateOrder(cartWithValidation.Cart);
+
+            return Ok();
         }
     }
 }
