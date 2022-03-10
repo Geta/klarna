@@ -25,7 +25,8 @@ namespace Foundation.Features.Checkout
                     DateOfBirth = "1980-01-01",
                     Gender = "Male",
                     LastFourSsn = "1234",
-                    Type = "organization"
+                    Type = "organization",
+                    OrganizationEntityType = PaymentCustomerOrganizationEntityType.LIMITED_COMPANY
                 };
             }
             session.MerchantReference2 = "12345";
