@@ -99,6 +99,10 @@
                 @Html.ValidationMessageFor(x => x.Address.Email, null, new { @class = "required" })
             </div>
             <div class="form-group">
+                @Html.LabelFor(x => x.Address.Organization)
+                @Html.TextBoxFor(x => x.Address.Organization, new { @class = "textbox" })
+            </div>
+            <div class="form-group">
                 <label class="checkbox">
                     @Html.CheckBoxFor(x => x.Address.ShippingDefault) @Html.DisplayNameFor(x => x.Address.ShippingDefault)
                     <span class="checkmark"></span>
