@@ -63,14 +63,28 @@ namespace Klarna.Common.Configuration
         {
             var configuration = _checkoutOptionsAccessor.Get(marketId.Value);
 
-            return configuration ?? new CheckoutConfiguration();
+            if (configuration != null)
+            {
+                configuration.MarketId = marketId.Value;
+
+                return configuration;
+            }
+
+            return new CheckoutConfiguration();
         }
 
         public PaymentsConfiguration GetPaymentsConfiguration(MarketId marketId)
         {
             var configuration = _paymentsOptionsAccessor.Get(marketId.Value);
 
-            return configuration ?? new PaymentsConfiguration();
+            if (configuration != null)
+            {
+                configuration.MarketId = marketId.Value;
+
+                return configuration;
+            }
+
+            return new PaymentsConfiguration();
         }
     }
 }

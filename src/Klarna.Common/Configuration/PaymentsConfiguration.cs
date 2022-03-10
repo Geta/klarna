@@ -5,6 +5,7 @@
         public string Mid { get; set; }
         public bool CustomerPreAssessment { get; set; }
         public bool SendProductAndImageUrl { get; set; }
+        public bool UseAttachments { get; set; }
         public bool AutoCapture { get; set; }
         public string WidgetBorderRadius { get; set; }
         public string WidgetDetailsColor { get; set; }

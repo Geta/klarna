@@ -86,6 +86,7 @@ namespace Foundation
             services.Configure<OrderOptions>(o => o.DisableOrderDataLocalization = true);
 
             services.Configure<PaymentsConfiguration>("US", _configuration.GetSection("Klarna:Payments:US"));
+            services.Configure<PaymentsConfiguration>("DEU", _configuration.GetSection("Klarna:Payments:DEU"));
             services.Configure<CheckoutConfiguration>("US", _configuration.GetSection("Klarna:Checkout:US"));
             services.Configure<CheckoutConfiguration>("UK", _configuration.GetSection("Klarna:Checkout:UK"));
             services.Configure<CheckoutConfiguration>("SWE", _configuration.GetSection("Klarna:Checkout:SWE"));
