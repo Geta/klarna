@@ -19,6 +19,13 @@ namespace Klarna.Common.Models
         /// </summary>
         [JsonPropertyName("title")]
         public string Title { get; set; }
+
+        /// <summary>
+        /// Organization name (if applicable). Only applicable for B2B customers. Maximum 100 characters.
+        /// </summary>
+        [JsonPropertyName("organization_name")]
+        public string OrganizationName { get; set; }
+
         /// <summary>
         /// First line of street address. Maximum 100 characters.
         /// </summary>

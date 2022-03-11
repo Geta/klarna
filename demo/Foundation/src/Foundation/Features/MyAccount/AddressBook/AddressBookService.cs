@@ -43,6 +43,7 @@ namespace Foundation.Features.MyAccount.AddressBook
             addressModel.AddressId = customerAddress.AddressId.ToString();
             addressModel.Name = customerAddress.Name;
             addressModel.DaytimePhoneNumber = customerAddress.DaytimePhoneNumber;
+            addressModel.Organization = customerAddress.OrganizationName;
 
             addressModel.CountryRegion = new CountryRegionViewModel
             {
@@ -92,6 +93,8 @@ namespace Foundation.Features.MyAccount.AddressBook
             customerAddress.PostalCode = addressModel.PostalCode;
             customerAddress.RegionName = addressModel.CountryRegion.Region;
             customerAddress.RegionCode = addressModel.CountryRegion.Region;
+            customerAddress.OrganizationName = addressModel.Organization;
+
 
             customerAddress.CountryName = CountryManager.GetCountries().Country
                 .Where(x => x.Code == addressModel.CountryCode)
