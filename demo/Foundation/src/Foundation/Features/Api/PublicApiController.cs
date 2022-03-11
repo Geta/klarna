@@ -62,13 +62,13 @@ namespace Foundation.Features.Api
         public async Task<IActionResult> Login(string userName, string returnUrl)
         {
             await _customerService.SignOutAsync();
-            var user = _customerService.UserManager().FindByEmailAsync(userName).GetAwaiter().GetResult();
+            var user = await _customerService.UserManager().FindByEmailAsync(userName);
             if (user == null)
             {
                 return new EmptyResult();
             }
 
-            await _customerService.SignInManager().SignInAsync(user.UserName, "Episerver123!", returnUrl);
+            await _customerService.SignInManager().SignInAsync(user.UserName, "Klarna123%", returnUrl);
 
             //set tracking cookie
             TrackingCookieManager.SetTrackingCookie(user.Id);
