@@ -33,7 +33,7 @@ using Klarna.Checkout;
 using Klarna.Payments;
 using Klarna.Payments.Models;
 using Mediachase.Commerce.Markets;
-using Mediachase.Commerce.Orders;
+using Constants = Klarna.Payments.Constants;
 
 namespace Foundation.Features.Checkout
 {
@@ -63,6 +63,7 @@ namespace Foundation.Features.Checkout
         private readonly  IKlarnaPaymentsService _klarnaPaymentsService;
         private readonly IKlarnaCheckoutService _klarnaCheckoutService;
         private readonly IMarketService _marketService;
+        private readonly PaymentMethodViewModelFactory _paymentMethodViewModelFactory;
 
         public CheckoutController(IPageRouteHelper pageRouteHelper,
             IOrderRepository orderRepository,
@@ -86,7 +87,8 @@ namespace Foundation.Features.Checkout
             ISettingsService settingsService,
             IKlarnaPaymentsService klarnaPaymentsService,
             IKlarnaCheckoutService klarnaCheckoutService,
-            IMarketService marketService)
+            IMarketService marketService,
+            PaymentMethodViewModelFactory paymentMethodViewModelFactory)
         {
             _pageRouteHelper = pageRouteHelper;
             _orderRepository = orderRepository;
@@ -111,6 +113,7 @@ namespace Foundation.Features.Checkout
             _klarnaPaymentsService = klarnaPaymentsService;
             _klarnaCheckoutService = klarnaCheckoutService;
             _marketService = marketService;
+            _paymentMethodViewModelFactory = paymentMethodViewModelFactory;
         }
 
         [HttpGet]
@@ -518,6 +521,29 @@ namespace Foundation.Features.Checkout
         {
             ModelState.Clear();
 
+            var paymentMethods = _paymentMethodViewModelFactory.GetPaymentMethodViewModels();
+
+            var paymentMethod = paymentMethods.FirstOrDefault(x => x.PaymentMethodId == checkoutViewModel.PaymentMethodId);
+
+            // Check if payment method is Klarna Payments (we bypass the add payment functionality)
+            if (paymentMethod != null && paymentMethod.SystemKeyword.Equals(Constants.KlarnaPaymentSystemKeyword, StringComparison.InvariantCultureIgnoreCase))
+            {
+                checkoutViewModel.OrderSummary = _orderSummaryViewModelFactory.CreateOrderSummaryViewModel(CartWithValidationIssues.Cart);
+                checkoutViewModel.Payment = Constants.KlarnaPaymentSystemKeyword.GetPaymentMethod();
+
+                // Clean up payments in cart on payment provider site.
+                foreach (var form in CartWithValidationIssues.Cart.Forms)
+                {
+                    form.Payments.Clear();
+                }
+
+                var payment = checkoutViewModel.Payment.CreatePayment(checkoutViewModel.OrderSummary.CartTotal, CartWithValidationIssues.Cart);
+
+                CartWithValidationIssues.Cart.AddPayment(payment, _orderGroupFactory);
+
+                payment.Properties[Constants.AuthorizationTokenPaymentField] = checkoutViewModel.AuthorizationToken;
+            }
+
             // store the shipment indexes and billing address properties if they are invalid when run TryValidateModel
             // format: key = Shipment | Billing
             var errorTypes = new List<KeyValuePair<string, int>>();
@@ -736,11 +762,11 @@ namespace Foundation.Features.Checkout
                     return;
                 }
 
-                if (orderSummary.PaymentTotal != 0)
-                {
-                    ModelState.AddModelError("PaymentTotal", "PaymentTotal is invalid.");
-                    return;
-                }
+                //if (orderSummary.PaymentTotal != 0)
+                //{
+                //    ModelState.AddModelError("PaymentTotal", "PaymentTotal is invalid.");
+                //    return;
+                //}
             }
 
             if (viewModel.BillingAddressType == 1)

@@ -66,12 +66,10 @@
     }
 
     function initKlarna(state, clientToken) {
-        if (state.initializedForToken !== clientToken) {
-            Klarna.Payments.init({
-                client_token: clientToken
-            });
-            state.initializedForToken = clientToken;
-        }
+        Klarna.Payments.init({
+            client_token: clientToken
+        });
+        state.initializedForToken = clientToken;
     }
 
     function load(newSettings, callback) {

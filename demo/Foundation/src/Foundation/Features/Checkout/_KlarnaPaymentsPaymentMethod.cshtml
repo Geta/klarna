@@ -42,44 +42,10 @@
             var paymentMethodCategories = string.Join(", ", Model.PaymentMethodCategories.Select(x => string.Format("'{0}'", x.Identifier)));
         }
 
-        var klarnaData = {
+        window.KlarnaPaymentsConfiguration = {
             klarna_container: "#klarna_container",
             client_token: '@Model.ClientToken',
             payment_method_categories: [@Html.Raw(paymentMethodCategories)]
         };
-
-        // Register callback function to be executed after initial load
-        window.klarnaAsyncCallback = function () {
-            KlarnaPayments.load(klarnaData);
-        };
-
-        // Only call this if jQuery/Klarna/KlarnaPayments has been loaded already
-        if (window.jQuery && window.Klarna && window.KlarnaPayments) {
-            window.setTimeout(function () {
-                KlarnaPayments.load(klarnaData);
-            }, 100);
-        }
-
-        $('.jsAddPayment').on('click', function (e) {
-            //if ($(".jsChangePayment:checked").val() !== "KlarnaPayments") {
-            //    return;
-            //}
-            if ($("#AuthorizationToken").val() === '') {
-                e.preventDefault();
-                //Checkout.showLoadingOverlay();
-                //Checkout.disableCheckoutSubmit();
-                console.log("Starting authorize call");
-                KlarnaPayments.authorize(function () {
-                    //Checkout.enableCheckoutSubmit();
-                    //Checkout.hideLoadingOverlay();
-                    console.log("Authorize call done");
-
-                });
-            }
-        });
     })();
 </script>
-
-
-
-<script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
