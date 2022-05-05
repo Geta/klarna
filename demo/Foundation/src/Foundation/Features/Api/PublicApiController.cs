@@ -17,6 +17,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using Foundation.Features.Checkout.Services;
+using Foundation.Infrastructure.Commerce.Markets;
+using Mediachase.Commerce;
+using Mediachase.Commerce.Markets;
 
 namespace Foundation.Features.Api
 {
@@ -30,6 +34,12 @@ namespace Foundation.Features.Api
         private readonly IUrlResolver _urlResolver;
         private readonly ICmsTrackingService _cmsTrackingService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMarketService _marketService;
+        private readonly ICurrentMarket _currentMarket;
+        private readonly ICartService _cartService;
+        private readonly ICurrencyService _currencyService;
+        private readonly LanguageService _languageService;
+        private readonly IContentRouteHelper _contentRouteHelper;
 
         public PublicApiController(LocalizationService localizationService,
             IContentLoader contentLoader,
@@ -38,7 +48,13 @@ namespace Foundation.Features.Api
             //ICampaignService campaignService,
             IUrlResolver urlResolver,
             ICmsTrackingService cmsTrackingService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMarketService marketService,
+            ICurrentMarket currentMarket,
+            ICartService cartService,
+            ICurrencyService currencyService,
+            LanguageService languageService,
+            IContentRouteHelper contentRouteHelper)
         {
             _localizationService = localizationService;
             _contentLoader = contentLoader;
@@ -48,6 +64,12 @@ namespace Foundation.Features.Api
             _urlResolver = urlResolver;
             _cmsTrackingService = cmsTrackingService;
             _httpContextAccessor = httpContextAccessor;
+            _marketService = marketService;
+            _currentMarket = currentMarket;
+            _cartService = cartService;
+            _currencyService = currencyService;
+            _languageService = languageService;
+            _contentRouteHelper = contentRouteHelper;
         }
 
         [HttpGet]
@@ -69,6 +91,50 @@ namespace Foundation.Features.Api
             }
 
             await _customerService.SignInManager().SignInAsync(user.UserName, "Klarna123%", returnUrl);
+
+            string marketId = "US";
+
+            if (userName.Equals("klarna_us@example.com", StringComparison.InvariantCultureIgnoreCase))
+            {
+                marketId = "US";
+            }
+
+            if (userName.Equals("klarna_uk@example.com", StringComparison.InvariantCultureIgnoreCase))
+            {
+                marketId = "UK";
+            }
+
+            if (userName.Equals("klarna_b2b@example.com", StringComparison.InvariantCultureIgnoreCase))
+            {
+                marketId = "DEU";
+            }
+
+            if (userName.Equals("klarna_sv@example.com", StringComparison.InvariantCultureIgnoreCase))
+            {
+                marketId = "SWE";
+            }
+
+            if (userName.Equals("klarna_fr@example.com", StringComparison.InvariantCultureIgnoreCase))
+            {
+                marketId = "FR";
+            }
+
+            // Update market
+            var newMarketId = new MarketId(marketId);
+            _currentMarket.SetCurrentMarket(newMarketId);
+            var currentMarket = _marketService.GetMarket(newMarketId);
+            var cart = _cartService.LoadCart(_cartService.DefaultCartName, true)?.Cart;
+
+            if (cart != null && cart.Currency != null)
+            {
+                _currencyService.SetCurrentCurrency(cart.Currency);
+            }
+            else
+            {
+                _currencyService.SetCurrentCurrency(currentMarket.DefaultCurrency);
+            }
+
+            _languageService.SetRoutedContent(_contentRouteHelper.Content, currentMarket.DefaultLanguage.Name);
 
             //set tracking cookie
             TrackingCookieManager.SetTrackingCookie(user.Id);
