@@ -26,6 +26,7 @@
 {
     @Html.AntiForgeryToken()
     @Html.HiddenFor(x => x.AuthorizationToken)
+    <input type="radio" class="hidden" name="PaymentMethodType" keyword="KlarnaPayments" checked>
 <div class="col-md-8 col-xs-12">
     <div class="card items border-radius-none">
         <div class="card-body flex-between">

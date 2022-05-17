@@ -23,6 +23,7 @@
 @using (Html.BeginForm("PlaceOrder", "Checkout", FormMethod.Post, new { @class = "row jsCheckoutForm", id = "jsCheckoutForm", novalidate = "novalidate" }))
 {
     @Html.AntiForgeryToken()
+    @Html.HiddenFor(x => x.AuthorizationToken)
     <div class="col-md-8 col-xs-12">
         <div class="card items border-radius-none">
             <div class="card-body flex-between">
