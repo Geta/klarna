@@ -4,10 +4,16 @@
 
 @Html.HiddenFor(model => model.PaymentMethodId)
 
+@if (Model.PaymentMethodCategories == null)
+{
+    <p>No payment categories.</p>
+    return;
+} 
+
 <br />
 <div class="row">
     <div class="col-12">
-        <h4 class="title">@Model.Descriptor.Tagline</h4>
+        <h4 class="title">@Model.Descriptor?.Tagline</h4>
     </div>
 </div>
 <div class="row">
