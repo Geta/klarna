@@ -8,7 +8,6 @@ using Klarna.Common.Configuration;
 using Klarna.Common.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Mediachase.MetaDataPlus;
 
 namespace Klarna.OrderManagement.Steps
 {
@@ -39,7 +38,7 @@ namespace Klarna.OrderManagement.Steps
 
                             if (returnForm != null)
                             {
-                                await KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)returnForm, payment).ConfigureAwait(false);
+                                await KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)returnForm, payment, shipment).ConfigureAwait(false);
                             }
                         }
                         payment.Status = PaymentStatus.Processed.ToString();

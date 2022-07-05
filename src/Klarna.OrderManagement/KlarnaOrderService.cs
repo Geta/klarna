@@ -83,9 +83,9 @@ namespace Klarna.OrderManagement
             return await _client.CreateAndFetchCapture(orderId, captureData).ConfigureAwait(false);
         }
 
-        public virtual async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment)
+        public virtual async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment, IShipment shipment)
         {
-            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false);
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false, shipment);
 
             var refund = new OrderManagementRefund
             {
