@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
 using Klarna.Common.Configuration;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders;
@@ -89,7 +90,7 @@ namespace Klarna.OrderManagement
 
             var refund = new OrderManagementRefund
             {
-                RefundedAmount = GetAmount(payment.Amount),
+                RefundedAmount = AmountHelper.GetAmount(payment.Amount),
                 Description = orderForm.ReturnComment,
                 OrderLines = lines
             };
@@ -120,15 +121,6 @@ namespace Klarna.OrderManagement
         public virtual async Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails)
         {
             await _client.UpdateCustomerAddresses(orderId, updateCustomerDetails).ConfigureAwait(false);
-        }
-
-        private int GetAmount(decimal money)
-        {
-            if (money > 0)
-            {
-                return (int)(money * 100);
-            }
-            return 0;
         }
     }
 }
