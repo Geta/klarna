@@ -36,7 +36,7 @@ namespace Klarna.Common
         }
 
         /// <summary>
-        /// Supported languages and locales: https://developers.klarna.com/documentation/klarna-checkout/in-depth/available-languages/
+        /// Supported languages and locales: https://docs.klarna.com/klarna-checkout/in-depth-knowledge/available-languages/
         /// </summary>
         public string ConvertToLocale(string languageId)
         {
