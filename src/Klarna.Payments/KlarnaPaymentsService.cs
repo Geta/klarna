@@ -12,6 +12,7 @@ using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
+using Klarna.OrderManagement;
 using Klarna.Payments.Extensions;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
@@ -31,6 +32,7 @@ namespace Klarna.Payments
         private readonly ILanguageService _languageService;
         private readonly IPurchaseOrderProcessor _purchaseOrderProcessor;
         private readonly IConfigurationLoader _configurationLoader;
+        private readonly IKlarnaOrderServiceFactory _klarnaOrderServiceFactory;
 
         public KlarnaPaymentsService(
             IOrderRepository orderRepository,
@@ -40,7 +42,8 @@ namespace Klarna.Payments
             IMarketService marketService,
             ILanguageService languageService,
             IPurchaseOrderProcessor purchaseOrderProcessor,
-            IConfigurationLoader configurationLoader)
+            IConfigurationLoader configurationLoader,
+            IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
             : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService, configurationLoader)
         {
             _orderGroupCalculator = orderGroupCalculator;
@@ -50,6 +53,7 @@ namespace Klarna.Payments
             _languageService = languageService;
             _purchaseOrderProcessor = purchaseOrderProcessor;
             _configurationLoader = configurationLoader;
+            _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
         public async Task<bool> CreateOrUpdateSession(ICart cart, SessionSettings settings)
@@ -242,6 +246,12 @@ namespace Klarna.Payments
                 _purchaseOrderProcessor.HoldOrder(purchaseOrder);
                 _orderRepository.Save(purchaseOrder);
             }
+        }
+
+        public virtual async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        {
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(_configurationLoader.GetPaymentsConfiguration(purchaseOrder.MarketId));
+            await klarnaOrderService.AcknowledgeOrder(purchaseOrder).ConfigureAwait(false);
         }
 
         private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, Uri siteUrl, bool includePersonalInformation = false)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Foundation.Features.Checkout.Services;
 using Foundation.Features.MyAccount.AddressBook;
@@ -74,6 +75,28 @@ namespace Foundation.Features.Api
             }
 
             return Redirect(_checkoutService.BuildRedirectionUrl(null, purchaseOrder, true));
+        }
+
+        [Route("push")]
+        [AcceptVerbs("POST")]
+        [HttpPost]
+        public async Task<ActionResult> Push(string klarna_order_id)
+        {
+            if (klarna_order_id == null)
+            {
+                return BadRequest();
+            }
+
+            var purchaseOrder = _klarnaPaymentsService.GetPurchaseOrderByKlarnaOrderId(klarna_order_id);
+            if (purchaseOrder == null)
+            {
+                return NotFound();
+            }
+
+            // Acknowledge the order through the order management API
+            await _klarnaPaymentsService.AcknowledgeOrder(purchaseOrder);
+
+            return Ok();
         }
 
         [Route("personal/allow")]

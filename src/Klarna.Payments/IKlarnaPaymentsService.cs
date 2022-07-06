@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using Klarna.Common;
@@ -15,5 +14,6 @@ namespace Klarna.Payments
         Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart);
         bool AllowSharingOfPersonalInformation(ICart cart);
         PersonalInformationSession GetPersonalInformationSession(ICart cart, IDictionary<string, object> dic = null);
+        Task AcknowledgeOrder(IPurchaseOrder purchaseOrder);
     }
 }
