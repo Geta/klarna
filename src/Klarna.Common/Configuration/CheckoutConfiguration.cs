@@ -31,6 +31,6 @@ namespace Klarna.Common.Configuration
         public string WidgetHeaderColor { get; set; }
         public string WidgetLinkColor { get; set; }
         public string WidgetBorderRadius { get; set; }
-        public bool SendProductAndImageUrl { get; set; }
+        public bool SendProductAndImageUrl { get; set; } = true;
     }
 }
