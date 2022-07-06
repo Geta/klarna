@@ -46,7 +46,7 @@ namespace Klarna.OrderManagement
 
         public virtual async Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment)
         {
-            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false);
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), true);
 
             var captureData = new OrderManagementCreateCapture
             {
@@ -64,7 +64,7 @@ namespace Klarna.OrderManagement
                 throw new InvalidOperationException("Can't find correct shipment");
             }
 
-            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false, shipment);
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), true, shipment);
 
             var shippingInfo = new OrderManagementShippingInfo
             {
@@ -86,7 +86,9 @@ namespace Klarna.OrderManagement
 
         public virtual async Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment, IShipment shipment)
         {
-            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false, shipment);
+            // By default we don't include the shipping fee in refunds. You can override this method and call: GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), false, shipment);
+            // to include the shipping fee with the line items. Note that you still need to manually add it to the refund total in the Optimizely Commerce Manager refund screen.
+            var lines = GetOrderLines(orderGroup, _orderGroupCalculator.GetOrderGroupTotals(orderGroup), true);
 
             var refund = new OrderManagementRefund
             {
