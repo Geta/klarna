@@ -1,22 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using EPiServer;
 using EPiServer.Commerce.Catalog.ContentTypes;
 using EPiServer.Commerce.Catalog.Linking;
 using EPiServer.Commerce.Order;
 using EPiServer.Core;
-using EPiServer.Reference.Commerce.Site.Features.Product.Models;
-using EPiServer.Reference.Commerce.Site.Features.Shared.Extensions;
 using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
+using Foundation.Features.CatalogContent.Product;
+using Foundation.Infrastructure.Commerce.Extensions;
 using Klarna.Checkout;
 using Klarna.Checkout.Models;
+using Klarna.Common.Configuration;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Mediachase.Commerce.Catalog;
 
 namespace Foundation.Features.Checkout
 {
-	[ServiceConfiguration(typeof(ICheckoutOrderDataBuilder), Lifecycle = ServiceInstanceScope.Transient)]
+	//[ServiceConfiguration(typeof(ICheckoutOrderDataBuilder), Lifecycle = ServiceInstanceScope.Transient)]
     public class KlarnaDemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
     {
         private Injected<UrlResolver> _urlResolver = default(Injected<UrlResolver>);
@@ -69,7 +71,7 @@ namespace Foundation.Features.Checkout
                 if (lineItem != null && lineItem.Type.Equals("physical"))
                 {
                     EntryContentBase entryContent = null;
-                    FashionProduct product = null;
+                    GenericProduct product = null;
                     if (!string.IsNullOrEmpty(lineItem.Reference))
                     {
                         var contentLink = _referenceConverter.Service.GetContentLink(lineItem.Reference);
@@ -80,7 +82,7 @@ namespace Foundation.Features.Checkout
                             var parentLink =
                                 entryContent.GetParentProducts(_relationRepository.Service).SingleOrDefault();
 
-                            _contentRepository.Service.TryGet<FashionProduct>(parentLink, out product);
+                            _contentRepository.Service.TryGet<GenericProduct>(parentLink, out product);
                         }
                     }
 
