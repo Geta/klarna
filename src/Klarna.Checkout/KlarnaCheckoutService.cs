@@ -26,7 +26,6 @@ using ConfigurationException = EPiServer.Business.Commerce.Exception.Configurati
 
 namespace Klarna.Checkout
 {
-    [ServiceConfiguration(typeof(IKlarnaCheckoutService))]
     public class KlarnaCheckoutService : KlarnaService, IKlarnaCheckoutService
     {
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));

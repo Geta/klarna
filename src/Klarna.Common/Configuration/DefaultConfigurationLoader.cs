@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
-using EPiServer.ServiceLocation;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders.Managers;
 using Microsoft.Extensions.Options;
 
 namespace Klarna.Common.Configuration
 {
-    [ServiceConfiguration(typeof(IConfigurationLoader))]
     public class DefaultConfigurationLoader : IConfigurationLoader
     {
         private readonly IOptionsSnapshot<CheckoutConfiguration> _checkoutOptionsAccessor;

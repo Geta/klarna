@@ -35,7 +35,6 @@ namespace Foundation.Features.Api
         }
 
         [Route("cart/{orderGroupId}/shippingoptionupdate")]
-        [AcceptVerbs("POST")]
         [HttpPost]
         public ActionResult ShippingOptionUpdate(int orderGroupId, [FromBody] ShippingOptionUpdateRequest shippingOptionUpdateRequest)
         {

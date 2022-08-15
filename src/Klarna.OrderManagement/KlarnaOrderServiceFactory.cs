@@ -1,5 +1,4 @@
 using EPiServer.Commerce.Order;
-using EPiServer.ServiceLocation;
 using Klarna.Common;
 using Klarna.Common.Configuration;
 using Klarna.Common.Models;
@@ -11,7 +10,6 @@ namespace Klarna.OrderManagement
     /// Factory methods to create an instance of IKlarnaOrderService
     /// Initializes it for a specific payment method and a specific market (as the API settings can vary)
     /// </summary>
-    [ServiceConfiguration(typeof(IKlarnaOrderServiceFactory))]
     public class KlarnaOrderServiceFactory : IKlarnaOrderServiceFactory
     {
         private readonly IOrderRepository _orderRepository;

@@ -21,7 +21,6 @@ using Options = Klarna.Payments.Models.Options;
 
 namespace Klarna.Payments
 {
-    [ServiceConfiguration(typeof(IKlarnaPaymentsService))]
     public class KlarnaPaymentsService : KlarnaService, IKlarnaPaymentsService
     {
         private readonly IOrderGroupCalculator _orderGroupCalculator;

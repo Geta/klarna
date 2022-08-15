@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading;
 using EPiServer.DataAbstraction;
 using EPiServer.Globalization;
-using EPiServer.ServiceLocation;
 
 namespace Klarna.Common
 {
-    [ServiceConfiguration(typeof(ILanguageService))]
     public class DefaultLanguageService : ILanguageService
     {
         private readonly ILanguageBranchRepository _languageBranchRepository;

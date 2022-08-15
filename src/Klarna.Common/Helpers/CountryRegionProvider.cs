@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace Klarna.Common.Helpers
 {
-    [ServiceConfiguration(typeof(ICountryRegionProvider), Lifecycle = ServiceInstanceScope.Singleton)]
     public class CountryRegionProvider : ICountryRegionProvider
     {
         public string GetStateCode(string twoLetterCountryCode, string stateName)

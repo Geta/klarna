@@ -84,6 +84,8 @@ namespace Foundation
             //site specific
             services.AddEmbeddedLocalization<Startup>();
             services.Configure<OrderOptions>(o => o.DisableOrderDataLocalization = true);
+            services.AddKlarnaPayments();
+            services.AddKlarnaCheckout();
 
             services.Configure<PaymentsConfiguration>("SWE", _configuration.GetSection("Klarna:Payments:SWE"));
             services.Configure<PaymentsConfiguration>("FR", _configuration.GetSection("Klarna:Payments:FR"));
