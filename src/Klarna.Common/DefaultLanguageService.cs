@@ -4,11 +4,9 @@ using System.Linq;
 using System.Threading;
 using EPiServer.DataAbstraction;
 using EPiServer.Globalization;
-using EPiServer.ServiceLocation;
 
 namespace Klarna.Common
 {
-    [ServiceConfiguration(typeof(ILanguageService))]
     public class DefaultLanguageService : ILanguageService
     {
         private readonly ILanguageBranchRepository _languageBranchRepository;
@@ -36,7 +34,7 @@ namespace Klarna.Common
         }
 
         /// <summary>
-        /// Supported languages and locales: https://developers.klarna.com/documentation/klarna-checkout/in-depth/available-languages/
+        /// Supported languages and locales: https://docs.klarna.com/klarna-checkout/in-depth-knowledge/available-languages/
         /// </summary>
         public string ConvertToLocale(string languageId)
         {

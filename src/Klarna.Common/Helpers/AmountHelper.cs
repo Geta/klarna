@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using Mediachase.Commerce;
 
 namespace Klarna.Common.Helpers

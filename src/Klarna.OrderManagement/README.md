@@ -1,11 +1,11 @@
-EPiServer Klarna order management
+Optimizely Klarna Order Management
 =============
 
 ## Description
 
-Klarna.OrderManagement is a library for processing a Klarna payment in EPiServer Commerce. This package supports both payments of Klarna.Payments and Klarna.Checkout. 
+Klarna.OrderManagement is a library for processing a Klarna payments in Optimizely Commerce. This package supports both payments of Klarna Payments and Klarna Checkout. 
 
-More about Klarna ordermanagement: https://docs.klarna.com/order-management/
+More about Klarna Order Management: https://docs.klarna.com/order-management/.
 
 ## Features
 * Capture
@@ -14,7 +14,7 @@ More about Klarna ordermanagement: https://docs.klarna.com/order-management/
 * Cancel
 * Support multi shipment payments
 
-### Steps integrated with EPiServer Commerce
+### Steps integrated with Optimizely Commerce
 - **Capture** - either partially (multi-shipment) or full capture the payment amount
 - **Refund** - either partially or full refund an amount
 - **Release remaining authorization** - release remaining authorization when the payment amount has not been fully captured. Note: this action should only occur when for example order line 1 is captured and the remaining order lines will not be captured.
@@ -27,56 +27,27 @@ More about Klarna ordermanagement: https://docs.klarna.com/order-management/
 - **Extend authorization time**
 - **Update customer information**
 
-(*) Not integrated in the EPiServer Commerce order process
+(*) Not integrated in the Optimizely Commerce order process
 
 <details>
   <summary>Setup (click to expand)</summary>
 
-Start by installing NuGet packages (use [NuGet](http://nuget.episerver.com/)):
+Start by installing NuGet packages (use [NuGet](http://nuget.optimizely.com/)):
 
     Install-Package Klarna.OrderManagement.v3
-    
-For the Commerce Manager site run the following package:
 
-    Install-Package Klarna.OrderManagement.CommerceManager.v3
-
-Both Klarna.Payments and Klarna.Checkout have reference to the Klarna.OrderManagement. It's more likely that one of those packages are installed.    
-</details>
-
-<details>
-  <summary>Configure user control (click to expand)</summary>
-  
-Unfortunately a manual configuration needs to be done in the XML file to make sure that the KlarnaPaymentControl.ascx user control is loaded in Commerce Manager. See section Klarna order information to learn what kind of information this user control displays. Follow these steps to configure the user control:
-- **Open file: /Apps/Order/Config/Views/Forms/PurchaseOrder-ObjectView.xml**
-- **Add the KlarnaPaymentControl.ascx to the Placeholder_2 like this**
-```
-<Block id="payments" name="Payments">
-	<Placeholder id="Placeholder_1">
-		<Control id="PaymentsGrid" path="~/Apps/Order/Modules/RelatedEntityView.ascx">
-			<Property name="RelatedClassName" value="Payment" />
-			<Property name="RelatedToClassName" value="Order"/>
-		</Control>
-	</Placeholder>
-	<Placeholder id="Placeholder_2">
-    <Control id="PaymentsGrid2" path="~/KlarnaSummary/KlarnaPaymentControl.ascx"></Control>
-	</Placeholder>
-	<Placeholder id="Placeholder_3" />
-	<Placeholder id="Placeholder_4" />
-</Block>
-```
-
-Note: these steps need to be done each time Commerce Manager is updated. 
+Both Klarna.Payments and Klarna.Checkout have references to the Klarna.OrderManagement package. It's more likely that one of those packages are installed.    
 </details>
 
 <details>
   <summary>Capture (click to expand)</summary>
 
-Capturing payments is done by completing a shipment in Commerce Manager. Follow these steps to complete a shipment:
+Capturing payments is done by completing a shipment in Optimizely Order Management. Follow these steps to complete a shipment:
 
-- Open the order in CM
+- Open the order in the Order Management screen
 - Go to Order details - 'Release shipment'
 - Create pick list with the order
-- Go to pick lists in CM and select your picklist
+- Go to pick lists and select your picklist
 - Complete shipment for corresponding order
     - You can enter tracking number in the 'Complete Shipment' pop-up, this will be available as shipping information in Klarna
     - The 'OK' button triggers the payment gateway to do a capture, if capturing the payment succeeds the pop up will close. Otherwise you'll receive an error message in the pop up or, if there's something wrong with the payment there should be a new order note with exception information on the order.
@@ -93,7 +64,7 @@ Upon completing a shipment in a multi-shipment scenario, a partial capture will 
 
 
 #### Change Capture data
-By default all capture data should be set automatically. However, similar to Klarna Payment sessions, it is possible to change capture data before it is sent to Klarna. In order to do so you can create an implementation of ``ICaptureBuilder`` and register it with StructureMap.
+By default all capture data should be set automatically. However, similar to Klarna Payment sessions, it is possible to change capture data before it is sent to Klarna. In order to do so you can create an implementation of ``ICaptureBuilder`` and register it with your IoC container.
 ```csharp
 public class DemoCaptureBuilder : ICaptureBuilder
 {
@@ -119,25 +90,27 @@ When the last shipment is handled, the payment gateway is called to release the 
 <details>
   <summary>Refund (click to expand)</summary>
 
-To create a return in Commerce Manager the order must have the completed status. Follow these steps to create a return:
+To create a return in Optimizely Order Management the order must have the completed status. Follow these steps to create a return:
 
-- Open the order in Commerce Manager
+- Open the order in Optimizely
 - Go to the Details tab
 - Press the 'Create return' button
 - New popup window is opened, add order lines, some comments and finally press 'Save'
 
 ![Order create return](/docs/screenshots/order-create-return.PNG?raw=true "Order create return")
 
-- Got to the Returns tab
+- Go to the Returns tab
 - Press the 'Acknowledge Receipt Items' button
 - To complete the return press the 'Complete button'
 
-When the return is completed the payment gateway is called to create a refund at Klarna. In the Payments tab, an extra row for the payment refund (called Credit in Commerce Manager) has been added. Also, a note is added at the order.
+By default we don't include the shipping fee. This can be changed in the IKlarnaOrderService Refund method by overriding it. Note that merchants need to remember to change the total in the Complete refund screen to include the shipping fee otherwise the total will not include it.
+
+When the return is completed the payment gateway is called to create a refund at Klarna. In the Payments tab, an extra row for the payment refund (called Credit in Optimizely) has been added. Also, a note is added at the order.
 
 ![Order payments refund](/docs/screenshots/order-payments-refund.PNG?raw=true "Order payments refund")
 
 #### Change Refund data
-It is possible to change refund data before sending it to Klarna, similar to [changing capture data](#Change-Capture-data) it is possible to do so by creating an implementation of ```IRefundBuilder``` and registering it with StructureMap.
+It is possible to change refund data before sending it to Klarna, similar to [changing capture data](#Change-Capture-data) it is possible to do so by creating an implementation of ```IRefundBuilder``` and registering it with your IoC container.
 ```csharp
 public class DemoRefundBuilder : IRefundBuilder
 {
@@ -152,8 +125,8 @@ public class DemoRefundBuilder : IRefundBuilder
 <details>
   <summary>Cancel (click to expand)</summary>
 
-Whenever an order is cancelled in Commerce Manager the payment gateway is called to also cancel the payment at Klarna.
-An order in Commerce Manager can only be can cancelled when the items haven't been shipped yet. 
+Whenever an order is cancelled in Optimizely the payment gateway is called to also cancel the payment at Klarna.
+An order in Optimizely can only be can cancelled when the items haven't been shipped yet. 
 
 ![Cancel order](/docs/screenshots/order-cancel.png?raw=true "Cancel order")
 
@@ -169,7 +142,7 @@ Once a Klarna order has been approved and successfully placed by a customer, the
 <details>
   <summary>Use KlarnaOrderService (click to expand)</summary>
 
-The IKlarnaOrderService interface contains some methods to work with Klarna payments. The following methods are used for integration in Commerce Manager: CancelOrder, CaptureOrder, Refund and ReleaseRemainingAuthorization.
+The IKlarnaOrderService interface contains some methods to work with Klarna payments. The following methods are used for integration in Optimizely Order Management: CancelOrder, CaptureOrder, Refund and ReleaseRemainingAuthorization.
 
 ```
     public interface IKlarnaOrderService
@@ -177,7 +150,6 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
         Task CancelOrder(string orderId);
 
         Task UpdateMerchantReferences(string orderId, string merchantReference1, string merchantReference2);
-	
         Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment);
 
         Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment);
@@ -188,12 +160,11 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
 
         Task TriggerSendOut(string orderId, string captureId);
 
-        Task<PatchedOrderData> GetOrder(string orderId);
+        Task<OrderManagementOrder> GetOrder(string orderId);
 
         Task ExtendAuthorizationTime(string orderId);
 
         Task UpdateCustomerInformation(string orderId, OrderManagementCustomerAddresses updateCustomerDetails);
-	
         Task AcknowledgeOrder(IPurchaseOrder purchaseOrder);
     }
 ```
@@ -201,18 +172,9 @@ The IKlarnaOrderService interface contains some methods to work with Klarna paym
 <details>
   <summary>Order notes (click to expand)<a name="order-notes"></a></summary>
 	
-EPiServer uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform users about the Klarna payment process. 
+Optimizely uses order notes internally to show updates to users regarding the current order. For example, when a shipment was released or when a return was created. Order notes are also saved by the Klarna package to inform merchants about the Klarna payment process. 
 
 ![Order notes](/docs/screenshots/order-notes-complete.PNG?raw=true "Order notes")
-</details>
-<details>
-  <summary>Klarna order information (click to expand)</summary>
-
-Order notes and the payment overview can be used to gather information about the Klarna payment process. The Payments tab contains more information about the order (payment) at Klarna. By clicking on the 'Show all order information' link a complete JSON of the order object from Klarna is displayed. 
-
-Note: this information is only displayed  when a Klarna payment is added to the order in Commerce Manager.
-
-![Klarna order information](/docs/screenshots/order-klarna-information.PNG?raw=true "Klarna order information")
 </details>
 
 ## Package maintainer

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -9,7 +9,7 @@ namespace Klarna.Common.Models
         /// An array of options to define the checkout behaviour. Supported options: disable_autofocux, minimal_confirmation.
         /// </summary>
         /// <remarks>Read only</remarks>
-        [JsonProperty(PropertyName = "options")]
+        [JsonPropertyName("options")]
         public ICollection<string> Options { get; set; }
     }
 }

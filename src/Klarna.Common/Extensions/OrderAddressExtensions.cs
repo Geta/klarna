@@ -10,14 +10,17 @@ namespace Klarna.Common.Extensions
     {
         public static OrderManagementAddressInfo ToAddress(this IOrderAddress orderAddress)
         {
-            var address = new OrderManagementAddressInfo();
-            address.GivenName = orderAddress.FirstName;
-            address.FamilyName = orderAddress.LastName;
-            address.StreetAddress = orderAddress.Line1;
-            address.StreetAddress2 = orderAddress.Line2;
-            address.PostalCode = orderAddress.PostalCode;
-            address.City = orderAddress.City;
-            address.Country = CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode);
+            var address = new OrderManagementAddressInfo
+            {
+                GivenName = orderAddress.FirstName,
+                FamilyName = orderAddress.LastName,
+                StreetAddress = orderAddress.Line1,
+                StreetAddress2 = orderAddress.Line2,
+                PostalCode = orderAddress.PostalCode,
+                City = orderAddress.City,
+                Country = CountryCodeHelper.GetTwoLetterCountryCode(orderAddress.CountryCode),
+                OrganizationName = orderAddress.Organization
+            };
             if (orderAddress.CountryCode != null && address.Country.Equals("us", StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(orderAddress.RegionName))
             {
                 address.Region =
@@ -46,7 +49,8 @@ namespace Klarna.Common.Extensions
                 PostalCode = customerAddress.PostalCode,
                 City = customerAddress.City,
                 Email = customerAddress.Email,
-                Phone = customerAddress.DaytimePhoneNumber ?? customerAddress.EveningPhoneNumber
+                Phone = customerAddress.DaytimePhoneNumber ?? customerAddress.EveningPhoneNumber,
+                OrganizationName = customerAddress.OrganizationName
             };
 
             var countryCode = CountryCodeHelper.GetTwoLetterCountryCode(customerAddress.CountryCode);

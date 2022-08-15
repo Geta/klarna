@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31727.386
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundation", "Src\Foundation\Foundation.csproj", "{856C325A-2CC0-422C-B964-1BD10EA14C99}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{04685227-468D-440F-A0DB-4E6C01D550CA}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		build.cmd = build.cmd
+		default.ruleset = default.ruleset
+		Nuget.config = Nuget.config
+		README.md = README.md
+		setup.cmd = setup.cmd
+		setup.sh = setup.sh
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Klarna.Checkout.v3", "..\..\src\Klarna.Checkout\Klarna.Checkout.v3.csproj", "{77597E10-CC0C-4535-9E49-B31218C1DF13}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Klarna.Common.v3", "..\..\src\Klarna.Common\Klarna.Common.v3.csproj", "{C5E9F279-240F-4762-BB76-29F4D66A9B40}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Klarna.OrderManagement.v3", "..\..\src\Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj", "{C2EC07E8-30B6-4DC1-A210-15F1AB1BDB56}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Klarna.Payments.v3", "..\..\src\Klarna.Payments\Klarna.Payments.v3.csproj", "{D6A34424-7A68-4B54-8C76-E63B1019F8FA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{856C325A-2CC0-422C-B964-1BD10EA14C99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{856C325A-2CC0-422C-B964-1BD10EA14C99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{856C325A-2CC0-422C-B964-1BD10EA14C99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{856C325A-2CC0-422C-B964-1BD10EA14C99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77597E10-CC0C-4535-9E49-B31218C1DF13}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77597E10-CC0C-4535-9E49-B31218C1DF13}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77597E10-CC0C-4535-9E49-B31218C1DF13}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77597E10-CC0C-4535-9E49-B31218C1DF13}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5E9F279-240F-4762-BB76-29F4D66A9B40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5E9F279-240F-4762-BB76-29F4D66A9B40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5E9F279-240F-4762-BB76-29F4D66A9B40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5E9F279-240F-4762-BB76-29F4D66A9B40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2EC07E8-30B6-4DC1-A210-15F1AB1BDB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2EC07E8-30B6-4DC1-A210-15F1AB1BDB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2EC07E8-30B6-4DC1-A210-15F1AB1BDB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2EC07E8-30B6-4DC1-A210-15F1AB1BDB56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6A34424-7A68-4B54-8C76-E63B1019F8FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A34424-7A68-4B54-8C76-E63B1019F8FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A34424-7A68-4B54-8C76-E63B1019F8FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A34424-7A68-4B54-8C76-E63B1019F8FA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CC916518-501C-4766-BC53-915DECEE5919}
+	EndGlobalSection
+EndGlobal

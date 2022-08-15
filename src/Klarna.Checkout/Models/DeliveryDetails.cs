@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
@@ -7,31 +7,31 @@ namespace Klarna.Checkout.Models
         /// <summary>
         /// Carrier product name.
         /// </summary>
-        [JsonProperty(PropertyName = "carrier")]
+        [JsonPropertyName("carrier")]
         public string Carrier { get; set; }
         
         /// <summary>
         /// Type of shipping class.
         /// </summary>
-        [JsonProperty(PropertyName = "class")]
+        [JsonPropertyName("class")]
         public string Class { get; set; }
         
         /// <summary>
         /// Upstream carrier product.
         /// </summary>
-        [JsonProperty(PropertyName = "product")]
+        [JsonPropertyName("product")]
         public ShippingOptionCarrierProduct Product { get; set; }
         
         /// <summary>
         /// The selected location for this shipping option.
         /// </summary>
-        [JsonProperty(PropertyName = "pickup_location")]
+        [JsonPropertyName("pickup_location")]
         public ShippingOptionPickupLocation PickupLocation { get; set; }
         
         /// <summary>
         /// The selected timeslot for this shipping option.
         /// </summary>
-        [JsonProperty(PropertyName = "timeslot")]
+        [JsonPropertyName("timeslot")]
         public ShippingOptionTimeslot Timeslot { get; set; }
     }
 }

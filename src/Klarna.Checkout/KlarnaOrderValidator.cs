@@ -1,10 +1,8 @@
 using System;
-using EPiServer.ServiceLocation;
 using Klarna.Checkout.Models;
 
 namespace Klarna.Checkout
 {
-    [ServiceConfiguration(typeof(IKlarnaOrderValidator))]
     public class KlarnaOrderValidator : IKlarnaOrderValidator
     {
         public bool Compare(CheckoutOrder checkoutData, CheckoutOrder otherCheckoutOrderData)

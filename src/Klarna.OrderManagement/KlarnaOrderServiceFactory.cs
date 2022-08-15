@@ -1,10 +1,8 @@
 using EPiServer.Commerce.Order;
 using Klarna.Common;
-using Klarna.Common.Extensions;
+using Klarna.Common.Configuration;
 using Klarna.Common.Models;
-using Mediachase.Commerce;
-using Mediachase.Commerce.Orders.Dto;
-using Mediachase.Commerce.Orders.Managers;
+using Mediachase.Commerce.Markets;
 
 namespace Klarna.OrderManagement
 {
@@ -12,16 +10,22 @@ namespace Klarna.OrderManagement
     /// Factory methods to create an instance of IKlarnaOrderService
     /// Initializes it for a specific payment method and a specific market (as the API settings can vary)
     /// </summary>
-    public class KlarnaOrderServiceFactory
+    public class KlarnaOrderServiceFactory : IKlarnaOrderServiceFactory
     {
-        public virtual IKlarnaOrderService Create(IPayment payment, IMarket market)
-        {
-            return Create(PaymentManager.GetPaymentMethod(payment.PaymentMethodId), market.MarketId);
-        }
+        private readonly IOrderRepository _orderRepository;
+        private readonly IPaymentProcessor _paymentProcessor;
+        private readonly IOrderGroupCalculator _orderGroupCalculator;
+        private readonly IMarketService _marketService;
+        private readonly IConfigurationLoader _configurationLoader;
 
-        public virtual IKlarnaOrderService Create(PaymentMethodDto paymentMethodDto, MarketId marketMarketId)
+        public KlarnaOrderServiceFactory(IOrderRepository orderRepository, IPaymentProcessor paymentProcessor, IOrderGroupCalculator orderGroupCalculator,
+            IMarketService marketService, IConfigurationLoader configurationLoader)
         {
-            return Create(paymentMethodDto.GetConnectionConfiguration(marketMarketId));
+            _orderRepository = orderRepository;
+            _paymentProcessor = paymentProcessor;
+            _orderGroupCalculator = orderGroupCalculator;
+            _marketService = marketService;
+            _configurationLoader = configurationLoader;
         }
 
         public virtual IKlarnaOrderService Create(ConnectionConfiguration connectionConfiguration)
@@ -39,7 +43,7 @@ namespace Klarna.OrderManagement
                 }
             }, new JsonSerializer());
             
-            return new KlarnaOrderService(client);
+            return new KlarnaOrderService(client, _orderRepository, _paymentProcessor, _orderGroupCalculator, _marketService, _configurationLoader);
         }
     }
 }

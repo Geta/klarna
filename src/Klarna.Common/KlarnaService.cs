@@ -4,10 +4,10 @@ using System.Linq;
 using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 using EPiServer.Logging;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
-using Klarna.Payments.Models;
 using Mediachase.Commerce.Markets;
 using Mediachase.Commerce.Orders.Managers;
 using Mediachase.Commerce.Orders.Search;
@@ -21,17 +21,19 @@ namespace Klarna.Common
         private readonly IPaymentProcessor _paymentProcessor;
         private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly IMarketService _marketService;
+        private readonly IConfigurationLoader _configurationLoader;
 
         protected KlarnaService(
             IOrderRepository orderRepository,
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
-            IMarketService marketService)
+            IMarketService marketService, IConfigurationLoader configurationLoader)
         {
             _orderRepository = orderRepository;
             _paymentProcessor = paymentProcessor;
             _orderGroupCalculator = orderGroupCalculator;
             _marketService = marketService;
+            _configurationLoader = configurationLoader;
         }
 
         public void FraudUpdate(NotificationModel notification)
@@ -45,8 +47,7 @@ namespace Klarna.Common
             if (payment == null) return;
 
             // Get payment method used and the configuration data
-            var paymentMethodDto = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
-            var connectionConfiguration = paymentMethodDto.GetConnectionConfiguration(order.MarketId);
+            var connectionConfiguration = _configurationLoader.GetConfiguration(payment, order.MarketId);
             string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.Common_{typeof(KlarnaService).Assembly.GetName().Version}";
 
             var client =  new OrderManagementStore(new ApiSession
@@ -98,23 +99,27 @@ namespace Klarna.Common
             _orderRepository.Save(order);
         }
 
-        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField)
+        public List<OrderLine> GetOrderLines(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrlField, IShipment shipment = null)
         {
             var market = _marketService.GetMarket(cart.MarketId);
 
-            return GetOrderLines(cart, orderGroupTotals, market.PricesIncludeTax, sendProductAndImageUrlField);
+            return GetOrderLines(cart, orderGroupTotals, market.PricesIncludeTax, sendProductAndImageUrlField, shipment);
         }
 
-        public List<OrderLine> GetOrderLines(ICart cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems, bool sendProductAndImageUrl)
+        public List<OrderLine> GetOrderLines(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool includeTaxOnLineItems, bool sendProductAndImageUrl, IShipment shipment = null)
         {
             return includeTaxOnLineItems
                 ? GetOrderLinesWithTax(cart, orderGroupTotals, sendProductAndImageUrl)
                 : GetOrderLinesWithoutTax(cart, orderGroupTotals, sendProductAndImageUrl);
         }
 
-        private List<OrderLine> GetOrderLinesWithoutTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
+        private List<OrderLine> GetOrderLinesWithoutTax(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl, IShipment shipment = null)
         {
-            var shipment = cart.GetFirstShipment();
+            if (shipment == null)
+            {
+                shipment = cart.GetFirstShipment();
+            }
+
             var orderLines = new List<OrderLine>();
 
             // Line items
@@ -164,9 +169,13 @@ namespace Klarna.Common
             return orderLines;
         }
 
-        private List<OrderLine> GetOrderLinesWithTax(ICart cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl)
+        private List<OrderLine> GetOrderLinesWithTax(IOrderGroup cart, OrderGroupTotals orderGroupTotals, bool sendProductAndImageUrl, IShipment shipment = null)
         {
-            var shipment = cart.GetFirstShipment();
+            if (shipment == null)
+            {
+                shipment = cart.GetFirstShipment();
+            }
+
             var orderLines = new List<OrderLine>();
             var market = _marketService.GetMarket(cart.MarketId);
 

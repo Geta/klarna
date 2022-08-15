@@ -1,5 +1,4 @@
-﻿using System;
-using EPiServer.Commerce.Order;
+﻿using EPiServer.Commerce.Order;
 
 namespace Klarna.Payments
 {

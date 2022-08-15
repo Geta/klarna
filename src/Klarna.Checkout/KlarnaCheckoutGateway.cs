@@ -6,7 +6,8 @@ using Mediachase.Commerce.Plugins.Payment;
 using EPiServer.Logging;
 using EPiServer.ServiceLocation;
 using Klarna.Checkout.Steps;
-using Klarna.Common;
+using Klarna.Common.Configuration;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
@@ -20,8 +21,14 @@ namespace Klarna.Checkout
 
         public IOrderGroup OrderGroup { get; set; }
 
-        internal Injected<KlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
-        private KlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
+        internal Injected<IKlarnaOrderServiceFactory> InjectedKlarnaOrderServiceFactory { get; set; }
+        private IKlarnaOrderServiceFactory KlarnaOrderServiceFactory => InjectedKlarnaOrderServiceFactory.Service;
+
+        internal Injected<IConfigurationLoader> InjectedConfigurationLoader { get; set; }
+        private IConfigurationLoader ConfigurationLoader => InjectedConfigurationLoader.Service;
+
+        internal Injected<IPurchaseOrderProcessor> InjectedPurchaseOrderProcessor { get; set; }
+        private IPurchaseOrderProcessor PurchaseOrderProcessor => InjectedPurchaseOrderProcessor.Service;
 
         public PaymentProcessingResult ProcessPayment(IOrderGroup orderGroup, IPayment payment)
         {
@@ -55,10 +62,10 @@ namespace Klarna.Checkout
                     _orderForm = OrderGroup.Forms.FirstOrDefault(form => form.Payments.Contains(payment));
                 }
 
-                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
-                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
-                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
-                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory);
+                var authorizePaymentStep = new AuthorizePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader, PurchaseOrderProcessor);
+                var capturePaymentStep = new CapturePaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
+                var creditPaymentStep = new CreditPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
+                var cancelPaymentStep = new CancelPaymentStep(payment, OrderGroup.MarketId, KlarnaOrderServiceFactory, ConfigurationLoader);
 
                 authorizePaymentStep.SetSuccessor(capturePaymentStep);
                 capturePaymentStep.SetSuccessor(creditPaymentStep);

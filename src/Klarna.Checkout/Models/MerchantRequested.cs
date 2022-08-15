@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Klarna.Common.Models;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
@@ -10,13 +9,13 @@ namespace Klarna.Checkout.Models
         /// Informs whether the AdditionalCheckbox is checked or not, when applicable.
         /// </summary>
         /// <remarks>Read only</remarks>
-        [JsonProperty(PropertyName = "additional_checkbox")]
+        [JsonPropertyName("additional_checkbox")]
         public bool AdditionalCheckbox { get; set; }
         /// <summary>
         /// Informs whether the AdditionalCheckboxes is checked or not, when applicable.
         /// </summary>
         /// <remarks>Read only</remarks>
-        [JsonProperty(PropertyName = "additional_checkboxes")]
+        [JsonPropertyName("additional_checkboxes")]
         public ICollection<MerchantRequestedAdditionalCheckbox> AdditionalCheckboxes { get; set; }
     }
 }

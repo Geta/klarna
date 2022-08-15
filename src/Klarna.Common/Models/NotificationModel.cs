@@ -1,15 +1,13 @@
-﻿using Klarna.Payments.Models;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
     public class NotificationModel
     {
-        [JsonProperty("order_id")]
+        [JsonPropertyName("order_id")]
         public string OrderId { get; set; }
-        [JsonProperty("event_type")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("event_type")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public NotificationFraudStatus Status { get; set; }
     }
 }

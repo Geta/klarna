@@ -4,10 +4,10 @@ using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.Common.Configuration;
 using Klarna.Common.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Mediachase.MetaDataPlus;
 
 namespace Klarna.OrderManagement.Steps
 {
@@ -15,8 +15,8 @@ namespace Klarna.OrderManagement.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(CreditPaymentStep));
 
-        public CreditPaymentStep(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
-            : base(payment, marketId, klarnaOrderServiceFactory)
+        public CreditPaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader)
+            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader)
         {
         }
 
@@ -34,11 +34,11 @@ namespace Klarna.OrderManagement.Steps
                         var purchaseOrder = orderGroup as IPurchaseOrder;
                         if (purchaseOrder != null)
                         {
-                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault(x=> ((OrderForm)x).Status == ReturnFormStatus.Complete.ToString() && ((OrderForm)x).ObjectState == MetaObjectState.Modified);
+                            var returnForm = purchaseOrder.ReturnForms.FirstOrDefault(x=> ((OrderForm)x).Status == ReturnFormStatus.AwaitingCompletion.ToString());
 
                             if (returnForm != null)
                             {
-                                await KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)returnForm, payment).ConfigureAwait(false);
+                                await KlarnaOrderService.Refund(orderId, orderGroup, (OrderForm)returnForm, payment, shipment).ConfigureAwait(false);
                             }
                         }
                         payment.Status = PaymentStatus.Processed.ToString();

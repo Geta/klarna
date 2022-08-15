@@ -1,0 +1,58 @@
+﻿@model EPiServer.Reference.Commerce.Site.Features.Payment.PaymentMethods.KlarnaPaymentsPaymentMethod
+
+@Html.HiddenFor(model => model.SystemKeyword)
+
+@if (Model.PaymentMethodCategories == null)
+{
+    return;
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.KlarnaLogoUrl))
+{
+    <img src="@Model.KlarnaLogoUrl" alt="Klarna logo" class="klarna-logo" />
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        @{ var first = true; }
+        @foreach (var category in Model.PaymentMethodCategories)
+        {
+            <div class="radio">
+                <label>
+                    <input type="radio" name="KlarnaPaymentMethodCategory" value="@category.Identifier" data-klarna-payments-select="@category.Identifier" @(first ? "checked" : string.Empty) />
+                    <img src="@category.AssetUrls.Standard" alt="@category.Name" class="klarna-logo" />
+                    @category.Name
+                </label>
+            </div>
+            <div id="klarna_container_@category.Identifier" data-klarna-container="@category.Identifier"></div>
+            <div id="klarna_container_error_@category.Identifier" data-klarna-container-error="@category.Identifier" class="alert alert-danger" hidden>@Html.Translate("/Checkout/Payment/Errors/NotAvailable")</div>
+            first = false;
+        }
+    </div>
+</div>
+
+@{
+    var paymentMethodCategories = string.Join(", ", Model.PaymentMethodCategories.Select(x => string.Format("'{0}'", x.Identifier)));
+}
+
+<script>
+    (function () {
+        var klarnaData = {
+            klarna_container: "#klarna_container",
+            client_token: '@Model.ClientToken',
+            payment_method_categories: [@Html.Raw(paymentMethodCategories)]
+        };
+
+        // Register callback function to be executed after initial load
+        window.klarnaAsyncCallback = function () {
+            KlarnaPayments.load(klarnaData);
+        };
+
+        // Only call this if jQuery/Klarna/KlarnaPayments has been loaded already
+        if (window.jQuery && window.Klarna && window.KlarnaPayments) {
+            window.setTimeout(function () {
+                KlarnaPayments.load(klarnaData);
+            }, 100);
+        }
+    })();
+</script>

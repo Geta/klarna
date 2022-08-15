@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using EPiServer.Commerce.Order;
 using EPiServer.Framework;
 using EPiServer.Framework.Initialization;
@@ -12,7 +13,7 @@ namespace Klarna.OrderManagement.Initialization
     [ModuleDependency(typeof(EPiServer.Commerce.Initialization.InitializationModule))]
     internal class OrderInitialization : IInitializableModule
     {
-        private IServiceLocator _locator;
+        private IServiceProvider _locator;
 
         public void Initialize(InitializationEngine context)
         {
@@ -32,8 +33,8 @@ namespace Klarna.OrderManagement.Initialization
             // multi shipment scenario. Call payment gateway to release remaining authorization
             if (IsReleaseRemaining(orderBeforeSave, orderAfterSave))
             {
-                var reseaseRemainingEventHandler = _locator.GetInstance<ReleaseRemainingEventHandler>();
-                reseaseRemainingEventHandler.Handle(new ReleaseRemainingEvent(orderAfterSave));
+                var releaseRemainingEventHandler = _locator.GetInstance<ReleaseRemainingEventHandler>();
+                releaseRemainingEventHandler.Handle(new ReleaseRemainingEvent(orderAfterSave));
             }
 
             if (orderAfterSave.OrderStatus == OrderStatus.Cancelled)
@@ -51,7 +52,6 @@ namespace Klarna.OrderManagement.Initialization
                    && form.Shipments.Any(s => s.OrderShipmentStatus == OrderShipmentStatus.Cancelled)
                    && form.Payments.All(p => p.TransactionType != KlarnaAdditionalTransactionType.ReleaseRemainingAuthorization.ToString());
         }
-
 
         public void Uninitialize(InitializationEngine context)
         {

@@ -3,13 +3,12 @@ using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.Common.Configuration;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
-using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using ApiException = Refit.ApiException;
 
 namespace Klarna.Payments.Steps
 {
@@ -20,8 +19,8 @@ namespace Klarna.Payments.Steps
         private readonly IKlarnaPaymentsService _klarnaPaymentService;
 
         public AuthorizePaymentStep(
-            IPayment payment, MarketId marketMarketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory, IKlarnaPaymentsService klarnaPaymentService)
-            : base(payment, marketMarketId, klarnaOrderServiceFactory)
+            IPayment payment, MarketId marketMarketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IKlarnaPaymentsService klarnaPaymentService, IConfigurationLoader configurationLoader, IPurchaseOrderProcessor purchaseOrderProcessor)
+            : base(payment, marketMarketId, klarnaOrderServiceFactory, configurationLoader, purchaseOrderProcessor)
         {
             _klarnaPaymentService = klarnaPaymentService;
         }

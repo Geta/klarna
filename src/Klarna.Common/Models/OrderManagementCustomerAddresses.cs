@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Common.Models
 {
@@ -7,12 +7,12 @@ namespace Klarna.Common.Models
         /// <summary>
         /// Customer shipping address.
         /// </summary>
-        [JsonProperty(PropertyName = "shipping_address")]
+        [JsonPropertyName("shipping_address")]
         public OrderManagementAddressInfo ShippingAddress { get; set; }
         /// <summary>
         /// Customer billing address.
         /// </summary>
-        [JsonProperty(PropertyName = "billing_address")]
+        [JsonPropertyName("billing_address")]
         public OrderManagementAddressInfo BillingAddress { get; set; }
     }
 }

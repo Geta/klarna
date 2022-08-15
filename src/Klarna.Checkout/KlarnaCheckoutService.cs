@@ -11,11 +11,11 @@ using EPiServer.Logging;
 using Klarna.Checkout.Extensions;
 using Klarna.Checkout.Models;
 using Klarna.Common;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
-using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Customers;
 using Mediachase.Commerce.Markets;
@@ -26,18 +26,18 @@ using ConfigurationException = EPiServer.Business.Commerce.Exception.Configurati
 
 namespace Klarna.Checkout
 {
-    [ServiceConfiguration(typeof(IKlarnaCheckoutService))]
     public class KlarnaCheckoutService : KlarnaService, IKlarnaCheckoutService
     {
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaCheckoutService));
         private readonly IOrderGroupCalculator _orderGroupCalculator;
         private readonly IKlarnaOrderValidator _klarnaOrderValidator;
         private readonly IMarketService _marketService;
-        private readonly ICheckoutConfigurationLoader _checkoutConfigurationLoader;
-        private readonly KlarnaOrderServiceFactory _klarnaOrderServiceFactory;
+        private readonly IConfigurationLoader _configurationLoader;
+        private readonly IKlarnaOrderServiceFactory _klarnaOrderServiceFactory;
         private readonly IOrderRepository _orderRepository;
         private readonly ILanguageService _languageService;
         private readonly IKlarnaCartValidator _klarnaCartValidator;
+        private readonly IPurchaseOrderProcessor _purchaseOrderProcessor;
 
         private CheckoutStore _client;
         private PaymentMethodDto _paymentMethodDto;
@@ -49,31 +49,31 @@ namespace Klarna.Checkout
             IOrderGroupCalculator orderGroupCalculator,
             IKlarnaOrderValidator klarnaOrderValidator,
             IMarketService marketService,
-            ICheckoutConfigurationLoader checkoutConfigurationLoader,
-            KlarnaOrderServiceFactory klarnaOrderServiceFactory,
+            IConfigurationLoader configurationLoader,
+            IKlarnaOrderServiceFactory klarnaOrderServiceFactory,
             ILanguageService languageService,
-            IKlarnaCartValidator klarnaCartValidator)
-            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
+            IKlarnaCartValidator klarnaCartValidator,
+            IPurchaseOrderProcessor purchaseOrderProcessor)
+            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService, configurationLoader)
         {
             _orderGroupCalculator = orderGroupCalculator;
             _orderRepository = orderRepository;
             _klarnaOrderValidator = klarnaOrderValidator;
             _marketService = marketService;
-            _checkoutConfigurationLoader = checkoutConfigurationLoader;
+            _configurationLoader = configurationLoader;
             _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
             _languageService = languageService;
             _klarnaCartValidator = klarnaCartValidator;
+            _purchaseOrderProcessor = purchaseOrderProcessor;
         }
 
         public virtual PaymentMethodDto PaymentMethodDto =>
-            _paymentMethodDto
-            ?? (_paymentMethodDto =
-                PaymentManager.GetPaymentMethodBySystemName(
-                    Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true));
+            _paymentMethodDto ??= PaymentManager.GetPaymentMethodBySystemName(
+                Constants.KlarnaCheckoutSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true);
 
         public virtual CheckoutConfiguration GetCheckoutConfiguration(IMarket market)
         {
-            return _checkoutConfiguration ?? (_checkoutConfiguration = GetConfiguration(market.MarketId));
+            return _checkoutConfiguration ??= GetConfiguration(market.MarketId);
         }
 
         public virtual CheckoutStore GetClient(IMarket market)
@@ -219,7 +219,7 @@ namespace Klarna.Checkout
             var marketCountry = CountryCodeHelper.GetTwoLetterCountryCode(market.Countries.FirstOrDefault());
             if (string.IsNullOrWhiteSpace(marketCountry))
             {
-                throw new ConfigurationException($"Please select a country in CM for market {cart.MarketId}");
+                throw new ConfigurationException($"Please select a country in Commerce Admin for market {cart.MarketId}");
             }
             var checkoutConfiguration = GetCheckoutConfiguration(market);
 
@@ -427,25 +427,17 @@ namespace Klarna.Checkout
                 return false;
             }
 
-            // Order is valid, create on hold cart in epi
-            cart.Name = OrderStatus.OnHold.ToString();
-            _orderRepository.Save(cart);
-
-            // Create new default cart
-            var newCart = _orderRepository.Create<ICart>(cart.CustomerId, Cart.DefaultName);
-            _orderRepository.Save(newCart);
-
             return true;
         }
 
-        public virtual void CancelOrder(ICart cart)
+        public virtual async Task CancelOrder(ICart cart)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(cart.MarketId));
 
             var orderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
             if (!string.IsNullOrWhiteSpace(orderId))
             {
-                klarnaOrderService.CancelOrder(orderId);
+                await klarnaOrderService.CancelOrder(orderId).ConfigureAwait(false);
 
                 cart.Properties[Constants.KlarnaCheckoutOrderIdCartField] = null;
                 _orderRepository.Save(cart);
@@ -463,10 +455,10 @@ namespace Klarna.Checkout
             }
         }
 
-        public virtual void AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        public virtual async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
         {
             var klarnaOrderService = _klarnaOrderServiceFactory.Create(GetConfiguration(purchaseOrder.MarketId));
-            klarnaOrderService.AcknowledgeOrder(purchaseOrder);
+            await klarnaOrderService.AcknowledgeOrder(purchaseOrder).ConfigureAwait(false);
         }
 
         public virtual CheckoutConfiguration GetConfiguration(IMarket market)
@@ -476,7 +468,7 @@ namespace Klarna.Checkout
 
         public virtual CheckoutConfiguration GetConfiguration(MarketId marketId)
         {
-            return _checkoutConfigurationLoader.GetConfiguration(marketId);
+            return _configurationLoader.GetCheckoutConfiguration(marketId);
         }
 
         public virtual void Complete(IPurchaseOrder purchaseOrder)
@@ -494,7 +486,8 @@ namespace Klarna.Checkout
 
             if (payment.HasFraudStatus(FraudStatus.PENDING))
             {
-                OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
+                _purchaseOrderProcessor.HoldOrder(purchaseOrder);
+
                 _orderRepository.Save(purchaseOrder);
             }
         }
@@ -537,7 +530,7 @@ namespace Klarna.Checkout
 
             Uri ToFullSiteUrl(Func<CheckoutConfiguration, string> fieldSelector)
             {
-                var url = fieldSelector(configuration).Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString());
+                var url = fieldSelector(configuration)?.Replace("{orderGroupId}", cart.OrderLink.OrderGroupId.ToString());
                 if (Uri.TryCreate(url, UriKind.Absolute, out var uri))
                 {
                     return uri;

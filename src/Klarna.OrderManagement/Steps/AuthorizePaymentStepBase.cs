@@ -1,19 +1,21 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Models;
-using Klarna.Payments.Models;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Orders;
-using Mediachase.Commerce.Orders.Managers;
 
 namespace Klarna.OrderManagement.Steps
 {
     public abstract class AuthorizePaymentStepBase : PaymentStep
     {
-        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
-            : base(payment, marketId, klarnaOrderServiceFactory)
+        private readonly IPurchaseOrderProcessor _purchaseOrderProcessor;
+
+        protected AuthorizePaymentStepBase(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader, IPurchaseOrderProcessor purchaseOrderProcessor)
+            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader)
         {
+            _purchaseOrderProcessor = purchaseOrderProcessor;
         }
 
         public override async Task<PaymentStepResult> Process(IPayment payment, IOrderForm orderForm, IOrderGroup orderGroup, IShipment shipment)
@@ -51,7 +53,7 @@ namespace Klarna.OrderManagement.Steps
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_ACCEPTED))
             {
                 payment.Status = PaymentStatus.Processed.ToString();
-                OrderStatusManager.ReleaseHoldOnOrder((PurchaseOrder)orderGroup);
+                _purchaseOrderProcessor.ReleaseOrder((PurchaseOrder) orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk accepted");
                 paymentStepResult.Status = true;
                 return paymentStepResult;
@@ -60,7 +62,8 @@ namespace Klarna.OrderManagement.Steps
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_REJECTED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
-                OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
+                _purchaseOrderProcessor.HoldOrder((PurchaseOrder)orderGroup);
+
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk rejected");
                 paymentStepResult.Status = true;
                 return paymentStepResult;
@@ -69,7 +72,7 @@ namespace Klarna.OrderManagement.Steps
             if (payment.HasFraudStatus(NotificationFraudStatus.FRAUD_RISK_STOPPED))
             {
                 payment.Status = PaymentStatus.Failed.ToString();
-                OrderStatusManager.HoldOrder((PurchaseOrder)orderGroup);
+                _purchaseOrderProcessor.HoldOrder((PurchaseOrder)orderGroup);
                 AddNoteAndSaveChanges(orderGroup, payment.TransactionType, "Klarna fraud risk stopped");
                 paymentStepResult.Status = true;
                 return paymentStepResult;

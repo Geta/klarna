@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Klarna.Checkout.v3")]
-[assembly: AssemblyDescription("Klarna Checkout (kco-v3) integration for Episerver")]
+[assembly: AssemblyDescription("Klarna Checkout (kco-v3) integration for Optimizely")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Geta")]
 [assembly: AssemblyProduct("Klarna.Checkout.v3")]
-[assembly: AssemblyCopyright("Copyright ©  2017")]
+[assembly: AssemblyCopyright("Copyright © 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

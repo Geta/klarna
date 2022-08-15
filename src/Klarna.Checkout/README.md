@@ -1,9 +1,8 @@
-# EPiServer Klarna Checkout integration
+# Optimizely Klarna Checkout integration
 
 ## Description
 
-Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](https://developers.klarna.com/documentation/klarna-checkout/) as the checkout solution for your EPiServer Commerce sites.
-This library consists of two assemblies. Both are mandatory for a creating an integration between EPiServer and Klarna.
+Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](https://docs.klarna.com/klarna-checkout/) as the checkout solution for your Optimizely Commerce store.
 
 ## Integration
 
@@ -11,49 +10,58 @@ This library consists of two assemblies. Both are mandatory for a creating an in
 
 ## Features
 
-- Klarna.Checkout is the integration between EPiServer and the Klarna Checkout API (https://developers.klarna.com/api/#checkout-api-create-a-new-order)
-- Klarna.Checkout.CommerceManager contains a usercontrol for the payment method configuration in Commerce Manager
+- Klarna.Checkout is the integration between Optimizely and the Klarna Checkout API (https://developers.klarna.com/api/#checkout-api-create-a-new-order)
 - Handle pending orders / fraud check results
 - Add order notes to track update flow
 - Pick shipping option in KCO widget
 - Style KCO widget to your liking
 - Add an additional checkbox
+- Klarna Checkout configuration
 
 ## Payment process / checkout flow
 
 - **Visitor visits checkout page** - Klarna order is created or updated
 - **Klarna checkout widget is loaded (payment option)**
   - Visitor can enter shipping and payment information
-  - Callback url's are called for updating information in EPiServer.
+  - Callback url's are called for updating information in Optimizely.
     - These also return data to Klarna in order to update order/lineitem totals and available shipping options
 - **Visitor clicks 'Place order' button**
-  - The [order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/) url is called in order to execute the last checks before finalizing the order. For example check stock, validate order totals and addresses to make sure all data is valid. If the data is not valid the user can be redirected or can be shown an error (still on the checkout page)
+  - The [order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/) url is called in order to execute the last checks before finalizing the order. For example check stock, validate order totals and addresses to make sure all data is valid. If the data is not valid the user can be redirected or can be shown an error message (still on the checkout page)
+
 - **The order is created at Klarna**
 - **Visitor is redirected to confirmation callback url**
-  - Purchase order is created in EPiServer
+  - The purchase order is created in Optimizely
 - **Visitor is redirected to confirmation page**
-- **optional - Klarna - fraud status notification** - When the Klarna order is pending, then a fraud status notification is sent to the configured notification URL (configured in Commerce Manager)
-- **delayed - Receive a [push callback](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/best-practices/#push) from Klarna** - This notifies Epi that the order has been created in Klarna Order Management (usually within a few seconds). We check if a PurchaseOrder has been made in Epi, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
+- **optional - Klarna - fraud status notification** - When the Klarna order is pending, then a fraud status notification is sent to the configured notification URL (see configuration below)
+- **delayed - Receive a [push callback](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/confirm-purchase/) from Klarna** - This notifies Optimizely that the order has been created in Klarna Order Management (usually within a few seconds). We check if a Purchase Order has been made in Optimizely, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
 
-More information about the Klarna Checkout flow: https://developers.klarna.com/documentation/klarna-checkout/.
+More information about the Klarna Checkout flow: https://docs.klarna.com/klarna-checkout/.
 
 <details>
   <summary>Setup (click to expand)</summary>
 
-Start by installing NuGet packages (use [NuGet](https://nuget.episerver.com/)):
+Start by installing NuGet package (use [NuGet](https://nuget.optimizely.com/))
 
-    Install-Package Klarna.Checkout.v3
+```
+    dotnet add package Klarna.Checkout.v3
+```
+	
+In Startup.cs
 
-For the Commerce Manager site run the following package:
-
-    Install-Package Klarna.Checkout.CommerceManager.v3
+```
+public void ConfigureServices(IServiceCollection services)
+{
+    ...
+    services.AddKlarnaCheckout();
+}
+```
 
 </details>
 
 <details>
-  <summary>Configure Commerce Manager (click to expand)</summary>
+  <summary>Configure (click to expand)</summary>
   
-Login into Commerce Manager and open **Administration -> Order System -> Payments**. Then click **New** and in **Overview** tab fill:
+Login into Optimizely with a CommerceAdmin user and go to **Commerce -> Administration -> Payments**. Then click **New** and in **Overview** tab fill:
 
 (\*) mandatory
 
@@ -67,46 +75,115 @@ Login into Commerce Manager and open **Administration -> Order System -> Payment
 - Select shipping methods available for this payment
 - Select markets available for this payment
 
-Click OK in order to save the Payment for the first time. After saving, return to the payment and go to the parameters tab
+Click OK in order to save the Payment for the first time.
 
-- **Market**
-  - Select the market you want to set up
-  - This will reflect the selected markets from the **Markets** tab (after saving)
-- **Klarna connection settings**
-  - Username(\*) - provided by Klarna
-  - Password(\*) - provided by Klarna
-  - ApiUrl(\*) - provided by Klarna
-    - See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls. Klarna API requires HTTPS.
-- **Widget settings**
-  - [Some widget styling settings](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkout-customization/)
-  - Shipping details, see [same link](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkout-customization/)
-  - Select shipping option in Klarna Checkout iFrame - Unless you want to have your own shipping options selector, set this to true
-  - Allow separate shipping address - If true, the consumer can enter different billing and shipping addresses. Default: false
-  - Date of birth mandatory - If true, the consumer cannot skip date of birth. Default: false
-  - Title mandatory - If specified to false, title becomes optional. Only available for orders for country GB.
-  - Show subtotal detail - If true, the Order Detail subtotals view is expanded. Default: false
-  - Send shipping countries - sends available countries from the Epi country dictionary
-  - Prefill addresses - send address information on order creation in Klarna (preferred shipping/billing address)
-  - Send shipping options prior to filling addresses - send in available shipping options even if address is unknown
-- **Klarna Widget additional checkbox**
-  - [Another extra feature](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkboxes/) which enables you to add a checkbox within the Klarna checkout iFrame
-- **Merchant/callback URLs**
-  - Checkout url (\*) - URL of merchant checkout page. Should be different than terms, confirmation and push URLs.
-  - Terms url (\*) - URL of merchant terms and conditions. Should be different than checkout, confirmation and push URLs
-  - Push url (\*) - URL that will be requested when an order is completed. Should be different than checkout and confirmation URLs
-  - Notification/fraud url - URL for notifications on pending orders
-  - Shipping option update url - URL for shipping option update - must be https
-  - Address update url - URL for shipping, tax and purchase currency updates. Will be called on address changes -must be https
-  - Order validation url - URL that will be requested for final merchant validation - must be https
-  - Confirmation url (\*) - URL of merchant confirmation page. Should be different than checkout and confirmation URLs
+** appsettings
 
-The Klarna.Checkout package will replace `{orderGroupId}` in any of the urls with the id of the cart. Klarna does a similar thing, they will replace `{checkout.order.id}` with the actual klarna order id (for example on confirmation url below)
+Once you have created the payment method in the Commerce interface go to your stores appsettings.json file and add the configuration using the following convention **Klarna -> Checkout -> MarketId**.
+
+Example:
+
+```
+"Klarna": {
+    "Checkout": {
+      "US": { // This is the market id
+        ...
+      }
+	}
+}
+```
+
+There are 7 properties that are required and several that are optional or that have default values that can be changed if needed.
+
+For a developer test account see: https://docs.klarna.com/resources/test-environment/. 
+
+*** Required properties ***
+
+| Name      | Description |
+| ----------- | ----------- |
+| Username   | API username - provided by Klarna        |
+| Password   | API password - provided by Klarna        |
+| ApiUrl   | Base Url - See the Klarna documentation for the API endpoints: https://developers.klarna.com/api/#api-urls. Klarna API requires HTTPS.        |
+| CheckoutUrl   | URL of merchant checkout page. Should be different then terms, confirmation and push URLs.        |
+| TermsUrl   | URL for the terms and conditions page of the merchant. The URL will be displayed inside the Klarna Checkout iFrame.        |
+| ConfirmationUrl   | URL of the merchant confirmation page. The consumer will be redirected back to the confirmation page if the authorization is successful after the customer clicks on the ‘Place Order’ button inside checkout.        |
+| PushUrl   | URL that will be used for push notification when an order is completed. Should be different than checkout and confirmation URLs.        |
+
+Example: 
+
+```
+"Klarna": {
+    "Checkout": {
+      "US": {
+        "Username": "",
+        "Password": "",
+        "ApiUrl": "https://api-na.playground.klarna.com/",
+        "CheckoutUrl": "/checkout",
+        "ConfirmationUrl": "/checkout/KlarnaCheckoutConfirmation?orderGroupId={orderGroupId}&klarna_order_id={checkout.order.id}",
+        "TermsUrl": "/terms",
+        "PushUrl": "/klarnacheckout/cart/{orderGroupId}/push?klarna_order_id={checkout.order.id}",
+      }
+	}
+}
+```
+
+*** Other properties ***
+
+All URLs must be https.
+
+| Name      | Description |
+| ----------- | ----------- |
+| WidgetButtonColor        | Color for the buttons within the iFrame. Value should be a CSS hex color, e.g. "#FF9900"       |
+| WidgetButtonTextColor         | Color for the text inside the buttons within the iFrame. Value should be a CSS hex color, e.g. "#FF9900"       |
+| WidgetCheckboxColor         | Color for the checkboxes within the iFrame. Value should be a CSS hex color, e.g. "#FF9900"       |
+| WidgetCheckboxCheckmarkColor         | Color for the checkboxes checkmark within the iFrame. Value should be a CSS hex color, e.g. "#FF9900"       |
+| WidgetHeaderColor         | Color for the headers within the iFrame. Value should be a CSS hex color, e.g. "#FF9900"       |
+| WidgetLinkColor         | Color for the hyperlinks within the iFrame. Value should be a CSS hex color, e.g. "#FF9900"       |
+| WidgetBorderRadius         | Radius for the border of elements within the iFrame. Example: 2px       |
+| ShippingDetailsText         | A message that will be presented on the confirmation page under the headline "Delivery" (max 255 characters)       |
+| ShippingOptionsInIFrame         | Select shipping option in Klarna Checkout iFrame - Unless you want to have your own shipping options selector, leave the default value of true       |
+| AllowSeparateShippingAddress          | If true, the consumer can enter different billing and shipping addresses. Default: false, except for purchase_country DE where default is: true       |
+| DateOfBirthMandatory          | Date of birth mandatory - If true, the consumer cannot skip date of birth. Default: false       |
+| TitleMandatory          | Title mandatory - If specified to false, title becomes optional. Default: false. Only available for orders for country GB       |
+| ShowSubtotalDetail          | Show subtotal detail - If true, the Order Detail subtotals view is expanded. Default: false       |
+| AdditionalCheckboxText           | Additional checkbox text. Klarna Docs: [Custom checkboxes](https://docs.klarna.com/klarna-checkout/popular-use-cases/checkboxes/).       |
+| AdditionalCheckboxDefaultChecked           | Additional checkbox default checked. True/false       |
+| AdditionalCheckboxRequired           | Additional checkbox required. True/false       |
+| SendShippingCountries           | Send shipping countries - sends available countries from the Optimizely country dictionary. True/false      |
+| PrefillAddress           | Prefill addresses - send address information on order creation in Klarna (preferred shipping/billing address). True/false      |
+| SendShippingOptionsPriorAddresses           | Send shipping options prior to filling addresses - send in available shipping options even if address is unknown. Default: true       |
+| NotificationUrl           | URL for notifications on pending orders. (max 2000 characters). Example: "https://merchant.com/notification/{checkout.order.id}"        |
+| CancellationTermsUrl           | URL for the cancellation terms page of the merchant. The URL will be displayed in the email that is sent to the customer after the order is captured       |
+| ShippingOptionUpdateUrl           | Shipping option update url - URL for shipping option update       |
+| AddressUpdateUrl            | Address update url - URL for shipping, tax and purchase currency updates. Will be called on address changes        |
+| OrderValidationUrl            | Order validation url - URL that will be requested for final merchant validation       |
+| RequireValidateCallbackSuccess            | Required validate callback success. Default: true       |
+| SendProductAndImageUrl            | Send product and image URL to Klarna for each line item. Default: true       |
+
+The Klarna.Checkout package will replace `{orderGroupId}` in any of the urls with the id of the cart. Klarna does a similar thing, they will replace `{checkout.order.id}` with the actual klarna order id (for example on confirmation url below).
 
 ![Checkout payment method settings](/docs/screenshots/checkout-parameters.PNG?raw=true "Checkout payment method parameters")
 
-**Note: If the parameters tab is empty (or gateway class is missing), make sure you have installed the commerce manager package (see above)**
+**Taxes: If the line items prices already include sales tax - make sure that PricesIncludeTax is set to true. This can be configured per market in Optimizely Commerce. Default is false.**
 
-**Taxes: If the line items prices already include sales tax - make sure that PricesIncludeTax is set to true. This can be configured per market in Episerver Commerce. Default is false.**
+After you've added the appsettings configuration you need to configure the service your app Startup. The convention is to use the market id as name.
+
+Example:
+
+```csharp
+private readonly IConfiguration _configuration;
+
+public Startup(IWebHostEnvironment webHostingEnvironment, IConfiguration configuration)
+{
+	_webHostingEnvironment = webHostingEnvironment;
+	_configuration = configuration;
+}
+
+public void ConfigureServices(IServiceCollection services)
+{
+	services.Configure<CheckoutConfiguration>("US", _configuration.GetSection("Klarna:Checkout:US")); // US is the market id
+}
+```
 
 </details>
 
@@ -151,11 +228,7 @@ public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
 </details>
 
 <details>
-  <summary>Quicksilver demo site implementation (click to expand)</summary>
-
-**Start page setting**
-
-When running the demo code in this repository make sure to enable Klarna Checkout on the start page (Commerce tab).
+  <summary>Foundation demo site implementation (click to expand)</summary>
 
 **Default properties**
 
@@ -173,45 +246,47 @@ The following properties are set by default (read from current cart and payment 
 - **BillingAddress**
 
 Read more about the different parameters: https://developers.klarna.com/api/#checkout-api-create-a-new-order.
+
 **Remark:**
-The demo site implementation only supports selecting the shipping address in the Klarna Checkout iFrame. By default the first available shipping option will be selected. If you want to support switching shipping options you can look at what happens upon updating the cart (and check out [Suspend and Resume here](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/client-side-events/)).
+
+The demo site implementation only supports selecting the shipping address in the Klarna Checkout iFrame. By default the first available shipping option will be selected. If you want to support switching shipping options you can look at what happens upon updating the cart (and check out [Suspend and Resume here](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/client-side-events/#checkout-actions-suspend-and-resume)).
 
 **API controller - Callback communication**
 
 Read more about callback functionality in the next section. In the demo site, you can find the code in the controller `KlarnaCheckoutController.cs`.
 
-**Load and display payment - QuickSilver**
+**Load and display payment - Foundation**
 
-- [\_KlarnaCheckout.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Payment/_KlarnaCheckout.cshtml) - display Klarna Checkout method by rendering HTML snippet
-- [\_KlarnaCheckoutConfirmation.cshtml](/demo/Sources/EPiServer.Reference.Commerce.Site/Views/Shared/_KlarnaCheckoutConfirmation.cshtml) - Klarna Checkout confirmation view
-- [KlarnaCheckoutPaymentMethod.cs](/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Payment/PaymentMethods/KlarnaCheckoutPaymentMethod.cs)
+- [\_KlarnaCheckout.cshtml](/demo/Foundation/src/Foundation/Features/Checkout/_KlarnaCheckoutPaymentMethod.cshtml) - display Klarna Checkout method by rendering the HTML snippet
+- [\_KlarnaCheckoutConfirmation.cshtml](/demo/Foundation/src/Foundation/Features/MyAccount/OrderConfirmation/_KlarnaCheckoutConfirmation.cshtml) - Klarna Checkout confirmation view
+- [KlarnaCheckoutPaymentOption.cs](/demo/Foundation/src/Foundation/Features/Checkout/Payments/KlarnaCheckoutPaymentOption.cs)
 
-**Process payment - QuickSilver**
+**Process payment - Foundation**
 
-- Call `IKlarnaCheckoutService.CreateOrUpdateOrder` to create or update a new checkout order. In QuickSilver this is called in the CheckoutController and CartController. This is an async method that requires your controller to be async, you can also use AsyncHelper.RunSync() to call it synchronize.
-- `KlarnaCheckoutConfirmation` in CheckoutController is called when visitor clicks the purchase button in the Klarna widget and order was successfully created. See Commerce Manager setup how to configure this URL. In this action, the purchase order in Episerver is created.
+- Call `IKlarnaCheckoutService.CreateOrUpdateOrder` to create or update a new checkout order. In Foundation this is called in the CheckoutController and CartController. This is an async method that requires your controller to be async, you can also use AsyncHelper.RunSync() to call it synchronize.
+- `KlarnaCheckoutConfirmation` in CheckoutController is called when visitor clicks the purchase button in the Klarna widget and order was successfully created. See the configuration section above on how to configure this URL. In this action, the purchase order in Optimizely is created.
 
 </details>
 
 <details>
 <summary>Klarna callbacks (click to expand)</summary>
 
-During the checkout process Klarna trigger one of the following callbacks.
+During the checkout process Klarna triggers one of the following callbacks.
 
-#### [Shipping optionupdate](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/server-side-callbacks/#how-its-done-shipping-option-update)
+#### [Shipping optionupdate](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/tax-handling/)
 
 If shipping options are available in the iFrame, after selecting a new shipping option Klarna will send information to this callback url. The information can be used to recalculate shipping costs/order totals.
 
 ```csharp
 [Route("cart/{orderGroupId}/shippingoptionupdate")]
-[AcceptVerbs("POST")]
 [HttpPost]
-[ResponseType(typeof(ShippingOptionUpdateResponse))]
-public IHttpActionResult ShippingOptionUpdate(int orderGroupId, [FromBody]ShippingOptionUpdateRequest shippingOptionUpdateRequest)
+public ActionResult ShippingOptionUpdate(int orderGroupId, [FromBody] ShippingOptionUpdateRequest shippingOptionUpdateRequest)
 {
-    var cart = _orderRepository.Load<ICart>(orderGroupId);
-    var response = _klarnaCheckoutService.UpdateShippingMethod(cart, shippingOptionUpdateRequest);
-    return Ok(response);
+	var cart = _orderRepository.Load<ICart>(orderGroupId);
+
+	var response = _klarnaCheckoutService.UpdateShippingMethod(cart, shippingOptionUpdateRequest);
+
+	return Ok(response);
 }
 ```
 
@@ -221,81 +296,131 @@ If an address has been updated in the iFrame, new address will be sent to the ad
 
 ```csharp
 [Route("cart/{orderGroupId}/addressupdate")]
-[AcceptVerbs("POST")]
 [HttpPost]
-[ResponseType(typeof(AddressUpdateResponse))]
-public IHttpActionResult AddressUpdate(int orderGroupId, [FromBody]AddressUpdateRequest addressUpdateRequest)
+public ActionResult AddressUpdate(int orderGroupId, [FromBody] CallbackAddressUpdateRequest addressUpdateRequest)
 {
-    var cart = _orderRepository.Load<ICart>(orderGroupId);
-    var response = _klarnaCheckoutService.UpdateAddress(cart, addressUpdateRequest);
-    return Ok(response);
+	var cart = _orderRepository.Load<ICart>(orderGroupId);
+	var response = _klarnaCheckoutService.UpdateAddress(cart, addressUpdateRequest);
+	return Ok(response);
 }
 ```
 
 #### [Order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/)
 
-Klarna will do a request to the [order validation callback url](https://developers.klarna.com/api/#checkout-api-callbacks-order-validation). Here you can check if a purchase order can be made. Think of checking stock, checking billing and shipping addresses and comparing the epi cart with the provided data from Klarna.
-If **Require validate callback success** is set to **true** Klarna will only create an order if they receive an HTTP status 200 OK response.
+Klarna will do a request to the [order validation callback url](https://developers.klarna.com/api/#checkout-api-callbacks-order-validation). Here you can check if a purchase order can be made. Think of checking stock, checking billing and shipping addresses and comparing the Optimizely cart with the provided data from Klarna.
+If **RequireValidateCallbackSuccess** is set to **true** Klarna will only create an order if they receive an HTTP status 200 OK response.
 
 ```csharp
 [Route("cart/{orderGroupId}/ordervalidation")]
-[AcceptVerbs("POST")]
 [HttpPost]
-public IHttpActionResult OrderValidation(int orderGroupId, [FromBody]PatchedCheckoutOrderData checkoutData)
+public ActionResult OrderValidation(int orderGroupId, [FromBody] CheckoutOrder checkoutData)
 {
-    var cart = _orderRepository.Load<ICart>(orderGroupId);
+	// More information: https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/
 
-    // Validate cart lineitems
-    var validationIssues = _cartService.ValidateCart(cart);
-    if (validationIssues.Any())
-    {
-        // check validation issues and redirect to a page to display the error
-        var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-        httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me/en/error-pages/checkout-something-went-wrong/");
-        return ResponseMessage(httpResponseMessage);
-    }
+	var cart = _orderRepository.Load<ICart>(orderGroupId);
 
-    // Validate billing address if necessary (this is just an example)
-    // To return an error like this you need require_validate_callback_success set to true
-    if (checkoutData.BillingCheckoutAddress.PostalCode.Equals("94108-2704"))
-    {
-        var errorResult = new ErrorResult
-        {
-            ErrorType = ErrorType.address_error,
-            ErrorText = "Can't ship to postalcode 94108-2704"
-        };
-        return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, errorResult));
-    }
+	// Validate cart lineitems
+	var validationIssues = _cartService.ValidateCart(cart);
+	if (validationIssues.Any())
+	{
+		// check validation issues and redirect to a page to display the error
+		return Redirect("/en/error-pages/checkout-something-went-wrong/");
+	}
 
-    // Validate order amount, shipping address
-    if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
-    {
-        var httpResponseMessage = new HttpResponseMessage(HttpStatusCode.RedirectMethod);
-        httpResponseMessage.Headers.Location = new Uri("http://klarna.localtest.me/en/error-pages/checkout-something-went-wrong/");
-        return ResponseMessage(httpResponseMessage);
-    }
+	// Validate billing address if necessary (this is just an example)
+	// To return an error like this you need require_validate_callback_success set to true
+	if (checkoutData.BillingCheckoutAddress.PostalCode.Equals("94108-2704"))
+	{
+		var errorResult = new ErrorResult
+		{
+			ErrorType = ErrorType.address_error,
+			ErrorText = "Can't ship to postalcode 94108-2704"
+		};
+		return BadRequest(errorResult);
+	}
 
-    return Ok();
+	// Validate order amount, shipping address
+	if (!_klarnaCheckoutService.ValidateOrder(cart, checkoutData))
+	{
+		return Redirect("/en/error-pages/checkout-something-went-wrong/");
+	}
+
+	return Ok();
 }
 ```
 
 #### Fraud status
 
-In Commerce Manager the notification URL can be configured. Klarna will call this URL for notifications for an orders that needs an additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below an example implementation.
+If NotificationUrl is configured, Klarna will call this URL for notifications for orders that needs additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below is an example implementation.
 
 ```csharp
 [Route("fraud")]
-[AcceptVerbs("POST")]
 [HttpPost]
-public IHttpActionResult FraudNotification(NotificationModel notification)
+public ActionResult FraudNotification(NotificationModel notification)
 {
-    _klarnaCheckoutService.FraudUpdate(notification);
-    return Ok();
+	_klarnaCheckoutService.FraudUpdate(notification);
+	return Ok();
 }
 ```
 
-When a payment needs an additional review, the payment in EPiServer is set to the status PENDING and the order to ONHOLD. When the fraud status callback URL is called and the payment is accepted the payment status will be set to PROCESSED and the order to ONHOLD. If the payment is rejected by Klarna the payment status is set to FAILED. An note is added to the order to notify the editor that a payment was rejected.
+When a payment needs an additional review, the payment in Optimizely is set to the status PENDING and the order to ONHOLD. When the fraud status callback URL is called and the payment is accepted the payment status will be set to PROCESSED and the order to ONHOLD. If the payment is rejected by Klarna the payment status is set to FAILED. An note is added to the order to notify the editor that a payment was rejected.
 ![Payment fraud rejected](/docs/screenshots/order-payment-fraud-rejected.png?raw=true "Payment fraud rejected")
+
+#### [Push url](https://developers.klarna.com/api/#checkout-api__create-a-new-ordermerchant_urls__push) is called by Klarna when an order is completed in order for Optimizely to acknowledge the order. In the example above the URL would be '/klarnacheckout/cart/{orderGroupId}/push?klarna_order_id={checkout.order.id}'. 
+
+```csharp
+[Route("cart/{orderGroupId}/push")]
+[HttpPost]
+public async Task<ActionResult> Push(int orderGroupId, string klarna_order_id)
+{
+	if (klarna_order_id == null)
+	{
+		return BadRequest();
+	}
+
+	var purchaseOrder = await GetOrCreatePurchaseOrder(orderGroupId, klarna_order_id).ConfigureAwait(false);
+	if (purchaseOrder == null)
+	{
+		return NotFound();
+	}
+
+	// Update merchant reference
+	await _klarnaCheckoutService.UpdateMerchantReference1(purchaseOrder).ConfigureAwait(false);
+
+	// Acknowledge the order through the order management API
+	await _klarnaCheckoutService.AcknowledgeOrder(purchaseOrder);
+
+	return Ok();
+}
+
+private async Task<IPurchaseOrder> GetOrCreatePurchaseOrder(int orderGroupId, string klarnaOrderId)
+{
+	// Check if the order has been created already
+	var purchaseOrder = _klarnaCheckoutService.GetPurchaseOrderByKlarnaOrderId(klarnaOrderId);
+	if (purchaseOrder != null)
+	{
+		return purchaseOrder;
+	}
+
+	// Check if we still have a cart and can create an order
+	var cart = _orderRepository.Load<ICart>(orderGroupId);
+	var cartKlarnaOrderId = cart.Properties[Constants.KlarnaCheckoutOrderIdCartField]?.ToString();
+	if (cartKlarnaOrderId == null || !cartKlarnaOrderId.Equals(klarnaOrderId))
+	{
+		return null;
+	}
+
+	var market = _marketService.GetMarket(cart.MarketId);
+	var order = await _klarnaCheckoutService.GetOrder(klarnaOrderId, market).ConfigureAwait(false);
+	if (!order.Status.Equals("checkout_complete"))
+	{
+		// Won't create order, Klarna checkout not complete
+		return null;
+	}
+	purchaseOrder = await _checkoutService.CreatePurchaseOrderForKlarna(klarnaOrderId, order, cart).ConfigureAwait(false);
+	return purchaseOrder;
+}
+```
 
 </details>
 <details>
@@ -314,19 +439,19 @@ Klarna Checkout offers a wide variety of payment methods to cover the main needs
 
 ![Klarna Checkout External Payment Methods & External Checkouts](https://developers.klarna.com/static/KCO_external-payment-methods.png)
 
-The most important thing to note is that you need to implement the backend integration for the external payment/checkout yourself. So for instance if you wanted to add PayPal you would have to create a redirect URL that has the processing logic for PayPal. Example: klarna.geta.no/processpaypall.
+The most important thing to note is that you need to implement the backend integration for the external payment/checkout yourself. So for instance if you wanted to add PayPal you would have to create a redirect URL that has the processing logic for PayPal. Example: klarna.getadigital.com/processpaypall.
 
 In your ICheckoutOrderDataBuilder implementation and the Build() method you would pass along the details of the payment method:
 
 ```csharp
 checkoutOrderData.ExternalPaymentMethods = new[]
 {
-    new PaymentProvider { Fee = 10, ImageUrl = "https://klarna.geta.no/Styles/Images/paypalpng", Name  = "PayPal", RedirectUrl = "https://klarna.geta.no"}
+    new PaymentProvider { Fee = 10, ImageUrl = "https://klarna.getadigital.com/Styles/Images/paypalpng", Name  = "PayPal", RedirectUrl = "https://klarna.getadigital.com"}
 };
 ```
 Name is case sensitiv so make sure to check the supported name in the documentation and the URLs all have to be https.
 
-You can find an [example in the demo site](https://github.com/Geta/Klarna/blob/aab444b0c2ce6c4319e808d4d2b203242ba3bbda/demo/Sources/EPiServer.Reference.Commerce.Site/Features/Checkout/DemoCheckoutOrderDataBuilder.cs#L34).
+You can find an [example in the demo site](/demo/Foundation/src/Foundation/Features/Checkout/KlarnaDemoCheckoutOrderDataBuilder.cs).
 </details>
 
 ## Local development environment
@@ -335,11 +460,11 @@ In order to use / work on this package locally you'll need a tool called www.ngr
 
 ## Demo
 
-https://kco-klarna.geta.no
+https://klarna.getadigital.com
 
 ## Package maintainer
 
-[Frederik Vig](https://github.com/frederikvig)
+https://github.com/frederikvig
 
 ## Changelog
 

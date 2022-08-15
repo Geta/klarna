@@ -1,5 +1,4 @@
-﻿using System;
-using EPiServer.Commerce.Order;
+﻿using EPiServer.Commerce.Order;
 using Mediachase.Commerce.Orders;
 
 namespace Klarna.Payments.Helpers

@@ -3,27 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using EPiServer.Commerce.Order;
 using EPiServer.ServiceLocation;
 using Klarna.Payments.Models;
 using EPiServer.Logging;
 using Klarna.Common;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Helpers;
 using Klarna.Common.Models;
+using Klarna.OrderManagement;
 using Klarna.Payments.Extensions;
 using Mediachase.Commerce;
 using Mediachase.Commerce.Markets;
-using Mediachase.Commerce.Orders;
-using Mediachase.Commerce.Orders.Dto;
 using Mediachase.Commerce.Orders.Managers;
-using ApiException = Refit.ApiException;
 using Options = Klarna.Payments.Models.Options;
 
 namespace Klarna.Payments
 {
-    [ServiceConfiguration(typeof(IKlarnaPaymentsService))]
     public class KlarnaPaymentsService : KlarnaService, IKlarnaPaymentsService
     {
         private readonly IOrderGroupCalculator _orderGroupCalculator;
@@ -31,8 +28,10 @@ namespace Klarna.Payments
         private readonly ILogger _logger = LogManager.GetLogger(typeof(KlarnaPaymentsService));
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderNumberGenerator _orderNumberGenerator;
-        private readonly KlarnaServiceApiFactory _klarnaServiceApiFactory;
         private readonly ILanguageService _languageService;
+        private readonly IPurchaseOrderProcessor _purchaseOrderProcessor;
+        private readonly IConfigurationLoader _configurationLoader;
+        private readonly IKlarnaOrderServiceFactory _klarnaOrderServiceFactory;
 
         public KlarnaPaymentsService(
             IOrderRepository orderRepository,
@@ -40,16 +39,20 @@ namespace Klarna.Payments
             IPaymentProcessor paymentProcessor,
             IOrderGroupCalculator orderGroupCalculator,
             IMarketService marketService,
-            KlarnaServiceApiFactory klarnaServiceApiFactory,
-            ILanguageService languageService)
-            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService)
+            ILanguageService languageService,
+            IPurchaseOrderProcessor purchaseOrderProcessor,
+            IConfigurationLoader configurationLoader,
+            IKlarnaOrderServiceFactory klarnaOrderServiceFactory)
+            : base(orderRepository, paymentProcessor, orderGroupCalculator, marketService, configurationLoader)
         {
             _orderGroupCalculator = orderGroupCalculator;
             _marketService = marketService;
             _orderRepository = orderRepository;
             _orderNumberGenerator = orderNumberGenerator;
-            _klarnaServiceApiFactory = klarnaServiceApiFactory;
             _languageService = languageService;
+            _purchaseOrderProcessor = purchaseOrderProcessor;
+            _configurationLoader = configurationLoader;
+            _klarnaOrderServiceFactory = klarnaOrderServiceFactory;
         }
 
         public async Task<bool> CreateOrUpdateSession(ICart cart, SessionSettings settings)
@@ -64,7 +67,7 @@ namespace Klarna.Payments
 
             try
             {
-                await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
+                await GetClient(cart.MarketId)
                     .UpdateSession(sessionId, sessionRequest)
                     .ConfigureAwait(false);
 
@@ -87,19 +90,11 @@ namespace Klarna.Payments
             }
         }
 
-        public async Task<bool> CreateOrUpdateSession(ICart cart, IDictionary<string, object> dic = null)
-        {
-            var additional = dic ?? new Dictionary<string, object>();
-            return await CreateOrUpdateSession(
-                    cart, new SessionSettings(SiteUrlHelper.GetCurrentSiteUrl()) {AdditionalValues = additional})
-                .ConfigureAwait(false);
-        }
-
         private Session CreateSessionRequest(ICart cart, SessionSettings settings)
         {
             // Check if we shared PI before, if so it allows us to share it again
             var canSendPersonalInformation = AllowedToSharePersonalInformation(cart);
-            var config = GetConfiguration(cart.MarketId);
+            var config = _configurationLoader.GetPaymentsConfiguration(cart.MarketId);
 
             var sessionRequest = GetSessionRequest(cart, config, settings.SiteUrl, canSendPersonalInformation);
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
@@ -127,26 +122,16 @@ namespace Klarna.Payments
             return sessionRequest;
         }
 
-        public string GetSessionId(ICart cart)
-        {
-            return cart.GetKlarnaSessionId();
-        }
-
-        public string GetClientToken(ICart cart)
-        {
-            return cart.GetKlarnaClientToken();
-        }
-
         public async Task<Session> GetSession(ICart cart)
         {
-            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
+            return await GetClient(cart.MarketId)
                 .GetSession(cart.GetKlarnaSessionId())
                 .ConfigureAwait(false);
         }
 
         public async Task<CreateOrderResponse> CreateOrder(string authorizationToken, ICart cart)
         {
-            var config = GetConfiguration(cart.MarketId);
+            var config = _configurationLoader.GetPaymentsConfiguration(cart.MarketId);
             var sessionRequest = GetSessionRequest(cart, config, cart.GetSiteUrl(), true);
 
             sessionRequest.MerchantReference1 = _orderNumberGenerator.GenerateOrderNumber(cart);
@@ -154,39 +139,16 @@ namespace Klarna.Payments
 
             sessionRequest.MerchantUrl = new MerchantUrl
             {
-                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?orderNumber={sessionRequest.MerchantReference1}&contactId={cart.CustomerId}",
+                Confirmation = $"{sessionRequest.MerchantUrl.Confirmation}?orderNumber={sessionRequest.MerchantReference1}&contactId={cart.CustomerId}&orderGroupId={cart.OrderLink.OrderGroupId}",
             };
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
                 sessionRequest = sessionBuilder.Build(sessionRequest, cart, config);
             }
-            return await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
+            return await GetClient(cart.MarketId)
                 .CreateOrder(authorizationToken, sessionRequest)
                 .ConfigureAwait(false);
-        }
-
-        public async Task CancelAuthorization(string authorizationToken, IMarket market)
-        {
-            try
-            {
-                await _klarnaServiceApiFactory.Create(GetConfiguration(market.MarketId))
-                    .CancelAuthorization(authorizationToken)
-                    .ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex.Message, ex);
-            }
-        }
-
-        public void CompleteAndRedirect(IPurchaseOrder purchaseOrder)
-        {
-            var result = Complete(purchaseOrder);
-            if (result.IsRedirect)
-            {
-                HttpContext.Current.Response.Redirect(result.RedirectUrl);
-            }
         }
 
         public CompletionResult Complete(IPurchaseOrder purchaseOrder)
@@ -264,7 +226,7 @@ namespace Klarna.Payments
 
             if (ServiceLocator.Current.TryGetExistingInstance(out ISessionBuilder sessionBuilder))
             {
-                var config = GetConfiguration(cart.MarketId);
+                var config = _configurationLoader.GetPaymentsConfiguration(cart.MarketId);
                 request = sessionBuilder.Build(request, cart, config, dic, true);
             }
 
@@ -280,9 +242,15 @@ namespace Klarna.Payments
         {
             if (payment.HasFraudStatus(FraudStatus.PENDING))
             {
-                OrderStatusManager.HoldOrder((PurchaseOrder)purchaseOrder);
+                _purchaseOrderProcessor.HoldOrder(purchaseOrder);
                 _orderRepository.Save(purchaseOrder);
             }
+        }
+
+        public virtual async Task AcknowledgeOrder(IPurchaseOrder purchaseOrder)
+        {
+            var klarnaOrderService = _klarnaOrderServiceFactory.Create(_configurationLoader.GetPaymentsConfiguration(purchaseOrder.MarketId));
+            await klarnaOrderService.AcknowledgeOrder(purchaseOrder).ConfigureAwait(false);
         }
 
         private Session GetSessionRequest(ICart cart, PaymentsConfiguration config, Uri siteUrl, bool includePersonalInformation = false)
@@ -297,7 +265,7 @@ namespace Klarna.Payments
                 OrderTaxAmount = AmountHelper.GetAmount(totals.TaxTotal),
                 PurchaseCurrency = cart.Currency.CurrencyCode,
                 Locale = _languageService.GetPreferredCulture().Name,
-                OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrlField).ToArray()
+                OrderLines = GetOrderLines(cart, totals, config.SendProductAndImageUrl).ToArray()
             };
 
             var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
@@ -308,10 +276,18 @@ namespace Klarna.Payments
                 {
                     Confirmation = ToFullSiteUrl(siteUrl, config.ConfirmationUrl),
                     Notification = ToFullSiteUrl(siteUrl, config.NotificationUrl),
+                    Push = ToFullSiteUrl(siteUrl, config.PushUrl),
                 };
-                request.Options = GetWidgetOptions(paymentMethod, cart.MarketId);
+                request.Options = new Options
+                {
+                    ColorBorder = config.WidgetBorderColor,
+                    ColorBorderSelected = config.WidgetSelectedBorderColor,
+                    ColorDetails = config.WidgetDetailsColor,
+                    ColorText = config.WidgetTextColor,
+                    RadiusBorder = config.WidgetBorderRadius
+                };
                 request.AutoCapture = config.AutoCapture;
-
+                request.Design = config.Design;
             }
 
             if (includePersonalInformation)
@@ -359,13 +335,14 @@ namespace Klarna.Payments
         {
             try
             {
-                var response = await _klarnaServiceApiFactory.Create(GetConfiguration(cart.MarketId))
-                    .CreatNewSession(sessionRequest)
+                var response = await GetClient(cart.MarketId)
+                    .CreateSession(sessionRequest)
                     .ConfigureAwait(false);
 
                 cart.SetKlarnaSessionId(response.SessionId);
                 cart.SetKlarnaClientToken(response.ClientToken);
                 cart.SetKlarnaPaymentMethodCategories(response.PaymentMethodCategories);
+                cart.SetKlarnaPaymentsDescriptor(response.Descriptor);
                 cart.SetSiteUrl(settings.SiteUrl);
 
                 _orderRepository.Save(cart);
@@ -379,46 +356,22 @@ namespace Klarna.Payments
             return false;
         }
 
-        private Options GetWidgetOptions(PaymentMethodDto paymentMethod, MarketId marketId)
+        public virtual PaymentsStore GetClient(MarketId marketId)
         {
-            var configuration = paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
-            var options = new Options();
+            var config = _configurationLoader.GetPaymentsConfiguration(marketId);
 
-            options.ColorDetails = GetString(configuration.WidgetDetailsColor);
-            options.ColorButton = GetString(configuration.WidgetButtonColor);
-            options.ColorButtonText = GetString(configuration.WidgetButtonTextColor);
-            options.ColorCheckbox = GetString(configuration.WidgetCheckboxColor);
-            options.ColorCheckboxCheckmark = GetString(configuration.WidgetCheckboxCheckmarkColor);
-            options.ColorHeader = GetString(configuration.WidgetHeaderColor);
-            options.ColorLink = GetString(configuration.WidgetLinkColor);
-            options.ColorBorder = GetString(configuration.WidgetBorderColor);
-            options.ColorBorderSelected = GetString(configuration.WidgetSelectedBorderColor);
-            options.ColorText = GetString(configuration.WidgetTextColor);
-            options.ColorTextSecondary = GetString(configuration.WidgetTextSecondaryColor);
-            options.RadiusBorder = GetString(configuration.WidgetBorderRadius);
+            string userAgent = $"Platform/Episerver.Commerce_{typeof(EPiServer.Commerce.ApplicationContext).Assembly.GetName().Version} Module/Klarna.Payments_{typeof(KlarnaPaymentsService).Assembly.GetName().Version}";
 
-            return options;
-        }
-        private string GetString(string input)
-        {
-            return string.IsNullOrWhiteSpace(input) ? null : input;
-        }
-
-        public PaymentsConfiguration GetConfiguration(IMarket market)
-        {
-            return GetConfiguration(market.MarketId);
-        }
-
-        public PaymentsConfiguration GetConfiguration(MarketId marketId)
-        {
-            var paymentMethod = PaymentManager.GetPaymentMethodBySystemName(
-                Constants.KlarnaPaymentSystemKeyword, _languageService.GetPreferredCulture().Name, returnInactive: true);
-            if (paymentMethod == null)
+            return new PaymentsStore(new ApiSession
             {
-                throw new Exception(
-                    $"PaymentMethod {Constants.KlarnaPaymentSystemKeyword} is not configured for market {marketId} and language {_languageService.GetPreferredCulture().Name}");
-            }
-            return paymentMethod.GetKlarnaPaymentsConfiguration(marketId);
+                ApiUrl = config.ApiUrl,
+                UserAgent = userAgent,
+                Credentials = new ApiCredentials
+                {
+                    Username = config.Username,
+                    Password = config.Password
+                }
+            }, new JsonSerializer());
         }
     }
 }

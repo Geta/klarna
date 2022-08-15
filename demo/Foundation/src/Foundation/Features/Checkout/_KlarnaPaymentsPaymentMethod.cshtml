@@ -1,0 +1,57 @@
+﻿@using Foundation.Features.Checkout.Payments
+
+@model KlarnaPaymentsPaymentOption
+
+@Html.HiddenFor(model => model.PaymentMethodId)
+
+@if (Model.PaymentMethodCategories == null)
+{
+    <p>No payment categories.</p>
+    return;
+} 
+
+<br />
+<div class="row">
+    <div class="col-12">
+        <h4 class="title">@Model.Descriptor?.Tagline</h4>
+    </div>
+</div>
+<div class="row">
+    
+    <div class="col-12">
+        @{ var first = true; }
+        <ul class="style-list-none">
+            @foreach (var category in Model.PaymentMethodCategories)
+            {
+                <li id="klarna_container_item_@category.Identifier">
+                    <div class="col-12">
+                        <label class="checkbox">
+                            <input type="radio" name="KlarnaPaymentMethodCategory" value="@category.Identifier" data-klarna-payments-select="@category.Identifier" @(first ? "checked" : string.Empty)/>
+                            <img src="@category.AssetUrls.Standard" alt="@category.Name" class="klarna-logo"/>
+                            @category.Name
+                            <span class="checkmark"></span>
+                        </label>
+                    </div>
+                    <div id="klarna_container_@category.Identifier" data-klarna-container="@category.Identifier"></div>
+                    <div id="klarna_container_error_@category.Identifier" data-klarna-container-error="@category.Identifier" class="alert alert-danger" hidden>@Html.Translate("/Checkout/Payment/Errors/NotAvailable")</div>
+                    @{ first = false; }
+                </li>
+            }
+        </ul>
+        <div id="klarna-payments-container"></div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        @{
+            var paymentMethodCategories = string.Join(", ", Model.PaymentMethodCategories.Select(x => string.Format("'{0}'", x.Identifier)));
+        }
+
+        window.KlarnaPaymentsConfiguration = {
+            klarna_container: "#klarna_container",
+            client_token: '@Model.ClientToken',
+            payment_method_categories: [@Html.Raw(paymentMethodCategories)]
+        };
+    })();
+</script>

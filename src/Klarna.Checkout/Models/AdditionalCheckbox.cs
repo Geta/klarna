@@ -1,16 +1,16 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
     public class AdditionalCheckbox
     {
-        [JsonProperty("text")]
+        [JsonPropertyName("text")]
         public string Text { get; set; }
 
-        [JsonProperty("checked")]
+        [JsonPropertyName("checked")]
         public bool? Checked { get; set; }
 
-        [JsonProperty("required")]
+        [JsonPropertyName("required")]
         public bool? Required { get; set; }
     }
 }

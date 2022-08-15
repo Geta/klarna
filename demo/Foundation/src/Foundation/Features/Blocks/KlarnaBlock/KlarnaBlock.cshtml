@@ -1,0 +1,11 @@
+﻿@using Foundation.Features.Blocks.KlarnaBlock
+
+@model IBlockViewModel<KlarnaBlock>
+
+@Html.FullRefreshPropertiesMetaData(new[] { "Placements" })
+
+<div style="background-color: @Model.CurrentBlock.BackgroundColor; opacity: @Model.CurrentBlock.BlockOpacity;" class="klarna-block @(Model.CurrentBlock.Padding + " " + Model.CurrentBlock.Margin)">
+    <klarna-placement data-key="@Model.CurrentBlock.Placements"
+                      data-locale="@KlarnaHelper.GetLocale()"
+                      data-purchase-amount="@KlarnaHelper.GetCartTotal()"></klarna-placement>
+</div>

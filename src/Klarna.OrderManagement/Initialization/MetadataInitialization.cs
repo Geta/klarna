@@ -26,6 +26,6 @@ namespace Klarna.OrderManagement.Initialization
 
         }
 
-        protected override string IntegrationName => "Order Management";
+        protected override string IntegrationName => "Klarna Order Management";
     }
 }

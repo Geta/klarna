@@ -14,7 +14,7 @@ namespace Klarna.OrderManagement
 
         Task<OrderManagementCapture> CaptureOrder(string orderId, int amount, string description, IOrderGroup orderGroup, IOrderForm orderForm, IPayment payment, IShipment shipment);
 
-        Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment);
+        Task Refund(string orderId, IOrderGroup orderGroup, OrderForm orderForm, IPayment payment, IShipment shipment);
 
         Task ReleaseRemainingAuthorization(string orderId);
 

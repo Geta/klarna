@@ -2,12 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0]
+
+### Breaking changes
+
+- [All packages] Upgraded to .NET 5 and Optimizely Commerce 14
+- [All packages] Configuration for payment methods has been moved from Commerce Manager to appsettings.json. See the documentation for Klarna Payments and Klarna Checkout for details
+- [Klarna Payments] Updated configuration class
+- [All packages] Removed Refit dependency
+- [All packages] Changed from JSON.NET to System.Text.Json Serializer
+
 ## [3.5.5]
 
 ### Changed
 
 - [All packages] Fixed #114 - Image URL for line item returns bad request when using string.Empty - Contributed by: [hyllengren](https://github.com/hyllengren)
-
 
 ## [3.5.4]
 

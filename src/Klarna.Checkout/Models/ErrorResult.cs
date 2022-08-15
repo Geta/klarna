@@ -1,15 +1,14 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿using System.Text.Json.Serialization;
 
 namespace Klarna.Checkout.Models
 {
     public class ErrorResult
     {
-        [JsonProperty("error_type")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("error_type")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ErrorType ErrorType { get; set; }
 
-        [JsonProperty("error_text")]
+        [JsonPropertyName("error_text")]
         public string ErrorText { get; set; }
     }
 }

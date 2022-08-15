@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
+using Klarna.Common.Configuration;
 using Klarna.Common.Extensions;
 using Klarna.Common.Models;
 using Mediachase.Commerce;
@@ -20,14 +21,14 @@ namespace Klarna.OrderManagement.Steps
 
         protected IKlarnaOrderService KlarnaOrderService;
 
-        protected PaymentStep(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
+        protected PaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader)
         {
             MarketId = marketId;
 
             PaymentMethod = PaymentManager.GetPaymentMethod(payment.PaymentMethodId);
             if (PaymentMethod != null)
             {
-                KlarnaOrderService = klarnaOrderServiceFactory.Create(PaymentMethod.GetConnectionConfiguration(marketId));
+                KlarnaOrderService = klarnaOrderServiceFactory.Create(configurationLoader.GetConfiguration(payment, marketId));
             }
         }
 

@@ -1,0 +1,42 @@
+﻿@model Foundation.Features.NamedCarts.DefaultCart.KlarnaExpressButtonViewModel
+
+<script src="https://x.klarnacdn.net/express-button/v1/lib.js"
+        data-id="@Model.Mid"
+        data-environment="playground"
+        async></script>
+
+<div class="row">
+    <div class="col-12">
+        <klarna-express-button data-locale="@Model.Locale" data-theme="@Model.Theme" />
+    </div>
+</div>
+
+<script>
+    window.klarnaExpressButtonAsyncCallback = function () {
+        Klarna.ExpressButton.on('user-authenticated', function (callbackData) {
+            fetch('/klarnaapi/express/authenticated', {
+                method: 'POST', 
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "given_name": callbackData.first_name,
+                    "family_name": callbackData.last_name,
+                    "email": callbackData.email,
+                    "phone": callbackData.phone,
+                    "date_of_birth": callbackData.date_of_birth,
+                    "street_address": callbackData.address.street_address,
+                    "street_address2": callbackData.address.street_address2,
+                    "postal_code": callbackData.address.postal_code,
+                    "city": callbackData.address.city,
+                    "region": callbackData.address.region,
+                    "country": callbackData.address.country
+                })
+            }).then(response => {
+                window.location.href = '/kp'; // redirect to Klarna Payments checkout page after updating the customers cart server side with new shipping and billing address
+            }).catch(function(err) {
+                console.info(err);
+            });
+        });
+    }
+</script>

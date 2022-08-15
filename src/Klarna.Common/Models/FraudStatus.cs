@@ -1,4 +1,4 @@
-﻿namespace Klarna.Payments.Models
+﻿namespace Klarna.Common.Models
 {
     public enum FraudStatus
     {

@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using EPiServer.Commerce.Marketing;
 using EPiServer.Commerce.Order;
-using EPiServer.ServiceLocation;
 using Klarna.Checkout.Extensions;
 using Mediachase.Commerce.Customers;
 
 namespace Klarna.Checkout
 {
-    [ServiceConfiguration(typeof(IKlarnaCartValidator))]
     public class DefaultKlarnaCartValidator : IKlarnaCartValidator
     {
         private readonly ILineItemValidator _lineItemValidator;

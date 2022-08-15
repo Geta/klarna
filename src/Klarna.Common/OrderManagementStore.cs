@@ -1,5 +1,6 @@
 ﻿using System.Net.Http;
 using System.Threading.Tasks;
+using Klarna.Common.Helpers;
 using Klarna.Common.Models;
 
 namespace Klarna.Common

@@ -3,6 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using EPiServer.Commerce.Order;
 using EPiServer.Logging;
+using Klarna.Common.Configuration;
 using Klarna.Common.Models;
 using Klarna.OrderManagement;
 using Klarna.OrderManagement.Steps;
@@ -15,8 +16,8 @@ namespace Klarna.Checkout.Steps
     {
         private static readonly ILogger Logger = LogManager.GetLogger(typeof(AuthorizePaymentStep));
 
-        public AuthorizePaymentStep(IPayment payment, MarketId marketId, KlarnaOrderServiceFactory klarnaOrderServiceFactory)
-            : base(payment, marketId, klarnaOrderServiceFactory)
+        public AuthorizePaymentStep(IPayment payment, MarketId marketId, IKlarnaOrderServiceFactory klarnaOrderServiceFactory, IConfigurationLoader configurationLoader, IPurchaseOrderProcessor purchaseOrderProcessor)
+            : base(payment, marketId, klarnaOrderServiceFactory, configurationLoader, purchaseOrderProcessor)
         {
         }
 
