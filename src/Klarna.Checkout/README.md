@@ -27,6 +27,7 @@ Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](ht
     - These also return data to Klarna in order to update order/lineitem totals and available shipping options
 - **Visitor clicks 'Place order' button**
   - The [order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/) url is called in order to execute the last checks before finalizing the order. For example check stock, validate order totals and addresses to make sure all data is valid. If the data is not valid the user can be redirected or can be shown an error message (still on the checkout page)
+
 - **The order is created at Klarna**
 - **Visitor is redirected to confirmation callback url**
   - The purchase order is created in Optimizely
@@ -247,6 +248,7 @@ The following properties are set by default (read from current cart and payment 
 Read more about the different parameters: https://developers.klarna.com/api/#checkout-api-create-a-new-order.
 
 **Remark:**
+
 The demo site implementation only supports selecting the shipping address in the Klarna Checkout iFrame. By default the first available shipping option will be selected. If you want to support switching shipping options you can look at what happens upon updating the cart (and check out [Suspend and Resume here](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/client-side-events/#checkout-actions-suspend-and-resume)).
 
 **API controller - Callback communication**
@@ -288,7 +290,7 @@ public ActionResult ShippingOptionUpdate(int orderGroupId, [FromBody] ShippingOp
 }
 ```
 
-#### [Address update](https://developers.klarna.com/api/#checkout-api-callbacks-address-update)
+#### [Address update](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/server-side-callbacks/#how-its-done-address-update)
 
 If an address has been updated in the iFrame, new address will be sent to the address update callback url. The information can be used to supply new shipping options and order totals.
 
@@ -462,7 +464,7 @@ https://klarna.getadigital.com
 
 ## Package maintainer
 
-[Brian Weeteling](https://github.com/frederikvig)
+https://github.com/frederikvig
 
 ## Changelog
 

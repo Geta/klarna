@@ -12,6 +12,12 @@ All notable changes to this project will be documented in this file.
 - [All packages] Removed Refit dependency
 - [All packages] Changed from JSON.NET to System.Text.Json Serializer
 
+## [3.5.5]
+
+### Changed
+
+- [All packages] Fixed #114 - Image URL for line item returns bad request when using string.Empty - Contributed by: [hyllengren](https://github.com/hyllengren)
+
 ## [3.5.4]
 
 ### Changed

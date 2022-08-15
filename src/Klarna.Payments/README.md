@@ -375,7 +375,7 @@ If the session needs to be finalized, you’ll need to perform this last step to
 
 You can finalize the session by calling the view’s `finalize()` method.
 
-For more information please see: [Klarna Payments Step by Step](https://developers.klarna.com/documentation/in-app/overview/steps-klarna-payments/#finalizing).
+For more information please see: [Klarna Payments Finalize the authorization](https://docs.klarna.com/klarna-payments/api-call-descriptions/authorize-the-purchase/#finalize-the-authorization).
 </details>
 
 <details>
@@ -412,7 +412,7 @@ Load the Klarna API Javascript.
 There are a few frontend changes that are required.
 
 - Load and initialize (define settings) the Klarna Payments widget
-- Authorize payment when visitor clicks the purchase button. The authorize action can be used to send some additional personal. Some countries (EU) we can only send personal information in the last (authorize) step. See more info about the [authorize step here](https://developers.klarna.com/documentation/klarna-payments/integration-guide/authorize/)
+- Authorize payment when visitor clicks the purchase button. The authorize action can be used to send some additional personal. Some countries (EU) we can only send personal information in the last (authorize) step. See more info about the [authorize step here](https://docs.klarna.com/klarna-payments/api-call-descriptions/authorize-the-purchase/)
 
 Example implementation: [Klarna.Payments.js](/demo/Foundation/src/Foundation/wwwroot/js/common/Klarna.Payments.js) and [checkout.js](/demo/Foundation/src/Foundation/Features/Checkout/checkout.js) (search for KlarnaPayments)
 
