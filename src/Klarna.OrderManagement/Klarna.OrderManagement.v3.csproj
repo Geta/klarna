@@ -2,11 +2,24 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <RootNamespace>Klarna.OrderManagement</RootNamespace>
-    <RepositoryUrl>https://github.com/Geta/Klarna</RepositoryUrl>
   </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageId>Klarna.OrderManagement.v3</PackageId>
+    <Title>Klarna.OrderManagement.v3</Title>
+    <Authors>Geta Digital</Authors>
+    <Company>Geta Digital</Company>
+    <PackageProjectUrl>https://github.com/Geta/Klarna/tree/master/src/Klarna.OrderManagement</PackageProjectUrl>
+    <PackageIconUrl>https://cdn.geta.no/opensource/icons/Geta-logo-3.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Description>Klarna Order Management (kco-v3) integration for Optimizely</Description>
+    <PackageReleaseNotes>https://github.com/Geta/klarna/blob/master/CHANGELOG.md</PackageReleaseNotes>
+    <PackageTags>Optimizely Commerce 14</PackageTags>
+    <RepositoryUrl>https://github.com/Geta/klarna.git</RepositoryUrl>
+	<Copyright>Copyright 2022 Geta</Copyright>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EPiServer.Commerce.Core" Version="14.0.2" />

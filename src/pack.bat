@@ -5,10 +5,10 @@ if not "%1"=="" (
   set outputDir=%1
 )
 
-
-nuget pack Klarna.Payments\Klarna.Payments.v3.csproj -IncludeReferencedProjects
-nuget pack Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj -IncludeReferencedProjects
-nuget pack Klarna.Checkout\Klarna.Checkout.v3.csproj -IncludeReferencedProjects
+dotnet pack Klarna.Common\Klarna.Common.v3.csproj
+dotnet pack Klarna.OrderManagement\Klarna.OrderManagement.v3.csproj
+dotnet pack Klarna.Payments\Klarna.Payments.v3.csproj
+dotnet pack Klarna.Checkout\Klarna.Checkout.v3.csproj
 
 copy Klarna.*.nupkg ..\demo\lib /Y
 
