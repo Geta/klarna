@@ -4,17 +4,15 @@ The Express button provides shoppers a fast and convenient way to buy with Klarn
 
 Add the Express button to your cart page to offer a quick and secure checkout option for your customers. With pre-filled data for all Klarna shoppers, you’ll offer a convenient shopping experience that customers expect, even if it’s their first time visiting your site.
 
-You need to have Klarna Payments setup and the domain added to the allowed list with Klarna before being able to use the Express Button.
-
-[More information](https://docs.klarna.com/express-button/prerequisites/).
+You need to have Klarna Payments setup and the domain added to the allowed list with Klarna before being able to use the Express button, please see the [prerequisites](https://docs.klarna.com/express-button/prerequisites/) for more information.
 
 ## Installation
 
-After installing the Klarna Payments package and configuring it (make sure that the merchant ID has been added to AppSettings). Follow the integration steps here: https://docs.klarna.com/express-button/steps-to-integrate/.
+After installing the Klarna Payments package and configuring it (make sure that the merchant ID has been added to appSettings). Follow the integration steps here: https://docs.klarna.com/express-button/steps-to-integrate/.
 
 The MID can be pulled from the settings and added based on the market like this.
 
-```
+```csharp
 private readonly IConfigurationLoader _configurationLoader;
 private readonly ICurrentMarket _currentMarket;
 
@@ -29,7 +27,7 @@ Here's some sample code to get you started (using Foundation as example store). 
 For most cases (75%) for customers the billing and shipping address are the same so we can prefill both of these using this data in the checkout form (and pre-select Klarna Payments as payment option).
 
 KlarnaExpressButtonViewModel.cs
-```
+```csharp
 public class KlarnaExpressButtonViewModel
 {
 	public string Mid { get; set; }
@@ -40,7 +38,7 @@ public class KlarnaExpressButtonViewModel
 
 We can then modify CartViewModelFactory.cs to include the KlarnaExpressButtonViewModel.
 
-```
+```csharp
 if (cartPage.ShowKlarnaExpressButton)
 {
 	var paymentsConfiguration = _configurationLoader.GetPaymentsConfiguration(_currentMarket.GetCurrentMarket().MarketId);
@@ -53,7 +51,7 @@ if (cartPage.ShowKlarnaExpressButton)
 ```
 
 _ExpressButton.cshtml
-```
+```csharp
 @model Foundation.Features.NamedCarts.DefaultCart.KlarnaExpressButtonViewModel
 
 <script src="https://x.klarnacdn.net/express-button/v1/lib.js"
@@ -101,7 +99,7 @@ _ExpressButton.cshtml
 Server side we have an endpoint that will take the data and update the cart with the address info.
 
 KlarnaPaymentsApiController.cs
-```
+```csharp
 [Route("express/authenticated")]
 [HttpPost]
 public ActionResult ExpressButtonAuthenticated([FromBody] OrderManagementAddressInfo addressInfo)
