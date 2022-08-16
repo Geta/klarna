@@ -34,7 +34,9 @@ More about Klarna Order Management: https://docs.klarna.com/order-management/.
 
 Start by installing NuGet packages (use [NuGet](http://nuget.optimizely.com/)):
 
+```
 dotnet add package Klarna.OrderManagement.v3
+```
 
 Both Klarna Payments and Klarna Checkout have dependencies on the Klarna Order Management package. It's more likely that one of those packages are installed, which automatically install this package.    
 </details>
