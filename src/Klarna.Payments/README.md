@@ -449,6 +449,14 @@ if (cart is Mediachase.Commerce.Orders.Cart) // old (not serialized) carts don't
 ```
 
 </details>
+<details>
+  <summary>Klarna Express button (click to expand)</summary>
+
+Add the Express button to your cart page to offer a quick and secure checkout option for your customers. With pre-filled data for all Klarna shoppers, you’ll offer a convenient shopping experience that customers expect, even if it’s their first time visiting your site.
+	
+For details on how to add it, please see the [Express button docs](/docs/express-button.md)
+
+</details>
 
 ## Package maintainer
 
