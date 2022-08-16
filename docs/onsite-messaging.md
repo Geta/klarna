@@ -17,7 +17,7 @@ Once activated you can add the JavaScript Library needed to run it. The JavaScri
 We've included a sample block below that uses the default placement options. Note that this requires the JavaScript library to work (obtained under installation).
 
 KlarnaBlock.cs
-```
+```csharp
 using System.ComponentModel.DataAnnotations;
 using EPiServer.DataAnnotations;
 using EPiServer.Shell.ObjectEditing;
@@ -61,7 +61,7 @@ public class KlarnaPlacementsSelectionFactory : ISelectionFactory
 ```
 
 KlarnaBlock.cshtml
-```
+```csharp
 @using Foundation.Features.Blocks.KlarnaBlock
 
 @model IBlockViewModel<KlarnaBlock>
@@ -76,7 +76,7 @@ KlarnaBlock.cshtml
 ```
 
 KlarnaHelper.cs
-```
+```csharp
 using System;
 using System.Linq;
 using EPiServer.Commerce.Order;
@@ -181,7 +181,7 @@ namespace Foundation.Features.Blocks.KlarnaBlock
 ```
 
 In Features/NamedCart/Cart.js we've added some sample code that shows how to update the purchase amount when the cart changes.
-```
+```js
 changeInfoCart(result) {
     $('.largecart-Subtotal').html("$" + result.data.SubTotal.Amount);
     $('.largecart-TotalDiscount').html("$" + result.data.TotalDiscount.Amount);

@@ -10,7 +10,7 @@ Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](ht
 
 ## Features
 
-- Klarna.Checkout is the integration between Optimizely and the Klarna Checkout API (https://developers.klarna.com/api/#checkout-api-create-a-new-order)
+- Klarna.Checkout is the integration between Optimizely and the [Klarna Checkout API](https://developers.klarna.com/api/#checkout-api-create-a-new-order)
 - Handle pending orders / fraud check results
 - Add order notes to track update flow
 - Pick shipping option in KCO widget
@@ -28,12 +28,12 @@ Klarna.Checkout is a library which helps to integrate [Klarna Checkout (KCO)](ht
 - **Visitor clicks 'Place order' button**
   - The [order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/) url is called in order to execute the last checks before finalizing the order. For example check stock, validate order totals and addresses to make sure all data is valid. If the data is not valid the user can be redirected or can be shown an error message (still on the checkout page)
 
-- **The order is created at Klarna**
+- **The order is created in Klarna**
 - **Visitor is redirected to confirmation callback url**
-  - The purchase order is created in Optimizely
+  - The purchase order is created in Optimizely Commerce
 - **Visitor is redirected to confirmation page**
 - **optional - Klarna - fraud status notification** - When the Klarna order is pending, then a fraud status notification is sent to the configured notification URL (see configuration below)
-- **delayed - Receive a [push callback](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/confirm-purchase/) from Klarna** - This notifies Optimizely that the order has been created in Klarna Order Management (usually within a few seconds). We check if a Purchase Order has been made in Optimizely, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
+- **delayed - receive a [push callback](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/confirm-purchase/) from Klarna** - This notifies Optimizely that the order has been created in Klarna Order Management (usually within a few seconds). We check if a Purchase Order has been made in Optimizely, acknowledge the order in Klarna and update the merchant reference to make sure the Klarna order data is complete.
 
 More information about the Klarna Checkout flow: https://docs.klarna.com/klarna-checkout/.
 
@@ -43,7 +43,7 @@ More information about the Klarna Checkout flow: https://docs.klarna.com/klarna-
 Start by installing NuGet package (use [NuGet](https://nuget.optimizely.com/))
 
 ```
-    dotnet add package Klarna.Checkout.v3
+dotnet add package Klarna.Checkout.v3
 ```
 	
 In Startup.cs
@@ -77,7 +77,7 @@ Login into Optimizely with a CommerceAdmin user and go to **Commerce -> Administ
 
 Click OK in order to save the Payment for the first time.
 
-** appsettings
+## appsettings
 
 Once you have created the payment method in the Commerce interface go to your stores appsettings.json file and add the configuration using the following convention **Klarna -> Checkout -> MarketId**.
 
@@ -93,11 +93,11 @@ Example:
 }
 ```
 
-There are 7 properties that are required and several that are optional or that have default values that can be changed if needed.
+There are 7 properties that are required and several other that are optional or that have default values that can be changed if needed.
 
 For a developer test account see: https://docs.klarna.com/resources/test-environment/. 
 
-*** Required properties ***
+### Required properties
 
 | Name      | Description |
 | ----------- | ----------- |
@@ -123,11 +123,11 @@ Example:
         "TermsUrl": "/terms",
         "PushUrl": "/klarnacheckout/cart/{orderGroupId}/push?klarna_order_id={checkout.order.id}",
       }
-	}
+    }
 }
 ```
 
-*** Other properties ***
+### Other properties
 
 All URLs must be https.
 
@@ -162,11 +162,9 @@ All URLs must be https.
 
 The Klarna.Checkout package will replace `{orderGroupId}` in any of the urls with the id of the cart. Klarna does a similar thing, they will replace `{checkout.order.id}` with the actual klarna order id (for example on confirmation url below).
 
-![Checkout payment method settings](/docs/screenshots/checkout-parameters.PNG?raw=true "Checkout payment method parameters")
-
 **Taxes: If the line items prices already include sales tax - make sure that PricesIncludeTax is set to true. This can be configured per market in Optimizely Commerce. Default is false.**
 
-After you've added the appsettings configuration you need to configure the service your app Startup. The convention is to use the market id as name.
+After you've added the appsettings configuration you need to add it under ConfigureServices in Startup.cs. The convention is to use the Market ID as the name.
 
 Example:
 
@@ -190,7 +188,7 @@ public void ConfigureServices(IServiceCollection services)
 <details>
 <summary>Creating and updating checkout order data (click to expand)</summary>
 
-Every time the user visits the checkout page or changes his/her order, an api call to Klarna is executed. The api call ensures that Klarna has the most recent information needed to show the checkout iFrame. By default all properties should be set as required by Klarna. If you want to hook into the process and change some of the data that is being sent, you can provide an implementation of `ICheckoutOrderDataBuilder` to do so. The interface has a `Build` method, which is called after all default values are set. Below an example implementation of a DemoCheckoutOrderDataBuilder.
+Every time the user visits the checkout page or changes their order, an api call to Klarna is executed. The api call ensures that Klarna has the most recent information needed to show the checkout iframe. By default all properties should be set as required by Klarna. If you want to hook into the process and change some of the data that is being sent, you can provide an implementation of `ICheckoutOrderDataBuilder` to do so. The interface has a `Build` method, which is called after all default values are set. Below an example implementation of ICheckoutOrderDataBuilder.
 
 ```csharp
 public class DemoCheckoutOrderDataBuilder : ICheckoutOrderDataBuilder
@@ -253,7 +251,7 @@ The demo site implementation only supports selecting the shipping address in the
 
 **API controller - Callback communication**
 
-Read more about callback functionality in the next section. In the demo site, you can find the code in the controller `KlarnaCheckoutController.cs`.
+Read more about callback functionality in the next section. In the demo site, you can find the code in the controller [KlarnaCheckoutApiController.cs](/demo/Foundation/src/Foundation/Features/Api/KlarnaCheckoutApiController.cs).
 
 **Load and display payment - Foundation**
 
@@ -275,7 +273,7 @@ During the checkout process Klarna triggers one of the following callbacks.
 
 #### [Shipping optionupdate](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/tax-handling/)
 
-If shipping options are available in the iFrame, after selecting a new shipping option Klarna will send information to this callback url. The information can be used to recalculate shipping costs/order totals.
+If shipping options are available in the iframe, after selecting a new shipping option Klarna will send information to this callback url. The information can be used to recalculate shipping costs/order totals.
 
 ```csharp
 [Route("cart/{orderGroupId}/shippingoptionupdate")]
@@ -292,7 +290,7 @@ public ActionResult ShippingOptionUpdate(int orderGroupId, [FromBody] ShippingOp
 
 #### [Address update](https://docs.klarna.com/klarna-checkout/in-depth-knowledge/server-side-callbacks/#how-its-done-address-update)
 
-If an address has been updated in the iFrame, new address will be sent to the address update callback url. The information can be used to supply new shipping options and order totals.
+If an address has been updated in the iframe, new address will be sent to the address update callback url. The information can be used to supply new shipping options and order totals.
 
 ```csharp
 [Route("cart/{orderGroupId}/addressupdate")]
@@ -308,7 +306,7 @@ public ActionResult AddressUpdate(int orderGroupId, [FromBody] CallbackAddressUp
 #### [Order validation](https://docs.klarna.com/klarna-checkout/popular-use-cases/validate-order/)
 
 Klarna will do a request to the [order validation callback url](https://developers.klarna.com/api/#checkout-api-callbacks-order-validation). Here you can check if a purchase order can be made. Think of checking stock, checking billing and shipping addresses and comparing the Optimizely cart with the provided data from Klarna.
-If **RequireValidateCallbackSuccess** is set to **true** Klarna will only create an order if they receive an HTTP status 200 OK response.
+If `RequireValidateCallbackSuccess` is set to **true** Klarna will only create an order if they receive an HTTP status 200 OK response.
 
 ```csharp
 [Route("cart/{orderGroupId}/ordervalidation")]
@@ -351,7 +349,7 @@ public ActionResult OrderValidation(int orderGroupId, [FromBody] CheckoutOrder c
 
 #### Fraud status
 
-If NotificationUrl is configured, Klarna will call this URL for notifications for orders that needs additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below is an example implementation.
+If `NotificationUrl` is configured, Klarna will call this URL for notifications for orders that needs additional review (fraud reasons). The IKlarnaService includes a method for handling fraud notifications. Below is an example implementation.
 
 ```csharp
 [Route("fraud")]
@@ -364,9 +362,10 @@ public ActionResult FraudNotification(NotificationModel notification)
 ```
 
 When a payment needs an additional review, the payment in Optimizely is set to the status PENDING and the order to ONHOLD. When the fraud status callback URL is called and the payment is accepted the payment status will be set to PROCESSED and the order to ONHOLD. If the payment is rejected by Klarna the payment status is set to FAILED. An note is added to the order to notify the editor that a payment was rejected.
-![Payment fraud rejected](/docs/screenshots/order-payment-fraud-rejected.png?raw=true "Payment fraud rejected")
 
-#### [Push url](https://developers.klarna.com/api/#checkout-api__create-a-new-ordermerchant_urls__push) is called by Klarna when an order is completed in order for Optimizely to acknowledge the order. In the example above the URL would be '/klarnacheckout/cart/{orderGroupId}/push?klarna_order_id={checkout.order.id}'. 
+#### [Push url](https://developers.klarna.com/api/#checkout-api__create-a-new-ordermerchant_urls__push) 
+
+Is called by Klarna when an order is completed in order for Optimizely to acknowledge the order. In the example above the URL would be '/klarnacheckout/cart/{orderGroupId}/push?klarna_order_id={checkout.order.id}'. 
 
 ```csharp
 [Route("cart/{orderGroupId}/push")]
@@ -439,7 +438,7 @@ Klarna Checkout offers a wide variety of payment methods to cover the main needs
 
 ![Klarna Checkout External Payment Methods & External Checkouts](https://developers.klarna.com/static/KCO_external-payment-methods.png)
 
-The most important thing to note is that you need to implement the backend integration for the external payment/checkout yourself. So for instance if you wanted to add PayPal you would have to create a redirect URL that has the processing logic for PayPal. Example: klarna.getadigital.com/processpaypall.
+The most important thing to note is that you need to implement the backend integration for the external payment/checkout yourself. So for instance if you wanted to add PayPal you would have to create a redirect URL that has the processing logic for PayPal. Example: `klarna.getadigital.com/processpaypall`.
 
 In your ICheckoutOrderDataBuilder implementation and the Build() method you would pass along the details of the payment method:
 
@@ -456,7 +455,7 @@ You can find an [example in the demo site](/demo/Foundation/src/Foundation/Featu
 
 ## Local development environment
 
-In order to use / work on this package locally you'll need a tool called www.ngrok.com. This tool can forward a generated ngrok URL to a localhost URL. Klarna Checkout will react on interactions in the widget by executing (push) URL's (configured in commerce manager). If Klarna can't successfully do these request it will show an error modal in the widget.
+In order to use / work on this package locally you'll need a tool called www.ngrok.com. This tool can forward a generated ngrok URL to a localhost URL. Klarna Checkout will react on interactions in the widget by executing (push) URL's (see configuration section). If Klarna can't successfully do these request it will show an error modal in the widget.
 
 ## Demo
 

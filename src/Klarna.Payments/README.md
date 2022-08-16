@@ -25,7 +25,7 @@ Klarna.Payments is a library which helps to integrate Klarna Payments as one of 
 - **Customer presses the Purchase button** - Klarna payment authorize is called client-side
 - **Klarna: Create order** - When payment authorization is completed then create order (payment gateway) at Klarna
 - **Optimizely: Create purchase order** - Create purchase order in Optimizely
-- **Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are send to the configured notification URL (configured in Commerce Manager)
+- **Klarna - fraud status notification** - When the Klarna order is pending then fraud status notification are sent to the configured notification URL
 
 More information about the Klarna Payments flow: https://docs.klarna.com/klarna-payments/.
 
@@ -35,7 +35,7 @@ More information about the Klarna Payments flow: https://docs.klarna.com/klarna-
 Start by installing the NuGet package (use [NuGet](https://nuget.optimizely.com/))
 
 ```
-    dotnet add package Klarna.Payments.v3
+dotnet add package Klarna.Payments.v3
 ```
 
 In Startup.cs
@@ -68,9 +68,9 @@ Login into Optimizely with a CommerceAdmin user and go to **Commerce -> Administ
 
 ![Payment method settings](/docs/screenshots/payment-overview.PNG?raw=true "Payment method settings")
 
-** appsettings
+## Configuration
 
-Once you have created the payment method in the Commerce interface go to your stores appsettings.json file and add the configuration using the following convention **Klarna -> Payments -> MarketId**.
+Once you have created the payment method in the Commerce interface, go to your stores appsettings.json file and add the configuration using the following convention **Klarna -> Payments -> MarketId**.
 
 Example:
 
@@ -80,15 +80,15 @@ Example:
       "US": { // This is the market id
         ...
       }
-	}
+    }
 }
 ```
 
-There are 6 properties that are required and several that are optional or that have default values that can be changed if needed.
+There are 6 properties that are required and several others that are optional or that have default values that can be changed if needed.
 
 For a developer test account see: https://docs.klarna.com/resources/test-environment/. 
 
-*** Required properties ***
+### Required properties
 
 | Name      | Description |
 | ----------- | ----------- |
@@ -118,7 +118,7 @@ Example:
 }
 ```
 
-*** Other properties ***
+### Other properties
 
 | Name      | Description |
 | ----------- | ----------- |
@@ -133,7 +133,7 @@ Example:
 | CustomerPreAssessment          | If not set, customer data will not be sent to Klarna before making a purchase. Default: false       |
 | AutoCapture          | Allow merchant to trigger auto capturing. Default: false       |
 
-After you've added the appsettings configuration you need to configure the service your app Startup. The convention is to use the market id as name.
+After you've added the appsettings configuration you need to add it under ConfigureServices in Startup.cs. The convention is to use the Market ID as the name.
 
 Example:
 
@@ -152,10 +152,11 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-After payment is completed the [confirmation url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__confirmation) must be called. This can be done with this method:
+After payment is completed (in Foundation this would be in the CheckoutController and PlaceOrder method), the [confirmation url](https://developers.klarna.com/api/#payments-api__create-a-new-credit-sessionmerchant_urls__confirmation) must be called. This can be done like this:
 
 ```csharp
 var result = _klarnaPaymentsService.Complete(purchaseOrder);
+	
 if (result.IsRedirect)
 {
     return Redirect(result.RedirectUrl);
@@ -230,9 +231,9 @@ public class KlarnaPaymentsApiController : Controller
 }
 ```
 
-The 'SendProductAndImageUrl' property indicates if the product (in cart) page and image URL should be sent to Klarna and displayed in the Merchant Portal. When the 'UseAttachments' property is set to true - the developer should send extra information to Klarna. See the Klarna documentation for more detailed explanation: https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data.
+The `SendProductAndImageUrl` property indicates if the product (in cart) page and image URL should be sent to Klarna and displayed in the Merchant Portal. When the `UseAttachments` property is set to true - the developer should send extra information to Klarna. See the [Klarna documentation](https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data) for more detailed explanation.
 
-The 'Pre-assesment' field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This option is only available in the U.S. market and will be ignored for all other markets. Below is a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder interface is explained later in this document.
+The `Pre-assesment` field indicates if customer information should be sent to Klarna prior to authorization. Klarna will review this information to verify if the customer can buy via Klarna. This option is only available in the U.S. market and will be ignored for all other markets. Below is a code snippet for sending customer information. An implementation of the ISessionBuilder can be used for setting this information. The ISessionBuilder interface is explained later in this document.
 
 ```chsarp
 sessionRequest.Customer = new Customer
@@ -259,13 +260,13 @@ Example:
 await _klarnaPaymentsService.CreateOrUpdateSession(MyCart, new SessionSettings(SiteDefinition.Current.SiteUrl));
 ```
 
-It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way you're able to override existing values or set missing ones. MerchantReference1 is used for the Purchase Order Number from Optimizely, MerchantReference2 can be used for additional data for that order which the merchant can then use to search and locate that particular order in the Klarna Portal (see example below in DemoSessionBuilder). The includePersonalInformation parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://developers.klarna.com/documentation/klarna-payments/legal-privacy/). 
+It's possible to create an implementation of the ISessionBuilder. The Build method is called after all default values are set. This way you're able to override existing values or set missing ones. MerchantReference1 is used for the Purchase Order Number from Optimizely, MerchantReference2 can be used for additional data for that order which the merchant can then use to search and locate that particular order in the Klarna Portal (see example below in DemoSessionBuilder). The `includePersonalInformation` parameter indicates if personal information can be sent to Klarna. There are some restrictions for certain countries. For example, countries in the EU can only send personal information once customer has actively selected a Klarna payment method. For more details on legal & privacy [see here](https://developers.klarna.com/documentation/klarna-payments/legal-privacy/). 
 
-You can add additional merchant data like customer data, subscription, event, reservation details etc when UseAttachments is set to true (see configuration above). Here's a list of all the different supported parameters: https://developers.klarna.com/api/#payments-api-create-a-new-credit-session. 
+You can add additional merchant data like customer data, subscription, event, reservation details etc when `UseAttachments` is set to true (see configuration above). [Here's a list](https://developers.klarna.com/api/#payments-api-create-a-new-credit-session) of all the different supported parameters. 
 
-Below is an example implementation of a DemoSessionBuilder.
+Below is an example implementation of ISessionBuilder.
 
-```
+```csharp
 public class DemoSessionBuilder : ISessionBuilder
 {
         public Session Build(Session session, ICart cart, PaymentsConfiguration configuration, IDictionary<string, object> dic = null, bool includePersonalInformation = false)
@@ -331,7 +332,7 @@ The following properties are set by default (read from current cart and payment 
 
 Read more about the different parameters: https://developers.klarna.com/api/#payments-api-create-a-new-credit-session.
 
-When 'UseAttachments' is set to true, extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. Full documentation about this topic can be found here: https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data.
+When `UseAttachments` is set to true, extra information can be send to Klarna. The code snippet above (DemoSessionBuilder) shows an example how you can implement this. [Here's the full documentation](https://developers.klarna.com/documentation/klarna-payments/integration-guide/create-session/#extra-merchant-data) by Klarna.
 
 </details>
 
@@ -404,7 +405,7 @@ This repository includes the [Foundation demo site](https://github.com/Geta/Klar
 Load the Klarna API Javascript.
 
 ```
-    <script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
+<script src="https://x.klarnacdn.net/kp/lib/v1/api.js" async></script>
 ```
 
 **Frontend implementation**
@@ -418,7 +419,7 @@ Example implementation: [Klarna.Payments.js](/demo/Foundation/src/Foundation/www
 
 **API controller - frontend and callback communication**
 
-The `KlarnaPaymentController` contains actions that are used by the frontend and for Klarna callbacks (confirmation, fraud, notification, and push).
+The [KlarnaPaymentsApiController](/demo/Foundation/src/Foundation/Features/Api/KlarnaPaymentsApiController.cs) contains actions that are used by the frontend and for Klarna callbacks (confirmation, fraud, notification, and push).
 
 - GetpersonalInformation - Get personal information for the authorization call. See the section 'Call authorize client-side' for more explanation.
 - AllowSharingOfPersonalInformation - Check if the personal information can be shared. See the section 'Call authorize client-side' for more explanation.
