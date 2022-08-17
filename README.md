@@ -12,7 +12,7 @@
 
 [Go to documentation](src/Klarna.OrderManagement/README.md)
 
-# On-site messaging
+# Klarna On-site messaging
 
 [Go to documentation](docs/onsite-messaging.md)
 
