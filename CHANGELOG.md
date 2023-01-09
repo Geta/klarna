@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.1]
+
+- [Klarna Order Management] Fixed #172 - Missing payment type PAY_BY_CARD
+
 ## [4.0.0]
 
 ### Breaking changes
