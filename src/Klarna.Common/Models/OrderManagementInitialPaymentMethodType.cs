@@ -14,6 +14,7 @@
         INVOICE_BUSINESS,
         DEFERRED_INTEREST,
         FIXED_SUM_CREDIT,
+        PAY_BY_CARD,
         PAY_LATER_BY_CARD,
         MOBILEPAY,
         OTHER,
