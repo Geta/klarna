@@ -2,7 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.5.6]
+
+### Changed
+
+- [Klarna Order Management] Fixed #172 - Missing payment type PAY_BY_CARD
+
 ## [4.0.1]
+
+### Changed
 
 - [Klarna Order Management] Fixed #172 - Missing payment type PAY_BY_CARD
 
@@ -43,14 +51,14 @@ All notable changes to this project will be documented in this file.
 
 ## [3.5.0]
 
-### Changed (breaking)
+### Breaking changes
 
 - [All packages] Fixed #84 - Removed Klarna.Rest.Core dependency
 - [All packages] Updated - Local logic for detecting country and language
 
 ## [3.0.1]
 
-### Changed (breaking)
+### Breaking changes
 
 - [All packages] Fixed #68 - Upgrade to Episerver Commerce 13
 - [All packages] Fixed #58 - Update deprecated package Klarna.Rest to Klarna.Rest.Core
