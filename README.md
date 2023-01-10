@@ -1,5 +1,7 @@
 ![](http://tc.geta.no/app/rest/builds/buildType:(id:Demo_Klarna_00ci),branch:master/statusIcon)
 
+The commerce13 branch is for Optimizely Commerce 13. For Optimizely Commerce 14 please switch to the master branch.
+
 # Klarna Payments
 
 [Go to documentation](src/Klarna.Payments/README.md)
