@@ -518,7 +518,7 @@ namespace Foundation.Features.Search
                     results.Add(item as EntryContentBase);
                 }
             }
-            return results.DistinctBy(e => e.ContentGuid);
+            return Enumerable.DistinctBy(results, e => e.ContentGuid);
         }
 
         private ProductSearchResults GetSearchResults(IContent currentContent,

@@ -17,6 +17,7 @@ using Foundation.Infrastructure.Display;
 using Geta.NotFoundHandler.Infrastructure.Configuration;
 using Geta.NotFoundHandler.Infrastructure.Initialization;
 using Geta.NotFoundHandler.Optimizely;
+using Geta.NotFoundHandler.Optimizely.Infrastructure.Configuration;
 using Jhoose.Security.DependencyInjection;
 using Mediachase.Commerce.Anonymous;
 using Mediachase.Commerce.Orders;
