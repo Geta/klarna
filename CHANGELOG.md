@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0]
+
+### Breaking changes
+
+- [All packages] Upgraded to .NET 6
+- [Klarna Order Management] Fixed #174 - Tax rate calculation on discounted line items 
+
 ## [3.5.6]
 
 ### Changed
