@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [3.6.0]
+
+### Changed
+
+- [All packages] Support for **HTTP Basic Authentication** when making API requests .  
+  - Authorization header is now built from `Username:Password` credentials.  
+  - Requests are automatically sent with `Authorization: Basic <token>` header.
+
 ## [3.5.6]
 
 ### Changed
