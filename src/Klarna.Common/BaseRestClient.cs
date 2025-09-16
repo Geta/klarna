@@ -195,6 +195,11 @@ namespace Klarna.Common
             var client = new HttpClient(handler, true) { Timeout = TimeSpan.FromSeconds(600) };
             client.DefaultRequestHeaders.Add("User-Agent", ApiSession.UserAgent);
             client.DefaultRequestHeaders.ExpectContinue = false;
+
+            var userPass = $"{ApiSession.Credentials.Username}:{ApiSession.Credentials.Password}";
+            var token = Convert.ToBase64String(Encoding.ASCII.GetBytes(userPass));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
+
             return client;
         }
 
