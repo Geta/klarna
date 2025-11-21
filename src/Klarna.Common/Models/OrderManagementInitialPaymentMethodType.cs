@@ -18,6 +18,12 @@
         PAY_LATER_BY_CARD,
         MOBILEPAY,
         OTHER,
-        SWISH
+        SWISH,
+        APPLE_PAY_CARD,
+        GOOGLE_PAY_CARD,
+        CARTES_BANCAIRES,
+        BLIK,
+        TWINT,
+        BANCONTACT
     }
 }
