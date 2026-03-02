@@ -24,6 +24,18 @@
         CARTES_BANCAIRES,
         BLIK,
         TWINT,
-        BANCONTACT
+        BANCONTACT,
+        APPLE_PAY_MASTERCARD,
+        APPLE_PAY_VISA,
+        GOOGLE_PAY_MASTERCARD,
+        GOOGLE_PAY_VISA,
+        KLARNA_PAY_IN_INSTALLMENTS,
+        KLARNA_PAY_LATER,
+        KLARNA_PAY_NOW,
+        MASTERCARD_CREDIT,
+        MASTERCARD_DEBIT,
+        UNKNOWN_CARD,
+        VISA_CREDIT,
+        VISA_DEBIT,
     }
 }
