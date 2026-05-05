@@ -133,7 +133,7 @@ namespace Klarna.Checkout
             }
             catch (ApiException ex)
             {
-                _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
+                _logger.Error(ex.GetFormattedErrorMessage(), ex);
                 throw;
             }
             catch (WebException ex)
@@ -177,7 +177,7 @@ namespace Klarna.Checkout
                     return await CreateOrder(cart).ConfigureAwait(false);
                 }
 
-                _logger.Error($"{ex.ErrorMessage.CorrelationId} {ex.ErrorMessage.ErrorCode} {string.Join(", ", ex.ErrorMessage.ErrorMessages)}", ex);
+                _logger.Error(ex.GetFormattedErrorMessage(), ex);
 
                 throw;
             }
