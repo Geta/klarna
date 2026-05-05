@@ -47,25 +47,32 @@ namespace Klarna.OrderManagement.Steps
 
         protected string GetExceptionMessage(Exception ex)
         {
-            var exceptionMessage = string.Empty;
-            switch (ex)
+            try
             {
-                case AggregateException aggregateException:
-                    var innerMessages =
-                        string.Join("; ", aggregateException.InnerExceptions.Select(GetExceptionMessage));
-                    exceptionMessage = $"{innerMessages}";
-                    break;
-                case ApiException apiException:
-                    exceptionMessage =
-                        $"{apiException.ErrorMessage.CorrelationId} " +
-                        $"{apiException.ErrorMessage.ErrorCode} " +
-                        $"{string.Join(", ", apiException.ErrorMessage.ErrorMessages)}";
-                    break;
-                case WebException webException:
-                    exceptionMessage = webException.Message;
-                    break;
+                switch (ex)
+                {
+                    case AggregateException aggregateException:
+                        return string.Join("; ",
+                            aggregateException.InnerExceptions.Select(GetExceptionMessage));
+                    case ApiException apiException:
+                        var errorMessage = apiException.ErrorMessage;
+                        if (errorMessage == null)
+                        {
+                            return apiException.Message ?? string.Empty;
+                        }
+                        var messages = errorMessage.ErrorMessages != null
+                            ? string.Join(", ", errorMessage.ErrorMessages)
+                            : string.Empty;
+                        return $"{errorMessage.CorrelationId} {errorMessage.ErrorCode} {messages}";
+                    case WebException webException:
+                        return webException.Message;
+                }
+                return string.Empty;
             }
-            return exceptionMessage;
+            catch
+            {
+                return ex?.ToString() ?? string.Empty;
+            }
         }
     }
 }
