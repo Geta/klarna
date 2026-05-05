@@ -47,32 +47,17 @@ namespace Klarna.OrderManagement.Steps
 
         protected string GetExceptionMessage(Exception ex)
         {
-            try
+            switch (ex)
             {
-                switch (ex)
-                {
-                    case AggregateException aggregateException:
-                        return string.Join("; ",
-                            aggregateException.InnerExceptions.Select(GetExceptionMessage));
-                    case ApiException apiException:
-                        var errorMessage = apiException.ErrorMessage;
-                        if (errorMessage == null)
-                        {
-                            return apiException.Message ?? string.Empty;
-                        }
-                        var messages = errorMessage.ErrorMessages != null
-                            ? string.Join(", ", errorMessage.ErrorMessages)
-                            : string.Empty;
-                        return $"{errorMessage.CorrelationId} {errorMessage.ErrorCode} {messages}";
-                    case WebException webException:
-                        return webException.Message;
-                }
-                return string.Empty;
+                case AggregateException aggregateException:
+                    return string.Join("; ",
+                        aggregateException.InnerExceptions.Select(GetExceptionMessage));
+                case ApiException apiException:
+                    return apiException.GetFormattedErrorMessage();
+                case WebException webException:
+                    return webException.Message;
             }
-            catch
-            {
-                return ex?.ToString() ?? string.Empty;
-            }
+            return string.Empty;
         }
     }
 }

@@ -226,6 +226,7 @@
     <Compile Include="BaseRestClient.cs" />
     <Compile Include="BaseStore.cs" />
     <Compile Include="ConnectionConfiguration.cs" />
+    <Compile Include="Extensions\ApiExceptionExtensions.cs" />
     <Compile Include="Extensions\ILineItemTaxCalculator.cs" />
     <Compile Include="Extensions\LineItemExtensions.cs" />
     <Compile Include="Extensions\LineItemTaxCalculator.cs" />

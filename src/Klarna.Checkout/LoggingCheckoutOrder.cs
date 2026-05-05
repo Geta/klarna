@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using EPiServer.Logging;
 using Klarna.Checkout.Models;
+using Klarna.Common.Extensions;
 using Klarna.Common.Models;
 
 namespace Klarna.Checkout
@@ -64,25 +65,7 @@ namespace Klarna.Checkout
 
         private static void Log(ApiException e)
         {
-            try
-            {
-                var errorMessage = e?.ErrorMessage;
-                if (errorMessage == null)
-                {
-                    Logger.Error(e?.Message, e);
-                    return;
-                }
-                var messages = errorMessage.ErrorMessages != null
-                    ? string.Join(" ", errorMessage.ErrorMessages)
-                    : string.Empty;
-                Logger.Error(
-                    $"Error Code: '{errorMessage.ErrorCode}'; CorrelationId: '{errorMessage.CorrelationId}'; Messages: '{messages}'",
-                    e);
-            }
-            catch
-            {
-                Logger.Error(e?.ToString(), e);
-            }
+            Logger.Error(e.GetVerboseLogMessage(), e);
         }
     }
 }
