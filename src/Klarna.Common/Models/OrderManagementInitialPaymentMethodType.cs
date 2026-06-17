@@ -37,5 +37,6 @@
         UNKNOWN_CARD,
         VISA_CREDIT,
         VISA_DEBIT,
+        VIPPS,
     }
 }
