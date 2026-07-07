@@ -1,4 +1,4 @@
-![](http://tc.geta.no/app/rest/builds/buildType:(id:Demo_Klarna_00ci),branch:master/statusIcon)
+![](http://teamcity.getatools.ai/app/rest/builds/buildType:(id:Demo_Klarna_00ci),branch:master/statusIcon)
 
 The master branch is for Optimizely Commerce 14. For Optimizely Commerce 13 please switch to the commerce13 branch.
 
