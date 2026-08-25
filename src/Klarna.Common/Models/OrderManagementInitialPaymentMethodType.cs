@@ -38,5 +38,6 @@
         VISA_CREDIT,
         VISA_DEBIT,
         VIPPS,
+        VIPPS_DIRECT
     }
 }
